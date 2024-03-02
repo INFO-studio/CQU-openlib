@@ -1,5 +1,37 @@
-site_name: 重庆大学课程攻略共享计划
+site_name: 重庆大学课业资源共享计划
+
 theme:
   name: material
+
 nav:
-- Home: docs/2023版重大高数下册习题集.md
+- 大学物理: 
+  - 大学物理总览: 大学物理/大学物理.md
+- 高等数学:
+  - 高等数学总览: 高等数学/高等数学.md
+  - 2023版重大高数下册习题集: 高等数学/2023版重大高数下册习题集.md
+- 概率论与数理统计:
+  - 概率论与数理统计总览: 概率论与数理统计/概率论与数理统计.md
+  - 习题答案:
+    - 第一章 A 组: 概率论与数理统计/概率论与数理统计 习题1 A组作业解答.md
+    - 第二章 A 组: 概率论与数理统计/概率论与数理统计 习题2 A组作业解答.md
+    - 第三章 A 组: 概率论与数理统计/概率论与数理统计 习题3 A组作业解答.md
+    - 第四章 A 组: 概率论与数理统计/概率论与数理统计 习题4 A组作业解答.md
+- 马克思主义原理:
+  - 马克思主义原理总览: 马克思主义原理/马克思主义原理.md
+- 文明经典:
+  - 文明经典 A 总览: 文明经典/文明经典 A.md
+  - 文明经典 B 总览: 文明经典/文明经典 B.md
+- 运筹学:
+  - 运筹学总览: 运筹学/运筹学.md
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
