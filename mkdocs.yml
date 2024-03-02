@@ -1,3 +1,5 @@
 site_name: 重庆大学课程攻略共享计划
 theme:
   name: material
+nav:
+- Home: docs/2023版重大高数下册习题集.md
