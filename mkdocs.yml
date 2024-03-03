@@ -31,7 +31,7 @@ nav:
 - 运筹学:
   - 运筹学总览: 运筹学/运筹学.md
 - 中国近现代史纲要:
-  - 中国近现代史纲要总览: 中国近现代史纲要.md
+  - 中国近现代史纲要总览: 中国近现代史纲要/中国近现代史纲要.md
 
 markdown_extensions:
   - pymdownx.arithmatex:
