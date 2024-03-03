@@ -3,26 +3,16 @@ site_name: 重庆大学课业资源共享计划
 theme:
   name: material
   palette: 
-    scheme: slate
     primary: indigo
     accent: indigo
-      scheme: default
+    - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-4
         name: Switch to dark mode
-
-    # Palette toggle for dark mode
-      scheme: light
+    - scheme: light
       toggle:
-        icon: material/brightness-4
+        icon: material/brightness-7
         name: Switch to light mode
-
-    # Palette toggle for dark mode
-      media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to system preference
   language: zh
 
 nav:
