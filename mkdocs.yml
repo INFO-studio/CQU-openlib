@@ -8,6 +8,8 @@ theme:
     accent: indigo
   language: zh
   logo: assets/openlib-logo.png
+  icon:
+    repo: fontawesome/brands/github
   features:
     - navigation.footer
   
@@ -48,6 +50,8 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/INFO-studio/CQU-openlib
       name: 项目Github链接
+repo_url: https://github.com/INFO-studio/CQU-openlib
+repo_name: CQU-openlib
 
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
