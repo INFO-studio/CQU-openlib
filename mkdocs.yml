@@ -50,12 +50,17 @@ nav:
   - 习近平法治思想概论: 习近平法治思想概论/习近平法治思想概论.md
 - 线性代数:
   - 线性代数总览: 线性代数/线性代数.md
+- 信号与系统: 
+  - 信号与系统: 信号与系统/信号与系统.md
 - 运筹学:
   - 运筹学总览: 运筹学/运筹学.md
 - 中国近现代史纲要:
   - 中国近现代史纲要总览: 中国近现代史纲要/中国近现代史纲要.md
 
 markdown_extensions:
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.arithmatex:
       generic: true
 
