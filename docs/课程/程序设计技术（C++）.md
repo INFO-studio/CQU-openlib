@@ -5,4 +5,4 @@
 ---
 
 ## 资源
-[期末大作业 ATM 参考](https://gitee.com/lin-yujing-22/ATMproject) @ 林欲静
+[期末大作业 ATM 参考](https://gitee.com/lin-yujing-22/ATMproject) @ 林欲静  
