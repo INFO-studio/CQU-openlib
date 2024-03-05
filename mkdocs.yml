@@ -8,11 +8,11 @@ theme:
   palette:
   - scheme: slate
     toggle:
-      icon: material/toggle-switch-off-outline
+      icon: material/toggle-switch
       name: Switch to light mode
   - scheme: defalt
     toggle:
-      icon: material/toggle-switch
+      icon: material/toggle-switch-off-outline
       name: Switch to dark mode
     primary: indigo
     accent: indigo
