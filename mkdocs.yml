@@ -3,6 +3,7 @@ site_name: 重庆大学课业资源共享计划
 theme:
   name: material
   palette: 
+  
     # Palette toggle for light mode
     - scheme: slate
       toggle:
