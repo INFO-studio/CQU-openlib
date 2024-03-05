@@ -5,7 +5,7 @@ theme:
   features:
     - navigation.footer
     - navigation.sections
-  palette: 
+  palette:
     - scheme: slate
       toggle:
         icon: material/toggle-switch-off-outline
