@@ -6,17 +6,13 @@ theme:
     - navigation.footer
     - navigation.sections
   palette: 
-  
-    # Palette toggle for light mode
     - scheme: slate
       toggle:
-        icon: material/brightness-4 
+        icon: material/toggle-switch-off-outline
         name: Switch to light mode
-
-    # Palette toggle for light mode
     - scheme: defalt
       toggle:
-        icon: material/brightness-7
+        icon: material/toggle-switch
         name: Switch to dark mode
     primary: indigo
     accent: indigo
