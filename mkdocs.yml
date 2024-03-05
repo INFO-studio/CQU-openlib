@@ -6,7 +6,7 @@ theme:
     - navigation.footer
     - navigation.sections
   palette:
-    - scheme: slate
+  - scheme: slate
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
