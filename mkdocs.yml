@@ -7,13 +7,13 @@ theme:
     - navigation.sections
   palette:
   - scheme: slate
-      toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to light mode
-    - scheme: defalt
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to dark mode
+    toggle:
+      icon: material/toggle-switch-off-outline
+      name: Switch to light mode
+  - scheme: defalt
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to dark mode
     primary: indigo
     accent: indigo
   language: zh
