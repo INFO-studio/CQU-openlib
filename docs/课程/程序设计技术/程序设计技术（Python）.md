@@ -6,7 +6,11 @@
 
 ## 资源
 - [推荐网课（无广，imooc打钱！）](https://www.imooc.com/learn/1261)  
-- [鸢尾花书 Book+1 《编程不难》<u>pdf</u>](https://file.uhsea.com/2403/be5da32ab7c06ff788876da4268c8c5275.pdf) [<u>配套代码</u>](https://file.uhsea.com/2403/4cc91475236e2156ebd5673ea74d680dQ5.zip) [<u>B站微课</u>](https://space.bilibili.com/513194466) [<u>Github</u>](https://github.com/Visualize-ML/Book1_Python-For-Beginners)
+- 鸢尾花书 Book+1 《编程不难》
+    - [pdf](https://file.uhsea.com/2403/be5da32ab7c06ff788876da4268c8c5275.pdf)
+    - [配套代码](https://file.uhsea.com/2403/4cc91475236e2156ebd5673ea74d680dQ5.zip)
+    - [B站微课](https://space.bilibili.com/513194466)
+    - [Github](https://github.com/Visualize-ML/Book1_Python-For-Beginners)
 
 ---
 
