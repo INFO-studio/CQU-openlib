@@ -7,7 +7,7 @@
 ---
 
 ## 资源
-- 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](/docs/技巧/关于epub文件.md)）  
+- 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](/CQU-openlib/技巧/关于epub文件.md)）  
     - [诗经](https://file.uhsea.com/2403/c694a5eb8ff71df33b260b2ac028814fQV.epub)  
     - [庄子](https://file.uhsea.com/2403/9c478b65cddafa9c616e6f8ced9cfd57EX.epub)  
     - [史记](https://file.uhsea.com/2403/f7c51db046e27cf9028168862f1415373C.epub)  
