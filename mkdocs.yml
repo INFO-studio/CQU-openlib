@@ -6,6 +6,7 @@ theme:
   features:
   - navigation.footer
   - navigation.sections
+  - announce.dismiss
   palette:
   - scheme: slate
     toggle:
