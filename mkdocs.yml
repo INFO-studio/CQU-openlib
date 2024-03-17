@@ -100,6 +100,10 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
 
+extra:
+  announcement: "📢 重要公告：本站点正在维护中，可能会出现不稳定的情况。感谢您的理解和支持！"
+
+
 extra_javascript:
   - javascripts/katex.js
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
