@@ -94,15 +94,15 @@ repo_name: CQU-openlib
 
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
-plugins:
-  - info
-
 markdown_extensions:
   - def_list
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.arithmatex:
       generic: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 extra_javascript:
   - javascripts/katex.js
