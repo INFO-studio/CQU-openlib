@@ -3,8 +3,8 @@ site_name: 重庆大学资源共享计划
 theme:
   name: material
   features:
-    - navigation.footer
-    - navigation.sections
+  - navigation.footer
+  - navigation.sections
   palette:
   - scheme: slate
     toggle:
