@@ -94,6 +94,9 @@ repo_name: CQU-openlib
 
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
+plugins:
+  - info
+
 markdown_extensions:
   - def_list
   - pymdownx.tasklist:
