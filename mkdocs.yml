@@ -21,6 +21,8 @@ theme:
   icon:
     repo: fontawesome/brands/github
   
+pages:
+  - 杂项/文明经典写作题目/2023届文明经典B下学期第一次写作题目.md
 
 nav:
 - 课程: 
