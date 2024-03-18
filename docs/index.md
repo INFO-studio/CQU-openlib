@@ -4,7 +4,13 @@
 ---
 !!! info "公告"
     - 四级、六级报名已经开启，请进入 [教务网](https://my.cqu.edu.cn/workspace/home)-四六级报名 进行报名  
+        - 截止时间：2024-Mar22-10:00  
     - 文经经典第一次写作已经开始，[文明经典A](/CQU-openlib/杂项/文明经典写作题目/2023届文明经典A下学期第一次写作题目)、[文明经典B](/CQU-openlib/杂项/文明经典写作题目/2023届文明经典B下学期第一次写作题目)  
+        - 截止时间：2024-Mar22-24:00
+    - [2024年英特尔杯大学生电子设计竞赛嵌入式系统专题邀请赛](https://sxic.cqu.edu.cn/content/news-detail?type=news&params=39e77dc4f7ce496eb3df5b1c15425fd0&menuIds=68,71)报名开始  
+        - 截止时间：2024-Mar20-24:00
+    - 重修课程[开始选课](http://my.cqu.edu.cn/enroll)  
+        - 截止时间：2024-Mar24-23:00
 
 ---
 
