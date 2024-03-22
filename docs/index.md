@@ -9,10 +9,6 @@
         - 截止时间：2024-Mar22-24:00
     - 重修课程[开始选课](http://my.cqu.edu.cn/enroll)  
         - 截止时间：2024-Mar24-23:00
-    - [2024年英特尔杯大学生电子设计竞赛嵌入式系统专题邀请赛](https://sxic.cqu.edu.cn/content/news-detail?type=news&params=39e77dc4f7ce496eb3df5b1c15425fd0&menuIds=68,71)报名开始  
-        - 截止时间：2024-Mar20-24:00
-    - [2024年中国高校计算机大赛-团体程序设计天梯赛](https://sxic.cqu.edu.cn/content/news-detail?type=news&params=ecd98f8138f44d0c9de83a4cec62564a&menuIds=68,71)报名开始
-        - 截止时间：2024-Mar20-24:00
 
 ---
 
