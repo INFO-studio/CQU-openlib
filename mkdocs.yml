@@ -5,6 +5,7 @@ theme:
   features:
   - navigation.footer
   - announce.dismiss
+  - content.code.copy
   palette:
   - scheme: slate
     toggle:
