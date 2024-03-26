@@ -4,9 +4,6 @@ theme:
   name: material
   custom_dir: overrides
   features:
-  - navigation.footer
-  - navigation.sections
-  - announce.dismiss
   palette:
   - scheme: slate
     toggle:
