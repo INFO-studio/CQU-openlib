@@ -7,14 +7,14 @@
 ---
 
 ## 资源
-- 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](../../技巧/关于epub文件)）  
+- 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](../../技巧/关于epub文件.md)）  
     - [诗经](https://file.uhsea.com/2403/c694a5eb8ff71df33b260b2ac028814fQV.epub)  
     - [庄子](https://file.uhsea.com/2403/9c478b65cddafa9c616e6f8ced9cfd57EX.epub)  
     - [史记](https://file.uhsea.com/2403/f7c51db046e27cf9028168862f1415373C.epub)  
     - [世说新语](https://file.uhsea.com/2403/0ae07df62b77f64e6d75eed5cb9bc5edEE.epub)、[戴建业精读版](https://file.uhsea.com/2403/7b6bcfb9aa2c1c56cfbb1f3637f73bf6Q5.epub)  
     - [唐律疏议](https://file.uhsea.com/2403/36676cefaa89f2cbf62ebe3fde0b75c1JK.epub)、[注译pdf](https://file.uhsea.com/2403/c3e8fa0ccfc396e636c23c1e37aea782F4.pdf)  
     - [传习录](https://file.uhsea.com/2403/ea069d5861904af991266df0843f091914.epub)  
-- [历史写作题目](../../杂项/文明经典写作题目/文明经典A历史写作题目)
+- [历史写作题目](../../杂项/文明经典写作题目/文明经典A历史写作题目.md)
 
 ---
 
