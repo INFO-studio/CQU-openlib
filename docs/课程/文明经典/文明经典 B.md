@@ -17,7 +17,7 @@
     - [第一哲学沉思集](https://file.uhsea.com/2403/7050ca187d79a03a48d5ef9c32ac1978NX.epub)  
     - [社会契约论](https://file.uhsea.com/2403/876c4076b84027c05197b89f4509ccedZ6.epub)  
     - [论道德的谱系](https://file.uhsea.com/2403/0719d03eea9e4c88b18c8e39701e08bbPE.epub)  
-- [历史写作题目](../../杂项/文明经典写作题目/文明经典B历史写作题目)  
+- [历史写作题目](../../杂项/文明经典写作题目/文明经典B历史写作题目.md)  
 
 ---
 
