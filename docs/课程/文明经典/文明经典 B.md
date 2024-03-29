@@ -10,7 +10,7 @@
 
 ## 资源
 - [教材](https://file.uhsea.com/2403/71109a486000ea805f0c3b92db468965Z6.pdf)  
-- 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](docs/技巧/关于epub文件)）  
+- 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](docs/技巧/关于epub文件.md)）  
     - [荷马史诗：伊利亚特](https://file.uhsea.com/2403/90ed0ad129e9dcc43344e4beaeb0e475C3.epub)  
     - [伯罗奔尼撒战争史](https://file.uhsea.com/2403/71c2fd354a1a87679f8fa60d51adc954VT.epub)  
     - [哈姆雷特](https://file.uhsea.com/2403/f5b21461a2cb26df14a2c03b5a428fe62G.epub)  
