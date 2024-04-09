@@ -122,14 +122,19 @@ repo_name: CQU-openlib
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
 markdown_extensions:
+  - admonition
   - def_list
-  - pymdownx.tasklist:
-      custom_checkbox: true
   - pymdownx.arithmatex:
       generic: true
-  - admonition
+  - pymdownx.caret
+  - pymdownx.critic
   - pymdownx.details
+  - pymdownx.keys
+  - pymdownx.mark
   - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
 
 extra_javascript:
   - javascripts/katex.js
