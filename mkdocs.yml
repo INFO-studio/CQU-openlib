@@ -149,27 +149,27 @@ repo_name: CQU-openlib
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
 extra: 
-  - generator: false
+- generator: false
 
 markdown_extensions:
-  - admonition
-  - def_list
-  - pymdownx.arithmatex:
-      generic: true
-  - pymdownx.caret
-  - pymdownx.critic
-  - pymdownx.details
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.superfences
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - pymdownx.tilde
+- admonition
+- def_list
+- pymdownx.arithmatex:
+    generic: true
+- pymdownx.caret
+- pymdownx.critic
+- pymdownx.details
+- pymdownx.keys
+- pymdownx.mark
+- pymdownx.superfences
+- pymdownx.tasklist:
+    custom_checkbox: true
+- pymdownx.tilde
 
 extra_javascript:
-  - javascripts/katex.js
-  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
-  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+- javascripts/katex.js
+- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
 
 extra_css:
-  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
