@@ -149,7 +149,7 @@ repo_name: CQU-openlib
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
 extra: 
-- generator: false
+ generator: false
 
 markdown_extensions:
 - admonition
