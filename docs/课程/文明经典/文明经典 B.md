@@ -12,6 +12,7 @@
 - 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](../../技巧/关于epub文件.md)）  
     - [荷马史诗：伊利亚特](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iJ73S1upjfij)  
     - [伯罗奔尼撒战争史](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/i5IES1upjckd)  
+        - 推荐观看视频：[前传](https://www.bilibili.com/video/BV1CP411Y7hk)、[上篇](https://www.bilibili.com/video/BV1W84y1D74w)、[下篇](https://www.bilibili.com/video/BV1xa4y1o7Fc)
     - [哈姆雷特](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iMYgy1upjcle)  
     - [第一哲学沉思集](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/in4gN1upjfhi)  
     - [社会契约论](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iGTSE1upjffg)  
