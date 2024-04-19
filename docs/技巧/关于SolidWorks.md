@@ -1,3 +1,3 @@
-- 关于软件下载，请看：[3D溜溜网](https://software.3d66.com/list/detail_8797.html)（如果您有{--雄厚的财力--}，欢迎支持正版）  
-    - 由于此下载方式为百度网盘，如有需求请看[网盘无限速下载](网盘无限速下载.md)
+- 关于软件下载，请看：[3D溜溜网](https://software.3d66.com/list/detail_8797.html)（如果您有{--雄厚的财力--}，欢迎支持[正版](https://www.solidworks.com/zh-hans)）  
+    - 由于此下载方式为百度网盘，如有需求请在主页的角落寻找魔法领域  
 - 关于如何改变语言至中文，请看：[知乎](https://zhuanlan.zhihu.com/p/643048514)  
