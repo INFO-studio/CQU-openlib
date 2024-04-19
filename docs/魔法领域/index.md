@@ -1,1 +1,7 @@
-在比黑更黑、比暗更暗的漆黑之中，期待我深红的混淆吧！觉醒之时已然来到，堕落在无谬境界中的自然之理，化为无行的扭曲显现吧！跃动吧！跃动吧！跃动吧！我的力量洪流渴望崩坏，渴望无可匹敌的崩坏！万象平等的化为灰烬，从深渊过来吧！这是人类最大威力的攻击手段，这才是究极的攻击魔法！爆裂魔法！🔮Explosion！！！🔥⚡🔥⚡🔥
+# 魔法领域
+Quis haec puella formosa est, quae insigne status sagae demonstrans ad pectus gerit, cuius capilli cani pendent, cuius forma et ingenium lucem diffundunt, cuius causa vel sol invito oculos comprimit? Enimvero, haec ego sum.  
+「この魔女の証であるブローチを付け、灰色の髪をなびかせて、その美しさと才能の輝きに、太陽さえも思わず目を細めてしまうほどの美女は、誰でしょうか？　そう、私です」  
+这位戴着彰显魔女身份的胸针，披着一头灰色秀发，其美貌与才能散发的光芒，连太阳见了都会不由眯起眼睛的美女，究竟是谁呢？没错，就是我。  
+![img001](../resourses/魔法领域_index_001.jpg){ align=right }
+
+- 作为

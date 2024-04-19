@@ -187,6 +187,7 @@ extra:
 
 markdown_extensions:
 - admonition
+- attr_list
 - def_list
 - pymdownx.arithmatex:
     generic: true
