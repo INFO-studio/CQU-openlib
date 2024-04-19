@@ -186,7 +186,7 @@ extra:
  generator: false
 
 plugins:
-  - glightbox
+- glightbox
 
 markdown_extensions:
 - admonition
