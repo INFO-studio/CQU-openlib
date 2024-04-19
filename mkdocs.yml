@@ -185,6 +185,9 @@ copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 extra: 
  generator: false
 
+plugins:
+  - glightbox
+
 markdown_extensions:
 - admonition
 - attr_list
