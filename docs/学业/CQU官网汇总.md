@@ -1,0 +1,8 @@
+- [主网站](https://www.cqu.edu.cn/)（https://www.cqu.edu.cn/）  
+- [教务网](https://my.cqu.edu.cn/)（https://my.cqu.edu.cn/）  
+    - 选课、查询成绩、申请教室  
+- [交叉创新中心](https://sxic.cqu.edu.cn/)（https://sxic.cqu.edu.cn/）  
+    - 创新类竞赛报名、创新项目管理、预约加工、设备借用  
+- [办事大厅](https://casp.cqu.edu.cn/)（https://casp.cqu.edu.cn/）  
+- [图书馆](http://lib.cqu.edu.cn/index)（http://lib.cqu.edu.cn/index）  
+- [校医院](http://cqdxyy.cqu.edu.cn:24180/)（http://cqdxyy.cqu.edu.cn:24180/）  
