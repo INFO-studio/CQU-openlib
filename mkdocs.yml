@@ -182,10 +182,6 @@ copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 extra: 
  generator: false
 
-plugins:
-- search:
-    jieba_dict: dict.txt
-
 markdown_extensions:
 - admonition
 - attr_list
