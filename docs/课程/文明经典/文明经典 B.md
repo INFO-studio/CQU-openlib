@@ -2,65 +2,14 @@
 
 ---
 ## 资源
-- [教材](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iJcGc1upjfcd)  
+- [教材](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iDOhz1wl5hre)  
 - 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](../../技巧/关于epub文件.md)）  
-    - [荷马史诗：伊利亚特](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iJ73S1upjfij)  
-    - [伯罗奔尼撒战争史](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/i5IES1upjckd)  
+    - [荷马史诗：伊利亚特](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/ilUZm1wl5ira)  
+    - [伯罗奔尼撒战争史](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/ivXNk1wl53pi)  
         - 推荐观看视频：[前传](https://www.bilibili.com/video/BV1CP411Y7hk)、[上篇](https://www.bilibili.com/video/BV1W84y1D74w)、[下篇](https://www.bilibili.com/video/BV1xa4y1o7Fc) @ [唠点历史](https://space.bilibili.com/10698584)
-    - [哈姆雷特](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iMYgy1upjcle)  
+    - [哈姆雷特](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/i54Qw1wl53qj)  
         - 推荐观看视频：[本尼迪克特版话剧](https://www.bilibili.com/video/BV16T411Y7qN)
-    - [第一哲学沉思集](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/in4gN1upjfhi)  
-    - [社会契约论](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iGTSE1upjffg)  
-    - [论道德的谱系](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzouh.com/iAauT1upjfwd)  
+    - [第一哲学沉思集](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iebqc1wl5i8b)  
+    - [社会契约论](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/itw5O1wl5hyb)  
+    - [论道德的谱系](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iEfNY1wl5mtg)  
 - [历史写作题目](../../杂项/文明经典写作题目/文明经典B历史写作题目.md)  
-
----
-<!--
-## 教师们  
-- #### 钟融冰  
-    - 内容评分 10/10 （3 份）  
-    - 分数评分 8.3/10 （3 份）  
-    - 对该老师的评价：  
-        `
-        抢！快抢！老师性格温柔，活的很豁达，学富五车，从工学，理学到文学，哲学，心理学，语言学样样精通，还会现场教你读古希腊语，上课好评率100％，读书报告字数无下限，上课有趣，使得文明经典这一坨答辩变成享受，从水课变成最期待的课，言语无法形容这位老师的伟大，上完课的同学普遍反应想让他滚回清华去教书而不是在**这个地方屈才。
-        ` @ HH  
-        `
-        人很好，讲课也不错，thu毕业的，就是我自己是文盲听不懂。期末给分好像一般般。
-        ` @ 文盲经典受害者  
-        `
-        作为前排（第一排）听课一学期的同学，感觉钟老师讲课非常非常好，上课氛围非常舒服，想学可以学到非常多，想摆也可以尽情摆，老师唯一要求就是实话实说，会有期末小组汇演，但这是真的非常非常好的老师
-        ` @ Kirisame Hg  
-- #### 张振  
-    - 内容评分 10/10 （1 份）  
-    - 分数评分 Nan/10 （0 份）  
-    - 对该老师的评价：  
-        `
-        老师讲课可能没有那么熟练，但是老师人特别好，不点名，不抽问，而且希望我们享受课程，不管你上课干什么，没有学术类的迫切要求，反而希望我们通过学文B了解自己。
-        `  
-- #### 石磊  
-    - 内容评分 6.3/10 （3 份）  
-    - 分数评分 4.3/10 （3 份）  
-    - 对该老师的评价：  
-        `
-        真正让我们见识到了经典的魅力。
-        ` @ 玖臣  
-        `
-        我平时五次写作分数都正常，期末考试正常考，课也都上都听，最后七十多分。
-        `  
-        `
-        六篇报告九分十分各一半，平时表演讨论课认真准备，最后只有81，查卷得知平时分20只有14，作文60给三十多（讲课感觉一般般，很多内容跟知网上的文献重叠，不知道的同学可能觉得风趣幽默，给分很雷），找老师问细项分被告知下学期找教务（黄花菜都凉了），建议避雷。
-        `
-- #### 石绘  
-    - 内容评分 9/10 （1 份）  
-    - 分数评分 10/10 （1 份）  
-    - 对该老师的评价：  
-        `
-        通过自己签名的方式进行点名，讲课个人觉得一般，但最后给分很高。
-        ` @ Flewbimo  
-- #### 唐杰  
-    - 内容评分 10/10 （1 份）  
-    - 分数评分 10/10 （1 份）  
-    - 对该老师的评价：  
-        `
-        神中神，讲课内涵很高，对课堂秩序也很有包容度。
-        `  -->
