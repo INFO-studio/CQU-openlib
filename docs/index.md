@@ -4,9 +4,6 @@ description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共�
 
 # 欢迎  
 !!! Warning "手机端需要点左上方三杠出现页面列表"  
-
----
-
 <div class="grid" markdown>
 
 !!! info "公告"
