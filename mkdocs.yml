@@ -26,7 +26,6 @@ theme:
     repo: fontawesome/brands/github
 
 nav:
-- CQU-openlib: index.md
 - 课程: 
   - 课程/index.md
   - 程序设计技术:
