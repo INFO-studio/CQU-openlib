@@ -4,7 +4,13 @@ LaTeX 是一种基于 TeX 的排版系统，由美国计算机科学家莱斯利
 
 在大四时学校会开放 LaTeX 官方模板，在此之前如果您想写论文，请参考[CQUThisis](https://github.com/nanmu42/CQUThesis)  
 
-## 如何安装  
+
+## 安装编译器  
 - 目前建议安装 TeX Live (Linux & Windows)、MacTeX (MacOS)  
 - 如您是校园网用户，建议使用[重庆大学开源软件镜像站](https://mirrors.cqu.edu.cn/)，但是不支持 `IDM`、`NDM`等[下载器](下载器.md)。  
 - 如您是流量卡用户，您除上述方式外也可以选择[清华大学TUNA开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/#)，此处支持 `IDM`、`NDM`  
+
+## 安装IDE  
+- [TeX Studio](https://www.texstudio.org/)
+- [overleaf](https://cn.overleaf.com/)
+- [texifier](https://apps.apple.com/cn/app/texifier-latex-editor/id458866234)（仅用于MacOS，收费）
