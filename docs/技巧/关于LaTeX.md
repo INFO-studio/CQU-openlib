@@ -7,8 +7,8 @@ LaTeX 是一种基于 TeX 的排版系统，由美国计算机科学家莱斯利
 
 ## 安装编译器  
 - 目前建议安装 TeX Live (Linux & Windows)、MacTeX (MacOS)  
-- 如您是校园网用户，建议使用[重庆大学开源软件镜像站](https://mirrors.cqu.edu.cn/)，但是不支持 `IDM`、`NDM`等[下载器](下载器.md)。  
-- 如您是流量卡用户，您除上述方式外也可以选择[清华大学TUNA开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/#)，此处支持 `IDM`、`NDM`  
+- 如您是流量卡用户，请使用[清华大学TUNA开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/#)
+- 如您是校园网用户，建议使用[重庆大学开源软件镜像站](https://mirrors.cqu.edu.cn/)
 
 ## 安装IDE  
 - [TeX Studio](https://www.texstudio.org/)
