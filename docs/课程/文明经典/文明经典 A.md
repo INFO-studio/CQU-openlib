@@ -9,10 +9,10 @@
 
 ## 资源
 - 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](../../技巧/关于epub文件.md)）  
-    - [诗经](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iWl1T1wl23te)  
-    - [庄子](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iCVqA1wl231g)  
-    - [史记](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iijGP1wl22ed)  
-    - [世说新语](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/i8JEY1wl20li)、[戴建业精读版](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iGvD41wl23bg)  
-    - [唐律疏议](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/ii35A1wl22la)、[注译pdf](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iZTEv1wmr7hc)  
-    - [传习录](https://lz.qaiu.top/parser?url=https://cqu-openlib.lanzout.com/iB4VM1wl20pc)  
+    - [诗经](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iWl1T1wl23te&type=down)  
+    - [庄子](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iCVqA1wl231g&type=down)  
+    - [史记](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iijGP1wl22ed&type=down)  
+    - [世说新语](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/i8JEY1wl20li&type=down)、[戴建业精读版](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iGvD41wl23bg&type=down)  
+    - [唐律疏议](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/ii35A1wl22la&type=down)、[注译pdf](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iZTEv1wmr7hc&type=down)  
+    - [传习录](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iB4VM1wl20pc&type=down)  
 - [历史写作题目](../../杂项/文明经典写作题目/文明经典A历史写作题目.md)
