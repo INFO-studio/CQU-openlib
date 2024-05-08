@@ -207,6 +207,8 @@ copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 extra: 
   generator: false
   analytics:
+    provider: google
+    property: G-0000000000
     feedback:
       title: 该页面对您有无帮助？
       ratings:
