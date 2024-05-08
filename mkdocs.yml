@@ -206,7 +206,9 @@ copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
 extra: 
   generator: false
-  analytics: 
+  analytics:
+    provider: a
+    property: a
     feedback:
       title: 该页面对您有无帮助？
       ratings:
