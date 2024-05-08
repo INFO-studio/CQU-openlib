@@ -221,7 +221,7 @@ extra:
           name: 没帮助
           data: 0
           note: >- 
-            感谢反馈（哭）<br>您可以提交一份 <a href="https://forms.office.com/r/4Wb8vu77GR?rc6e1d6688c2441c6a2158f000e455944={url}" target="_blank">表单</a> 来帮助我们改进！<br>拜托了
+            感谢反馈（哭）<br>您可以提交 <a href="https://forms.office.com/r/4Wb8vu77GR?rc6e1d6688c2441c6a2158f000e455944={url}" target="_blank">表单</a> 来帮助我们改进！<br>拜托了
 
 markdown_extensions:
 - admonition
