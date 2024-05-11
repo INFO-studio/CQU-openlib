@@ -14,6 +14,7 @@ xcode-select --install
 ```
 ## 2. 换源
 请执行如下指令  
+
 ```bash
 export HOMEBREW_INSTALL_FROM_API=1
 export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
@@ -23,6 +24,7 @@ export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebr
 ```
 ## 3. 安装  
 请执行如下指令  
+
 ```bash
 git clone --depth=1 https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/install.git brew-install
 /bin/bash brew-install/install.sh
