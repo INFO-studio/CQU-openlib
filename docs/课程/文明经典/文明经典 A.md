@@ -9,10 +9,10 @@
 
 ## 资源
 - 需要阅读的书籍（有关epub格式书籍的教程请查看[此页面](../../技巧/关于epub文件.md)）  
-    - [诗经](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iWl1T1wl23te&type=down)  
-    - [庄子](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iCVqA1wl231g&type=down)  
-    - [史记](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iijGP1wl22ed&type=down)  
-    - [世说新语](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/i8JEY1wl20li&type=down)、[戴建业精读版](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iGvD41wl23bg&type=down)  
-    - [唐律疏议](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/ii35A1wl22la&type=down)、[注译pdf](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iZTEv1wmr7hc&type=down)  
-    - [传习录](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iB4VM1wl20pc&type=down)  
+    - [诗经](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/iWl1T1wl23te&redirect=1)  
+    - [庄子](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/iCVqA1wl231g&redirect=1)  
+    - [史记](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/iijGP1wl22ed&redirect=1)  
+    - [世说新语](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/i8JEY1wl20li&redirect=1)、[戴建业精读版](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/iGvD41wl23bg&redirect=1)  
+    - [唐律疏议](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/ii35A1wl22la&redirect=1)、[注译pdf](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/iZTEv1wmr7hc&redirect=1)  
+    - [传习录](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/iB4VM1wl20pc&redirect=1)  
 - [历史写作题目](../../杂项/文明经典写作题目/文明经典A历史写作题目.md)
