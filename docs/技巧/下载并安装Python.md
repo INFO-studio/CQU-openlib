@@ -25,6 +25,6 @@
         - `64 位操作系统, 基于 ARM 的处理器` 对应的是 `ARM64` 版本
 
 - 3.12.3  
-    - [Windows installer (64-bit)](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/izni21x6g5qd&redirect=1)
-    - [Windows installer (32-bit)](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/ipk161x6fmbe&redirect=1)
-    - [Windows installer (ARM64)](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/i6ho81x6fv1i&redirect=1)
+    - [Windows installer (64-bit)](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/izni21x6g5qd&type=down)
+    - [Windows installer (32-bit)](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/ipk161x6fmbe&type=down)
+    - [Windows installer (ARM64)](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/i6ho81x6fv1i&type=down)

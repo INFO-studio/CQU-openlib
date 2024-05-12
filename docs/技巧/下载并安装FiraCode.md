@@ -1,5 +1,5 @@
 ## 下载  
-[FiraCode-VF](https://vercel-chi-kohl.vercel.app/lanzouyunapi.php?data=https://cqu-openlib.lanzout.com/izLmc1x5wxte&redirect=1)  
+[FiraCode-VF](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/izLmc1x5wxte&type=down)  
 
 ---
 
