@@ -6,3 +6,7 @@
 - [办事大厅](https://casp.cqu.edu.cn/)（https://casp.cqu.edu.cn/）  
 - [图书馆](http://lib.cqu.edu.cn/index)（http://lib.cqu.edu.cn/index）  
 - [校医院](http://cqdxyy.cqu.edu.cn:24180/)（http://cqdxyy.cqu.edu.cn:24180/）  
+- [虎溪校区服务中心](http://huxinetservice.cqu.edu.cn/)（http://huxinetservice.cqu.edu.cn/）  
+- [重庆大学校园一卡通服务大厅](http://card.cqu.edu.cn/)  
+    - 校园卡、水电充值  
+    - 账号为学号，密码默认为身份证 **数字** 后六位  
