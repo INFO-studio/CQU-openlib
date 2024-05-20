@@ -144,6 +144,7 @@ nav:
   - 下载并安装VSCode: 技巧/下载并安装VSCode.md
   - 下载并安装Python: 技巧/下载并安装Python.md
   - 下载并安装FiraCode: 技巧/下载并安装FiraCode.md
+  - 命令行基础: 技巧/命令行基础.md
   - java从入门到入土: 技巧/java从入门到入土.md
   - 关于SolidWorks: 技巧/关于SolidWorks.md
   - pip安装Python库: 技巧/pip安装Python库.md
@@ -155,6 +156,7 @@ nav:
   - 流程图: 技巧/流程图.md
   - 下载器: 技巧/下载器.md
   - 配置Homebrew: 技巧/配置Homebrew.md
+  - conda管理Python环境: 技巧/conda管理Python环境.md
   - 多端文件互传: 技巧/多端文件互传.md
 - 生活:
   - 生活/index.md

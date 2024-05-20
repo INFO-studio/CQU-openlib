@@ -1,10 +1,12 @@
 !!! warning "Python 是完全免费的软件，如果软件提示收费，请勿缴费并将其删除，您下到了盗版软件"
 
 
-## 0. 前情提要
-- 此页仅适用于 `Windows` 操作系统，如您的操作系统是 `MacOS`，建议学习[配置Homebrew](配置Homebrew.md)，并使用 `brew install python` 指令进行安装，`linux` 操作系统同理，移动端暂时没有很好支持的配置……请买个电脑  
+## 0. 前提
 - 类似 `{xxx}` 大括号内不以叹号 `!` 开头的是每个人不同的，您需要根据您的情况进行修改  
 - 类似 `{!xxx}` 大括号内以叹号 `!` 开头的是每个人不同的，但是无需修改，您只需要执行描述的操作即可  
+- 此页仅适用于 `Windows` 操作系统，如您的操作系统是 `MacOS`，建议学习[配置Homebrew](配置Homebrew.md)，并使用 `brew install python` 指令进行安装，`linux` 操作系统同理，移动端暂时没有很好支持的配置……请买个电脑  
+- 作为该教程的进阶，您可以选择直接使用[conda管理Python环境](conda管理Python环境.md)，这需要额外大约 `10 G` 的空间，但是后续的操作也会变得简单
+
 ## 1. 下载  
 - 打开[Python下载页](https://www.python.org/downloads/)  
 - 点击 `Download Python 3.{!ver}`  
