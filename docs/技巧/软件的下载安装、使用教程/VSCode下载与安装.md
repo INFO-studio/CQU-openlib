@@ -37,10 +37,11 @@
 #### 中文翻译包  
 - 打开后的界面是英文的，首先自然是安装中文翻译包  
 - 点击如下区域，此处被叫为 `扩展栏`  
-    <center>![pic1](../resourses/技巧_安装VSCode_001.png)</center>  
+    <center>![pic1](../../resourses/技巧_软件的下载安装、使用教程_安装VSCode_001.png)</center>  
 - 在 `搜索框` 中输入 `简体`（或者 `中文`，随便什么，毕竟是搜索），然后点击 `Install`  
-    <center>![pic2](../resourses/技巧_安装VSCode_002.png)</center>  
+    <center>![pic2](../../resourses/技巧_软件的下载安装、使用教程_安装VSCode_002.png)</center>  
 - 在右下角弹出的窗口中点击 `Change Language and Restart`，应用将重启，中文安装包已安装  
+    <center>![pic3](../../resourses/技巧_软件的下载安装、使用教程_安装VSCode_003.png)</center>  
 #### 额外扩展  
 这里是一些推荐安装的额外的扩展，可能改善您的编程体验  
 
