@@ -52,7 +52,7 @@ rm -rf brew-install
     ```
 
 ## 5. 常用指令  
-- `brew help` 查看有哪些指令可以使用  
+- `brew help`：查看有哪些指令可以使用  
 - `brew search {app}`：查找软件 `{app}`  
 - `brew install mongodb`：安裝软件 `{app}`  
 - `brew info {app}`：查看已安裝软件 `{app}` 的信息  

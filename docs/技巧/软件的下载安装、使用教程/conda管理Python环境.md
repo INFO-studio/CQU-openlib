@@ -27,52 +27,26 @@ conda config --set show_channel_urls yes
 ```
 （本教程默认使用清华源，您可以使用其他镜像源，这里不做教程，请自行适配）  
 
-## 6. 全部指令  
-根据 homebrew 官方提示，所有功能如下  
-```
-==> Built-in commands
---cache           deps              log               tap-info
---caskroom        desc              migrate           tap
---cellar          developer         missing           uninstall
---env             docs              nodenv-sync       unlink
---prefix          doctor            options           unpin
---repository      fetch             outdated          untap
---version         formulae          pin               update-report
-analytics         gist-logs         postinstall       update-reset
-autoremove        help              pyenv-sync        update
-casks             home              rbenv-sync        upgrade
-cleanup           info              readall           uses
-command           install           reinstall         vendor-install
-commands          leaves            search
-completions       link              setup-ruby
-config            list              shellenv
-
-==> Built-in developer commands
-audit                               pr-publish
-bottle                              pr-pull
-bump-cask-pr                        pr-upload
-bump-formula-pr                     prof
-bump-revision                       release
-bump-unversioned-casks              rubocop
-bump                                ruby
-cat                                 rubydoc
-contributions                       sh
-create                              style
-determine-test-runners              tap-new
-dispatch-build-bottle               test
-edit                                tests
-extract                             typecheck
-formula                             unbottled
-generate-cask-api                   unpack
-generate-formula-api                update-license-data
-generate-man-completions            update-maintainers
-install-bundler-gems                update-python-resources
-irb                                 update-sponsors
-linkage                             update-test
-livecheck                           vendor-gems
-pr-automerge
-
-==> External commands
-services
-```
-您可以使用 `brew help {command}` 指令来获取 `{command}` 的用法信息  
+## 3. 常用指令
+#### 环境管理
+- `conda create`：创建环境
+    - `-n {envName}`：必要指令，创建新的名为 `{envName}` 的环境，同 `--name`
+    - `-p {path}`：必要指令，创建路径为 `{path}` 且名字为 `{path}` 最子文件夹的环境，同 `--prosix` ，与 `-n` 不兼容
+    - `{package}={ver}`：额外指令，指定新环境的 `{package}` 库版本为 `{ver}`
+    - `-c {envSourse}`：额外指令，在 `{envSourse}` 的基础上创建库，同 `--clone`
+    - 实例：
+        - `conda create -n new1`
+        - `conda create -n new2 python=3.11`
+        - `conda create -p "~\env\new3" numpy=1.8.0`
+        - `conda create -n new4 -c new3`
+- `conda activate {envName}`：进入名为 `{envName}` 的环境
+- `conda deactivate`：进入默认环境
+- `conda remove -n {envName} --all`：删除名为 `{envName}` 的环境
+#### 库管理
+- `conda list`：列举所属库
+    - `-n {envName}`：额外指令，列举名为 `{envName}` 的所属库
+- `conda search {package}`：查找源是否有 `{package}` 库
+- `conda install {package}`：安装 `{package}` 库
+    - `={ver}`：额外指令（前无空格），指定 `{package}` 库版本为 `{ver}`
+- `conda update {package}`：更新 `{package}` 库
+- `conda uninstall {package}`：卸载 `{package}` 库
