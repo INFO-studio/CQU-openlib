@@ -3,8 +3,8 @@
 ## 0. 前提  
 - 类似 `{xxx}` 大括号内不以叹号 `!` 开头的是每个人不同的，您需要根据您的情况进行修改  
 - 类似 `{!xxx}` 大括号内以叹号 `!` 开头的是每个人不同的，但是无需修改，您只需要执行描述的操作即可  
-- 前置知识
-    - [判断您的操作系统和系统架构](判断您的操作系统和系统架构.md)
+- 前置知识  
+    - [判断您的操作系统和系统架构](判断您的操作系统和系统架构.md)  
 
 ## 1. 下载  
 - 打开[VSCode下载页](https://code.visualstudio.com/Download)，选择您的 `操作系统` 下载对应包
@@ -46,15 +46,20 @@
 
 - `One Dark Pro` 颜色主题  
 - `Material Icon Theme` 文件图标主题  
+- `Better Comments` 注释着色
+- 
 #### 字体  
 强烈建议使用 `Fira Code` 进行编程，其特有的连字系统将使您的代码更加易读美观  
 
-1. [下载并安装FiraCode](下载并安装FiraCode.md)  
+1. [FiraCode下载并安装](FiraCode下载并安装.md)  
 2. 在左下角 `设置`（齿轮）图标中点击 `设置`，搜索 `连字`  
 3. 点击 `在 settings.json 中编辑`，修改 `"editor.fontLigatures": false` 为 `"editor.fontLigatures": true`  
 4. 返回 `设置`，点击 `Editor: Font Ligatures` 左侧的 `设置`（齿轮）图标，点击 `将设置应用于所有配置文件`  
 
 ## 4. 特定语言配置  
 #### Python  
-1. [下载并安装Python](下载并安装Python.md)  
+1. [Python下载与安装](Python下载与安装.md)  
 2. 安装 VSCode 关于 Python 的扩展  
+    - `Python Extension Pack` 基础工具，包含了绝大多数需要使用的工具
+3. 额外扩展
+    - `LiveCode for python` 很厉害的同步 Python 实时演示插件

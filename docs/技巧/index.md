@@ -8,6 +8,6 @@
 ## 目录  
 - 有关电子、计算机的技巧  
     - [「蓝盟」电脑维修](「蓝盟」电脑维修.md)  
-    - [下载并安装VSCode](下载并安装VSCode.md)  
-    - [下载并安装Python](下载并安装Python.md)  
+    - [VSCode下载并安装](VSCode下载并安装.md)  
+    - [Python下载与安装](Python下载与安装.md)  
     - [下载器](下载器.md)  

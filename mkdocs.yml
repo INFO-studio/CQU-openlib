@@ -142,13 +142,16 @@ nav:
   - 技巧/index.md
   - 计算机基础: 技巧/计算机基础.md
   - 「蓝盟」电脑维修: 技巧/「蓝盟」电脑维修.md
-  - 下载并安装VSCode: 技巧/下载并安装VSCode.md
-  - 下载并安装Python: 技巧/下载并安装Python.md
-  - 下载并安装FiraCode: 技巧/下载并安装FiraCode.md
+  - 软件的下载安装、使用教程: 
+    - VSCode下载并安装: 技巧/软件的下载安装、使用教程/VSCode下载并安装.md
+    - Python下载与安装: 技巧/软件的下载安装、使用教程/Python下载与安装.md
+    - FiraCode下载并安装: 技巧/软件的下载安装、使用教程/FiraCode下载并安装.md
+    - pip安装Python库: 技巧/软件的下载安装、使用教程/pip安装Python库.md
+    - Homebrew配置与使用: 技巧/软件的下载安装、使用教程/Homebrew配置与使用.md
+    - conda管理Python环境: 技巧/软件的下载安装、使用教程/conda管理Python环境.md
   - 命令行基础: 技巧/命令行基础.md
   - java从入门到入土: 技巧/java从入门到入土.md
   - 关于SolidWorks: 技巧/关于SolidWorks.md
-  - pip安装Python库: 技巧/pip安装Python库.md
   - 关于LaTeX: 技巧/关于LaTeX.md
   - 关于epub文件: 技巧/关于epub文件.md
   - 课表: 技巧/课表.md
@@ -156,9 +159,7 @@ nav:
   - 学生卡: 技巧/学生卡.md
   - 流程图: 技巧/流程图.md
   - 下载器: 技巧/下载器.md
-  - 配置Homebrew: 技巧/配置Homebrew.md
   - 判断您的操作系统和系统架构: 技巧/判断您的操作系统和系统架构.md
-  - conda管理Python环境: 技巧/conda管理Python环境.md
   - 多端文件互传: 技巧/多端文件互传.md
 - 生活:
   - 生活/index.md

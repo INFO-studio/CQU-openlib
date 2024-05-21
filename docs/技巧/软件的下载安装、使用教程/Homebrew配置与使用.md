@@ -3,9 +3,9 @@
 - 类似 `{!xxx}` 大括号内以叹号 `!` 开头的是每个人不同的，但是无需修改，您只需要执行描述的操作即可  
 - 本页面适用于 `MacOS` 和 `Linux` 用户，请甄别您的系统类型  
 - 本页面使用 `清华大学开源软件站` 驱动，您可自行更换软件源  
-- 本页教程需要您熟知基本的[命令行](命令行基础.md)，请提前熟知  
-    - 如果您是 `MacOS` 操作系统（苹果电脑）用户  
-        3. 请使用指令 `uname -m` 来获取您的 `系统架构`  
+- 前置知识
+    - []
+    - [命令行基础](命令行基础.md)
 
 ## 1. 准备措施  
 对于 `MacOS` 用户，您需要额外执行此步骤，`Linux` 用户可以跳过  
@@ -15,7 +15,6 @@ xcode-select --install
 
 ## 2. 换源  
 请执行如下指令  
-
 ```bash
 export HOMEBREW_INSTALL_FROM_API=1
 export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
@@ -23,6 +22,7 @@ export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bot
 export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
 export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
 ```
+（本教程默认使用清华源，您可以使用其他镜像源，这里不做教程，请自行适配）  
 
 ## 3. 安装  
 请执行如下指令  
@@ -67,29 +67,46 @@ rm -rf brew-install
 根据 homebrew 官方提示，所有功能如下  
 ```
 ==> Built-in commands
---cache          casks            docs             leaves           pin              tap-info         upgrade
---caskroom       cleanup          doctor           link             postinstall      tap              uses
---cellar         command          fetch            list             pyenv-sync       uninstall        vendor-install
---env            commands         formulae         log              rbenv-sync       unlink
---prefix         completions      gist-logs        migrate          readall          unpin
---repository     config           help             missing          reinstall        untap
---version        deps             home             nodenv-sync      search           update-report
-analytics        desc             info             options          setup-ruby       update-reset
-autoremove       developer        install          outdated         shellenv         update
+--cache           deps              log               tap-info
+--caskroom        desc              migrate           tap
+--cellar          developer         missing           uninstall
+--env             docs              nodenv-sync       unlink
+--prefix          doctor            options           unpin
+--repository      fetch             outdated          untap
+--version         formulae          pin               update-report
+analytics         gist-logs         postinstall       update-reset
+autoremove        help              pyenv-sync        update
+casks             home              rbenv-sync        upgrade
+cleanup           info              readall           uses
+command           install           reinstall         vendor-install
+commands          leaves            search
+completions       link              setup-ruby
+config            list              shellenv
 
 ==> Built-in developer commands
-audit                         edit                          pr-pull                       typecheck
-bottle                        extract                       pr-upload                     unbottled
-bump-cask-pr                  formula                       prof                          unpack
-bump-formula-pr               generate-cask-api             release                       update-license-data
-bump-revision                 generate-formula-api          rubocop                       update-maintainers
-bump-unversioned-casks        generate-man-completions      ruby                          update-python-resources
-bump                          install-bundler-gems          rubydoc                       update-sponsors
-cat                           irb                           sh                            update-test
-contributions                 linkage                       style                         vendor-gems
-create                        livecheck                     tap-new
-determine-test-runners        pr-automerge                  test
-dispatch-build-bottle         pr-publish                    tests
+audit                               pr-publish
+bottle                              pr-pull
+bump-cask-pr                        pr-upload
+bump-formula-pr                     prof
+bump-revision                       release
+bump-unversioned-casks              rubocop
+bump                                ruby
+cat                                 rubydoc
+contributions                       sh
+create                              style
+determine-test-runners              tap-new
+dispatch-build-bottle               test
+edit                                tests
+extract                             typecheck
+formula                             unbottled
+generate-cask-api                   unpack
+generate-formula-api                update-license-data
+generate-man-completions            update-maintainers
+install-bundler-gems                update-python-resources
+irb                                 update-sponsors
+linkage                             update-test
+livecheck                           vendor-gems
+pr-automerge
 
 ==> External commands
 services
