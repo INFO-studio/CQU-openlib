@@ -12,6 +12,7 @@
 - `Anaconda` 为更全面更丰富且带有图形化页面的 `conda` 版本，大约占用电脑 10 G 空间，`Miniconda` 为最简化仅带有基础命令行功能的 `conda` 版本，占用电脑大约 1 G 空间
 - 官方安装网站：[Anaconda](https://www.anaconda.com/download/success)、[Miniconda](https://docs.anaconda.com/free/miniconda/index.html)
 - [清华大学镜像站](https://mirrors.tuna.tsinghua.edu.cn/) - 右侧 `获取下载链接` - 上方 `应用软件` - `Conda` 选择您的操作系统和系统架构对应的安装包下载
+- 请按照指示进行进一步安装
 
 ## 2. 换源
 请在命令行输入以下指令  
