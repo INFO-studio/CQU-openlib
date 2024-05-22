@@ -4,28 +4,25 @@
 - 类似 `{xxx}` 大括号内不以叹号 `!` 开头的是每个人不同的，您需要根据您的情况进行修改  
 - 类似 `{!xxx}` 大括号内以叹号 `!` 开头的是每个人不同的，但是无需修改，您只需要执行描述的操作即可  
 - 此页仅适用于 `Windows` 操作系统，如您的操作系统是 `MacOS`，建议学习[Homebrew配置与使用](Homebrew配置与使用.md)，并使用 `brew install python` 指令进行安装，`linux` 操作系统同理建议使用 `apt-get` 或 `yum` 等包管理工具进行安装，移动端暂时没有很好支持的配置……请买个电脑  
-- 作为该教程的进阶，您可以选择直接使用[conda管理Python环境](conda管理Python环境.md)，这需要额外大约 `10 G` 的空间，但是后续的操作也会变得简单
+- 作为该教程的进阶，您可以选择直接使用[conda管理Python环境](conda管理Python环境.md)，这需要额外大约 `10 G` 的空间，但是后续的操作也会变得简单  
+- 前置知识  
+    - [判断您的操作系统和系统架构](../计算机基础/判断您的操作系统和系统架构.md)  
 
 ## 1. 下载  
 - 打开[Python下载页](https://www.python.org/downloads/)  
 - 点击 `Download Python 3.{!ver}`  
 - 下载可能会十分缓慢，请考虑使用下面的本站[Python安装包](#python安装包)
     - 并非最新最好，应对学校课程请尽量使用机房版本  
+    - 请选择适合您电脑 `系统架构` 的安装包
 
 ## 2. 安装
-还没写，请根据引导走
+- 请根据引导走
+- 请务必在最后选择 `添加到PATH` 选项
 
 ---
 
 ## 资源
 #### Python安装包  
-!!! info "如何选择"
-    - 目前的绝大多数电脑都是 `64-bit`，如果您没有明确知道您电脑的系统架构，请选择 `64-bit` 版本  
-    - 您可以在 `设置`-`系统`-`系统信息`-`系统类型` 处找到您电脑的系统架构
-        - `64 位操作系统, 基于 x64 的处理器` 对应的是 `64-bit` 版本
-        - `32 位操作系统, 基于 x86 的处理器` 对应的是 `32-bit` 版本
-        - `64 位操作系统, 基于 ARM 的处理器` 对应的是 `ARM64` 版本
-
 - 3.12.3  
     - [Windows installer (64-bit)](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/izni21x6g5qd&type=down)
     - [Windows installer (32-bit)](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/ipk161x6fmbe&type=down)
