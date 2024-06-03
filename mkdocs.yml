@@ -24,6 +24,7 @@ theme:
   logo: assets/openlib-logo.png
   icon:
     repo: fontawesome/brands/github
+    publisher: material/book-edit
 
 nav:
 - 课程: 
@@ -214,11 +215,9 @@ repo_name: CQU-openlib
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
 plugins:
-  - tags:
-    - publisher: material-book-alphabet
+  - tags
 
 extra: 
-  generator: false
   analytics:
     provider: google
     property: G-0000000000
@@ -235,6 +234,9 @@ extra:
           data: 0
           note: >- 
             感谢反馈（哭）<br>您可以提交 <a href="https://forms.office.com/r/4Wb8vu77GR?rc6e1d6688c2441c6a2158f000e455944={url}" target="_blank">表单</a> 来帮助我们改进！<br>拜托了
+  generator: false
+  tags:
+    Publisher: publisher
 
 markdown_extensions:
 - admonition
