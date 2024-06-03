@@ -9,6 +9,7 @@ theme:
   - navigation.indexes
   - navigation.tabs
   - navigation.tabs.sticky
+  - navigation.sections
   palette:
   - scheme: slate
     toggle:
@@ -212,6 +213,9 @@ repo_url: https://github.com/INFO-studio/CQU-openlib
 repo_name: CQU-openlib
 
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
+
+plugins:
+  - tags
 
 extra: 
   generator: false
