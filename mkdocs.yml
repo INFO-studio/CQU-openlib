@@ -9,6 +9,9 @@ theme:
   - navigation.indexes
   - navigation.tabs
   - navigation.tabs.sticky
+  font:
+    text: LXGW WenKai TC
+    code: Fira Code
   palette:
   - scheme: slate
     toggle:
