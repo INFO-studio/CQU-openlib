@@ -75,7 +75,8 @@ markdown_extensions:
 - pymdownx.tasklist:
     custom_checkbox: true
 - pymdownx.tilde
-- toc(permalink=true)
+- toc:
+    permalink=true
 
 extra_javascript:
 - javascripts/katex.js
