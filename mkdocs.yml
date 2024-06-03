@@ -9,7 +9,6 @@ theme:
   - navigation.indexes
   - navigation.tabs
   - navigation.tabs.sticky
-  - navigation.sections
   palette:
   - scheme: slate
     toggle:
@@ -215,7 +214,8 @@ repo_name: CQU-openlib
 copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
 
 plugins:
-  - tags
+  - tags:
+    - publisher: material-book-alphabet
 
 extra: 
   generator: false
