@@ -77,6 +77,7 @@ markdown_extensions:
 - pymdownx.tilde
 - toc: 
     permalink: true
+    permalink_title: 小节签
 
 extra_javascript:
 - javascripts/katex.js
