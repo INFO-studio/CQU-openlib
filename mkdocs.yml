@@ -31,7 +31,7 @@ theme:
 repo_url: https://github.com/INFO-studio/CQU-openlib
 repo_name: CQU-openlib
 
-copyright: Copyright &copy; 2024 CQU-openlib Opensource Organization
+copyright: Copyright &copy; 2024 CQU-openlib Opensource Community
 
 plugins:
   - tags
