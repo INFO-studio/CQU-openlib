@@ -14,7 +14,7 @@
 - [推荐网课（无广，imooc打钱！）](https://www.imooc.com/learn/1261)  
 - [pip安装Python库](../../技巧/软件的下载安装、使用教程/pip安装Python库.md)
 - 鸢尾花书 Book_1 《编程不难》  
-    - [pdf](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/ifTOc1upbsbc&type=down)  
-    - [配套代码](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/i4Wu51upbtsf&type=down)  
+    - [pdf](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iTLwv20tst2b&type=down)  
+    - [配套代码](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iWyzf20tsvkbf&type=down)  
     - [B站微课](https://space.bilibili.com/513194466)  
     - [Github](https://github.com/Visualize-ML/Book1_Python-For-Beginners)  
