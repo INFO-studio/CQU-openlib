@@ -72,11 +72,6 @@ CQU-openlib 想要做成一个只要关于重大，要什么有什么的网站�
 
 ---
 
-## 网站主体与文件管理
-本站主体代码采用 [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html)，框架，文件管理采用大陆地区网盘托管+直链解析。
-
----
-
 ## 友情链接
-- [浙江大学课程攻略共享计划](https://qsctech.github.io/zju-icicles/#)
-- []()
+- [CQUThesis: 重庆大学毕业论文LaTeX模板](https://github.com/nanmu42/CQUThesis)
+- [重庆大学蓝盟](http://lanunion.cqu.edu.cn/)
