@@ -8,6 +8,7 @@
 ---
 
 ## 资源
+- [教材](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iU4a421zt8sj&type=down)
 - 需要阅读的书籍（有关epub格式书籍的教程请查看[关于epub文件](../../技巧/计算机基础/关于epub文件.md)）  
     - [诗经](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iWl1T1wl23te&type=down)  
     - [庄子](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/iCVqA1wl231g&type=down)  
