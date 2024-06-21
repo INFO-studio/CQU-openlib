@@ -10,9 +10,7 @@ hide:
 
 !!! info "公告"
     - 可以进入[学业](学业/index.md)查询您专业的课程信息一览  
-    - [本学期助教评教已开始](限时活动/本学期助教评教已开始.md)  
-        - [学生评教入口](http://jxpj.cqu.edu.cn/stu/)  
-        - 起止日期：APR 12 10AM - JUN 17 5PM  
+    - 请回顾[【经典回归】考 试 出 分](https://www.bilibili.com/video/BV16w411o7DL)
 
 !!! note "最新动态"  
     - 添加[文明经典A](课程/文明经典/文明经典%20A.md)页 `教材`  
