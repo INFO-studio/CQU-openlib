@@ -1,6 +1,6 @@
 ## 操作方法  
 - 打开你的中国大学MOOC网站的标题页面，如图  
-    <center>![pic002](../../resourses/技巧_推荐使用的网站等_中国大学MOOC答案_002.png)</center>  
+    <center>![pic002](../../resourses/技巧_推荐使用的网站等_中国大学MOOC答案_001.png)</center>  
 - 查看该页面的链接  
     上图中页面的链接为 `https://www.icourse163.org/learn/CQU-1461085178?tid={tid}#/learn/announce`，其中 `{tid}` 为该课程的 `tid码`，每学期的 `tid码` 会有所更改，请以自己页面为准  
 - 打开 `https://ginnnnnn.top/mooc/course/{tid}`，其中 `{tid}` 为本学期该课程的 tid码  
