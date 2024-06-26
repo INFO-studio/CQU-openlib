@@ -93,6 +93,8 @@ extra_css:
 nav:
 - 课程: 
   - 课程/index.md
+  - 20世纪中国文艺思潮: 课程/20世纪中国文艺思潮.md
+  - An Introduction to Machine Learning: 课程/An Introduction to Machine Learning.md
   - 程序设计技术:
     - 课程/程序设计技术/index.md
     - 程序设计技术（Python）: 课程/程序设计技术/程序设计技术（基于Python）.md
