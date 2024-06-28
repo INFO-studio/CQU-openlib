@@ -93,7 +93,7 @@ extra_css:
 nav:
 - 课程: 
   - 课程/index.md
-  - *~:
+  - .~:
     - 20世纪中国文艺思潮: 课程/20世纪中国文艺思潮.md
     - Linux操作系统: 课程/Linux操作系统.md
     - Numerical Methods For Engineers: 课程/Numerical Methods For Engineers.md
