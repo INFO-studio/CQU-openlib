@@ -35,6 +35,7 @@ copyright: Copyright &copy; 2024 CQU-openlib Opensource Community
 
 plugins:
   - tags
+  - search
 
 extra: 
   analytics:
