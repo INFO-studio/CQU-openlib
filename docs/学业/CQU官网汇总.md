@@ -1,12 +1,17 @@
-- [主网站](https://www.cqu.edu.cn/)（https://www.cqu.edu.cn/）  
-- [教务网](https://my.cqu.edu.cn/)（https://my.cqu.edu.cn/）  
-    - 选课、查询成绩、申请教室  
-- [交叉创新中心](https://sxic.cqu.edu.cn/)（https://sxic.cqu.edu.cn/）  
-    - 创新类竞赛报名、创新项目管理、预约加工、设备借用  
-- [办事大厅](https://casp.cqu.edu.cn/)（https://casp.cqu.edu.cn/）  
-- [图书馆](http://lib.cqu.edu.cn/index)（http://lib.cqu.edu.cn/index）  
-- [校医院](http://cqdxyy.cqu.edu.cn:24180/)（http://cqdxyy.cqu.edu.cn:24180/）  
-- [虎溪校区服务中心](http://huxinetservice.cqu.edu.cn/)（http://huxinetservice.cqu.edu.cn/）  
-- [重庆大学校园一卡通服务大厅](http://card.cqu.edu.cn/)  
-    - 校园卡、水电充值  
-    - 账号为学号，密码默认为身份证 **数字** 后六位  
+[主网站](https://www.cqu.edu.cn/)（https://www.cqu.edu.cn/）  
+
+=== "功能大全"
+    * [教务网](https://my.cqu.edu.cn/)（https://my.cqu.edu.cn/）  
+        * 选课、查询成绩、申请教室  
+    * [办事大厅](https://casp.cqu.edu.cn/)（https://casp.cqu.edu.cn/）  
+    * [重庆大学校园一卡通服务大厅](http://card.cqu.edu.cn/)（http://card.cqu.edu.cn/）  
+        * 校园卡、水电充值  
+        * 账号为学号，密码默认为身份证 **数字** 后六位  
+=== "学业类"
+    * [图书馆](http://lib.cqu.edu.cn/index)（http://lib.cqu.edu.cn/index）  
+    * [交叉创新中心](https://sxic.cqu.edu.cn/)（https://sxic.cqu.edu.cn/）  
+        * 创新类竞赛报名、创新项目管理、预约加工、设备借用  
+=== "生活类"
+    * [虎溪校区服务中心](http://huxinetservice.cqu.edu.cn/)（http://huxinetservice.cqu.edu.cn/）  
+    * [校医院](http://cqdxyy.cqu.edu.cn:24180/)（http://cqdxyy.cqu.edu.cn:24180/）  
+=== "正在添加……"
