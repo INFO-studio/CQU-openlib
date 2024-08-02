@@ -1,4 +1,10 @@
-## 暂无数据，欢迎贡献
+# 通识课
 
-- Github: [https://github.com/INFO-studio/CQU-openlib](https://github.com/INFO-studio/CQU-openlib)
-- 站长QQ: `2247977881`
+（采用课程首字母排序）
+=== "A/B/C/D/E"
+=== "F/G/H/I/J"
+=== "K/L/M/N/O"
+=== "P/Q/R/S/T"
+    * [摄影艺术创作](摄影艺术创作.md)
+=== "U/V/W/X/Y/Z"
+=== "其他"
