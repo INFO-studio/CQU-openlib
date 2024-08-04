@@ -8,6 +8,9 @@
         * 校园卡、水电充值  
         * 账号为学号，密码默认为身份证 **数字** 后六位  
 === "学业类"
+    * [网上缴费平台](http://pay.cqu.edu.cn/)（http://pay.cqu.edu.cn/）
+        * 学费、住宿费缴纳
+        * 账号为学号，密码为开学自设
     * [图书馆](http://lib.cqu.edu.cn/index)（http://lib.cqu.edu.cn/index）  
     * [交叉创新中心](https://sxic.cqu.edu.cn/)（https://sxic.cqu.edu.cn/）  
         * 创新类竞赛报名、创新项目管理、预约加工、设备借用  
