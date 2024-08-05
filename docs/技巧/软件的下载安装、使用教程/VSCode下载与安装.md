@@ -64,3 +64,7 @@
     - `Python Extension Pack` 基础工具，包含了绝大多数需要使用的工具
 3. 额外扩展
     - `LiveCode for python` 很厉害的同步 Python 实时演示插件
+
+
+## 5. 额外事项
+- [Windows执行代码时命令行乱码的修复](../计算机基础/Windows执行代码时命令行乱码的修复.md)
