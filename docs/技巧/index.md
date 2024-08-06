@@ -8,9 +8,9 @@
 ## 目录  
 
 === "软件的下载安装、使用教程"
-    * [VSCode下载并安装](软件的下载安装、使用教程/VSCode下载与安装.md)
+    * [VSCode下载与安装](软件的下载安装、使用教程/VSCode下载与安装.md)
     * [Python下载与安装](软件的下载安装、使用教程/Python下载与安装.md)
-    * [FiraCode下载并安装](软件的下载安装、使用教程/FiraCode下载并安装.md)
+    * [FiraCode下载与安装](软件的下载安装、使用教程/FiraCode下载与安装.md)
     * [pip安装Python库](软件的下载安装、使用教程/pip安装Python库.md)
     * [Homebrew配置与使用](软件的下载安装、使用教程/Homebrew配置与使用.md)
     * [conda管理Python环境](软件的下载安装、使用教程/conda管理Python环境.md)
