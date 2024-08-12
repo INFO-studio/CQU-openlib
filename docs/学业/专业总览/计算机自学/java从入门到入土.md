@@ -6,10 +6,11 @@
 ## 萌新入门教程  
 ### 推荐网课  
 网课很长，但是可以为你打下极其坚固的基础  
-[【零基础 快速学Java】韩顺平 零基础30天学会Java】](https://www.bilibili.com/video/BV1fh411y7R8/?share_source=copy_web&vd_source=da05e21272974f1e3356896d368c6c90)  
+[【零基础 快速学Java】韩顺平 零基础30天学会Java】](https://www.bilibili.com/video/BV1fh411y7R8)  
 其他网课不做推荐，跟着黑马程序员来即可  
 ### 学习路线  
-[java技术体系(这是真的从入门到入土，不要吓到了)](../../../../PR_resources/Java技术体系.png)  
+(这是真的从入门到入土，不要吓到了)
+![java技术体系](../../../../PR_resources/#%208/Java技术体系.png)  
 
 ## 推荐书目  
 [待定]
