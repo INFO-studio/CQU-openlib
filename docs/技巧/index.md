@@ -14,6 +14,7 @@
     * [pip安装Python库](软件的下载安装、使用教程/pip安装Python库.md)
     * [Homebrew配置与使用](软件的下载安装、使用教程/Homebrew配置与使用.md)
     * [conda管理Python环境](软件的下载安装、使用教程/conda管理Python环境.md)
+    * [Jetbrains IDEs下载与安装](软件的下载安装、使用教程/Jetbrains%20IDEs下载与安装.md)
     * [关于LaTeX](软件的下载安装、使用教程/关于LaTeX.md)
     * [关于SolidWorks](软件的下载安装、使用教程/关于SolidWorks.md)
 === "推荐使用的网站等"
