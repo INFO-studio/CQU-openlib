@@ -59,7 +59,7 @@
     - MacOS：使用命令 `sudo nano /etc/hosts` 编辑
     - Linux：使用命令 `sudo vim /etc/hosts` 编辑
 
-#### 1.3 激活生效
+### 1.3 激活生效
 大部分情况下是直接生效，如未生效可尝试下面的办法，刷新 DNS：
 
 - Windows：使用命令 `ipconfig /flushdns`
