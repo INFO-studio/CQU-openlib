@@ -12,8 +12,8 @@
 
 ### 1.2 添加Github到Hosts文件
 - 复制以下内容
-    ??? note ""
-        ```bash
+    ??? note "Github Hosts信息"
+        ```
         #Github Hosts Start
         140.82.114.26 alive.github.com
         140.82.112.25 live.github.com
