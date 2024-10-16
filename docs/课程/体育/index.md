@@ -1,6 +1,16 @@
+!!! info "由于英语课程十分繁杂，故设立统一页面"
+
+---
+
+## 攻略
 - 步道乐跑……一学期30次捏（男生 3 公里、女生 2 公里）  
 - 长跑体测（正常女生 2 公里、正常男生 2.4 公里、选修马拉松 3 公里）
 
+## 资源  
+=== "大学体育核心素质课"
+    * [雨课堂](https://www.yuketang.cn/)网课  
+        * 《大学体育核心素质课》  
+            * [答案](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/i0A1c2cq3obe&type=down)  
 
 ## 体测成绩查询
 === "公网版"
