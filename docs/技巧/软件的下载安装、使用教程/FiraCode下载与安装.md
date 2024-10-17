@@ -1,5 +1,5 @@
 ## 下载  
-[FiraCode-VF](https://api.ecylt.top/v1/lanzou_link?url=https://cqu-openlib.lanzout.com/izLmc1x5wxte&type=down)  
+[FiraCode-VF](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/izLmc1x5wxte&type=down)  
 
 ---
 
