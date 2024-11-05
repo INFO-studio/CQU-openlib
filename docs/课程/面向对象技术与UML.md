@@ -1,5 +1,3 @@
-!!! info "本页面的课程编号为 `ME20681`，有类似课程但未收录"
-
----
-
 ## 资源  
+=== ":material-book:`ME20681`"  
+    * [教材](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iUf7u2eb81xa&type=down) - :material-format-quote-open:`UML面向对象分析、建模与设计` - :material-account:`吕云翔` - :material-printer:`清华大学出版社`  
