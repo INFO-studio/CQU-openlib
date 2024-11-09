@@ -10,7 +10,7 @@
 === "大学体育核心素质课"
     * [雨课堂](https://www.yuketang.cn/)网课  
         * 《大学体育核心素质课》  
-            * [答案](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/i0A1c2cq3obe&type=down)  
+            * [答案](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/i0A1c2cq3obe&down=true)  
 
 ## 体测成绩查询
 === "公网版"

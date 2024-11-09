@@ -8,12 +8,12 @@
 ---
 
 ## 资源
-- [教材](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iU4a421zt8sj&type=down)
+- [教材](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iU4a421zt8sj&down=true)
 - 需要阅读的书籍（有关epub格式书籍的教程请查看[关于epub文件](../../技巧/计算机基础/关于epub文件.md)）  
-    - [诗经](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iWl1T1wl23te&type=down)  
-    - [庄子](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iCVqA1wl231g&type=down)  
-    - [史记](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iijGP1wl22ed&type=down)  
-    - [世说新语](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/i8JEY1wl20li&type=down)、[戴建业精读版](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iGvD41wl23bg&type=down)  
-    - [唐律疏议](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/ii35A1wl22la&type=down)、[注译pdf](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iZTEv1wmr7hc&type=down)  
-    - [传习录](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/iB4VM1wl20pc&type=down)  
+    - [诗经](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iWl1T1wl23te&down=true)  
+    - [庄子](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iCVqA1wl231g&down=true)  
+    - [史记](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iijGP1wl22ed&down=true)  
+    - [世说新语](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/i8JEY1wl20li&down=true)、[戴建业精读版](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iGvD41wl23bg&down=true)  
+    - [唐律疏议](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ii35A1wl22la&down=true)、[注译pdf](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iZTEv1wmr7hc&down=true)  
+    - [传习录](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iB4VM1wl20pc&down=true)  
 - [历史写作题目](../../杂项/文明经典写作题目/文明经典A历史写作题目.md)

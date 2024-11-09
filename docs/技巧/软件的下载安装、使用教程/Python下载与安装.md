@@ -27,6 +27,6 @@
 ## 资源
 #### Python安装包  
 - 3.12.3  
-    - [Windows installer (64-bit)](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/izni21x6g5qd&type=down)
-    - [Windows installer (32-bit)](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/ipk161x6fmbe&type=down)
-    - [Windows installer (ARM64)](http://api.xtaoa.com/api/lanzou.php?url=https://cqu-openlib.lanzout.com/i6ho81x6fv1i&type=down)
+    - [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/izni21x6g5qd&down=true)
+    - [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ipk161x6fmbe&down=true)
+    - [Windows installer (ARM64)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/i6ho81x6fv1i&down=true)
