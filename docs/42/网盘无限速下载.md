@@ -1,4 +1,6 @@
 ---
+hide:
+  - feedback
 search:
   exclude: true
 ---
