@@ -4,11 +4,11 @@
 ## 资源  
 === ":material-book:`HG00080`"  
     * [教材](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ioHU12epuhxc&down=true) - :material-format-quote-open:`文明经典一` - :material-account:`《文明经典》教材编写组` - :material-printer:`重庆大学出版社`  
-    * 需要阅读的书籍（有关epub格式书籍的教程请查看[关于epub文件](../../技巧/计算机基础/关于epub文件.md)）  
+    * 需要阅读的书籍（有关epub格式书籍的教程请查看[关于epub文件](../技巧/计算机基础/关于epub文件.md)）  
         * [诗经](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iR4P92eptrad&down=true)  
         * [庄子](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ifRiT2eptpfg&down=true)  
         * [史记](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iqBxl2epth1e&down=true)  
         * [世说新语](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iNjkx2eptf2d&down=true)、[戴建业精读版](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iedc62eptpkb&down=true)  
         * [唐律疏议](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iLWzO2epth2f&down=true)、[注译pdf](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/izPVe2eptpbc&down=true)  
         * [传习录](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/i9mtI2eptf7i&down=true)  
-    * [历史写作题目](../../杂项/文明经典写作题目/文明经典A历史写作题目.md)
+    * [历史写作题目](../杂项/文明经典写作题目/文明经典A历史写作题目.md)
