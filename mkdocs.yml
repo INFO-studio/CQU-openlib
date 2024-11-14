@@ -1,4 +1,11 @@
 site_name: 重庆大学资源共享计划
+site_url: https://cqu-openlib.cn
+site_description: 重庆大学资源共享计划（CQU-openlib）
+
+repo_url: https://github.com/INFO-studio/CQU-openlib
+repo_name: CQU-openlib
+
+copyright: Copyright &copy; 2024 CQU-openlib Opensource Community
 
 theme:
   name: material
@@ -27,15 +34,11 @@ theme:
     repo: fontawesome/brands/github
     publisher: material/book-edit
 
-repo_url: https://github.com/INFO-studio/CQU-openlib
-repo_name: CQU-openlib
-
-copyright: Copyright &copy; 2024 CQU-openlib Opensource Community
-
 plugins:
   - tags
   - search
   - autorefs
+  - heti
 
 extra: 
   analytics:
@@ -1018,32 +1021,32 @@ nav:
     - 校企俱乐部: 社团/职业发展协会/校企俱乐部.md
     - 新奥精英社: 社团/职业发展协会/新奥精英社.md
 - 技巧:
-  - 技巧/index.md
+  - skill/index.md
   - 软件的下载安装、使用教程: 
-    - VSCode下载与安装: 技巧/软件的下载安装、使用教程/VSCode下载与安装.md
-    - Python下载与安装: 技巧/软件的下载安装、使用教程/Python下载与安装.md
-    - FiraCode下载与安装: 技巧/软件的下载安装、使用教程/FiraCode下载与安装.md
-    - pip安装Python库: 技巧/软件的下载安装、使用教程/pip安装Python库.md
-    - Homebrew配置与使用: 技巧/软件的下载安装、使用教程/Homebrew配置与使用.md
-    - conda管理Python环境: 技巧/软件的下载安装、使用教程/conda管理Python环境.md
-    - Jetbrains IDEs下载与安装: 技巧/软件的下载安装、使用教程/Jetbrains IDEs下载与安装.md
-    - 关于LaTeX: 技巧/软件的下载安装、使用教程/关于LaTeX.md
-    - 关于SolidWorks: 技巧/软件的下载安装、使用教程/关于SolidWorks.md
+    - VSCode下载与安装: skill/软件的下载安装、使用教程/VSCode下载与安装.md
+    - Python下载与安装: skill/软件的下载安装、使用教程/Python下载与安装.md
+    - FiraCode下载与安装: skill/软件的下载安装、使用教程/FiraCode下载与安装.md
+    - pip安装Python库: skill/软件的下载安装、使用教程/pip安装Python库.md
+    - Homebrew配置与使用: skill/软件的下载安装、使用教程/Homebrew配置与使用.md
+    - conda管理Python环境: skill/软件的下载安装、使用教程/conda管理Python环境.md
+    - Jetbrains IDEs下载与安装: skill/软件的下载安装、使用教程/Jetbrains IDEs下载与安装.md
+    - 关于LaTeX: skill/软件的下载安装、使用教程/关于LaTeX.md
+    - 关于SolidWorks: skill/软件的下载安装、使用教程/关于SolidWorks.md
   - 推荐使用的网站等:
-    - 多端文件互传: 技巧/推荐使用的网站等/多端文件互传.md
-    - 流程图: 技巧/推荐使用的网站等/流程图.md
-    - 课表: 技巧/推荐使用的网站等/课表.md
-    - 中国大学MOOC答案: 技巧/推荐使用的网站等/中国大学MOOC答案.md
+    - 多端文件互传: skill/推荐使用的网站等/多端文件互传.md
+    - 流程图: skill/推荐使用的网站等/流程图.md
+    - 课表: skill/推荐使用的网站等/课表.md
+    - 中国大学MOOC答案: skill/推荐使用的网站等/中国大学MOOC答案.md
   - 计算机基础:
-    - 「蓝盟」电脑维修: 技巧/计算机基础/「蓝盟」电脑维修.md
-    - 计算机基础: 技巧/计算机基础/计算机基础.md
-    - 命令行基础: 技巧/计算机基础/命令行基础.md
-    - 判断您的操作系统和系统架构: 技巧/计算机基础/判断您的操作系统和系统架构.md
-    - 修改Hosts以访问Github: 技巧/计算机基础/修改Hosts以访问Github.md
-    - 关于epub文件: 技巧/计算机基础/关于epub文件.md
-    - 下载器: 技巧/计算机基础/下载器.md
-    - 苹果电脑MacOS入门: 技巧/计算机基础/苹果电脑MacOS入门.md
-    - Windows执行代码时命令行乱码的修复: 技巧/计算机基础/Windows执行代码时命令行乱码的修复.md
+    - 「蓝盟」电脑维修: skill/计算机基础/「蓝盟」电脑维修.md
+    - 计算机基础: skill/计算机基础/计算机基础.md
+    - 命令行基础: skill/计算机基础/命令行基础.md
+    - 判断您的操作系统和系统架构: skill/计算机基础/判断您的操作系统和系统架构.md
+    - 修改Hosts以访问Github: skill/计算机基础/修改Hosts以访问Github.md
+    - 关于epub文件: skill/计算机基础/关于epub文件.md
+    - 下载器: skill/计算机基础/下载器.md
+    - 苹果电脑MacOS入门: skill/计算机基础/苹果电脑MacOS入门.md
+    - Windows执行代码时命令行乱码的修复: skill/计算机基础/Windows执行代码时命令行乱码的修复.md
 - 生活:
   - 生活/index.md
   - 吃饭！活着就是为了吃饭！: 生活/吃饭！活着就是为了吃饭！.md
@@ -1123,3 +1126,11 @@ nav:
     - 231a4: 杂项/文明经典写作题目/2023届文明经典A上学期第四次写作题目.md
     - 231a5: 杂项/文明经典写作题目/2023届文明经典A上学期第五次写作题目.md
     - 232b1: 杂项/文明经典写作题目/2023届文明经典B下学期第一次写作题目.md
+
+not_in_nav:
+  - 魔法领域: 
+    - 42/index.md
+    - 晨曦计划空间传送: 42/晨曦计划空间传送.md
+    - 清华社刷课: 42/清华社刷课.md
+    - 网盘无限速下载: 42/网盘无限速下载.md
+    - 破解软件获取教程: 42/破解软件获取教程.md

@@ -4,7 +4,7 @@
 ## 资源  
 === ":material-book:`HG00080`"  
     * [教材](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ioHU12epuhxc&down=true) - :material-format-quote-open:`文明经典一` - :material-account:`《文明经典》教材编写组` - :material-printer:`重庆大学出版社`  
-    * 需要阅读的书籍（有关epub格式书籍的教程请查看[关于epub文件](../技巧/计算机基础/关于epub文件.md)）  
+    * 需要阅读的书籍（有关epub格式书籍的教程请查看[关于epub文件](../skill/计算机基础/关于epub文件.md)）  
         * [诗经](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iR4P92eptrad&down=true)  
         * [庄子](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ifRiT2eptpfg&down=true)  
         * [史记](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iqBxl2epth1e&down=true)  
