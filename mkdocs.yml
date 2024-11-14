@@ -45,18 +45,18 @@ extra:
     provider: google
     property: G-VT413TW5MF
     feedback:
-      title: 您对该页面是否还满意？
+      title: 页面是否还符合您心意？
       ratings:
         - icon: material/emoticon-happy-outline
           name: 有帮助
           data: 1
           note: >-
-            感谢反馈！开心喵
+            感谢反馈>_<！
         - icon: material/emoticon-sad-outline
           name: 没帮助
           data: 0
           note: >- 
-            感谢反馈（哭）<br>您可以提交 <a href="https://forms.office.com/r/4Wb8vu77GR?rc6e1d6688c2441c6a2158f000e455944={url}" target="_blank">表单</a> 来帮助我们改进！<br>拜托了
+            感谢反馈T_T<br>您可以提交 <a href="https://forms.office.com/r/4Wb8vu77GR?rc6e1d6688c2441c6a2158f000e455944={url}" target="_blank">表单</a> 来反馈问题，帮助我们改进！<br>拜托了
   generator: false
   tags:
     Publisher: publisher

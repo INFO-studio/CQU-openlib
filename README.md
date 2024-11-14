@@ -32,6 +32,8 @@
 
 推荐使用 Github Issue 来共享您的资料
 
+「课程」栏有独立的文件上传路径，您可使用[表单](https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAAA7OwxpURE8xNTROTVRBQTc3M0tDTThaWTVQOENaRC4u)来共享您的（或您收集的）各种圣遗物
+
 资料包括但不限于：笔记、教材pdf、教师PPT（请得到教师允许）、期中期末试卷  
 
 ---
