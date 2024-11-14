@@ -33,7 +33,6 @@ theme:
   icon:
     repo: fontawesome/brands/github
     publisher: material/book-edit
-  custom_dir: overrides
 
 plugins:
   - tags
@@ -89,6 +88,7 @@ markdown_extensions:
 
 extra_javascript:
 - javascripts/katex.js
+- javascripts/upload.js
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
 
