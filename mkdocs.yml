@@ -38,7 +38,7 @@ plugins:
   - tags
   - search
   - autorefs
-  # - heti
+  - heti
 
 extra: 
   analytics:
