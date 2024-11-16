@@ -1,3 +1,2 @@
 mkdocs-material==9.5.40
 mkdocs-autorefs==1.2.0
-mkdocs-heti-plugin==0.1.6
