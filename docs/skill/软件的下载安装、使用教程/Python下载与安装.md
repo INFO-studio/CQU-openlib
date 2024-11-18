@@ -11,7 +11,7 @@
 ## 1. 下载  
 - 打开[Python下载页](https://www.python.org/downloads/)  
 - 点击 `Download Python 3.{!ver}`  
-- 下载可能会十分缓慢，请考虑使用下面的本站[Python安装包](#python安装包)
+- 下载可能会十分缓慢，请考虑使用下面的本站[Python安装包](#python)
     - 并非最新最好，应对学校课程请尽量使用机房版本  
     - 请选择适合您电脑 `系统架构` 的安装包
 
