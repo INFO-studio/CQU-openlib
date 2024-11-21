@@ -1,23 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-    if (window.location.pathname.split('/').length > 3) {
-        const article = document.querySelector('article.md-content__inner.md-typeset');
-        if (article) {
-            const firstH1 = article.querySelector('h1');
-            if (firstH1) {
-                const bookmarkTrigger = document.createElement("p");
-                bookmarkTrigger.innerHTML = '<a class="md-button" href="#" id="bookmark-button">收藏本页</a>';
-                firstH1.parentNode.insertBefore(bookmarkTrigger, firstH1.nextSibling);
-            }
-        }
-    }
     updateMainClearBookmarksButton();
+    displayBookmarks();
+    addBookmarkButton();
     updateBookmarkButton();
 });
-
-function isPageBookmarked() {
-    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-    return bookmarks.some(bookmark => bookmark.url === window.location.href);
-}
 
 function updateMainClearBookmarksButton() {
     const button = document.getElementById("clear-bookmarks-button");
@@ -36,6 +22,25 @@ function updateMainClearBookmarksButton() {
     }
 }
 
+function addBookmarkButton() {
+    if (window.location.pathname.split('/').length > 3) {
+        const markdownContent = document.querySelector('article.md-content__inner.md-typeset');
+        if (markdownContent) {
+            const title = markdownContent.querySelector('h1');
+            if (title) {
+                const bookmarkButton = document.createElement("p");
+                bookmarkButton.innerHTML = '<a class="md-button" href="#" id="bookmark-button">收藏本页</a>';
+                title.parentNode.insertBefore(bookmarkButton, title.nextSibling);
+            }
+        }
+    }
+}
+
+function isPageBookmarked() {
+    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+    return bookmarks.some(bookmark => bookmark.url === window.location.origin + window.location.pathname);
+}
+
 function updateBookmarkButton() {
     const button = document.getElementById("bookmark-button");
     if(button) {
@@ -52,7 +57,7 @@ function updateBookmarkButton() {
 
 function bookmarkPage() {
     const currentPage = {
-        url: window.location.href,
+        url: window.location.origin + window.location.pathname,
         title: document.title.split(" - 重庆大学资源共享计划")[0]
     };
 
@@ -66,7 +71,7 @@ function bookmarkPage() {
 
 function removeBookmark() {
     let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-    bookmarks = bookmarks.filter(bookmark => bookmark.url !== window.location.href);
+    bookmarks = bookmarks.filter(bookmark => bookmark.url !== window.location.origin + window.location.pathname);
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
 
     alert$.next("页面已取消收藏");
@@ -74,21 +79,24 @@ function removeBookmark() {
 }
 
 function displayBookmarks() {
-    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
     const bookmarksContainer = document.getElementById("bookmarks-container");
 
-    if (bookmarks.length === 0) {
-        bookmarksContainer.innerHTML = "<p>您还没有收藏任何页面 _:(´□`」 ∠):_</p>";
-        return;
+    if(bookmarksContainer) {
+        const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+        if (bookmarks.length === 0) {
+            bookmarksContainer.innerHTML = "<p>您还没有收藏任何页面 _:(´□`」 ∠):_</p>";
+            return;
+        }
+
+        let html = "<ul>";
+        bookmarks.forEach(bookmark => {
+            html += `<li><a href="${bookmark.url}">${bookmark.title}</a></li>`;
+        });
+        html += "</ul>";
+
+        bookmarksContainer.innerHTML = html;
     }
-
-    let html = "<ul>";
-    bookmarks.forEach(bookmark => {
-        html += `<li><a href="${bookmark.url}">${bookmark.title}</a></li>`;
-    });
-    html += "</ul>";
-
-    bookmarksContainer.innerHTML = html;
 }
 
 function clearBookmarks() {

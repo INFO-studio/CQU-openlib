@@ -18,12 +18,6 @@ hide:
 
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        displayBookmarks();
-    });
-</script>
-
 ---
 
 ## 快来加[QQ频道](https://pd.qq.com/s/4upbscwrl)捏
