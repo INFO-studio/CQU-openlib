@@ -12,15 +12,17 @@ hide:
     - 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     - 关于新教材，如果本站没有收录，可以进入[QQ频道](https://pd.qq.com/s/4upbscwrl)提供「出版社+作者」或者「封面图」，[站长](contributor/茵符草.md)与其他贡献者会出手的
 
-!!! note "最新动态"  
-    - 增加 [复变函数与积分变换](course/复变函数与积分变换.md) 页 `2018秋-B-试卷+答案`
-    - 增加 [电磁兼容及电磁环境保护](course/电磁兼容及电磁环境保护.md) 页 `2020秋-A-试卷`
-    - 增加 [风能利用原理与技术](course/风能利用原理与技术.md) 页 `教材`
-    - 增加 [太阳能利用原理与技术](course/太阳能利用原理与技术.md) 页 `教材`
-    - 增加 [汽轮机原理](course/汽轮机原理.md) 页 `教材`
-    - {==更多详情请看[更新日志](sundry/更新日志/index.md)==}
+!!! abstract "您的收藏页 <button id="clear-bookmarks-button" onclick="clearBookmarks()">清空收藏</button>"  
+    <div id="bookmarks-container">
+    </div>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        displayBookmarks();
+    });
+</script>
 
 ---
 
