@@ -1,24 +1,55 @@
 document.addEventListener("DOMContentLoaded", function () {
     updateMainClearBookmarksButton();
-    displayBookmarks();
+    updateBookmarkList();
     addBookmarkButton();
     updateBookmarkButton();
 });
 
 function updateMainClearBookmarksButton() {
     const button = document.getElementById("clear-bookmarks-button");
-    if(button) {
+    if (button) {
         const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-        if(bookmarks.length === 0) {
+        if (bookmarks.length === 0) {
             button.innerHTML = "";
         } else {
             const a = document.querySelectorAll('a[href="https://github.com/INFO-studio/CQU-openlib"]')[2];
+            const admonitionTitle = button.closest('p');
+            const paddingRight = getComputedStyle(admonitionTitle)["paddingRight"];
             const computedStyle = getComputedStyle(a);
             button.style.all = "unset";
             button.style.color = computedStyle.color;
             button.style.textDecoration = computedStyle.textDecoration;
             button.style.cursor = computedStyle.cursor;
+            button.style.position = "absolute";
+            button.style.right = paddingRight;
         }
+    }
+}
+
+function clearBookmarks() {
+    localStorage.removeItem("bookmarks");
+    updateBookmarkList();
+    updateMainClearBookmarksButton();
+}
+
+function updateBookmarkList() {
+    const bookmarksContainer = document.getElementById("bookmarks-container");
+
+    if (bookmarksContainer) {
+        const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+        if (bookmarks.length === 0) {
+            bookmarksContainer.innerHTML = "<p style=\"text-align:center;\">您还没有收藏任何页面 _:(´□`」 ∠):_</p>";
+            return;
+        }
+
+        let html = "<ul>";
+        bookmarks.forEach(bookmark => {
+            html += `<li><a href="${bookmark.url}">${bookmark.title}</a></li>`;
+        });
+        html += "</ul>";
+
+        bookmarksContainer.innerHTML = html;
     }
 }
 
@@ -29,21 +60,16 @@ function addBookmarkButton() {
             const title = markdownContent.querySelector('h1');
             if (title) {
                 const bookmarkButton = document.createElement("p");
-                bookmarkButton.innerHTML = '<a class="md-button" href="#" id="bookmark-button">收藏本页</a>';
+                bookmarkButton.innerHTML = '<a class="md-button" id="bookmark-button">收藏本页</a>';
                 title.parentNode.insertBefore(bookmarkButton, title.nextSibling);
             }
         }
     }
 }
 
-function isPageBookmarked() {
-    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-    return bookmarks.some(bookmark => bookmark.url === window.location.origin + window.location.pathname);
-}
-
 function updateBookmarkButton() {
     const button = document.getElementById("bookmark-button");
-    if(button) {
+    if (button) {
         if (isPageBookmarked()) {
             button.innerHTML = '取消收藏 <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20.8 22.7-2.9-2.9.3 1.2-6.2-3.7L5.8 21l1.6-7L2 9.2l4.9-.4L1.1 3l1.3-1.3 19.7 19.7zM22 9.2l-7.2-.6L12 2l-2 4.8 6.9 6.9z"></path></svg></span>';
             button.onclick = removeBookmark;
@@ -53,6 +79,11 @@ function updateBookmarkButton() {
         }
 
     }
+}
+
+function isPageBookmarked() {
+    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+    return bookmarks.some(bookmark => bookmark.url === window.location.origin + window.location.pathname);
 }
 
 function bookmarkPage() {
@@ -76,31 +107,4 @@ function removeBookmark() {
 
     alert$.next("页面已取消收藏");
     updateBookmarkButton();
-}
-
-function displayBookmarks() {
-    const bookmarksContainer = document.getElementById("bookmarks-container");
-
-    if(bookmarksContainer) {
-        const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-
-        if (bookmarks.length === 0) {
-            bookmarksContainer.innerHTML = "<p>您还没有收藏任何页面 _:(´□`」 ∠):_</p>";
-            return;
-        }
-
-        let html = "<ul>";
-        bookmarks.forEach(bookmark => {
-            html += `<li><a href="${bookmark.url}">${bookmark.title}</a></li>`;
-        });
-        html += "</ul>";
-
-        bookmarksContainer.innerHTML = html;
-    }
-}
-
-function clearBookmarks() {
-    localStorage.removeItem("bookmarks");
-    displayBookmarks();
-    updateMainClearBookmarksButton();
 }
