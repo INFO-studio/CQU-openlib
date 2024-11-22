@@ -9,9 +9,7 @@ function updateMainClearBookmarksButton() {
     const button = document.getElementById("clear-bookmarks-button");
     if (button) {
         const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-        if (bookmarks.length === 0) {
-            button.innerHTML = "";
-        } else {
+        if (bookmarks) {
             const a = document.querySelectorAll('a[href="https://github.com/INFO-studio/CQU-openlib"]')[2];
             const admonitionTitle = button.closest('p');
             const paddingRight = getComputedStyle(admonitionTitle)["paddingRight"];
@@ -22,6 +20,7 @@ function updateMainClearBookmarksButton() {
             button.style.cursor = computedStyle.cursor;
             button.style.position = "absolute";
             button.style.right = paddingRight;
+            button.innerHTML = "清空收藏";
         }
     }
 }
