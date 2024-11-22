@@ -33,22 +33,18 @@ function clearBookmarks() {
 
 function updateBookmarkList() {
     const bookmarksContainer = document.getElementById("bookmarks-container");
-
     if (bookmarksContainer) {
         const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-
         if (bookmarks.length === 0) {
             bookmarksContainer.innerHTML = "<p style=\"text-align:center;\">您还没有收藏任何页面 _:(´□`」 ∠):_</p>";
-            return;
+        } else {
+            let html = "<ul>";
+            bookmarks.forEach(bookmark => {
+                html += `<li><a href="${bookmark.url}">${bookmark.title}</a></li>`;
+            });
+            html += "</ul>";
+            bookmarksContainer.innerHTML = html;
         }
-
-        let html = "<ul>";
-        bookmarks.forEach(bookmark => {
-            html += `<li><a href="${bookmark.url}">${bookmark.title}</a></li>`;
-        });
-        html += "</ul>";
-
-        bookmarksContainer.innerHTML = html;
     }
 }
 
@@ -90,11 +86,9 @@ function bookmarkPage() {
         url: window.location.origin + window.location.pathname,
         title: document.title.split(" - 重庆大学资源共享计划")[0]
     };
-
     let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
     bookmarks.push(currentPage);
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-
     alert$.next("页面已收藏");
     updateBookmarkButton();
 }
@@ -103,7 +97,6 @@ function removeBookmark() {
     let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
     bookmarks = bookmarks.filter(bookmark => bookmark.url !== window.location.origin + window.location.pathname);
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-
     alert$.next("页面已取消收藏");
     updateBookmarkButton();
 }

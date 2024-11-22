@@ -93,6 +93,7 @@ extra_javascript:
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
 
 extra_css:
+- css/CQUlogo.css
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 
 nav:
@@ -882,6 +883,8 @@ nav:
     - 常见问题: academic/入学必看/常见问题.md
     - 重庆大学校园网那些事: academic/入学必看/重庆大学校园网那些事.md
     - 大学电脑推荐: academic/入学必看/大学电脑推荐.md
+  - 重庆大学视觉形象: academic/重庆大学视觉形象.md
+  - 重庆大学官网汇总: academic/重庆大学官网汇总.md
   - 专业培养方案:
     - academic/专业培养方案/index.md
     - 本科生院:
@@ -988,7 +991,6 @@ nav:
   - 竞赛:
     - 算法: academic/竞赛/算法.md
     - 数学建模: academic/竞赛/数学建模.md
-  - CQU官网汇总: academic/CQU官网汇总.md
   - 专业总览:
     - 数统:
       - 数统教材: academic/专业总览/数统/数统教材.md
@@ -1150,6 +1152,7 @@ nav:
         - 2024-11-16: sundry/更新日志/2024/2024-11/2024-11-16.md
         - 2024-11-18: sundry/更新日志/2024/2024-11/2024-11-18.md
         - 2024-11-20: sundry/更新日志/2024/2024-11/2024-11-20.md
+        - 2024-11-22: sundry/更新日志/2024/2024-11/2024-11-22.md
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
     - 文明经典A历史写作题目: sundry/文明经典写作题目/文明经典A历史写作题目.md
