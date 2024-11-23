@@ -11,9 +11,9 @@
 ## 1. 下载  
 - 打开[Python下载页](https://www.python.org/downloads/)  
 - 点击 `Download Python 3.{!ver}`  
-- 下载可能会十分缓慢，请考虑使用下面的本站[Python安装包](#python)
+- 下载可能会十分缓慢，可以使用资源[Python安装包](#python)  
     - 并非最新最好，应对学校课程请尽量使用机房版本  
-    - 请选择适合您电脑 `系统架构` 的安装包
+    - 请选择适合您电脑 `系统架构` 的安装包  
 
 ## 2. 安装
 - 请根据引导走
@@ -25,8 +25,12 @@
 ---
 
 ## 资源
-#### Python安装包  
-- 3.12.3  
-    - [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/izni21x6g5qd&down=true)
-    - [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ipk161x6fmbe&down=true)
-    - [Windows installer (ARM64)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/i6ho81x6fv1i&down=true)
+#### Python安装包
+=== "3.13.0"
+    * [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iPC0s2fy8z7c&down=true)
+    * [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/icDwb2fy92qj&down=true)
+    * [Windows installer (ARM64)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iqxW72fy91ob&down=true)
+=== "3.12.7"
+    * [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iLCcQ2fy8umh&down=true)
+    * [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iJH1W2fy8x0d&down=true)
+    * [Windows installer (ARM64)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iIzqs2fy8wbi&down=true)
