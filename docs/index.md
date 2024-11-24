@@ -5,16 +5,15 @@ hide:
 ---
 
 # 欢迎  
-!!! Warning "手机端需要点左上方三杠出现页面列表"  
+!!! Warning "手机端需要点击左上方三杠出现页面列表"  
 <div class="grid" markdown>
 
 !!! info "公告"
     - 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     - 关于新教材，如果本站没有收录，可以进入[QQ频道](https://pd.qq.com/s/4upbscwrl)提供「出版社+作者」或者「封面图」，[站长](contributor/茵符草.md)与其他贡献者会出手的
 
-!!! abstract "您的收藏页 <button id="clear-bookmarks-button" onclick="clearBookmarks()"></button>"  
-    <div id="bookmarks-container">
-    </div>
+!!! abstract "您的收藏页<button id="clear-bookmarks-button" onclick="clearBookmarks()"></button>"  
+    <div id="bookmarks-container"></div>
 
 </div>
 
@@ -29,7 +28,7 @@ hide:
 ## 简介  
 
 （省流：资料共享站！如题）  
-
+ 
 𝙲𝚀𝚄-𝚘𝚙𝚎𝚗𝚕𝚒𝚋 想要做成一个只要关于重大，要什么有什么的网站：  
 
 课件教材资源、作业习题答案、甚至哪个地方好吃哪里好逛，都可以在这里找到  

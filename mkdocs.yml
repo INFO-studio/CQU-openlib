@@ -30,6 +30,7 @@ theme:
     accent: indigo
   language: zh
   logo: assets/openlib-logo.png
+  favicon: assets/favicon.png
   icon:
     repo: fontawesome/brands/github
     publisher: material/book-edit
