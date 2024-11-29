@@ -9,7 +9,7 @@ function updateMainClearBookmarksButton() {
     const button = document.getElementById("clear-bookmarks-button");
     if (button) {
         const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-        if (bookmarks) {
+        if (bookmarks.length !== 0) {
             const a = document.querySelectorAll('a[href="https://github.com/INFO-studio/CQU-openlib"]')[2];
             const admonitionTitle = button.closest('p');
             const paddingRight = getComputedStyle(admonitionTitle)["paddingRight"];
