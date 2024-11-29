@@ -9,18 +9,20 @@ function updateMainClearBookmarksButton() {
     const button = document.getElementById("clear-bookmarks-button");
     if (button) {
         const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+        const a = document.querySelectorAll('a[href="https://github.com/INFO-studio/CQU-openlib"]')[2];
+        const admonitionTitle = button.closest('p');
+        const paddingRight = getComputedStyle(admonitionTitle)["paddingRight"];
+        const computedStyle = getComputedStyle(a);
+        button.style.all = "unset";
+        button.style.color = computedStyle.color;
+        button.style.textDecoration = computedStyle.textDecoration;
+        button.style.cursor = computedStyle.cursor;
+        button.style.position = "absolute";
+        button.style.right = paddingRight;
         if (bookmarks.length !== 0) {
-            const a = document.querySelectorAll('a[href="https://github.com/INFO-studio/CQU-openlib"]')[2];
-            const admonitionTitle = button.closest('p');
-            const paddingRight = getComputedStyle(admonitionTitle)["paddingRight"];
-            const computedStyle = getComputedStyle(a);
-            button.style.all = "unset";
-            button.style.color = computedStyle.color;
-            button.style.textDecoration = computedStyle.textDecoration;
-            button.style.cursor = computedStyle.cursor;
-            button.style.position = "absolute";
-            button.style.right = paddingRight;
             button.innerHTML = "清空收藏";
+        } else {
+            button.innerHTML = "";
         }
     }
 }
