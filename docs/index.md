@@ -10,7 +10,7 @@ hide:
 
 !!! info "公告"
     - 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
-    - [更新日志](sundry/更新日志/index.md) / [2024-11-26](sundry/更新日志/2024/2024-11/2024-11-26.md)
+    - [更新日志](sundry/更新日志/index.md) / [2024-12-03](sundry/更新日志/2024/2024-12/2024-12-03.md)
 
 !!! abstract "您的收藏页<button id="clear-bookmarks-button" onclick="clearBookmarks()"></button>"  
     <div id="bookmarks-container"></div>
@@ -19,7 +19,11 @@ hide:
 
 ---
 
-## 快来加[QQ频道](https://pd.qq.com/s/4upbscwrl)捏
+## 快来加频道捏
+
+- [QQ频道](https://pd.qq.com/s/4upbscwrl)
+
+- [Tg群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
 
 能闲聊，能答疑，能提建议帮助网站更新，速速前往 (>_<)
 

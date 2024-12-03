@@ -58,6 +58,13 @@ extra:
           note: >- 
             感谢反馈T_T<br>您可以提交 <a href="https://forms.office.com/r/4Wb8vu77GR?rc6e1d6688c2441c6a2158f000e455944={url}" target="_blank">表单</a> 来反馈问题，帮助我们改进！<br>拜托了
   generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/INFO-studio/CQU-openlib
+    - icon: fontawesome/brands/telegram
+      link: https://t.me/+3TnAZ_PgiNs1OGQ1
+    - icon: fontawesome/brands/qq
+      link: https://pd.qq.com/s/4upbscwrl
   tags:
     Publisher: publisher
 
@@ -1158,6 +1165,8 @@ nav:
         - 2024-11-23: sundry/更新日志/2024/2024-11/2024-11-23.md
         - 2024-11-24: sundry/更新日志/2024/2024-11/2024-11-24.md
         - 2024-11-26: sundry/更新日志/2024/2024-11/2024-11-26.md
+      - 2024-12:
+        - 2024-12-03: sundry/更新日志/2024/2024-12/2024-12-03.md
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
     - 文明经典A历史写作题目: sundry/文明经典写作题目/文明经典A历史写作题目.md
