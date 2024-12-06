@@ -38,5 +38,25 @@
 
 ---
 
+### 使用
+1. 本地部署
+    ```bash
+    cd {库根文件}
+    python -m pip install -r requirements.txt
+    python ./scripts/updateLog.py
+    mkdocs serve
+    ```
+2. PR提交
+    ```bash
+    cd {库根文件}
+    git pull origin main                                      
+    git add .
+    git commit -m "更新"
+    python ./scripts/updateLog.py
+    git push origin main
+    ```
+
+---
+
 ### 提醒  
 请注意我们是一个纯非盈利性质的组织，也并非官方机构。目前我们并不会考虑开通打赏渠道，同样，也不接受任何推广服务。如您认为您的版权受到了侵犯，请邮箱联系 `beta-s@outlook.com`，我们会为您删掉对应的数据。  
