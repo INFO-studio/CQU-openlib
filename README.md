@@ -41,14 +41,14 @@
 ### 使用
 1. 本地部署
     ```bash
-    cd {库根文件}
+    cd {库根文件夹}
     python -m pip install -r requirements.txt
     python ./scripts/updateLog.py
     mkdocs serve
     ```
 2. PR提交
     ```bash
-    cd {库根文件}
+    cd {库根文件夹}
     git pull origin main                                      
     git add .
     git commit -m "更新"
