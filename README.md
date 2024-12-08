@@ -50,9 +50,9 @@
     ```bash
     cd {库根文件夹}
     git pull origin main                                      
+    python ./scripts/updateLog.py
     git add .
     git commit -m "更新"
-    python ./scripts/updateLog.py
     git push origin main
     ```
 

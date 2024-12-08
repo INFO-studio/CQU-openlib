@@ -10,7 +10,7 @@ hide:
 
 !!! info "公告"
     - 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
-    - [更新日志](sundry/更新日志/index.md) / [2024-12-06](sundry/更新日志/2024/2024-12/2024-12-06.md)
+    - [更新日志](sundry/更新日志/index.md) / [2024-12-08](sundry/更新日志/2024/2024-12/2024-12-08.md)
 
 !!! abstract "您的收藏页<button id="clear-bookmarks-button" onclick="clearBookmarks()"></button>"  
     <div id="bookmarks-container"></div>
