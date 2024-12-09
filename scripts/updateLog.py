@@ -42,7 +42,8 @@ def update_a_md(log_structure, a_md_path):
         key=lambda date: tuple(map(int, date.split('-')))
     )
 
-    new_content = f"# 更新日志\n\n前期更新并未有完整日志，本栏自[2024-09-01](2024/2024-09/2024-09-01.md)起开始记录\n\n最新更新日志：[{latest_update}]({latest_update.replace('-', '/')}.md)\n\n"
+    year, month, day = latest_update.split('-')
+    new_content = f"# 更新日志\n\n前期更新并未有完整日志，本栏自[2024-09-01](2024/2024-09/2024-09-01.md)起开始记录\n\n最新更新日志：[{latest_update}]({year}/{year}-{month}/{latest_update}.md)\n\n"
 
     for year in sorted(log_structure.keys(), reverse=True):
         new_content += f"=== \"{year}年\"\n"
