@@ -26,10 +26,10 @@
 
 ## 资源
 #### Python安装包
-=== "3.13.0"
-    * [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iPC0s2fy8z7c&down=true)
-    * [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/icDwb2fy92qj&down=true)
-    * [Windows installer (ARM64)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iqxW72fy91ob&down=true)
+=== "3.13.1"
+    * [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iN2yU2hqvvud&down=true)
+    * [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ibaWs2hqvxni&down=true)
+    * [Windows installer (ARM64)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iycS82hqvtpg&down=true)
 === "3.12.7"
     * [Windows installer (64-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iLCcQ2fy8umh&down=true)
     * [Windows installer (32-bit)](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/iJH1W2fy8x0d&down=true)
