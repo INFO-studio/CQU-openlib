@@ -125,4 +125,4 @@ if __name__ == "__main__":
     update_main_page(latest_log)
     print("✔...路由", end='')
     update_yml(log_structure)
-    print("✔")
+    print("✔\n-------- updateLog.py --------")
