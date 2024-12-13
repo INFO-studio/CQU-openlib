@@ -10,7 +10,9 @@ hide:
 
 !!! info "公告"
     - 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
+    <!--updateLog.py start-->
     - [更新日志](sundry/更新日志/index.md) / [2024-12-13](sundry/更新日志/2024/2024-12/2024-12-13.md)
+    <!--updateLog.py end-->
 
 !!! abstract "您的收藏页<button id="clear-bookmarks-button" onclick="clearBookmarks()"></button>"  
     <div id="bookmarks-container"></div>
