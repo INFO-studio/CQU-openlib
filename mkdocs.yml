@@ -128,6 +128,7 @@ nav:
     - An Introduction to Machine Learning: course/An Introduction to Machine Learning.md
   - B~:
     - BIM与专业计算机应用: course/BIM与专业计算机应用.md
+    - 半导体器件物理学: course/半导体器件物理学.md
     - 比较文学概论: course/比较文学概论.md
     - 毕业实习: course/毕业实习.md
     - 边疆与族群: course/边疆与族群.md
@@ -139,12 +140,14 @@ nav:
     - CAD案例设计与实践: course/CAD案例设计与实践.md
     - 材料成形技术基础: course/材料成形技术基础.md
     - 材料力学: course/材料力学.md
+    - 材料制备及其测试: course/材料制备及其测试.md
     - 操作系统: course/操作系统.md
     - 测控技术: course/测控技术.md
     - 测试技术: course/测试技术.md
     - 产品创新设计管理: course/产品创新设计管理.md
     - 产品现代设计方法: course/产品现代设计方法.md
     - 常微分方程: course/常微分方程.md
+    - 超导: course/超导.md
     - 车辆工程专业英语: course/车辆工程专业英语.md
     - 车辆专业生产实习: course/车辆专业生产实习.md
     - 车用电机原理及应用: course/车用电机原理及应用.md
@@ -153,6 +156,7 @@ nav:
     - 程序设计进阶实践: course/程序设计进阶实践.md
     - 程序设计实训: course/程序设计实训.md
     - 齿轮啮合理论与新型传动: course/齿轮啮合理论与新型传动.md
+    - 磁性功能材料: course/磁性功能材料.md
     - 抽象代数: course/抽象代数.md
     - 储能材料科学基础: course/储能材料科学基础.md
     - 储能器件及关键材料: course/储能器件及关键材料.md
@@ -161,6 +165,8 @@ nav:
     - 储能专业综合实验: course/储能专业综合实验.md
     - 储氢技术及应用: course/储氢技术及应用.md
     - 传播学概论: course/传播学概论.md
+    - 传感器技术: course/传感器技术.md
+    - 传感器系统实验: course/传感器系统实验.md
     - 传感器与传感器网络: course/传感器与传感器网络.md
     - 传感器与自动检测技术: course/传感器与自动检测技术.md
     - 传媒与社会: course/传媒与社会.md
@@ -203,6 +209,7 @@ nav:
     - 电磁场原理: course/电磁场原理.md
     - 电磁兼容及电磁环境保护: course/电磁兼容及电磁环境保护.md
     - 电磁兼容原理与建模仿真: course/电磁兼容原理与建模仿真.md
+    - 电磁学实验: course/电磁学实验.md
     - 电厂燃运与灰渣处理系统: course/电厂燃运与灰渣处理系统.md
     - 电动力学: course/电动力学.md
     - 电动汽车原理与构造: course/电动汽车原理与构造.md
@@ -334,10 +341,13 @@ nav:
     - 古代汉语: course/古代汉语.md
     - 古典神话学导论: course/古典神话学导论.md
     - 固体废弃物与资源化技术: course/固体废弃物与资源化技术.md
+    - 固体物理: course/固体物理.md
     - 固体物理学: course/固体物理学.md
     - 管理信息系统: course/管理信息系统.md
     - 管理学: course/管理学.md
     - 光电检测原理及应用: course/光电检测原理及应用.md
+    - 光电子技术: course/光电子技术.md
+    - 光学实验: course/光学实验.md
     - 光学系统设计实践: course/光学系统设计实践.md
     - 锅炉原理: course/锅炉原理.md
     - 过程控制系统: course/过程控制系统.md
@@ -419,6 +429,7 @@ nav:
     - 基础研究能力培养: course/基础研究能力培养.md
     - 基础医学概论: course/基础医学概论.md
     - 基因组学: course/基因组学.md
+    - 激光与信息处理实验: course/激光与信息处理实验.md
     - 激光原理: course/激光原理.md
     - 计算力学: course/计算力学.md
     - 计算机测控应用基础: course/计算机测控应用基础.md
@@ -438,6 +449,7 @@ nav:
     - 计算流体力学: course/计算流体力学.md
     - 计算摩擦学引论: course/计算摩擦学引论.md
     - 计算思维导论: course/计算思维导论.md
+    - 计算物理学: course/计算物理学.md
     - 技术创新方法与实践: course/技术创新方法与实践.md
     - 技术经济学: course/技术经济学.md
     - 建环专业创新实验与实践: course/建环专业创新实验与实践.md
@@ -474,6 +486,7 @@ nav:
     - 结构优化设计: course/结构优化设计.md
     - 金工实习: course/金工实习.md
     - 金融学: course/金融学.md
+    - 近、现代物理实验: course/近、现代物理实验.md
     - 经济学原理: course/经济学原理.md
     - 精密传动与驱动: course/精密传动与驱动.md
     - 精密与特种加工技术: course/精密与特种加工技术.md
@@ -503,11 +516,13 @@ nav:
     - 离散数学: course/离散数学.md
     - 理论力学: course/理论力学.md
     - 理想国: course/理想国.md
+    - 力、热学实验: course/力、热学实验.md
     - 力学竞赛培训: course/力学竞赛培训.md
     - 力学实验设计与操作: course/力学实验设计与操作.md
     - 量子力学: course/量子力学.md
     - 量子化学基础: course/量子化学基础.md
     - 量子化学实践: course/量子化学实践.md
+    - 量子输运基础: course/量子输运基础.md
     - 流体传动与控制: course/流体传动与控制.md
     - 流体界面输运新理论及应用前沿: course/流体界面输运新理论及应用前沿.md
     - 流体力学: course/流体力学.md
@@ -546,6 +561,7 @@ nav:
     - 能源系统的评估原理: course/能源系统的评估原理.md
     - 能源战略与能源经济: course/能源战略与能源经济.md
     - 能源转化原理: course/能源转化原理.md
+    - 凝聚态物理导论: course/凝聚态物理导论.md
   - O~:
     - 欧洲文艺复兴: course/欧洲文艺复兴.md
   - P~:
@@ -598,6 +614,7 @@ nav:
     - 热工基础: course/热工基础.md
     - 热工学: course/热工学.md
     - 热力系统仿真与优化: course/热力系统仿真与优化.md
+    - 热力学与统计物理: course/热力学与统计物理.md
     - 热力学与统计物理学: course/热力学与统计物理学.md
     - 热能存储技术与应用: course/热能存储技术与应用.md
     - 热驱动制冷: course/热驱动制冷.md
@@ -622,6 +639,7 @@ nav:
     - 软件项目管理: course/软件项目管理.md
     - 软件需求分析: course/软件需求分析.md
     - 软件综合设计: course/软件综合设计.md
+    - 软凝聚态物理简介: course/软凝聚态物理简介.md
   - S~:
     - 三维CAD: course/三维CAD.md
     - 思想道德与法治: course/思想道德与法治.md
@@ -665,6 +683,7 @@ nav:
     - 数学分析: course/数学分析.md
     - 数学实验: course/数学实验.md
     - 数学思维和数学文化: course/数学思维和数学文化.md
+    - 数学物理方法: course/数学物理方法.md
     - 数字电路技术与设计: course/数字电路技术与设计.md
     - 数字电路技术与设计实验: course/数字电路技术与设计实验.md
     - 数字电子技术: course/数字电子技术.md
@@ -690,6 +709,7 @@ nav:
     - 唐宋词: course/唐宋词.md
     - 特种结构: course/特种结构.md
     - 体育: course/体育.md
+    - 天体物理概论: course/天体物理概论.md
     - 通风安全与照明: course/通风安全与照明.md
     - 通信与车联网系统: course/通信与车联网系统.md
     - 通讯与现场总线技术: course/通讯与现场总线技术.md
@@ -714,6 +734,7 @@ nav:
     - 网络空间安全概论: course/网络空间安全概论.md
     - 网络数据库基础: course/网络数据库基础.md
     - 网络协同制造: course/网络协同制造.md
+    - 微电子技术: course/微电子技术.md
     - 微分几何: course/微分几何.md
     - 微观经济学: course/微观经济学.md
     - 微机原理与接口技术: course/微机原理与接口技术.md
@@ -729,8 +750,10 @@ nav:
     - 文明经典系列A: course/文明经典系列A.md
     - 文明经典系列B: course/文明经典系列B.md
     - 文学理论: course/文学理论.md
+    - 无损检测: course/无损检测.md
     - 无线电能传输技术及应用: course/无线电能传输技术及应用.md
     - 物理化学: course/物理化学.md
+    - 物理问题的定性分析以及可解模型的应用: course/物理问题的定性分析以及可解模型的应用.md
     - 物联网大数据应用创新实践: course/物联网大数据应用创新实践.md
     - 物联网感知技术与应用: course/物联网感知技术与应用.md
     - 物联网通信与控制原理: course/物联网通信与控制原理.md
@@ -750,6 +773,7 @@ nav:
     - 现代材料测试分析方法: course/现代材料测试分析方法.md
     - 现代材料成型工程: course/现代材料成型工程.md
     - 现代汉语: course/现代汉语.md
+    - 现代检测技术: course/现代检测技术.md
     - 现代控制工程: course/现代控制工程.md
     - 现代密码学: course/现代密码学.md
     - 现代设计方法: course/现代设计方法.md
@@ -769,6 +793,7 @@ nav:
     - 信息安全导论: course/信息安全导论.md
     - 信息安全数学基础: course/信息安全数学基础.md
     - 信息管理学: course/信息管理学.md
+    - 信息光学: course/信息光学.md
     - 信息论基础: course/信息论基础.md
     - 信息融合与控制: course/信息融合与控制.md
     - 信息隐藏技术: course/信息隐藏技术.md
@@ -798,6 +823,7 @@ nav:
     - 语言学: course/语言学.md
     - 语言哲学: course/语言哲学.md
     - 元明清文学专题: course/元明清文学专题.md
+    - 原子物理学: course/原子物理学.md
     - 云计算技术: course/云计算技术.md
     - 运筹学: course/运筹学.md
     - 运筹学导论: course/运筹学导论.md
@@ -806,6 +832,7 @@ nav:
     - 增材制造: course/增材制造.md
     - 增材制造技术及应用: course/增材制造技术及应用.md
     - 张量分析基础: course/张量分析基础.md
+    - 真空与薄膜技术: course/真空与薄膜技术.md
     - 振动力学: course/振动力学.md
     - 振动信号处理与结构系统辨识: course/振动信号处理与结构系统辨识.md
     - 制冷及低温原理: course/制冷及低温原理.md
@@ -982,6 +1009,7 @@ nav:
       - academic/专业培养方案/微电子与通信工程学院/index.md
     - 物理学院:
       - academic/专业培养方案/物理学院/index.md
+      - 土木工程: academic/专业培养方案/物理学院/应用物理学.md
     - 新闻学院:
       - academic/专业培养方案/新闻学院/index.md
     - 药学院（创新药物研究中心）:
