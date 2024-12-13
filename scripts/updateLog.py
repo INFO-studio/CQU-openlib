@@ -119,7 +119,7 @@ if __name__ == "__main__":
     log_structure = get_log_structure(base_path)
     print("成功\n正在获取最新日志......", end='')
     latest_log = get_latest_log(log_structure)
-    print(f"成功，最新日志{'-'.join(latest_log)}\n正在更新......专栏指引", end='')
+    print(f"成功，最新日志{latest_log[4]}\n正在更新......专栏指引", end='')
     update_sundary_updateLog_index(log_structure, latest_log)
     print("✔...主页", end='')
     update_main_page(latest_log)
