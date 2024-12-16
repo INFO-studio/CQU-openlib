@@ -96,7 +96,7 @@ def update_main_page(latest_log):
     main_page_path = "docs/index.md"
     new_content = ""
     latest_log_year, latest_log_month, latest_log_day, latest_log_ym, latest_log_ymd, latest_log_file = latest_log
-    new_content += f"    - [更新日志](sundry/更新日志/index.md) / [{latest_log_ymd}](sundry/更新日志/{latest_log_year}/{latest_log_ym}/{latest_log_file})\n"
+    new_content += f"    * [更新日志](sundry/更新日志/index.md) / [{latest_log_ymd}](sundry/更新日志/{latest_log_year}/{latest_log_ym}/{latest_log_file})\n"
     update_content(main_page_path, new_content)
 
 

@@ -9,10 +9,11 @@ hide:
 <div class="grid" markdown>
 
 !!! info "公告"
-    - 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
+    * 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     <!--updateLog.py start-->
-    - [更新日志](sundry/更新日志/index.md) / [2024-12-16](sundry/更新日志/2024/2024-12/2024-12-16.md)
+    * [更新日志](sundry/更新日志/index.md) / [2024-12-16](sundry/更新日志/2024/2024-12/2024-12-16.md)
     <!--updateLog.py end-->
+    * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为我们的[贡献者](contributor/index.md)
 
 !!! abstract "您的收藏页<button id="clear-bookmarks-button" onclick="clearBookmarks()"></button>"  
     <div id="bookmarks-container"></div>
