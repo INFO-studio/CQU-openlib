@@ -81,5 +81,5 @@ hide:
 
 ## 友情链接
 - [CQUThesis: 重庆大学毕业论文LaTeX模板](https://github.com/nanmu42/CQUThesis)
-- [重庆大学蓝盟](http://lanunion.cqu.edu.cn/)
+- 重庆大学蓝盟 [内网版](http://lanunion.cqu.edu.cn/) / [公网版](https://lanunion-cqu-edu-cn.atrust.cqu.edu.cn) / [简介](club/科学技术协会/蓝盟.md)
 - 感谢2022级电气信息雏鹰巢群组 `876307729` 、2023级CQU骐骥原 `834044239` 对本网站资源建设和宣传的支持

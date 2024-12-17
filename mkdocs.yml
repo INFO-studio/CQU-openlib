@@ -1234,8 +1234,6 @@ nav:
     - 喵呜社: life/学生团体/喵呜社.md
   - 校园网: life/校园网.md
   - 学生卡: life/学生卡.md
-- 限时活动:
-  - activity/index.md
 - 贡献者: 
   - contributor/index.md
   - 茵符草: contributor/茵符草.md
@@ -1254,6 +1252,8 @@ nav:
     - TODO-main: sundry/待办事项/TODO-main.md
     - TODO-textbook: sundry/待办事项/TODO-textbook.md
     - TODO-rest: sundry/待办事项/TODO-rest.md
+  - 限时活动:
+    - sundry/限时活动/index.md
   - 更新日志:
     - sundry/更新日志/index.md
     # updateLog.py start
