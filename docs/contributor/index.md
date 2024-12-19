@@ -36,3 +36,4 @@
 - cmd
 - qweasdqweasdqw
 - Still_the-H
+- 长崎素世
