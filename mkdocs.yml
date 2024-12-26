@@ -1253,8 +1253,8 @@ nav:
   - sundry/index.md
   - 待办事项:
     - sundry/待办事项/index.md
+    - TODO-github: sundry/待办事项/TODO-github.md
     - TODO-main: sundry/待办事项/TODO-main.md
-    - TODO-pullrequest: sundry/待办事项/TODO-pullrequest.md
     - TODO-textbook: sundry/待办事项/TODO-textbook.md
     - TODO-rest: sundry/待办事项/TODO-rest.md
   - 限时活动:
