@@ -5,7 +5,7 @@ site_description: 重庆大学资源共享计划（CQU-openlib）
 repo_url: https://github.com/INFO-studio/CQU-openlib
 repo_name: CQU-openlib
 
-copyright: Copyright &copy; 2024 CQU-openlib Opensource Community
+copyright: Copyright &copy; 2024 - 2025 CQU-openlib Opensource Community
 
 theme:
   name: material
@@ -1240,6 +1240,7 @@ nav:
 - 贡献者: 
   - contributor/index.md
   - 茵符草: contributor/茵符草.md
+  - OddFish: contributor/OddFish.md
   - xeri_chen: contributor/xeri_chen.md
   - 林欲静: contributor/林欲静.md
   - 叶旭航: contributor/叶旭航.md
@@ -1249,6 +1250,7 @@ nav:
   - 奚: contributor/奚.md
   - 安林于: contributor/安林于.md
   - brokenblue: contributor/brokenblue.md
+  - IUPAC: contributor/IUPAC.md
 - 杂项:
   - sundry/index.md
   - 待办事项:
@@ -1315,6 +1317,7 @@ nav:
         - 2024-12-19: sundry/更新日志/2024/2024-12/2024-12-19.md
         - 2024-12-24: sundry/更新日志/2024/2024-12/2024-12-24.md
         - 2024-12-26: sundry/更新日志/2024/2024-12/2024-12-26.md
+        - 2024-12-29: sundry/更新日志/2024/2024-12/2024-12-29.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md

@@ -22,6 +22,8 @@
 - [奚](奚.md)
 - [安林于](安林于.md)
 - [brokenblue](brokenblue.md)
+- [IUPAC](IUPAC.md)
+- [OddFish](OddFish.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -31,7 +33,6 @@
 - 攘莫
 - Dipper
 - 轴线
-- IUPAC
 - 唐公
 - dky
 - SUNRAY
