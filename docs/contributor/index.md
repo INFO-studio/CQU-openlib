@@ -14,6 +14,7 @@
 贡献者名单（顺序不分先后）：  
 
 - [xeri_chen](xeri_chen.md)  
+- [OddFish](OddFish.md)
 - [Hacoj](Hacoj.md)  
 - [林欲静](林欲静.md)  
 - [叶旭航](叶旭航.md)  
@@ -23,7 +24,6 @@
 - [安林于](安林于.md)
 - [brokenblue](brokenblue.md)
 - [IUPAC](IUPAC.md)
-- [OddFish](OddFish.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
