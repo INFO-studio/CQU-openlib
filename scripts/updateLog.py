@@ -113,7 +113,7 @@ def update_yml(log_structure):
     update_content(yml_path, new_content)
 
 
-if __name__ == "__main__":
+def main():
     base_path = "docs/sundry/更新日志"
     print("-------- updateLog.py --------\n正在获取日志路径结构......", end='')
     log_structure = get_log_structure(base_path)
@@ -126,3 +126,6 @@ if __name__ == "__main__":
     print("✔...路由", end='')
     update_yml(log_structure)
     print("✔\n-------- updateLog.py --------")
+
+if __name__ == "__main__":
+    main()

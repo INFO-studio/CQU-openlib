@@ -22,11 +22,10 @@ def main():
             print(f"git pull 失败: {e}", file=sys.stderr)
             sys.exit(1)
 
-        # 第二步：调用已有的 Python 代码 aaa(bbb)
-        print("调用 Python 代码 aaa(bbb)...")
+        print("调用 Python 代码 updateLog...")
         try:
-            from your_module import aaa, bbb  # 替换为实际的模块和函数
-            aaa(bbb)
+            from updateLog import main
+            main()
         except ImportError as e:
             print(f"导入失败: {e}", file=sys.stderr)
             sys.exit(1)
