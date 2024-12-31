@@ -24,6 +24,7 @@
 - [安林于](安林于.md)
 - [brokenblue](brokenblue.md)
 - [IUPAC](IUPAC.md)
+- [NitroFire](NitroFire.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
