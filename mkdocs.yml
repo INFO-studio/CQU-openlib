@@ -1259,6 +1259,7 @@ nav:
     - TODO-main: sundry/待办事项/TODO-main.md
     - TODO-textbook: sundry/待办事项/TODO-textbook.md
     - TODO-rest: sundry/待办事项/TODO-rest.md
+    - TODO-upload: sundry/待办事项/TODO-upload.md
   - 限时活动:
     - sundry/限时活动/index.md
   - 更新日志:
@@ -1319,6 +1320,7 @@ nav:
         - 2024-12-26: sundry/更新日志/2024/2024-12/2024-12-26.md
         - 2024-12-29: sundry/更新日志/2024/2024-12/2024-12-29.md
         - 2024-12-30: sundry/更新日志/2024/2024-12/2024-12-30.md
+        - 2024-12-31: sundry/更新日志/2024/2024-12/2024-12-31.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
