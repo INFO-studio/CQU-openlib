@@ -4,7 +4,7 @@ hide:
   - feedback
 ---
 
-# 元旦快乐w  
+# 考试周加油捏(ﾉ>ω<)ﾉ  
 !!! Warning "手机端需要点击左上方三杠出现页面列表"  
 <div class="grid" markdown>
 
