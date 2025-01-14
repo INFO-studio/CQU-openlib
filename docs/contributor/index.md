@@ -25,6 +25,7 @@
 - [brokenblue](brokenblue.md)
 - [IUPAC](IUPAC.md)
 - [NitroFire](NitroFire.md)
+- [skirt_wind](skirt_wind.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -39,9 +40,12 @@
 - SUNRAY
 - cmd
 - qweasdqweasdqw
-- Still_the-H
+- Still_the_H
 - 长崎素世
 - Lixy
 - 热心好市民
 - Pricilla520
 - 觉心
+- Chao_Player
+- 魑魅魍魉
+- zoloft
