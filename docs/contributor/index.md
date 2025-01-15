@@ -49,3 +49,5 @@
 - Chao_Player
 - 魑魅魍魉
 - zoloft
+- 石稳
+- 贰拾叁划生
