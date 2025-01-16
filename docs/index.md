@@ -4,14 +4,14 @@ hide:
   - feedback
 ---
 
-# 考试周加油捏(ﾉ>ω<)ﾉ  
+# 欢迎  
 !!! Warning "手机端需要点击左上方三杠出现页面列表"  
 <div class="grid" markdown>
 
 !!! info "公告"
     * 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-01-15](sundry/更新日志/2025/2025-01/2025-01-15.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-01-16](sundry/更新日志/2025/2025-01/2025-01-16.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
