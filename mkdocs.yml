@@ -1253,6 +1253,7 @@ nav:
   - brokenblue: contributor/brokenblue.md
   - IUPAC: contributor/IUPAC.md
   - NitroFire: contributor/NitroFire.md
+  - Funoke: contributor/Funoke.md
 - 杂项:
   - sundry/index.md
   - 待办事项:
@@ -1329,6 +1330,8 @@ nav:
         - 2025-01-14: sundry/更新日志/2025/2025-01/2025-01-14.md
         - 2025-01-15: sundry/更新日志/2025/2025-01/2025-01-15.md
         - 2025-01-16: sundry/更新日志/2025/2025-01/2025-01-16.md
+      - 2025-02:
+        - 2025-02-17: sundry/更新日志/2025/2025-02/2025-02-17.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
