@@ -1,5 +1,3 @@
-## 暂无数据，欢迎贡献
-!!! info "如果您知晓本门课程需要什么教材，欢迎[填表贡献](https://forms.office.com/r/huSXS4xpuD)，您只需要告知信息，并不必要持有pdf文件"
-
-- Github: [https://github.com/INFO-studio/CQU-openlib](https://github.com/INFO-studio/CQU-openlib)
-- 站长QQ: `2247977881`
+## 资源  
+=== ":material-book:`SE21023`"  
+    * [教材](https://api.mir6.com/api/lanzou?url=https://cqu-openlib.lanzout.com/ihbn22obnbeb&down=true) - :material-format-quote-open:`Java2实用教程` - :material-account:`耿祥义` - :material-printer:`清华大学出版社`  

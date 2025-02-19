@@ -54,3 +54,6 @@
 - 贰拾叁划生
 - 大鸽子
 - SUNRay
+- slq
+- kaikai
+- Hydroquinone
