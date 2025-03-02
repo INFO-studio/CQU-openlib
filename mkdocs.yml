@@ -237,6 +237,7 @@ nav:
     - 产品现代设计方法: course/产品现代设计方法.md
     - 常微分方程: course/常微分方程.md
     - 超导: course/超导.md
+    - 超高速激光雷达设计基础: course/超高速激光雷达设计基础.md
     - 车辆工程专业英语: course/车辆工程专业英语.md
     - 车辆专业生产实习: course/车辆专业生产实习.md
     - 车用电机原理及应用: course/车用电机原理及应用.md
@@ -285,6 +286,8 @@ nav:
     - 大学物理实验: course/大学物理实验.md
     - 大型循环流化床燃烧技术: course/大型循环流化床燃烧技术.md
     - 当代文学专题: course/当代文学专题.md
+    - 单片机实践基础: course/单片机实践基础.md
+    - 单片机原理及应用: course/单片机原理及应用.md
     - 导航与制导: course/导航与制导.md
     - 道路工程综合课程设计: course/道路工程综合课程设计.md
     - 道路勘测设计: course/道路勘测设计.md
@@ -297,6 +300,7 @@ nav:
     - 地下结构设计原理与方法: course/地下结构设计原理与方法.md
     - 地震动特性及设计地震动: course/地震动特性及设计地震动.md
     - 电磁测量与传感器原理: course/电磁测量与传感器原理.md
+    - 电磁场理论: course/电磁场理论.md
     - 电磁场原理: course/电磁场原理.md
     - 电磁兼容及电磁环境保护: course/电磁兼容及电磁环境保护.md
     - 电磁兼容原理与建模仿真: course/电磁兼容原理与建模仿真.md
@@ -314,6 +318,7 @@ nav:
     - 电机学: course/电机学.md
     - 电机学及拖动基础: course/电机学及拖动基础.md
     - 电机拖动与运动控制系统: course/电机拖动与运动控制系统.md
+    - 电类课程设计: course/电类课程设计.md
     - 电力储存技术与系统: course/电力储存技术与系统.md
     - 电力传动: course/电力传动.md
     - 电力电子技术: course/电力电子技术.md
@@ -329,6 +334,8 @@ nav:
     - 电液伺服控制: course/电液伺服控制.md
     - 电源技术: course/电源技术.md
     - 电子安装实习: course/电子安装实习.md
+    - 电子电路创新设计: course/电子电路创新设计.md
+    - 电子电路设计基础: course/电子电路设计基础.md
     - 电子设计与制作: course/电子设计与制作.md
     - 电子综合设计: course/电子综合设计.md
     - 电子综合设计及制作实践: course/电子综合设计及制作实践.md
@@ -400,6 +407,7 @@ nav:
     - 工程地质: course/工程地质.md
     - 工程地质实习: course/工程地质实习.md
     - 工程电子技术: course/工程电子技术.md
+    - 工程光学实验: course/工程光学实验.md
     - 工程机械: course/工程机械.md
     - 工程机械与建筑机器人: course/工程机械与建筑机器人.md
     - 工程机械智能化设计: course/工程机械智能化设计.md
@@ -439,8 +447,15 @@ nav:
     - 固体物理学: course/固体物理学.md
     - 管理信息系统: course/管理信息系统.md
     - 管理学: course/管理学.md
+    - 光电成像与显示: course/光电成像与显示.md
+    - 光电技术前沿: course/光电技术前沿.md
     - 光电检测原理及应用: course/光电检测原理及应用.md
+    - 光电器件: course/光电器件.md
+    - 光电系统及设计: course/光电系统及设计.md
+    - 光电信息技术实验: course/光电信息技术实验.md
+    - 光电仪器原理: course/光电仪器原理.md
     - 光电子技术: course/光电子技术.md
+    - 光纤技术: course/光纤技术.md
     - 光学实验: course/光学实验.md
     - 光学系统设计实践: course/光学系统设计实践.md
     - 锅炉原理: course/锅炉原理.md
@@ -524,8 +539,10 @@ nav:
     - 基础研究能力培养: course/基础研究能力培养.md
     - 基础医学概论: course/基础医学概论.md
     - 基因组学: course/基因组学.md
+    - 激光测量技术: course/激光测量技术.md
     - 激光与信息处理实验: course/激光与信息处理实验.md
     - 激光原理: course/激光原理.md
+    - 几何光学: course/几何光学.md
     - 计算力学: course/计算力学.md
     - 计算机测控应用基础: course/计算机测控应用基础.md
     - 计算机仿真技术: course/计算机仿真技术.md
@@ -534,11 +551,13 @@ nav:
     - 计算机接口技术及应用: course/计算机接口技术及应用.md
     - 计算机控制技术: course/计算机控制技术.md
     - 计算机视觉: course/计算机视觉.md
+    - 计算机视觉技术: course/计算机视觉技术.md
     - 计算机通讯与网络: course/计算机通讯与网络.md
     - 计算机图形学: course/计算机图形学.md
     - 计算机网络: course/计算机网络.md
     - 计算机网络安全: course/计算机网络安全.md
     - 计算机系统: course/计算机系统.md
+    - 计算机硬件技术基础: course/计算机硬件技术基础.md
     - 计算机硬件技术基础课程设计: course/计算机硬件技术基础课程设计.md
     - 计算机组成与结构: course/计算机组成与结构.md
     - 计算流体力学: course/计算流体力学.md
@@ -694,6 +713,7 @@ nav:
     - 汽轮机原理: course/汽轮机原理.md
     - 嵌入式技术及应用: course/嵌入式技术及应用.md
     - 嵌入式体系结构: course/嵌入式体系结构.md
+    - 嵌入式系统设计: course/嵌入式系统设计.md
     - 桥梁工程: course/桥梁工程.md
     - 桥梁工程综合课程设计: course/桥梁工程综合课程设计.md
     - 砌体结构设计: course/砌体结构设计.md
@@ -787,6 +807,7 @@ nav:
     - 数字电路技术与设计: course/数字电路技术与设计.md
     - 数字电路技术与设计实验: course/数字电路技术与设计实验.md
     - 数字电子技术: course/数字电子技术.md
+    - 数字电子技术实验: course/数字电子技术实验.md
     - 数字动画与游戏设计: course/数字动画与游戏设计.md
     - 数字孪生技术在智能制造新模式下的创新应用: course/数字孪生技术在智能制造新模式下的创新应用.md
     - 数字逻辑: course/数字逻辑.md
@@ -852,6 +873,7 @@ nav:
     - 文学理论: course/文学理论.md
     - 无损检测: course/无损检测.md
     - 无线电能传输技术及应用: course/无线电能传输技术及应用.md
+    - 物理光学: course/物理光学.md
     - 物理化学: course/物理化学.md
     - 物理问题的定性分析以及可解模型的应用: course/物理问题的定性分析以及可解模型的应用.md
     - 物理综合实验: course/物理综合实验.md
@@ -889,6 +911,7 @@ nav:
     - 新生研讨课: course/新生研讨课.md
     - 新闻学概论: course/新闻学概论.md
     - 新闻英语视听说: course/新闻英语视听说.md
+    - 信号变换与传输原理: course/信号变换与传输原理.md
     - 信号处理与分析: course/信号处理与分析.md
     - 信号与系统: course/信号与系统.md
     - 信息安全导论: course/信息安全导论.md
@@ -911,7 +934,10 @@ nav:
     - 岩土工程监测与检测技术: course/岩土工程监测与检测技术.md
     - 岩土工程数值建模与计算: course/岩土工程数值建模与计算.md
     - 岩土工程综合课程设计: course/岩土工程综合课程设计.md
+    - 冶金原理: course/冶金原理.md
     - 英语: course/英语.md
+    - 英语诗歌欣赏: course/英语诗歌欣赏.md
+    - 移动机器人与智能技术: course/移动机器人与智能技术.md
     - 移动计算与车联网: course/移动计算与车联网.md
     - 移动应用开发: course/移动应用开发.md
     - 移动应用软件开发: course/移动应用软件开发.md
@@ -932,6 +958,7 @@ nav:
   - Z~:
     - 增材制造: course/增材制造.md
     - 增材制造技术及应用: course/增材制造技术及应用.md
+    - 照明光学系统设计与创新: course/照明光学系统设计与创新.md
     - 张量分析基础: course/张量分析基础.md
     - 真空与薄膜技术: course/真空与薄膜技术.md
     - 振动力学: course/振动力学.md
@@ -1055,6 +1082,7 @@ nav:
       - academic/专业培养方案/管理科学与房地产学院/index.md
     - 光电工程学院:
       - academic/专业培养方案/光电工程学院/index.md
+      - 光电信息科学与工程: academic/专业培养方案/光电工程学院/光电信息科学与工程.md
     - 国家卓越工程师学院:
       - academic/专业培养方案/国家卓越工程师学院/index.md
     - 航空航天学院:
@@ -1256,6 +1284,7 @@ nav:
   - brokenblue: contributor/brokenblue.md
   - IUPAC: contributor/IUPAC.md
   - NitroFire: contributor/NitroFire.md
+  - skirt_wind: contributor/skirt_wind.md
   - Funoke: contributor/Funoke.md
 - 杂项:
   - sundry/index.md
