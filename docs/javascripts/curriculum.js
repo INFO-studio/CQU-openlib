@@ -199,7 +199,6 @@ function renderCurriculum(events) {
     }
   }
   const today = new Date();
-  today.setDate(today.getDate() + 4);
   today.setHours(0, 0, 0, 0);
   const dayIndex = (today.getDay() + 6) % 7;
   const monday = new Date(today)
