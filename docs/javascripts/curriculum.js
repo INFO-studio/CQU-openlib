@@ -40,7 +40,7 @@ function curriculumSaveEvents(force = false) {
 
 async function curriculumGetEventsFromApi(userCredentials) {
   try {
-    const apiUrl = "https://api.schedule.dl444.net/v1/subscription";
+    const apiUrl = "https://cquopenlib-schedule.azure-api.net/v1/subscription";
     const requestOptions = {
       method: "POST",
       headers: {
