@@ -14,7 +14,7 @@ function curriculum() {
   document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
   document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
   curriculumSaveEvents();
-  // renderCurriculum(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents);
+  renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
 }
 
 function saveData() {
@@ -34,7 +34,8 @@ function curriculumSaveEvents(force = false) {
   const events = JSON.parse(localStorage.getItem("curriculumEvents"));
   if (!events || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
     const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
-    curriculumGetEventsFromApi(userCredentials)
+    const curriculumEvents = curriculumGetEventsFromApi(userCredentials)
+    localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
   }
 }
 
@@ -58,7 +59,7 @@ async function curriculumGetEventsFromApi(userCredentials) {
       throw new Error(`API 请求失败: ${response.status} - ${errorData.message || '未知错误'}`);
     }
     const responseData = await response.json();
-    return responseData;
+    return responseData.data.icsContent;
   } catch (error) {
     console.error("获取课程表失败:", error);
     throw error;
