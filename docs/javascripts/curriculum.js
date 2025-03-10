@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function curriculum() {
-  if(!localStorage.getItem("userCredentials")) {
+  if (!localStorage.getItem("userCredentials")) {
     document.getElementById("curriculum-form-div").style.display = "unset";
     document.getElementById("curriculum-table-div").style.display = "none";
     saveData();
@@ -11,8 +11,10 @@ function curriculum() {
   }
   document.getElementById("curriculum-form-div").style.display = "none";
   document.getElementById("curriculum-table-div").style.display = "unset";
-  const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
-  console.log(getCurriculumEvents(userCredentials));
+  document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
+  document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
+  curriculumSaveEvents();
+  // renderCurriculum(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents);
 }
 
 function saveData() {
@@ -28,9 +30,17 @@ function saveData() {
   });
 }
 
-async function getCurriculumEvents(userCredentials) {
+function curriculumSaveEvents(force = false) {
+  const events = JSON.parse(localStorage.getItem("curriculumEvents"));
+  if (!events || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
+    const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
+    curriculumGetEventsFromApi(userCredentials)
+  }
+}
+
+async function curriculumGetEventsFromApi(userCredentials) {
   try {
-    const apiUrl = "https://cquopenlib-schedule.azure-api.net/v1/curriculum";
+    const apiUrl = "https://api.schedule.dl444.net/v1/subscription";
     const requestOptions = {
       method: "POST",
       headers: {
@@ -53,6 +63,15 @@ async function getCurriculumEvents(userCredentials) {
     console.error("获取课程表失败:", error);
     throw error;
   }
+}
+
+function curriculumRefreshEvents() {
+  curriculumSaveEvents(force = true);
+}
+
+function curriculumResetStorage() {
+  localStorage.removeItem("userCredentials");
+  curriculum();
 }
 
 function timeList() {
@@ -169,7 +188,7 @@ function resolveIcs(ics) {
 function renderCurriculum(events) {
 
   function widthCatcher() {
-    if(window.matchMedia('(min-width: 44em)').matches) {
+    if (window.matchMedia('(min-width: 44em)').matches) {
       return 0;
     } else if (window.matchMedia('(min-width: 33em)').matches) {
       return 1;

@@ -17,7 +17,7 @@
         您的账密会只存储至本地，CQU-openlib是纯网页，并不能获取到您的任何个人信息
       </div>
       <div class="curriculum-form-button">
-        <button type="submit" class="md-button md-button--primary" aria-label="提交凭证">
+        <button type="submit" class="md-button md-button--primary" aria-label="获取">
           <span class="md-button__content">获取</span>
         </button>
       </div>
@@ -25,10 +25,10 @@
   </div>
   <div id="curriculum-table-div" style="display: none;">
     <div class="curriculum-table-actions">
-      <button type="submit" class="md-button md-button--primary" aria-label="提交凭证">
+      <button type="submit" class="md-button md-button--primary" id="curriculum-table-actions-refresh" aria-label="刷新课表">
         <span class="md-button__content">刷新课表</span>
       </button>
-      <button type="submit" class="md-button md-button--primary" aria-label="提交凭证">
+      <button type="submit" class="md-button md-button--primary" id="curriculum-table-actions-reset" aria-label="重置本页">
         <span class="md-button__content">重置本页</span>
       </button>
     </div>
