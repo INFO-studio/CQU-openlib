@@ -96,11 +96,13 @@ extra_javascript:
 - javascripts/bookmark.js
 - javascripts/katex.js
 - javascripts/upload.js
+- javascripts/curriculum.js
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
 
 extra_css:
 - css/CQUlogo.css
+- css/curriculum.css
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 
 nav:
