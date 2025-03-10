@@ -72,6 +72,7 @@ function curriculumRefreshEvents() {
 
 function curriculumResetStorage() {
   localStorage.removeItem("userCredentials");
+  localStorage.removeItem("curriculumEvents");
   curriculum();
 }
 
