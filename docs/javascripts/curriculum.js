@@ -1,24 +1,28 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  await curriculum();
+  curriculum();
 });
 
 async function curriculum() {
-  if (!localStorage.getItem("userCredentials")) {
-    document.getElementById("curriculum-form-div").style.display = "unset";
-    document.getElementById("curriculum-table-div").style.display = "none";
-    saveData();
-    return;
+  try {
+    if (!localStorage.getItem("userCredentials")) {
+      document.getElementById("curriculum-form-div").style.display = "unset";
+      document.getElementById("curriculum-table-div").style.display = "none";
+      saveData();
+      return;
+    }
+    const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+    formFetchButton.innerText = "正在获取";
+    await curriculumSaveEvents();
+    formFetchButton.innerText = "获取";
+    renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
+    document.getElementById("curriculum-form-div").style.display = "none";
+    document.getElementById("curriculum-table-div").style.display = "unset";
+    document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
+    document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
+  } catch (error) {
+    alert$.next("课程表初始化失败:" + String(error));
+    curriculumResetStorage();
   }
-  const formFetchButton = document.getElementById("curriculum-form-action-fetch");
-  formFetchButton.innerText = "正在获取";
-  formFetchButton.disabled = true;
-  await curriculumSaveEvents();
-  formFetchButton.innerText = "获取";
-  renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
-  document.getElementById("curriculum-form-div").style.display = "none";
-  document.getElementById("curriculum-table-div").style.display = "unset";
-  document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
-  document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
 }
 
 function getNextEvent() {
@@ -40,7 +44,7 @@ function saveData() {
 
 async function curriculumSaveEvents(force = false) {
   const events = JSON.parse(localStorage.getItem("curriculumEvents"));
-  if (!events || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
+  if (!events?.timeUpdated || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
     const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
     const curriculumEvents = await curriculumGetEventsFromApi(userCredentials)
     localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
@@ -64,8 +68,8 @@ async function curriculumGetEventsFromApi(userCredentials) {
     const response = await fetch(apiUrl, requestOptions);
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`API 请求失败：${response.status} - ${errorData.message || '未知错误'}`);
       curriculumResetStorage();
+      throw new Error(`API 请求失败：${response.status} - ${errorData.message || '未知错误'}`);
     }
     const responseData = await response.json();
     return responseData.data.icsContent;
@@ -76,8 +80,11 @@ async function curriculumGetEventsFromApi(userCredentials) {
   }
 }
 
-function curriculumRefreshEvents() {
-  curriculumSaveEvents(force = true);
+async function curriculumRefreshEvents() {
+  const tableRefreshButton = document.getElementById("curriculum-form-action-fetch");
+  tableRefreshButton.innerText = "正在刷新";
+  await curriculumSaveEvents(force = true);
+  tableRefreshButton.innerText = "刷新课表";
 }
 
 function curriculumResetStorage() {
