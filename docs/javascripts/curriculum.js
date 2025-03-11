@@ -21,6 +21,10 @@ async function curriculum() {
     document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
   } catch (error) {
     alert$.next("课程表初始化失败:" + String(error));
+    const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+    formFetchButton.innerText = "获取";
+    const tableRefreshButton = document.getElementById("curriculum-form-action-fetch");
+    tableRefreshButton.innerText = "刷新课表";
     curriculumResetStorage();
   }
 }
@@ -81,7 +85,7 @@ async function curriculumGetEventsFromApi(userCredentials) {
 }
 
 async function curriculumRefreshEvents() {
-  const tableRefreshButton = document.getElementById("curriculum-form-action-fetch");
+  const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
   tableRefreshButton.innerText = "正在刷新";
   await curriculumSaveEvents(force = true);
   tableRefreshButton.innerText = "刷新课表";
