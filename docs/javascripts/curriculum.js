@@ -13,6 +13,7 @@ async function curriculum() {
   formFetchButton.innerText = "正在获取";
   formFetchButton.disabled = true;
   await curriculumSaveEvents();
+  formFetchButton.innerText = "获取";
   renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
   document.getElementById("curriculum-form-div").style.display = "none";
   document.getElementById("curriculum-table-div").style.display = "unset";
