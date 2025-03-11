@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
-  curriculum();
+document.addEventListener('DOMContentLoaded', async () => {
+  await curriculum();
 });
 
-function curriculum() {
+async function curriculum() {
   if (!localStorage.getItem("userCredentials")) {
     document.getElementById("curriculum-form-div").style.display = "unset";
     document.getElementById("curriculum-table-div").style.display = "none";
@@ -13,7 +13,7 @@ function curriculum() {
   document.getElementById("curriculum-table-div").style.display = "unset";
   document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
   document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
-  curriculumSaveEvents();
+  await curriculumSaveEvents();
   renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
 }
 
@@ -30,11 +30,11 @@ function saveData() {
   });
 }
 
-function curriculumSaveEvents(force = false) {
+async function curriculumSaveEvents(force = false) {
   const events = JSON.parse(localStorage.getItem("curriculumEvents"));
   if (!events || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
     const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
-    const curriculumEvents = curriculumGetEventsFromApi(userCredentials)
+    const curriculumEvents = await curriculumGetEventsFromApi(userCredentials)
     localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
   }
 }
