@@ -88,6 +88,7 @@ async function curriculumRefreshEvents() {
   const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
   tableRefreshButton.innerText = "正在刷新";
   await curriculumSaveEvents(force = true);
+  alert$.next("课表刷新成功");
   tableRefreshButton.innerText = "刷新课表";
 }
 
