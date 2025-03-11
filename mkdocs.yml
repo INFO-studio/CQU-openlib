@@ -1040,6 +1040,8 @@ nav:
     - 综合社会实践: course/综合社会实践.md
     - 综合项目课: course/综合项目课.md
     - 最优控制: course/最优控制.md
+- 课表:
+  - curriculum.md
 - 学业: 
   - academic/index.md
   - 入学必看: 

@@ -9,12 +9,15 @@ async function curriculum() {
     saveData();
     return;
   }
+  const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+  formFetchButton.innerText = "正在获取";
+  formFetchButton.disabled = true;
+  await curriculumSaveEvents();
+  renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
   document.getElementById("curriculum-form-div").style.display = "none";
   document.getElementById("curriculum-table-div").style.display = "unset";
   document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
   document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
-  await curriculumSaveEvents();
-  renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
 }
 
 function saveData() {
@@ -56,12 +59,14 @@ async function curriculumGetEventsFromApi(userCredentials) {
     const response = await fetch(apiUrl, requestOptions);
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`API 请求失败: ${response.status} - ${errorData.message || '未知错误'}`);
+      throw new Error(`API 请求失败：${response.status} - ${errorData.message || '未知错误'}`);
+      curriculumResetStorage();
     }
     const responseData = await response.json();
     return responseData.data.icsContent;
   } catch (error) {
     console.error("获取课程表失败:", error);
+    curriculumResetStorage();
     throw error;
   }
 }

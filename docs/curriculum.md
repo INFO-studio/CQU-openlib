@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 <div id="curriculum-container">
   <div id="curriculum-form-div" style="display: none;">
     <form id="curriculum-form">
@@ -18,7 +24,7 @@
       </div>
       <div class="curriculum-form-button">
         <button type="submit" class="md-button md-button--primary" aria-label="获取">
-          <span class="md-button__content">获取</span>
+          <span class="md-button__content" id="curriculum-form-action-fetch">获取</span>
         </button>
       </div>
     </form>
