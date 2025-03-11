@@ -4,6 +4,8 @@ hide:
   - toc
 ---
 
+# 课表
+
 <div id="curriculum-container">
   <div id="curriculum-form-div" style="display: none;">
     <form id="curriculum-form">

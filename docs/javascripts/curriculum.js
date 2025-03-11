@@ -21,6 +21,10 @@ async function curriculum() {
   document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
 }
 
+function getNextEvent() {
+  // TODO
+}
+
 function saveData() {
   const form = document.getElementById("curriculum-form");
   form.addEventListener('submit', async (event) => {
