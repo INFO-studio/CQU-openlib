@@ -66,7 +66,8 @@ async function curriculumGetEventsFromApi(userCredentials) {
       },
       body: JSON.stringify({
         username: userCredentials.username,
-        password: userCredentials.password
+        password: userCredentials.password,
+        returnStructured: false
       })
     };
     const response = await fetch(apiUrl, requestOptions);
