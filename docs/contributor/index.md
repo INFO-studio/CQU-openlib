@@ -60,3 +60,5 @@
 - zesuy
 - 不会捏蓝
 - Redflag
+- 常锦宏
+- raindusk-雨汐
