@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  if(window.location.pathname === "/curriculum") curriculum();
+  if (window.location.pathname === "/curriculum") curriculum();
 });
 
 async function curriculum() {
@@ -67,7 +67,7 @@ async function curriculumGetEventsFromApi(userCredentials) {
       body: JSON.stringify({
         username: userCredentials.username,
         password: userCredentials.password,
-        returnStructured: false
+        returnStructured: true
       })
     };
     const response = await fetch(apiUrl, requestOptions);
@@ -99,37 +99,42 @@ function curriculumResetStorage() {
   curriculum();
 }
 
-function timeList() {
-  const timeListLength = 12;
-  const startTimeList = [
-    { hour: 8, minute: 30 },
-    { hour: 9, minute: 25 },
-    { hour: 10, minute: 30 },
-    { hour: 11, minute: 25 },
-    { hour: 13, minute: 30 },
-    { hour: 14, minute: 25 },
-    { hour: 15, minute: 20 },
-    { hour: 16, minute: 25 },
-    { hour: 17, minute: 20 },
-    { hour: 19, minute: 0 },
-    { hour: 19, minute: 55 },
-    { hour: 20, minute: 50 },
-  ];
-  const endTimeList = [
-    { hour: 9, minute: 15 },
-    { hour: 10, minute: 10 },
-    { hour: 11, minute: 15 },
-    { hour: 12, minute: 10 },
-    { hour: 14, minute: 15 },
-    { hour: 15, minute: 10 },
-    { hour: 16, minute: 5 },
-    { hour: 17, minute: 10 },
-    { hour: 18, minute: 5 },
-    { hour: 19, minute: 45 },
-    { hour: 20, minute: 40 },
-    { hour: 21, minute: 35 },
-  ];
-  return { timeListLength, startTimeList, endTimeList };
+const LectureTimeList = [
+  { startHour: 8, startMinute: 30, endHour: 9, endMinute: 15 },
+  { startHour: 9, startMinute: 25, endHour: 10, endMinute: 10 },
+  { startHour: 10, startMinute: 30, endHour: 11, endMinute: 15 },
+  { startHour: 11, startMinute: 25, endHour: 12, endMinute: 10 },
+  { startHour: 13, startMinute: 20, endHour: 14, endMinute: 15 },
+  { startHour: 14, startMinute: 25, endHour: 15, endMinute: 10 },
+  { startHour: 15, startMinute: 20, endHour: 16, endMinute: 5 },
+  { startHour: 16, startMinute: 25, endHour: 17, endMinute: 10 },
+  { startHour: 17, startMinute: 20, endHour: 18, endMinute: 5 },
+  { startHour: 19, startMinute: 0, endHour: 19, endMinute: 45 },
+  { startHour: 19, startMinute: 55, endHour: 20, endMinute: 40 },
+  { startHour: 20, startMinute: 50, endHour: 21, endMinute: 35 },
+]
+
+function resolveLectures(weeks) {
+  let lectures = [];
+  for(const week in weeks) {
+    const weekNumber = week.weekNumber;
+    const entries = week.entries
+    for(const lecture in entries) {
+      lectures.add({
+        name: lecture.name,
+        startTime: Date(lecture.startTime),
+        endTime: Date(lecture.endTime),
+        startIndex: lecture.startSession,
+        endIndex: lecture.endSession,
+        lecturer: lecture.lecturer,
+        position: lecture.position ?? lecture.room,
+        room : lecture.position ? lecture.room + lecture.position : lecture.room,
+        weekNumber: weekNumber,
+        dayOfWeek: dayOfWeek
+      })
+    }
+  }
+  return lectures;
 }
 
 function resolveIcs(ics) {

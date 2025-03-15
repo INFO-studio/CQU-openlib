@@ -6,8 +6,6 @@ hide:
 
 # 课表
 
-## 暂时正在测试新版本，敬请期待
-
 <div id="curriculum-container">
   <div id="curriculum-form-div" style="display: none;">
     <form id="curriculum-form">
