@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  if(window.location.pathname === "/curriculum") curriculum();
+  if(window.location.pathname === "/curriculum/") curriculum();
 });
 
 async function curriculum() {
