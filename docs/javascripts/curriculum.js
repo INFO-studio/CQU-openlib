@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  if(window.location.pathname === "/curriculum/") curriculum();
+  if (window.location.pathname === "/curriculum/") curriculum();
 });
 
 async function curriculum() {
@@ -49,6 +49,10 @@ function saveData() {
 async function curriculumSaveEvents(force = false) {
   const events = JSON.parse(localStorage.getItem("curriculumEvents"));
   if (!events?.timeUpdated || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
+    if (!force) {
+      document.getElementById("curriculum-form-div").style.display = "none";
+      document.getElementById("curriculum-table-div").style.display = "unset";
+    }
     const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
     const curriculumEvents = await curriculumGetEventsFromApi(userCredentials)
     localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
