@@ -71,6 +71,7 @@ markdown_extensions:
 - admonition
 - attr_list
 - def_list
+- footnotes
 - md_in_html
 - pymdownx.arithmatex:
     generic: true
@@ -96,11 +97,13 @@ extra_javascript:
 - javascripts/bookmark.js
 - javascripts/katex.js
 - javascripts/upload.js
+- javascripts/curriculum.js
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
 
 extra_css:
 - css/CQUlogo.css
+- css/curriculum.css
 - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 
 nav:
@@ -817,6 +820,7 @@ nav:
     - 数字信号处理器及应用（研讨课）: course/数字信号处理器及应用（研讨课）.md
     - 数值分析: course/数值分析.md
     - 数值计算与最优化: course/数值计算与最优化.md
+    - 水文学与水文地质学: course/水文学与水文地质学.md
     - 伺服控制系统: course/伺服控制系统.md
     - 塑性力学: course/塑性力学.md
     - 算法设计与分析: course/算法设计与分析.md
@@ -1038,6 +1042,7 @@ nav:
     - 综合社会实践: course/综合社会实践.md
     - 综合项目课: course/综合项目课.md
     - 最优控制: course/最优控制.md
+- 课表: curriculum.md
 - 学业: 
   - academic/index.md
   - 入学必看: 
@@ -1259,7 +1264,7 @@ nav:
   - 校园集市: life/校园集市.md
   - 校车时刻表: life/校车时刻表.md
   - 食堂菜单:
-    - 虎溪校区一食堂: life/食堂菜单/虎溪校区一食堂.md
+    - 科学城校区一食堂: life/食堂菜单/科学城校区一食堂.md
   - 学生团体:
     - life/学生团体/index.md
     - 铳带: life/学生团体/铳带.md
@@ -1371,6 +1376,10 @@ nav:
         - 2025-02-28: sundry/更新日志/2025/2025-02/2025-02-28.md
       - 2025-03:
         - 2025-03-02: sundry/更新日志/2025/2025-03/2025-03-02.md
+        - 2025-03-11: sundry/更新日志/2025/2025-03/2025-03-11.md
+        - 2025-03-15: sundry/更新日志/2025/2025-03/2025-03-15.md
+        - 2025-03-17: sundry/更新日志/2025/2025-03/2025-03-17.md
+        - 2025-03-18: sundry/更新日志/2025/2025-03/2025-03-18.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
