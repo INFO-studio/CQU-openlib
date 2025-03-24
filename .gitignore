@@ -9,3 +9,6 @@ path/
 
 #vscode
 .history
+
+#Jetbrains IDEs
+.idea/
