@@ -314,7 +314,7 @@ def generate_markdown_files(data, output_folder):
     course_done_set = get_course_done_set(MKDOCS_YML_PATH, "courseRead")
     
     for college in data:
-        yml_training_plan_lines.append(f"    - {college}:")
+        yml_training_plan_lines.append(f"    - {college}:\n      - academic/专业培养方案/{college}/index.md")
         college_folder = os.path.join(base_folder, college)
         os.makedirs(college_folder, exist_ok=True)
         # 生成 index.md 文件内容
