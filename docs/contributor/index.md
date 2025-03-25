@@ -27,6 +27,7 @@
 - [NitroFire](NitroFire.md)
 - [skirt_wind](skirt_wind.md)
 - [Funoke](Funoke.md)
+- [Tano](Tano.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -62,4 +63,3 @@
 - Redflag
 - 常锦宏
 - raindusk-雨汐
-- [Tano](Tano.md)
