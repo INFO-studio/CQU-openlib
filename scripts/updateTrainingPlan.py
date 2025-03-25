@@ -10,7 +10,7 @@ def constants() -> list:
     # 输入文件夹（存放所有 xlsx 文件）
     INPUT_FOLDER = os.path.join("scripts", "input")
     # 输出文件夹（生成 md 文件及中间 JSON 文件）
-    OUTPUT_FOLDER = os.path.join("docs", "academic")
+    OUTPUT_FOLDER = os.path.join("docs", "academic", "专业培养方案")
     # json 配置文件输出文件夹
     JSON_OUTPUT_PATH = os.path.join("scripts", "trainingPlan.json")
     # mkdocs 配置文件
@@ -307,7 +307,7 @@ def generate_markdown_files(data, output_folder):
       - index.md 按模板生成专业列表
       - 每个专业的 md 文件按照“年级 → 学期 → 课程性质（必修在前） → 课程类别”的层次生成课程条目
     """
-    base_folder = os.path.join(output_folder, "专业培养方案")
+    base_folder = os.path.join(output_folder)
     os.makedirs(base_folder, exist_ok=True)
     yml_training_plan_lines = []
     yml_course_lines = []
