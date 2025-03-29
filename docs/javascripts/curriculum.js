@@ -9,16 +9,17 @@ async function curriculum() {
       document.getElementById("curriculum-table-div").style.display = "none";
       saveData();
       return;
+    } else {
+      document.getElementById("curriculum-form-div").style.display = "none";
+      document.getElementById("curriculum-table-div").style.display = "unset";
+      const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+      formFetchButton.innerText = "正在获取";
+      await curriculumSaveEvents();
+      formFetchButton.innerText = "获取";
+      renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
+      document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
+      document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
     }
-    const formFetchButton = document.getElementById("curriculum-form-action-fetch");
-    formFetchButton.innerText = "正在获取";
-    await curriculumSaveEvents();
-    formFetchButton.innerText = "获取";
-    renderCurriculum(resolveIcs(JSON.parse(localStorage.getItem("curriculumEvents")).curriculumEvents));
-    document.getElementById("curriculum-form-div").style.display = "none";
-    document.getElementById("curriculum-table-div").style.display = "unset";
-    document.getElementById("curriculum-table-actions-refresh").addEventListener('click', curriculumRefreshEvents);
-    document.getElementById("curriculum-table-actions-reset").addEventListener('click', curriculumResetStorage);
   } catch (error) {
     alert$.next("课程表初始化失败:" + String(error));
     const formFetchButton = document.getElementById("curriculum-form-action-fetch");
