@@ -141,12 +141,10 @@ def simplify_course_name(course_name):
     """
     简化课程名称
     """
-    if "英语" in course_name:
-        return "英语"
-    if "体育" in course_name:
-        return "体育"
-    if "文明经典" in course_name:
-        return "文明经典系列"
+    if "英语" in course_name: return "英语"
+    if "体育" in course_name: return "体育"
+    if "文明经典" in course_name: return "文明经典系列"
+    if "Fourier分析" in course_name or "fourier分析" in course_name: return "Fourier分析"
     
     simplify_course_name = course_name
     simplify_course_name = re.sub(r'[\/]', '、', simplify_course_name)
@@ -410,7 +408,7 @@ def get_course_done_set(file_path, pattern):
         for line in lines:
             if f"updateTrainingPlan.py _{pattern}_ start" in line:
                 else_content = False
-            elif "updateTrainingPlan.py _{pattern}_ end" in line:
+            elif f"updateTrainingPlan.py _{pattern}_ end" in line:
                 else_content = True
             elif not else_content:
                 match = re.search(r'/([^/]+)\.md', line)
