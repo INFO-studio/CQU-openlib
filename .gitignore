@@ -7,6 +7,9 @@ site/
 
 path/
 
+scripts/input/
+scripts/trainingPlan.json
+
 #vscode
 .history
 

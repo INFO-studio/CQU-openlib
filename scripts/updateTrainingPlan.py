@@ -112,14 +112,20 @@ def parse_semester_field(semester_field):
 
 def is_cjk(char):
     cp = ord(char)
-    # CJK统一表意文字
-    if 0x4E00 <= cp <= 0x9FFF:
+    # CJK统一汉字（基本+扩展A）
+    if 0x3400 <= cp <= 0x4DBF or 0x4E00 <= cp <= 0x9FFF:
         return True
-    # CJK基本平假名、片假名
+    # 日文假名（平假名+片假名+注音假名）
     if 0x3040 <= cp <= 0x30FF:
         return True
-    # 韩文音节
+    # 韩文音节（Hangul Syllables）
     if 0xAC00 <= cp <= 0xD7AF:
+        return True
+    # 兼容汉字（如繁體/簡體映射）
+    if 0xF900 <= cp <= 0xFAFF:
+        return True
+    # 中文标点符号
+    if 0x3000 <= cp <= 0x303F:
         return True
     return False
 
@@ -144,7 +150,7 @@ def simplify_course_name(course_name):
     if "英语" in course_name: return "英语"
     if "体育" in course_name: return "体育"
     if "文明经典" in course_name: return "文明经典系列"
-    if "Fourier分析" in course_name or "fourier分析" in course_name: return "Fourier分析"
+    if ("Fourier分析" in course_name) or ("fourier分析" in course_name): return "Fourier分析"
     
     simplify_course_name = course_name
     simplify_course_name = re.sub(r'[\/]', '、', simplify_course_name)
@@ -265,7 +271,7 @@ def adjust_policy_courses(data):
             for year in data[college][major]:
                 # 判定该年级是否为 5 年制
                 is_5_year = any(
-                    sem in ["大五上", "大五下", "大五下小学期"]
+                    sem in ["小学期四", "大五上", "大五下"]
                     for sem in data[college][major][year].keys()
                 )
                 for semester in data[college][major][year]:
@@ -365,7 +371,7 @@ def generate_markdown_files(data, output_folder):
                                         major_md_lines.append(f'            * {category}')
                                         for course in courses:
                                             major_md_lines.append(
-                                                f'                * [{course["course_name"]}](../../../../course/{course["linked_name"]}.md) - :material-book:`{course["course_code"]}` - :material-arrow-up-circle:`{course["total_credits"]}`  '
+                                                f'                * [{course["course_name"]}](../../../course/{course["linked_name"]}.md) - :material-book:`{course["course_code"]}` - :material-arrow-up-circle:`{course["total_credits"]}`  '
                                             )
                                             if course["linked_name"] not in course_done_set:
                                                 yml_course_lines.append(f"    - {course["simplified_name"]}: course/{course["linked_name"]}.md")
