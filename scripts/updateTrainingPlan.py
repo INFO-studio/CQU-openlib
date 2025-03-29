@@ -365,7 +365,7 @@ def generate_markdown_files(data, output_folder):
                                         major_md_lines.append(f'            * {category}')
                                         for course in courses:
                                             major_md_lines.append(
-                                                f'                * [{course["course_name"]}](/course/{course["linked_name"]}.md) - :material-book:`{course["course_code"]}` - :material-arrow-up-circle:`{course["total_credits"]}`  '
+                                                f'                * [{course["course_name"]}](/docs/course/{course["linked_name"]}.md) - :material-book:`{course["course_code"]}` - :material-arrow-up-circle:`{course["total_credits"]}`  '
                                             )
                                             if course["linked_name"] not in course_done_set:
                                                 yml_course_lines.append(f"    - {course["simplified_name"]}: course/{course["linked_name"]}.md")
