@@ -219,13 +219,13 @@ nav:
     - 20世纪中国文艺思潮: course/20世纪中国文艺思潮.md
     - 3D打印技术及应用: course/3D打印技术及应用.md
   - A~:
-    - AIGC 视频短片创作: course/AIGC%20视频短片创作.md
+    - AIGC 视频短片创作: course/AIGC 视频短片创作.md
     - AIGC与计算机辅助产品设计: course/AIGC与计算机辅助产品设计.md
     - AI辅助短片剧本写作: course/AI辅助短片剧本写作.md
     - AI辅助与论文写作: course/AI辅助与论文写作.md
     - AI辅助与交互设计: course/AI辅助与交互设计.md
     - AI技术与绘画: course/AI技术与绘画.md
-    - An Introduction to Machine Learning: course/An%20Introduction%20to%20Machine%20Learning.md
+    - An Introduction to Machine Learning: course/An Introduction to Machine Learning.md
     - 安全工程AutoCAD辅助设计: course/安全工程AutoCAD辅助设计.md
     - 安全工程发展概论: course/安全工程发展概论.md
     - 安全工程综合实验: course/安全工程综合实验.md
@@ -640,7 +640,7 @@ nav:
     - 计算机信息管理基础: course/计算机信息管理基础.md
     - 计算机硬件技术基础: course/计算机硬件技术基础.md
     - 计算机硬件技术基础课程设计: course/计算机硬件技术基础课程设计.md
-    - 计算机硬件技术基础Ⅰ课程设计: course/计算机硬件技术基础%E2%85%A0课程设计.md
+    - 计算机硬件技术基础Ⅰ课程设计: course/计算机硬件技术基础Ⅰ课程设计.md
     - 计算机组成与结构: course/计算机组成与结构.md
     - 计算流体力学: course/计算流体力学.md
     - 计算摩擦学引论: course/计算摩擦学引论.md
@@ -652,7 +652,7 @@ nav:
     - 建环专业创新实验与实践: course/建环专业创新实验与实践.md
     - 建设法规: course/建设法规.md
     - 建设工程安全与风险智能化管理: course/建设工程安全与风险智能化管理.md
-    - 建设工程安全、健康与环境管理: course/建设工程安全%E3%80%81健康与环境管理.md
+    - 建设工程安全、健康与环境管理: course/建设工程安全、健康与环境管理.md
     - 建设工程成本规划与控制: course/建设工程成本规划与控制.md
     - 建设工程成本规划与控制课程设计: course/建设工程成本规划与控制课程设计.md
     - 建设工程合同管理: course/建设工程合同管理.md
@@ -784,7 +784,7 @@ nav:
     - 理解当代中国之中国当代话题: course/理解当代中国之中国当代话题.md
     - 理解当代中国之跨文化传播: course/理解当代中国之跨文化传播.md
     - 理解当代中国综合实践: course/理解当代中国综合实践.md
-    - 理解当代中国：中外名篇赏析: course/理解当代中国%EF%BC%9A中外名篇赏析.md
+    - 理解当代中国：中外名篇赏析: course/理解当代中国：中外名篇赏析.md
     - 理论力学: course/理论力学.md
     - 理论物理问题的计算机模拟: course/理论物理问题的计算机模拟.md
     - 理想国: course/理想国.md
@@ -1101,7 +1101,7 @@ nav:
     - 微型计算机原理及接口技术: course/微型计算机原理及接口技术.md
     - 微型计算机原理及接口技术课程设计: course/微型计算机原理及接口技术课程设计.md
     - 文创设计: course/文创设计.md
-    - 文创与策展：公共文化场所营造: course/文创与策展%EF%BC%9A公共文化场所营造.md
+    - 文创与策展：公共文化场所营造: course/文创与策展：公共文化场所营造.md
     - 文化产业法: course/文化产业法.md
     - 文化与创意产品设计: course/文化与创意产品设计.md
     - 文化与文明: course/文化与文明.md
@@ -1115,9 +1115,9 @@ nav:
     - 文学翻译: course/文学翻译.md
     - 文学符号学导论: course/文学符号学导论.md
     - 文学理论: course/文学理论.md
-    - 文学理论与研究专题：文学符号学导论: course/文学理论与研究专题%EF%BC%9A文学符号学导论.md
-    - 文学理论与研究专题：文学中的科学与伦理: course/文学理论与研究专题%EF%BC%9A文学中的科学与伦理.md
-    - 文学理论与研究专题：族裔文学: course/文学理论与研究专题%EF%BC%9A族裔文学.md
+    - 文学理论与研究专题：文学符号学导论: course/文学理论与研究专题：文学符号学导论.md
+    - 文学理论与研究专题：文学中的科学与伦理: course/文学理论与研究专题：文学中的科学与伦理.md
+    - 文学理论与研究专题：族裔文学: course/文学理论与研究专题：族裔文学.md
     - 文学批评理论与实践: course/文学批评理论与实践.md
     - 文学批评与实践: course/文学批评与实践.md
     - 文学中的科学与伦理: course/文学中的科学与伦理.md
@@ -1330,20 +1330,22 @@ nav:
     # updateTrainingPlan.py _courseRead_ end
   - 未分类:
     # updateTrainingPlan.py _courseWrite_ start
-    - Big Questions: course/Big%20Questions.md
-    - Big Questions实践: course/Big%20Questions实践.md
-    - BioMed +X: course/BioMed%20%2BX.md
-    - C++程序设计技术: course/C%2B%2B程序设计技术.md
+    - AIGC 视频短片创作: course/AIGC 视频短片创作.md
+    - An Introduction to Machine Learning: course/An Introduction to Machine Learning.md
+    - Big Questions: course/Big Questions.md
+    - Big Questions实践: course/Big Questions实践.md
+    - BioMed +X: course/BioMed +X.md
+    - C++程序设计技术: course/C++程序设计技术.md
     - CG模型设计: course/CG模型设计.md
     - CI设计: course/CI设计.md
-    - China in Transition: course/China%20in%20Transition.md
+    - China in Transition: course/China in Transition.md
     - Co: course/Co.md
     - C程序设计技术: course/C程序设计技术.md
     - EDA基础及生物医学应用: course/EDA基础及生物医学应用.md
     - EDA设计与仿真实践: course/EDA设计与仿真实践.md
     - ESG管理概述: course/ESG管理概述.md
-    - English Literature: course/English%20Literature.md
-    - English Literature实践: course/English%20Literature实践.md
+    - English Literature: course/English Literature.md
+    - English Literature实践: course/English Literature实践.md
     - FIDIC合同条件: course/FIDIC合同条件.md
     - Fourier分析: course/Fourier分析.md
     - GIS实习: course/GIS实习.md
@@ -1353,40 +1355,40 @@ nav:
     - GNSS定位实习: course/GNSS定位实习.md
     - HSK考试技能: course/HSK考试技能.md
     - ISIE实习: course/ISIE实习.md
-    - Independent  Study独立研究: course/Independent%20%20Study独立研究.md
-    - Java EE程序设计: course/Java%20EE程序设计.md
+    - Independent  Study独立研究: course/Independent  Study独立研究.md
+    - Java EE程序设计: course/Java EE程序设计.md
     - Java程序设计: course/Java程序设计.md
     - Jessup国际模拟法庭技能培训: course/Jessup国际模拟法庭技能培训.md
     - Jessup国际模拟法庭知识培训: course/Jessup国际模拟法庭知识培训.md
     - MEMS射频器件及应用: course/MEMS射频器件及应用.md
-    - Modern Society: course/Modern%20Society.md
-    - Numerical Methods For Engineers: course/Numerical%20Methods%20For%20Engineers.md
-    - OpenBIM 协同创新与实践: course/OpenBIM%20协同创新与实践.md
+    - Modern Society: course/Modern Society.md
+    - Numerical Methods For Engineers: course/Numerical Methods For Engineers.md
+    - OpenBIM 协同创新与实践: course/OpenBIM 协同创新与实践.md
     - Python图形化编程实践: course/Python图形化编程实践.md
     - Python数据分析: course/Python数据分析.md
     - Python程序设计技术: course/Python程序设计技术.md
     - Python编程实践: course/Python编程实践.md
-    - RISC CPU设计: course/RISC%20CPU设计.md
+    - RISC CPU设计: course/RISC CPU设计.md
     - RS实习: course/RS实习.md
     - SECS编程: course/SECS编程.md
     - TRIZ创新思维方法与实践: course/TRIZ创新思维方法与实践.md
-    - World History: course/World%20History.md
+    - World History: course/World History.md
     - X射线衍射与电子显微学: course/X射线衍射与电子显微学.md
     - web安全技术: course/web安全技术.md
-    - “一带一路”战略与国际关系: course/%E2%80%9C一带一路%E2%80%9D战略与国际关系.md
-    - “互联网+”大学生创新创业大赛能力训练与提升: course/%E2%80%9C互联网%2B%E2%80%9D大学生创新创业大赛能力训练与提升.md
-    - “产学结合、服务社会”设计实践: course/%E2%80%9C产学结合、服务社会%E2%80%9D设计实践.md
-    - “泛设计”创新实践: course/%E2%80%9C泛设计%E2%80%9D创新实践.md
-    - 《储能原理与技术 》课程设计: course/《储能原理与技术%20》课程设计.md
+    - “一带一路”战略与国际关系: course/“一带一路”战略与国际关系.md
+    - “互联网+”大学生创新创业大赛能力训练与提升: course/“互联网+”大学生创新创业大赛能力训练与提升.md
+    - “产学结合、服务社会”设计实践: course/“产学结合、服务社会”设计实践.md
+    - “泛设计”创新实践: course/“泛设计”创新实践.md
+    - 《储能原理与技术 》课程设计: course/《储能原理与技术 》课程设计.md
     - 《制冷及低温原理》课程设计: course/《制冷及低温原理》课程设计.md
-    - 《多能互联互补能源产储用系统及理论 》课程设计: course/《多能互联互补能源产储用系统及理论%20》课程设计.md
+    - 《多能互联互补能源产储用系统及理论 》课程设计: course/《多能互联互补能源产储用系统及理论 》课程设计.md
     - 《太阳能利用原理与技术》课程设计: course/《太阳能利用原理与技术》课程设计.md
     - 《微生物能源转化技术》课程设计: course/《微生物能源转化技术》课程设计.md
     - 《智慧热力发电厂》课程设计: course/《智慧热力发电厂》课程设计.md
     - 《汽轮机原理》课程设计: course/《汽轮机原理》课程设计.md
-    - 《热能存储技术与应用 》课程设计: course/《热能存储技术与应用%20》课程设计.md
+    - 《热能存储技术与应用 》课程设计: course/《热能存储技术与应用 》课程设计.md
     - 《理解当代中国》综合实践: course/《理解当代中国》综合实践.md
-    - 《理解当代中国》综合实践：英汉互译: course/《理解当代中国》综合实践%EF%BC%9A英汉互译.md
+    - 《理解当代中国》综合实践：英汉互译: course/《理解当代中国》综合实践：英汉互译.md
     - 《理解当代中国》翻译实践: course/《理解当代中国》翻译实践.md
     - 《理解当代中国》阅读实践: course/《理解当代中国》阅读实践.md
     - 《理解当代中国》高级中文听说: course/《理解当代中国》高级中文听说.md
@@ -1502,8 +1504,8 @@ nav:
     - 中外城建史: course/中外城建史.md
     - 中外建筑史: course/中外建筑史.md
     - 中外文化比较: course/中外文化比较.md
-    - 中外文化比较：中西文化比较: course/中外文化比较%EF%BC%9A中西文化比较.md
-    - 中外文化比较：跨文化交际: course/中外文化比较%EF%BC%9A跨文化交际.md
+    - 中外文化比较：中西文化比较: course/中外文化比较：中西文化比较.md
+    - 中外文化比较：跨文化交际: course/中外文化比较：跨文化交际.md
     - 中外文明交流史: course/中外文明交流史.md
     - 中外服装史: course/中外服装史.md
     - 中外歌剧表演: course/中外歌剧表演.md
@@ -1759,7 +1761,7 @@ nav:
     - 公司金融: course/公司金融.md
     - 公益创业与社会投资: course/公益创业与社会投资.md
     - 公益慈善事业管理: course/公益慈善事业管理.md
-    - 公私伙伴关系：理论与实践: course/公私伙伴关系%EF%BC%9A理论与实践.md
+    - 公私伙伴关系：理论与实践: course/公私伙伴关系：理论与实践.md
     - 公私部门人力资源法律基础专题: course/公私部门人力资源法律基础专题.md
     - 公私部门人力资源管理比较研究: course/公私部门人力资源管理比较研究.md
     - 六西格玛管理: course/六西格玛管理.md
@@ -1822,7 +1824,7 @@ nav:
     - 剧作理论与实践: course/剧作理论与实践.md
     - 剧目表演与创作: course/剧目表演与创作.md
     - 剪辑基础: course/剪辑基础.md
-    - 剪辑：理论与实践: course/剪辑%EF%BC%9A理论与实践.md
+    - 剪辑：理论与实践: course/剪辑：理论与实践.md
     - 力学综合实验: course/力学综合实验.md
     - 功率器件与IC技术: course/功率器件与IC技术.md
     - 功能材料与器件: course/功能材料与器件.md
@@ -1866,8 +1868,8 @@ nav:
     - 化工过程设计基础: course/化工过程设计基础.md
     - 化工过程设计实践: course/化工过程设计实践.md
     - 区块链商业应用实践: course/区块链商业应用实践.md
-    - 区域国别研究专题：东亚区域问题研讨: course/区域国别研究专题%EF%BC%9A东亚区域问题研讨.md
-    - 区域国别研究专题：德语国家与欧盟研究: course/区域国别研究专题%EF%BC%9A德语国家与欧盟研究.md
+    - 区域国别研究专题：东亚区域问题研讨: course/区域国别研究专题：东亚区域问题研讨.md
+    - 区域国别研究专题：德语国家与欧盟研究: course/区域国别研究专题：德语国家与欧盟研究.md
     - 区域经济学: course/区域经济学.md
     - 区域规划: course/区域规划.md
     - 医学仪器原理及设计课程设计: course/医学仪器原理及设计课程设计.md
@@ -1935,8 +1937,8 @@ nav:
     - 古画临摹: course/古画临摹.md
     - 古诗词唱诵: course/古诗词唱诵.md
     - 可再生能源及其利用技术: course/可再生能源及其利用技术.md
-    - 可持续发展：教育养德: course/可持续发展%EF%BC%9A教育养德.md
-    - 可持续发展：构建人与自然命运共同体: course/可持续发展%EF%BC%9A构建人与自然命运共同体.md
+    - 可持续发展：教育养德: course/可持续发展：教育养德.md
+    - 可持续发展：构建人与自然命运共同体: course/可持续发展：构建人与自然命运共同体.md
     - 可持续建设管理: course/可持续建设管理.md
     - 可编程器件与硬件描述语言: course/可编程器件与硬件描述语言.md
     - 可编程控制器应用技术: course/可编程控制器应用技术.md
@@ -2140,7 +2142,7 @@ nav:
     - 城市非正规空间调查研究: course/城市非正规空间调查研究.md
     - 城镇防洪与雨水利用: course/城镇防洪与雨水利用.md
     - 培训理论与实践: course/培训理论与实践.md
-    - 基于Grasshopper中的c#应用编程：“数字建筑算法设计与逻辑生成”: course/基于Grasshopper中的c%23应用编程%EF%BC%9A%E2%80%9C数字建筑算法设计与逻辑生成%E2%80%9D.md
+    - 基于Grasshopper中的c#应用编程：“数字建筑算法设计与逻辑生成”: course/基于Grasshopper中的c#应用编程：“数字建筑算法设计与逻辑生成”.md
     - 基因工程原理与技术: course/基因工程原理与技术.md
     - 基因组和功能基因组学: course/基因组和功能基因组学.md
     - 基因芯片原理与技术: course/基因芯片原理与技术.md
@@ -2182,7 +2184,7 @@ nav:
     - 外国文学译介与传播: course/外国文学译介与传播.md
     - 外国新闻事业: course/外国新闻事业.md
     - 外国电影史: course/外国电影史.md
-    - 外国电影史—: course/外国电影史%E2%80%94.md
+    - 外国电影史—: course/外国电影史—.md
     - 外国美术史: course/外国美术史.md
     - 外国舞蹈史: course/外国舞蹈史.md
     - 外汇业务: course/外汇业务.md
@@ -2277,7 +2279,7 @@ nav:
     - 对称性与群论: course/对称性与群论.md
     - 导演基础: course/导演基础.md
     - 导演基础I-: course/导演基础I-.md
-    - 导演基础Ⅰ-: course/导演基础%E2%85%A0-.md
+    - 导演基础Ⅰ-: course/导演基础Ⅰ-.md
     - 射频集成电路设计基础: course/射频集成电路设计基础.md
     - 小合唱: course/小合唱.md
     - 小型建筑空间创意设计: course/小型建筑空间创意设计.md
@@ -2390,7 +2392,6 @@ nav:
     - 废弃矿井碳封存技术: course/废弃矿井碳封存技术.md
     - 康复医学与工程导论: course/康复医学与工程导论.md
     - 建筑美学: course/建筑美学.md
-    - 建设工程安全、健康与环境管理: course/建设工程安全、健康与环境管理.md
     - 开放空间设计原理与方法: course/开放空间设计原理与方法.md
     - 当代中国政党与政治: course/当代中国政党与政治.md
     - 当代仪表与自动化: course/当代仪表与自动化.md
@@ -2527,7 +2528,7 @@ nav:
     - 政治心理学: course/政治心理学.md
     - 政治教育: course/政治教育.md
     - 政治经济学: course/政治经济学.md
-    - 故事片摄影：理论与技巧: course/故事片摄影%EF%BC%9A理论与技巧.md
+    - 故事片摄影：理论与技巧: course/故事片摄影：理论与技巧.md
     - 教育学: course/教育学.md
     - 教育实习: course/教育实习.md
     - 教育经济学: course/教育经济学.md
@@ -2588,6 +2589,10 @@ nav:
     - 数智赋能翻译: course/数智赋能翻译.md
     - 数理综合: course/数理综合.md
     - 数论: course/数论.md
+    - 文创与策展：公共文化场所营造: course/文创与策展：公共文化场所营造.md
+    - 文学理论与研究专题：文学中的科学与伦理: course/文学理论与研究专题：文学中的科学与伦理.md
+    - 文学理论与研究专题：文学符号学导论: course/文学理论与研究专题：文学符号学导论.md
+    - 文学理论与研究专题：族裔文学: course/文学理论与研究专题：族裔文学.md
     - 新中国史: course/新中国史.md
     - 新产品定义与导入策划设计: course/新产品定义与导入策划设计.md
     - 新产品开发与商业创新: course/新产品开发与商业创新.md
@@ -3011,7 +3016,7 @@ nav:
     - 物流运作优化: course/物流运作优化.md
     - 物理前沿实验: course/物理前沿实验.md
     - 物理学史通俗演义: course/物理学史通俗演义.md
-    - 物理学术竞赛 实验实践: course/物理学术竞赛%20实验实践.md
+    - 物理学术竞赛 实验实践: course/物理学术竞赛 实验实践.md
     - 物理实验创新实践: course/物理实验创新实践.md
     - 物理实验方法与设计: course/物理实验方法与设计.md
     - 物理性污染控制工程: course/物理性污染控制工程.md
@@ -3110,6 +3115,7 @@ nav:
     - 现象学导论: course/现象学导论.md
     - 班马异同: course/班马异同.md
     - 球类竞赛组织与智能编排: course/球类竞赛组织与智能编排.md
+    - 理解当代中国：中外名篇赏析: course/理解当代中国：中外名篇赏析.md
     - 生产与运作管理: course/生产与运作管理.md
     - 生产实践: course/生产实践.md
     - 生化与分子生物学创新实践: course/生化与分子生物学创新实践.md
@@ -3233,7 +3239,7 @@ nav:
     - 电视模式研发: course/电视模式研发.md
     - 电视类型节目制作: course/电视类型节目制作.md
     - 电视节目制作: course/电视节目制作.md
-    - 电视节目策划：理论与实务: course/电视节目策划%EF%BC%9A理论与实务.md
+    - 电视节目策划：理论与实务: course/电视节目策划：理论与实务.md
     - 电解工程: course/电解工程.md
     - 电路与传感器实验: course/电路与传感器实验.md
     - 电路与电子技术基础: course/电路与电子技术基础.md
@@ -3370,7 +3376,7 @@ nav:
     - 素描人体写生: course/素描人体写生.md
     - 素描人物写生: course/素描人物写生.md
     - 纪录片创作: course/纪录片创作.md
-    - 纪录片摄影：理论与技巧: course/纪录片摄影%EF%BC%9A理论与技巧.md
+    - 纪录片摄影：理论与技巧: course/纪录片摄影：理论与技巧.md
     - 纪录片概论: course/纪录片概论.md
     - 纪录片理论与创作: course/纪录片理论与创作.md
     - 纯粹理性批判: course/纯粹理性批判.md
@@ -3530,7 +3536,7 @@ nav:
     - 英文文献阅读: course/英文文献阅读.md
     - 英汉翻译: course/英汉翻译.md
     - 英汉翻译实践: course/英汉翻译实践.md
-    - 英汉语言研究导论：英汉语言对比: course/英汉语言研究导论%EF%BC%9A英汉语言对比.md
+    - 英汉语言研究导论：英汉语言对比: course/英汉语言研究导论：英汉语言对比.md
     - 英美文学与电影: course/英美文学与电影.md
     - 药事管理: course/药事管理.md
     - 药事管理学: course/药事管理学.md
@@ -3607,6 +3613,7 @@ nav:
     - 视觉文化设计与传播: course/视觉文化设计与传播.md
     - 视觉测量原理及应用: course/视觉测量原理及应用.md
     - 解析几何: course/解析几何.md
+    - 计算机硬件技术基础Ⅰ课程设计: course/计算机硬件技术基础Ⅰ课程设计.md
     - 认识实习、仿真实习: course/认识实习、仿真实习.md
     - 论文写作: course/论文写作.md
     - 设施管理与低碳运行: course/设施管理与低碳运行.md

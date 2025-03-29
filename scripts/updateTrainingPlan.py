@@ -374,7 +374,7 @@ def generate_markdown_files(data, output_folder):
                                                 f'                * [{course["course_name"]}](../../../course/{course["linked_name"]}.md) - :material-book:`{course["course_code"]}` - :material-arrow-up-circle:`{course["total_credits"]}`  '
                                             )
                                             if course["linked_name"] not in course_done_set:
-                                                yml_course_lines.append(f"    - {course["simplified_name"]}: course/{course["linked_name"]}.md")
+                                                yml_course_lines.append(f"    - {course["simplified_name"]}: course/{course["simplified_name"]}.md")
                                                 course_done_set.add(course["linked_name"])
                                                 course_md_path = os.path.join(COURSES_FOLDER, f"{course['simplified_name']}.md")
                                                 with open(course_md_path, "w", encoding="utf-8") as f:
