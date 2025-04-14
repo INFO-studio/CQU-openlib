@@ -4234,8 +4234,11 @@ nav:
   - Tano: contributor/Tano.md
 - 杂项:
   - sundry/index.md
-  - 限时活动:
-    - sundry/限时活动/index.md
+  - 待办事项:
+    - sundry/待办事项/index.md
+    - 教材需求: sundry/待办事项/textbook.md
+    - 资源上传: sundry/待办事项/upload.md
+    - 杂项: sundry/待办事项/misc.md
   - 更新日志:
     - sundry/更新日志/index.md
     # updateLog.py start
@@ -4317,6 +4320,7 @@ nav:
         - 2025-03-24: sundry/更新日志/2025/2025-03/2025-03-24.md
       - 2025-04:
         - 2025-04-13: sundry/更新日志/2025/2025-04/2025-04-13.md
+        - 2025-04-14: sundry/更新日志/2025/2025-04/2025-04-14.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
