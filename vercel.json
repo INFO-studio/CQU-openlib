@@ -1,0 +1,26 @@
+{
+    "builds": [
+      {
+        "src": "mkdocs.yaml",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "site"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/api/$1"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/$1"
+      }
+    ],
+    "functions": {
+      "api/**/*.js": {
+        "runtime": "vercel-now@1.0.0"
+      }
+    }
+  }
