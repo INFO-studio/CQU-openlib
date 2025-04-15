@@ -27,10 +27,10 @@
 ## 资源
 #### Python安装包
 === "3.13.2"
-    * [Windows installer (64-bit)](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/iN2yU2hqvvud&type=down)
-    * [Windows installer (32-bit)](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/iZmiF2opqrte&type=down)
-    * [Windows installer (ARM64)](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/iycS82hqvtpg&type=down)
+    * [Windows installer (64-bit)](http://api.cqu-openlib.cn/file?key=iN2yU2hqvvud)
+    * [Windows installer (32-bit)](http://api.cqu-openlib.cn/file?key=iZmiF2opqrte)
+    * [Windows installer (ARM64)](http://api.cqu-openlib.cn/file?key=iycS82hqvtpg)
 === "3.12.9"
-    * [Windows installer (64-bit)](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/iLRvZ2opqhsd&type=down)
-    * [Windows installer (32-bit)](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/iWWWk2opqbti&type=down)
-    * [Windows installer (ARM64)](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/i77242opqm0f&type=down)
+    * [Windows installer (64-bit)](http://api.cqu-openlib.cn/file?key=iLRvZ2opqhsd)
+    * [Windows installer (32-bit)](http://api.cqu-openlib.cn/file?key=iWWWk2opqbti)
+    * [Windows installer (ARM64)](http://api.cqu-openlib.cn/file?key=i77242opqm0f)

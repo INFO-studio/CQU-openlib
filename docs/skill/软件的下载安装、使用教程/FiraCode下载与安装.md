@@ -5,9 +5,9 @@ FiraCode 是一款专门为广大程序员们提供的一种编程连字等宽�
 
 ## 1. 下载  
 === "简洁版"  
-    * [FiraCode-VF](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/isauK2fzkqih&type=down)  
+    * [FiraCode-VF](http://api.cqu-openlib.cn/file?key=isauK2fzkqih)  
 === "完整版" 
-    * [FiraCode v6.2](https://api.hanximeng.com/lanzou/?url=https://cqu-openlib.lanzout.com/i0sr52fzowwb&type=down)  
+    * [FiraCode v6.2](http://api.cqu-openlib.cn/file?key=i0sr52fzowwb)  
 
 ## 2. 安装  
 === "简洁版"  
