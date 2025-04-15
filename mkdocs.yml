@@ -1054,7 +1054,7 @@ nav:
     - 土木工程综合实验: course/土木工程综合实验.md
     - 拓扑学: course/拓扑学.md
   - W~:
-    - Web安全技术: course/Web安全技术.md
+    - web安全技术: course/web安全技术.md
     - Web开发技术: course/Web开发技术.md
     - Windows应用程序原理: course/Windows应用程序原理.md
     - 外国文学史: course/外国文学史.md
@@ -3931,6 +3931,7 @@ nav:
       - 智能采矿工程: academic/专业培养方案/资源与安全学院/智能采矿工程.md
       - 碳储科学与工程: academic/专业培养方案/资源与安全学院/碳储科学与工程.md
       - 采矿工程: academic/专业培养方案/资源与安全学院/采矿工程.md
+      - 采矿工程（国际）: academic/专业培养方案/资源与安全学院/采矿工程（国际）.md
     - 弘深学院:
       - academic/专业培养方案/弘深学院/index.md
       - 工程力学（弘深）: academic/专业培养方案/弘深学院/工程力学（弘深）.md
