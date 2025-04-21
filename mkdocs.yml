@@ -4108,6 +4108,7 @@ nav:
       - 数统教材: academic/专业总览/数统/数统教材.md
     - 商科: academic/专业总览/商科.md
     - 计算机自学:
+      - academic/专业总览/计算机自学/index.md
       - java从入门到入土: academic/专业总览/计算机自学/java从入门到入土.md
 - 社团:
   - club/index.md
@@ -4240,6 +4241,7 @@ nav:
     - sundry/待办事项/index.md
     - 教材需求: sundry/待办事项/textbook.md
     - 资源上传: sundry/待办事项/upload.md
+    - Github: sundry/待办事项/github.md
     - 杂项: sundry/待办事项/misc.md
   - 更新日志:
     - sundry/更新日志/index.md
@@ -4328,6 +4330,7 @@ nav:
         - 2025-04-18: sundry/更新日志/2025/2025-04/2025-04-18.md
         - 2025-04-19: sundry/更新日志/2025/2025-04/2025-04-19.md
         - 2025-04-20: sundry/更新日志/2025/2025-04/2025-04-20.md
+        - 2025-04-21: sundry/更新日志/2025/2025-04/2025-04-21.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
