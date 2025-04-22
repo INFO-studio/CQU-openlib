@@ -2,11 +2,9 @@
 hide:
   - navigation
   - toc
-extra_javascript:
-  - javascripts/curriculum.js
 ---
 
-# 课表
+# 课表（正在重构中）
 
 <div id="curriculum-container">
   <div id="curriculum-form-div" style="display: none;">

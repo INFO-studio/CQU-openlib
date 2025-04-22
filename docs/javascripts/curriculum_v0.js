@@ -20,8 +20,7 @@ async function curriculum() {
       // 确保从localStorage获取到数据后再渲染
       const eventsData = localStorage.getItem("curriculumEvents");
       if (eventsData) {
-        const parsedData = JSON.parse(eventsData);
-        renderCurriculum(parsedData.curriculumEvents);
+        renderCurriculum(resolveIcs(JSON.parse(eventsData).curriculumEvents));
       }
       
       // 确保只添加一次事件监听器
@@ -29,22 +28,33 @@ async function curriculum() {
       const resetButton = document.getElementById("curriculum-table-actions-reset");
       
       if (refreshButton) {
+        // 移除之前可能存在的事件监听器
         refreshButton.removeEventListener('click', curriculumRefreshEvents);
         refreshButton.addEventListener('click', curriculumRefreshEvents);
       }
       
       if (resetButton) {
+        // 移除之前可能存在的事件监听器
         resetButton.removeEventListener('click', curriculumResetStorage);
         resetButton.addEventListener('click', curriculumResetStorage);
       }
     }
   } catch (error) {
     console.error("课程表初始化失败:", error);
-    alert$.next("课程表初始化失败:" + String(error));
-    const formFetchButton = document.getElementById("curriculum-form-action-fetch");
-    if (formFetchButton) formFetchButton.innerText = "获取";
-    const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
-    if (tableRefreshButton) tableRefreshButton.innerText = "刷新课表";
+    try {
+      // 如果存在alert$对象
+      if (typeof alert$ !== 'undefined' && alert$ && alert$.next) {
+        alert$.next("课程表初始化失败:" + String(error));
+      } else {
+        alert("课程表初始化失败:" + String(error));
+      }
+      const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+      if (formFetchButton) formFetchButton.innerText = "获取";
+      const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
+      if (tableRefreshButton) tableRefreshButton.innerText = "刷新课表";
+    } catch (e) {
+      console.error("错误处理失败:", e);
+    }
     curriculumResetStorage();
   }
 }
@@ -70,6 +80,10 @@ async function curriculumSaveEvents(force = false) {
   try {
     const events = localStorage.getItem("curriculumEvents") ? JSON.parse(localStorage.getItem("curriculumEvents")) : null;
     if (!events?.timeUpdated || events.timeUpdated + 1000 * 60 * 60 * 24 < Date.now() || force) {
+      if (!force) {
+        document.getElementById("curriculum-form-div").style.display = "none";
+        document.getElementById("curriculum-table-div").style.display = "unset";
+      }
       const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
       const curriculumEvents = await curriculumGetEventsFromApi(userCredentials);
       localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
@@ -92,40 +106,17 @@ async function curriculumGetEventsFromApi(userCredentials) {
       body: JSON.stringify({
         username: userCredentials.username,
         password: userCredentials.password,
-        returnStructured: true  // 请求JSON格式的数据
+        returnStructured: false
       })
     };
-    
     const response = await fetch(apiUrl, requestOptions);
-    
     if (!response.ok) {
       const errorData = await response.json();
       curriculumResetStorage();
       throw new Error(`API 请求失败：${response.status} - ${errorData.message || '未知错误'}`);
     }
-    
     const responseData = await response.json();
-    
-    // 处理响应数据
-    if (!responseData.data) {
-      console.error("API返回数据格式不正确:", responseData);
-      throw new Error("API返回的数据格式不正确");
-    }
-    
-    // 检查是否有weeks属性（JSON格式）
-    if (responseData.data.weeks && Array.isArray(responseData.data.weeks)) {
-      console.log("获取到JSON格式的课表数据");
-      return resolveLectures(responseData.data.weeks);
-    } 
-    // 回退到icsContent（如果可能有的话）
-    else if (responseData.data.icsContent) {
-      console.warn("获取到ICS格式的课表数据，服务器没有返回JSON格式");
-      return [];
-    } 
-    else {
-      console.error("未能获取到有效的课表数据:", responseData.data);
-      return [];
-    }
+    return responseData.data.icsContent;
   } catch (error) {
     console.error("获取课程表失败:", error);
     curriculumResetStorage();
@@ -138,21 +129,48 @@ async function curriculumRefreshEvents() {
     const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
     if (tableRefreshButton) tableRefreshButton.innerText = "正在刷新";
     
+    // 强制刷新课表数据
     await curriculumSaveEvents(true);
     
+    // 获取最新数据并重新渲染
     const eventsData = localStorage.getItem("curriculumEvents");
     if (eventsData) {
-      const parsedData = JSON.parse(eventsData);
-      renderCurriculum(parsedData.curriculumEvents);
-      alert$.next("课表刷新成功");
+      try {
+        const parsedData = JSON.parse(eventsData);
+        renderCurriculum(resolveIcs(parsedData.curriculumEvents));
+        
+        // 成功提示
+        if (typeof alert$ !== 'undefined' && alert$ && alert$.next) {
+          alert$.next("课表刷新成功");
+        } else {
+          alert("课表刷新成功");
+        }
+      } catch (parseError) {
+        console.error("解析课表数据失败:", parseError);
+        if (typeof alert$ !== 'undefined' && alert$ && alert$.next) {
+          alert$.next("解析课表数据失败:" + String(parseError));
+        } else {
+          alert("解析课表数据失败:" + String(parseError));
+        }
+      }
     } else {
-      alert$.next("未能获取到课表数据，请重新登录");
+      // 如果没有获取到数据
+      if (typeof alert$ !== 'undefined' && alert$ && alert$.next) {
+        alert$.next("未能获取到课表数据，请重新登录");
+      } else {
+        alert("未能获取到课表数据，请重新登录");
+      }
       curriculumResetStorage();
     }
   } catch (error) {
     console.error("刷新课程表失败:", error);
-    alert$.next("刷新课表失败:" + String(error));
+    if (typeof alert$ !== 'undefined' && alert$ && alert$.next) {
+      alert$.next("刷新课表失败:" + String(error));
+    } else {
+      alert("刷新课表失败:" + String(error));
+    }
   } finally {
+    // 无论成功或失败，都恢复按钮文本
     const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
     if (tableRefreshButton) tableRefreshButton.innerText = "刷新课表";
   }
@@ -166,107 +184,144 @@ function curriculumResetStorage() {
 
 function timeList() {
   const timeListLength = 12;
-  const startTimeList = LectureTimeList.map(time => ({ hour: time.startHour, minute: time.startMinute }));
-  const endTimeList = LectureTimeList.map(time => ({ hour: time.endHour, minute: time.endMinute }));
+  const startTimeList = [
+    { hour: 8, minute: 30 },
+    { hour: 9, minute: 25 },
+    { hour: 10, minute: 30 },
+    { hour: 11, minute: 25 },
+    { hour: 13, minute: 30 },
+    { hour: 14, minute: 25 },
+    { hour: 15, minute: 20 },
+    { hour: 16, minute: 25 },
+    { hour: 17, minute: 20 },
+    { hour: 19, minute: 0 },
+    { hour: 19, minute: 55 },
+    { hour: 20, minute: 50 },
+  ];
+  const endTimeList = [
+    { hour: 9, minute: 15 },
+    { hour: 10, minute: 10 },
+    { hour: 11, minute: 15 },
+    { hour: 12, minute: 10 },
+    { hour: 14, minute: 15 },
+    { hour: 15, minute: 10 },
+    { hour: 16, minute: 5 },
+    { hour: 17, minute: 10 },
+    { hour: 18, minute: 5 },
+    { hour: 19, minute: 45 },
+    { hour: 20, minute: 40 },
+    { hour: 21, minute: 35 },
+  ];
   return { timeListLength, startTimeList, endTimeList };
 }
 
-const LectureTimeList = [
-  { startHour: 8, startMinute: 30, endHour: 9, endMinute: 15 },
-  { startHour: 9, startMinute: 25, endHour: 10, endMinute: 10 },
-  { startHour: 10, startMinute: 30, endHour: 11, endMinute: 15 },
-  { startHour: 11, startMinute: 25, endHour: 12, endMinute: 10 },
-  { startHour: 13, startMinute: 30, endHour: 14, endMinute: 15 },
-  { startHour: 14, startMinute: 25, endHour: 15, endMinute: 10 },
-  { startHour: 15, startMinute: 20, endHour: 16, endMinute: 5 },
-  { startHour: 16, startMinute: 25, endHour: 17, endMinute: 10 },
-  { startHour: 17, startMinute: 20, endHour: 18, endMinute: 5 },
-  { startHour: 19, startMinute: 0, endHour: 19, endMinute: 45 },
-  { startHour: 19, startMinute: 55, endHour: 20, endMinute: 40 },
-  { startHour: 20, startMinute: 50, endHour: 21, endMinute: 35 },
-];
-
-function resolveLectures(weeks) {
+function resolveIcs(ics) {
   try {
-    if (!weeks || !Array.isArray(weeks)) {
-      console.error("周数据无效", weeks);
+    if (!ics || typeof ics !== 'string') {
+      console.error("ICS数据无效", ics);
       return [];
     }
-    
+
+    const { startTimeList, endTimeList } = timeList();
+
+    function decodeUnicode(str) {
+      if (!str || typeof str !== 'string') return '';
+      return str.replace(/\\u([\dA-Fa-f]{4})/gi, (_, grp) => {
+        return String.fromCharCode(parseInt(grp, 16));
+      });
+    }
+
+    function parseUTC(dtStr) {
+      if (!dtStr || typeof dtStr !== 'string' || dtStr.length < 13) {
+        return new Date(); // 返回当前时间作为默认值
+      }
+      const year = parseInt(dtStr.slice(0, 4));
+      const month = parseInt(dtStr.slice(4, 6)) - 1;
+      const day = parseInt(dtStr.slice(6, 8));
+      const hour = parseInt(dtStr.slice(9, 11));
+      const minute = parseInt(dtStr.slice(11, 13));
+      return new Date(Date.UTC(year, month, day, hour, minute));
+    }
+
+    function parseDay(dtStr) {
+      const dateBJ = parseUTC(dtStr);
+      return { year: dateBJ.getFullYear(), month: dateBJ.getMonth() + 1, day: dateBJ.getDate() };
+    }
+
+    function parseTime(dtStr) {
+      const dateBJ = parseUTC(dtStr);
+      return { hour: dateBJ.getHours(), minute: dateBJ.getMinutes() };
+    }
+
+    function parseTeacher(teacherStr) {
+      if (!teacherStr || typeof teacherStr !== 'string') return '';
+      const teacher = decodeUnicode(teacherStr).match(/教师:\s*([^]+?)(?=-[A-Za-z]\d+|;|$)/);
+      return teacher ? teacher[1].trim() : '';
+    }
+
     const events = [];
-    
-    for (let i = 0; i < weeks.length; i++) {
-      const week = weeks[i];
-      if (!week || typeof week !== 'object') continue;
-      
-      const weekNumber = week.weekNumber || i + 1;
-      const entries = Array.isArray(week.entries) ? week.entries : [];
-      
-      for (let j = 0; j < entries.length; j++) {
-        try {
-          const lecture = entries[j];
-          
-          // 检查必要的属性是否存在
-          if (!lecture.name || !lecture.startTime || !lecture.endTime) continue;
-          
-          const startDate = new Date(lecture.startTime);
-          const endDate = new Date(lecture.endTime);
-          
-          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            console.warn("课程时间无效", lecture);
-            continue;
-          }
-          
-          const startIndex = typeof lecture.startSession === 'number' ? lecture.startSession : 0;
-          const endIndex = typeof lecture.endSession === 'number' ? lecture.endSession : 0;
-          
-          if (startIndex < 0 || endIndex < startIndex) {
-            console.warn("课程节次无效", lecture);
-            continue;
-          }
-          
-          const day = {
-            year: startDate.getFullYear(),
-            month: startDate.getMonth() + 1,
-            day: startDate.getDate()
-          };
-          
-          // 生成唯一ID
-          const uid = `lecture-${weekNumber}-${j}-${startDate.getTime()}`;
-          
-          events.push({
-            uid,
-            title: lecture.name,
-            day,
-            startTime: startIndex,
-            endTime: endIndex,
-            teacher: lecture.lecturer || '',
-            classroom: lecture.position ? `${lecture.room || ''}${lecture.position}` : (lecture.room || ''),
-            weekNumber,
-            dayOfWeek: typeof lecture.dayOfWeek === 'number' ? lecture.dayOfWeek : startDate.getDay()
-          });
-        } catch (lectureError) {
-          console.error("解析课程条目失败", lectureError);
+    const lines = ics.split('\r\n');
+    let currentEvent = [];
+    let inEvent = false;
+
+    for (const line of lines) {
+      if (line === 'BEGIN:VEVENT') {
+        inEvent = true;
+        currentEvent = [];
+      } else if (line === 'END:VEVENT') {
+        inEvent = false;
+        const eventObj = {};
+        for (const l of currentEvent) {
+          if (!l || !l.includes(':')) continue;
+          const [key, value] = l.split(/:(.*)/);
+          if (key) eventObj[key] = eventObj[key] ?? value;
         }
+        
+        try {
+          const title = decodeUnicode(eventObj.SUMMARY || '');
+          const day = parseDay(eventObj.DTSTART || '');
+          const startTime = parseTime(eventObj.DTSTART);
+          const endTime = parseTime(eventObj.DTEND);
+          const teacher = parseTeacher(eventObj.DESCRIPTION || '');
+          const classroom = decodeUnicode(eventObj.LOCATION || '');
+          const uid = eventObj.UID || '';
+
+          // 验证startTime和endTime是否有效
+          const startTimeIndex = startTimeList.findIndex(
+            item => item.hour === startTime.hour && item.minute === startTime.minute
+          );
+          const endTimeIndex = endTimeList.findIndex(
+            item => item.hour === endTime.hour && item.minute === endTime.minute
+          );
+
+          if (startTimeIndex !== -1 && endTimeIndex !== -1 && startTimeIndex <= endTimeIndex) {
+            events.push({
+              uid,
+              title,
+              day,
+              startTime: startTimeIndex,
+              endTime: endTimeIndex,
+              teacher,
+              classroom
+            });
+          } else {
+            console.warn("课程时间无效，忽略此条目", {startTime, endTime, title});
+          }
+        } catch (eventError) {
+          console.error("解析课程事件失败", eventError, eventObj);
+        }
+      } else if (inEvent) {
+        currentEvent.push(line);
       }
     }
-    
-    console.log("解析完成的课程数据:", events);
     return events;
   } catch (error) {
-    console.error("解析周课程数据失败", error);
+    console.error("解析ICS数据失败", error);
     return [];
   }
 }
 
 function renderCurriculum(events) {
-  if (!events || !Array.isArray(events) || events.length === 0) {
-    const tableDiv = document.querySelector('.curriculum-table-time');
-    if (tableDiv) {
-      tableDiv.innerHTML = "<div class='curriculum-empty-message'>暂无课程数据</div>";
-    }
-    return;
-  }
 
   function widthCatcher() {
     if (window.matchMedia('(min-width: 44em)').matches) {
@@ -328,40 +383,24 @@ function renderCurriculum(events) {
   const timeLabels = deriveTimeLabels();
   const rows = timeListLength, cols = dates.length;
   const grid = Array.from({ length: rows }, () => Array(cols).fill(null));
-  
-  // 过滤无效的事件
-  const validEvents = events.filter(event => 
-    event && 
-    event.day && 
-    event.startTime >= 0 && 
-    event.startTime < rows && 
-    event.endTime >= event.startTime && 
-    event.endTime < rows
-  );
-  
-  validEvents.forEach(event => {
-    try {
-      const eventDate = new Date(event.day.year, event.day.month - 1, event.day.day);
-      const colIndex = dates.findIndex(d =>
-        d.getFullYear() === eventDate.getFullYear() &&
-        d.getMonth() === eventDate.getMonth() &&
-        d.getDate() === eventDate.getDate()
-      );
-      if (colIndex === -1) return;
+  events.forEach(event => {
+    const eventDate = new Date(event.day.year, event.day.month - 1, event.day.day);
+    const colIndex = dates.findIndex(d =>
+      d.getFullYear() === eventDate.getFullYear() &&
+      d.getMonth() === eventDate.getMonth() &&
+      d.getDate() === eventDate.getDate()
+    );
+    if (colIndex === -1) return;
 
-      const start = event.startTime;
-      const end = event.endTime;
-      const rowSpan = end - start + 1;
+    const start = event.startTime;
+    const end = event.endTime;
+    const rowSpan = end - start + 1;
 
-      grid[start][colIndex] = { event, rowSpan, eventDate };
-      for (let r = start + 1; r <= end; r++) {
-        grid[r][colIndex] = 'occupied';
-      }
-    } catch (error) {
-      console.error("处理事件时出错", error, event);
+    grid[start][colIndex] = { event, rowSpan, eventDate };
+    for (let r = start + 1; r <= end; r++) {
+      grid[r][colIndex] = 'occupied';
     }
   });
-  
   const table = document.createElement('table');
   const headerRow = document.createElement('tr');
   const emptyTh = document.createElement('th');
@@ -398,23 +437,23 @@ function renderCurriculum(events) {
         td.classList.add('curriculum-table-cell-scheduled');
         const flexbox = document.createElement('div');
         flexbox.classList.add('curriculum-event-flexbox');
-        const eventTitle = document.createElement('strong');
+        eventTitle = document.createElement('strong');
         eventTitle.classList.add('curriculum-event-title');
         eventTitle.innerHTML = event.title;
         flexbox.appendChild(eventTitle);
-        const eventTeacher = document.createElement('div');
+        eventTeacher = document.createElement('div');
         eventTeacher.classList.add('curriculum-event-teacher');
         eventTeacher.innerHTML = event.teacher;
         flexbox.appendChild(eventTeacher);
-        const eventClassroom = document.createElement('div');
+        eventClassroom = document.createElement('div');
         eventClassroom.classList.add('curriculum-event-classroom');
         eventClassroom.innerHTML = event.classroom;
         flexbox.appendChild(eventClassroom);
         const dialog = document.createElement('dialog');
         dialog.id = "eventDialog-" + event.uid;
         dialog.classList.add('curriculum-event-dialog');
-        dialog.addEventListener('click', (evt) => {
-          if (evt.target === dialog) {
+        dialog.addEventListener('click', (event) => {
+          if (event.target === dialog) {
             dialog.close();
           }
         });
