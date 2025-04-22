@@ -2,6 +2,10 @@
 hide:
   - navigation
   - toc
+extra_javascript:
+  - javascripts/curriculum.js
+extra_css:
+  - css/curriculum.css
 ---
 
 # 课表

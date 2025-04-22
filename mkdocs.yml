@@ -95,16 +95,7 @@ markdown_extensions:
 
 extra_javascript:
 - javascripts/bookmark.js
-- javascripts/katex.js
 - javascripts/upload.js
-- javascripts/curriculum.js
-- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
-- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
-
-extra_css:
-- css/CQUlogo.css
-- css/curriculum.css
-- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 
 nav:
 - 课程: 
@@ -4331,6 +4322,7 @@ nav:
         - 2025-04-19: sundry/更新日志/2025/2025-04/2025-04-19.md
         - 2025-04-20: sundry/更新日志/2025/2025-04/2025-04-20.md
         - 2025-04-21: sundry/更新日志/2025/2025-04/2025-04-21.md
+        - 2025-04-22: sundry/更新日志/2025/2025-04/2025-04-22.md
     # updateLog.py end
   - 文明经典写作题目:
     - 文明经典B历史写作题目: sundry/文明经典写作题目/文明经典B历史写作题目.md
