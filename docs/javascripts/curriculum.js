@@ -12,19 +12,26 @@ async function curriculum() {
     } else {
       document.getElementById("curriculum-form-div").style.display = "none";
       document.getElementById("curriculum-table-div").style.display = "unset";
-      const formFetchButton = document.getElementById("curriculum-form-action-fetch");
-      if (formFetchButton) formFetchButton.innerText = "正在获取";
-      await curriculumSaveEvents();
-      if (formFetchButton) formFetchButton.innerText = "获取";
       
-      // 确保从localStorage获取到数据后再渲染
+      const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+      if (formFetchButton) {
+        formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
+        formFetchButton.disabled = true;
+      }
+      
+      await curriculumSaveEvents();
+      
+      if (formFetchButton) {
+        formFetchButton.innerHTML = "获取";
+        formFetchButton.disabled = false;
+      }
+      
       const eventsData = localStorage.getItem("curriculumEvents");
       if (eventsData) {
         const parsedData = JSON.parse(eventsData);
         renderCurriculum(parsedData.curriculumEvents);
       }
       
-      // 确保只添加一次事件监听器
       const refreshButton = document.getElementById("curriculum-table-actions-refresh");
       const resetButton = document.getElementById("curriculum-table-actions-reset");
       
@@ -42,9 +49,15 @@ async function curriculum() {
     console.error("课程表初始化失败:", error);
     alert$.next("课程表初始化失败:" + String(error));
     const formFetchButton = document.getElementById("curriculum-form-action-fetch");
-    if (formFetchButton) formFetchButton.innerText = "获取";
+    if (formFetchButton) {
+      formFetchButton.innerHTML = "获取";
+      formFetchButton.disabled = false;
+    }
     const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
-    if (tableRefreshButton) tableRefreshButton.innerText = "刷新课表";
+    if (tableRefreshButton) {
+      tableRefreshButton.innerHTML = "刷新课表";
+      tableRefreshButton.disabled = false;
+    }
     curriculumResetStorage();
   }
 }
@@ -62,6 +75,11 @@ function saveData() {
     const credentials = JSON.stringify({ username, password });
     const base64Credentials = btoa(credentials);
     localStorage.setItem("userCredentials", base64Credentials);
+    const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+    if (formFetchButton) {
+      formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
+      formFetchButton.disabled = true;
+    }
     curriculum();
   });
 }
@@ -77,6 +95,12 @@ async function curriculumSaveEvents(force = false) {
   } catch (error) {
     console.error("保存课程表事件失败:", error);
     throw error;
+  } finally {
+    const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+    if (formFetchButton) {
+      formFetchButton.innerHTML = "获取";
+      formFetchButton.disabled = false;
+    }
   }
 }
 
@@ -105,19 +129,14 @@ async function curriculumGetEventsFromApi(userCredentials) {
     }
     
     const responseData = await response.json();
-    
-    // 处理响应数据
     if (!responseData.data) {
       console.error("API返回数据格式不正确:", responseData);
       throw new Error("API返回的数据格式不正确");
     }
-    
-    // 检查是否有weeks属性（JSON格式）
     if (responseData.data.weeks && Array.isArray(responseData.data.weeks)) {
       console.log("获取到JSON格式的课表数据");
       return resolveLectures(responseData.data.weeks);
-    } 
-    // 回退到icsContent（如果可能有的话）
+    }
     else if (responseData.data.icsContent) {
       console.warn("获取到ICS格式的课表数据，服务器没有返回JSON格式");
       return [];
@@ -136,10 +155,11 @@ async function curriculumGetEventsFromApi(userCredentials) {
 async function curriculumRefreshEvents() {
   try {
     const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
-    if (tableRefreshButton) tableRefreshButton.innerText = "正在刷新";
-    
+    if (tableRefreshButton) {
+      tableRefreshButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在刷新`;
+      tableRefreshButton.disabled = true;
+    }
     await curriculumSaveEvents(true);
-    
     const eventsData = localStorage.getItem("curriculumEvents");
     if (eventsData) {
       const parsedData = JSON.parse(eventsData);
@@ -154,7 +174,10 @@ async function curriculumRefreshEvents() {
     alert$.next("刷新课表失败:" + String(error));
   } finally {
     const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
-    if (tableRefreshButton) tableRefreshButton.innerText = "刷新课表";
+    if (tableRefreshButton) {
+      tableRefreshButton.innerHTML = "刷新课表";
+      tableRefreshButton.disabled = false;
+    }
   }
 }
 
@@ -230,10 +253,7 @@ function resolveLectures(weeks) {
             month: startDate.getMonth() + 1,
             day: startDate.getDate()
           };
-          
-          // 生成唯一ID
           const uid = `lecture-${weekNumber}-${j}-${startDate.getTime()}`;
-          
           events.push({
             uid,
             title: lecture.name,
@@ -266,6 +286,24 @@ function renderCurriculum(events) {
       tableDiv.innerHTML = "<div class='curriculum-empty-message'>暂无课程数据</div>";
     }
     return;
+  }
+  if (!document.getElementById('loading-spinner-style')) {
+    const style = document.createElement('style');
+    style.id = 'loading-spinner-style';
+    style.textContent = `
+      .loading-spinner {
+        width: 1em;
+        height: 1em;
+        animation: spin 1s linear infinite;
+        vertical-align: middle;
+        margin-right: 0.5em;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   function widthCatcher() {
