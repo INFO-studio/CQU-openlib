@@ -10,39 +10,65 @@ async function curriculum() {
       saveData();
       return;
     } else {
-      document.getElementById("curriculum-form-div").style.display = "none";
-      document.getElementById("curriculum-table-div").style.display = "unset";
-      
-      const formFetchButton = document.getElementById("curriculum-form-action-fetch");
-      if (formFetchButton) {
-        formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
-        formFetchButton.disabled = true;
-      }
-      
-      await curriculumSaveEvents();
-      
-      if (formFetchButton) {
-        formFetchButton.innerHTML = "获取";
-        formFetchButton.disabled = false;
-      }
-      
       const eventsData = localStorage.getItem("curriculumEvents");
       if (eventsData) {
+        document.getElementById("curriculum-form-div").style.display = "none";
+        document.getElementById("curriculum-table-div").style.display = "unset";
+        
         const parsedData = JSON.parse(eventsData);
         renderCurriculum(parsedData.curriculumEvents);
-      }
-      
-      const refreshButton = document.getElementById("curriculum-table-actions-refresh");
-      const resetButton = document.getElementById("curriculum-table-actions-reset");
-      
-      if (refreshButton) {
-        refreshButton.removeEventListener('click', curriculumRefreshEvents);
-        refreshButton.addEventListener('click', curriculumRefreshEvents);
-      }
-      
-      if (resetButton) {
-        resetButton.removeEventListener('click', curriculumResetStorage);
-        resetButton.addEventListener('click', curriculumResetStorage);
+        
+        const refreshButton = document.getElementById("curriculum-table-actions-refresh");
+        const resetButton = document.getElementById("curriculum-table-actions-reset");
+        
+        if (refreshButton) {
+          refreshButton.removeEventListener('click', curriculumRefreshEvents);
+          refreshButton.addEventListener('click', curriculumRefreshEvents);
+        }
+        
+        if (resetButton) {
+          resetButton.removeEventListener('click', curriculumResetStorage);
+          resetButton.addEventListener('click', curriculumResetStorage);
+        }
+      } else {
+        const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+        if (formFetchButton) {
+          formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
+          formFetchButton.disabled = true;
+        }
+        
+        try {
+          await curriculumSaveEvents(true);
+          
+          document.getElementById("curriculum-form-div").style.display = "none";
+          document.getElementById("curriculum-table-div").style.display = "unset";
+          
+          const eventsData = localStorage.getItem("curriculumEvents");
+          if (eventsData) {
+            const parsedData = JSON.parse(eventsData);
+            renderCurriculum(parsedData.curriculumEvents);
+          }
+          
+          const refreshButton = document.getElementById("curriculum-table-actions-refresh");
+          const resetButton = document.getElementById("curriculum-table-actions-reset");
+          
+          if (refreshButton) {
+            refreshButton.removeEventListener('click', curriculumRefreshEvents);
+            refreshButton.addEventListener('click', curriculumRefreshEvents);
+          }
+          
+          if (resetButton) {
+            resetButton.removeEventListener('click', curriculumResetStorage);
+            resetButton.addEventListener('click', curriculumResetStorage);
+          }
+        } catch (error) {
+          console.error("初始获取课表失败:", error);
+          alert$.next("获取课表失败:" + String(error));
+          if (formFetchButton) {
+            formFetchButton.innerHTML = "获取";
+            formFetchButton.disabled = false;
+          }
+        }
       }
     }
   } catch (error) {
@@ -75,12 +101,28 @@ function saveData() {
     const credentials = JSON.stringify({ username, password });
     const base64Credentials = btoa(credentials);
     localStorage.setItem("userCredentials", base64Credentials);
+    
     const formFetchButton = document.getElementById("curriculum-form-action-fetch");
     if (formFetchButton) {
       formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
       formFetchButton.disabled = true;
     }
-    curriculum();
+    
+    try {
+      const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
+      const curriculumEvents = await curriculumGetEventsFromApi(userCredentials);
+      localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
+      
+      curriculum();
+    } catch (error) {
+      console.error("获取课程表失败:", error);
+      alert$.next("获取课表失败:" + String(error));
+      if (formFetchButton) {
+        formFetchButton.innerHTML = "获取";
+        formFetchButton.disabled = false;
+      }
+      curriculumResetStorage();
+    }
   });
 }
 
