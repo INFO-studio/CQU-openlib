@@ -321,6 +321,9 @@ function resolveLectures(weeks) {
   }
 }
 
+// 添加一个全局变量用于存储当前日期的偏移量
+let currentDateOffset = 0;
+
 function renderCurriculum(events) {
   if (!events || !Array.isArray(events) || events.length === 0) {
     const tableDiv = document.querySelector('.curriculum-table-time');
@@ -329,6 +332,7 @@ function renderCurriculum(events) {
     }
     return;
   }
+
   if (!document.getElementById('loading-spinner-style')) {
     const style = document.createElement('style');
     style.id = 'loading-spinner-style';
@@ -344,6 +348,38 @@ function renderCurriculum(events) {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
+      .date-nav-button {
+        background-color: var(--md-primary-fg-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: background-color 0.2s;
+      }
+      .date-nav-button:hover {
+        background-color: var(--md-primary-fg-color--dark);
+      }
+      .date-nav-prev {
+        left: 0.5rem;
+      }
+      .date-nav-next {
+        right: 0.5rem;
+      }
+      .curriculum-table-container {
+        position: relative;
+        padding: 0 3rem;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -357,36 +393,49 @@ function renderCurriculum(events) {
       return 2;
     }
   }
+  
+  // 获取当前日期并应用偏移量
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const dayIndex = (today.getDay() + 6) % 7;
-  const monday = new Date(today)
-  monday.setDate(today.getDate() - dayIndex);
+  
+  // 根据当前偏移量调整日期
+  const displayDate = new Date(today);
+  displayDate.setDate(today.getDate() + currentDateOffset);
+  
+  const dayIndex = (displayDate.getDay() + 6) % 7;
+  const monday = new Date(displayDate);
+  monday.setDate(displayDate.getDate() - dayIndex);
+  
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     weekDates.push(d);
   }
+  
   const recentFiveDates = [];
   for (let i = -1; i < 4; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
+    const d = new Date(displayDate);
+    d.setDate(displayDate.getDate() + i);
     recentFiveDates.push(d);
   }
+  
   const recentThreeDates = [];
   for (let i = 0; i < 3; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
+    const d = new Date(displayDate);
+    d.setDate(displayDate.getDate() + i);
     recentThreeDates.push(d);
   }
-  const todayIndex = [dayIndex, 1, 0][widthCatcher()];
-  const dates = [weekDates, recentFiveDates, recentThreeDates][widthCatcher()];
+  
+  const widthMode = widthCatcher();
+  const todayIndex = [dayIndex, 1, 0][widthMode];
+  const dates = [weekDates, recentFiveDates, recentThreeDates][widthMode];
+  const dateStep = [7, 5, 3][widthMode]; // 日期步长
 
   const weekDayNames = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
   const recentFiveDayNames = ["昨天", "今天", "明天", "后天", "大后天"];
   const recentThreeDayNames = ["今天", "明天", "后天"];
-  const dayNames = [weekDayNames, recentFiveDayNames, recentThreeDayNames][widthCatcher()];
+  const dayNames = [weekDayNames, recentFiveDayNames, recentThreeDayNames][widthMode];
 
   const { timeListLength, startTimeList, endTimeList } = timeList();
 
@@ -442,6 +491,38 @@ function renderCurriculum(events) {
     }
   });
   
+  // 创建日期导航函数
+  function navigateDate(step) {
+    return function() {
+      currentDateOffset += step;
+      const eventsData = localStorage.getItem("curriculumEvents");
+      if (eventsData) {
+        const parsedData = JSON.parse(eventsData);
+        renderCurriculum(parsedData.curriculumEvents);
+      }
+    };
+  }
+  
+  const tableDiv = document.querySelector('.curriculum-table-time');
+  tableDiv.innerHTML = "";
+  
+  // 创建一个容器，用于放置表格和导航按钮
+  const containerDiv = document.createElement('div');
+  containerDiv.classList.add('curriculum-table-container');
+  
+  // 创建导航按钮
+  const prevButton = document.createElement('button');
+  prevButton.classList.add('date-nav-button', 'date-nav-prev');
+  prevButton.innerHTML = '&lt;';
+  prevButton.title = '查看上' + dateStep + '天';
+  prevButton.onclick = navigateDate(-dateStep);
+  
+  const nextButton = document.createElement('button');
+  nextButton.classList.add('date-nav-button', 'date-nav-next');
+  nextButton.innerHTML = '&gt;';
+  nextButton.title = '查看下' + dateStep + '天';
+  nextButton.onclick = navigateDate(dateStep);
+  
   const table = document.createElement('table');
   const headerRow = document.createElement('tr');
   const emptyTh = document.createElement('th');
@@ -469,7 +550,7 @@ function renderCurriculum(events) {
       if (grid[r][c] === 'occupied') continue;
       const td = document.createElement('td');
       td.classList.add('curriculum-table-cell');
-      if (c === todayIndex) {
+      if (dates[c].toDateString() === today.toDateString()) {
         td.classList.add('curriculum-table-today');
       }
       if (grid[r][c] && grid[r][c].event) {
@@ -524,7 +605,31 @@ function renderCurriculum(events) {
     }
     table.appendChild(tr);
   }
-  const tableDiv = document.querySelector('.curriculum-table-time');
-  tableDiv.innerHTML = "";
-  tableDiv.appendChild(table);
+  
+  // 将表格和导航按钮添加到容器中
+  containerDiv.appendChild(prevButton);
+  containerDiv.appendChild(table);
+  containerDiv.appendChild(nextButton);
+  
+  // 将容器添加到表格区域
+  tableDiv.appendChild(containerDiv);
+  
+  // 如果当前偏移量为0，添加重置按钮
+  if (currentDateOffset !== 0) {
+    const resetDateButton = document.createElement('button');
+    resetDateButton.textContent = '返回当前日期';
+    resetDateButton.classList.add('md-button');
+    resetDateButton.style.marginTop = '1rem';
+    resetDateButton.style.display = 'block';
+    resetDateButton.style.margin = '1rem auto';
+    resetDateButton.onclick = function() {
+      currentDateOffset = 0;
+      const eventsData = localStorage.getItem("curriculumEvents");
+      if (eventsData) {
+        const parsedData = JSON.parse(eventsData);
+        renderCurriculum(parsedData.curriculumEvents);
+      }
+    };
+    tableDiv.appendChild(resetDateButton);
+  }
 }
