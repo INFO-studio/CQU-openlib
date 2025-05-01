@@ -234,10 +234,27 @@ nav:
     - 安装工程估价课程设计: course/安装工程估价课程设计.md
     - 安装工程施工技术: course/安装工程施工技术.md
   - B~:
+    - Big Questions: course/Big Questions.md
+    - Big Questions实践: course/Big Questions实践.md
     - BIM与专业计算机应用: course/BIM与专业计算机应用.md
+    - BioMed +X: course/BioMed +X.md
     - 半导体器件物理学: course/半导体器件物理学.md
     - 比较文学概论: course/比较文学概论.md
+    - 毕业创作: course/毕业创作.md
+    - 毕业创作素材收集: course/毕业创作素材收集.md
+    - 毕业汇报演出实践: course/毕业汇报演出实践.md
+    - 毕业汇报音乐会: course/毕业汇报音乐会.md
+    - 毕业教学实习: course/毕业教学实习.md
+    - 毕业剧目: course/毕业剧目.md
+    - 毕业论文: course/毕业论文.md
+    - 毕业论文或设计: course/毕业论文或设计.md
     - 毕业实习: course/毕业实习.md
+    - 毕业晚会专题: course/毕业晚会专题.md
+    - 毕业专项调研: course/毕业专项调研.md
+    - 毕业设计: course/毕业设计.md
+    - 毕业设计、毕业论文及答辩: course/毕业设计、毕业论文及答辩.md
+    - 毕业设计及答辩: course/毕业设计及答辩.md
+    - 毕业音乐会: course/毕业音乐会.md
     - 边疆与族群: course/边疆与族群.md
     - 边坡工程: course/边坡工程.md
     - 边缘计算: course/边缘计算.md
@@ -245,6 +262,12 @@ nav:
     - 并行与分布式计算: course/并行与分布式计算.md
   - C~:
     - CAD案例设计与实践: course/CAD案例设计与实践.md
+    - CG模型设计: course/CG模型设计.md
+    - China in Transition: course/China in Transition.md
+    - CI设计: course/CI设计.md
+    - Co: course/Co.md
+    - C程序设计技术: course/C程序设计技术.md
+    - C++程序设计技术: course/C++程序设计技术.md
     - 材料成形技术基础: course/材料成形技术基础.md
     - 材料力学: course/材料力学.md
     - 材料制备及其测试: course/材料制备及其测试.md
@@ -258,6 +281,9 @@ nav:
     - 产品创新设计管理: course/产品创新设计管理.md
     - 产品现代设计方法: course/产品现代设计方法.md
     - 常微分方程: course/常微分方程.md
+    - 场地认知与专业表达: course/场地认知与专业表达.md
+    - 场地设计: course/场地设计.md
+    - 场地与总图设计: course/场地与总图设计.md
     - 超导: course/超导.md
     - 超高速激光雷达设计基础: course/超高速激光雷达设计基础.md
     - 车辆工程专业英语: course/车辆工程专业英语.md
@@ -374,6 +400,12 @@ nav:
     - 多旋翼飞行器设计与实践: course/多旋翼飞行器设计与实践.md
   - E~:
     - 恶意代码分析: course/恶意代码分析.md
+    - 二次资源循环利用: course/二次资源循环利用.md
+    - 二氧化碳地质封存: course/二氧化碳地质封存.md
+    - 二氧化碳-水: course/二氧化碳-水.md
+    - 二氧化碳提高油气采收率原理: course/二氧化碳提高油气采收率原理.md
+    - 二氧化碳输运技术: course/二氧化碳输运技术.md
+    - 二氧化碳转化与利用: course/二氧化碳转化与利用.md
   - F~:
     - 发电厂电气设备: course/发电厂电气设备.md
     - 发电厂及变电站电气部分: course/发电厂及变电站电气部分.md
@@ -531,22 +563,30 @@ nav:
     - 核工程前沿: course/核工程前沿.md
     - 核医学仪器与方法: course/核医学仪器与方法.md
     - 荷载与结构设计方法: course/荷载与结构设计方法.md
+    - 花鸟: course/花鸟.md
+    - 花鸟画创作: course/花鸟画创作.md
+    - 花鸟画素材收集: course/花鸟画素材收集.md
+    - 花鸟写意: course/花鸟写意.md
+    - 花样跳绳: course/花样跳绳.md
     - 化工原理: course/化工原理.md
     - 化学反应工程: course/化学反应工程.md
     - 环境保护概论: course/环境保护概论.md
     - 换热器: course/换热器.md
     - 回归分析: course/回归分析.md
     - 汇编语言程序设计: course/汇编语言程序设计.md
+    - 绘画: course/绘画.md
     - 绘画构成: course/绘画构成.md
     - 绘画透视: course/绘画透视.md
     - 绘画写生: course/绘画写生.md
     - 混凝土建筑结构: course/混凝土建筑结构.md
     - 混凝土结构基本原理: course/混凝土结构基本原理.md
   - J~:
-    - JAVA企业级应用: course/JAVA企业级应用.md
     - Java EE程序设计: course/Java EE程序设计.md
+    - Java程序设计: course/Java程序设计.md
     - JAVA企业级应用: course/JAVA企业级应用.md
     - Java手机APP开发: course/Java手机APP开发.md
+    - Jessup国际模拟法庭技能培训: course/Jessup国际模拟法庭技能培训.md
+    - Jessup国际模拟法庭知识培训: course/Jessup国际模拟法庭知识培训.md
     - 机床数控技术: course/机床数控技术.md
     - 机电测控综合实践: course/机电测控综合实践.md
     - 机电创新实践: course/机电创新实践.md
@@ -746,8 +786,13 @@ nav:
     - 金融学: course/金融学.md
     - 近、现代物理实验: course/近、现代物理实验.md
     - 经济学原理: course/经济学原理.md
+    - 精化产品工艺学: course/精化产品工艺学.md
     - 精密传动与驱动: course/精密传动与驱动.md
+    - 精密机械设计课程设计: course/精密机械设计课程设计.md
+    - 精密机械设计基础: course/精密机械设计基础.md
+    - 精密机械原理与设计: course/精密机械原理与设计.md
     - 精密与特种加工技术: course/精密与特种加工技术.md
+    - 精益建造与智能供应链: course/精益建造与智能供应链.md
     - 军事理论: course/军事理论.md
   - K~:
     - 科幻文学: course/科幻文学.md
@@ -769,6 +814,10 @@ nav:
     - 矿山压力与岩层智能控制: course/矿山压力与岩层智能控制.md
   - L~:
     - Linux操作系统: course/Linux操作系统.md
+    - 篮球副项提高课: course/篮球副项提高课.md
+    - 篮球运动: course/篮球运动.md
+    - 篮球主项提高课: course/篮球主项提高课.md
+    - 篮球专项教学训练理论与实践: course/篮球专项教学训练理论与实践.md
     - 冷热源工程: course/冷热源工程.md
     - 冷弯型钢结构住宅: course/冷弯型钢结构住宅.md
     - 离散数学: course/离散数学.md
@@ -844,12 +893,14 @@ nav:
   - O~:
     - 欧洲文艺复兴: course/欧洲文艺复兴.md
   - P~:
+    - Python编程实践: course/Python编程实践.md
+    - Python程序设计技术: course/Python程序设计技术.md
+    - Python数据分析: course/Python数据分析.md
+    - Python图形化编程实践: course/Python图形化编程实践.md
     - 偏微分方程: course/偏微分方程.md
     - 普适计算与普适控制: course/普适计算与普适控制.md
     - 普通物理: course/普通物理.md
   - Q~:
-    - 氢能及燃气低碳化应用技术: course/氢能及燃气低碳化应用技术.md
-    - 氢能与制氢技术: course/氢能与制氢技术.md
     - 气动电子技术: course/气动电子技术.md
     - 气动建模与分析综合实践: course/气动建模与分析综合实践.md
     - 汽车安全设计理论: course/汽车安全设计理论.md
@@ -881,6 +932,9 @@ nav:
     - 桥梁工程: course/桥梁工程.md
     - 桥梁工程综合课程设计: course/桥梁工程综合课程设计.md
     - 砌体结构设计: course/砌体结构设计.md
+    - 秦汉史: course/秦汉史.md
+    - 氢能及燃气低碳化应用技术: course/氢能及燃气低碳化应用技术.md
+    - 氢能与制氢技术: course/氢能与制氢技术.md
     - 区块链技术与应用: course/区块链技术与应用.md
   - R~:
     - 燃料电池: course/燃料电池.md
@@ -1019,7 +1073,27 @@ nav:
     - 太阳能利用原理与技术: course/太阳能利用原理与技术.md
     - 弹性力学: course/弹性力学.md
     - 弹性力学及有限元: course/弹性力学及有限元.md
+    - 碳捕集原理与技术: course/碳捕集原理与技术.md
+    - 碳储地质学: course/碳储地质学.md
+    - 碳储环境工程学: course/碳储环境工程学.md
+    - 碳储监测与安全: course/碳储监测与安全.md
+    - 碳储科学与工程创新实践: course/碳储科学与工程创新实践.md
+    - 碳储科学与工程前沿: course/碳储科学与工程前沿.md
+    - 碳储系统风险评估: course/碳储系统风险评估.md
+    - 碳储综合实验课: course/碳储综合实验课.md
+    - 碳封存技术开发与应用: course/碳封存技术开发与应用.md
+    - 碳工程经济学原理: course/碳工程经济学原理.md
+    - 碳排放管理: course/碳排放管理.md
+    - 碳排放权交易管理: course/碳排放权交易管理.md
+    - 碳市场政策与法规: course/碳市场政策与法规.md
     - 碳中和导论: course/碳中和导论.md
+    - 碳中和概论: course/碳中和概论.md
+    - 碳中和管理概论: course/碳中和管理概论.md
+    - 碳中和政策: course/碳中和政策.md
+    - 碳转化与合成原理: course/碳转化与合成原理.md
+    - 碳资源管理: course/碳资源管理.md
+    - 碳资源循环利用: course/碳资源循环利用.md
+    - 碳资源循环系统虚拟仿真创新实验: course/碳资源循环系统虚拟仿真创新实验.md
     - 唐宋词: course/唐宋词.md
     - 特种结构: course/特种结构.md
     - 题跋: course/题跋.md
@@ -1160,12 +1234,38 @@ nav:
     - 现代制造技术: course/现代制造技术.md
     - 宪法学: course/宪法学.md
     - 线性代数: course/线性代数.md
+    - 消防工程: course/消防工程.md
+    - 消费者行为学: course/消费者行为学.md
+    - 消化系统与疾病: course/消化系统与疾病.md
+    - 新材料新技术发展动态: course/新材料新技术发展动态.md
+    - 新产品定义与导入策划设计: course/新产品定义与导入策划设计.md
+    - 新产品开发与商业创新: course/新产品开发与商业创新.md
     - 新产品智能开发: course/新产品智能开发.md
+    - 新媒体运营入门: course/新媒体运营入门.md
+    - 新媒体营销与运营: course/新媒体营销与运营.md
+    - 新能源材料: course/新能源材料.md
     - 新能源材料与器件: course/新能源材料与器件.md
     - 新能源发电并网原理及电力电子技术: course/新能源发电并网原理及电力电子技术.md
+    - 新能源发电技术: course/新能源发电技术.md
+    - 新能源工程专业综合实验: course/新能源工程专业综合实验.md
+    - 新能源及其利用技术: course/新能源及其利用技术.md
+    - 新能源汽车关键技术与研究动态: course/新能源汽车关键技术与研究动态.md
+    - 新能源转化与控制技术: course/新能源转化与控制技术.md
     - 新生研讨课: course/新生研讨课.md
+    - 新闻编辑: course/新闻编辑.md
+    - 新闻采编: course/新闻采编.md
+    - 新闻采访与写作: course/新闻采访与写作.md
+    - 新闻翻译: course/新闻翻译.md
+    - 新闻翻译与国际传播: course/新闻翻译与国际传播.md
+    - 新闻名篇选读: course/新闻名篇选读.md
+    - 新闻评论: course/新闻评论.md
+    - 新闻摄影: course/新闻摄影.md
+    - 新闻事实核查: course/新闻事实核查.md
     - 新闻学概论: course/新闻学概论.md
     - 新闻英语视听说: course/新闻英语视听说.md
+    - 新闻主持与出镜报道: course/新闻主持与出镜报道.md
+    - 新型电池材料: course/新型电池材料.md
+    - 新中国史: course/新中国史.md
     - 信号变换与传输原理: course/信号变换与传输原理.md
     - 信号处理与分析: course/信号处理与分析.md
     - 信号与系统: course/信号与系统.md
@@ -1200,6 +1300,27 @@ nav:
     - 岩土工程监测与检测技术: course/岩土工程监测与检测技术.md
     - 岩土工程数值建模与计算: course/岩土工程数值建模与计算.md
     - 岩土工程综合课程设计: course/岩土工程综合课程设计.md
+    - 药剂学: course/药剂学.md
+    - 药剂学实验: course/药剂学实验.md
+    - 药理学: course/药理学.md
+    - 药理学实验: course/药理学实验.md
+    - 药事管理: course/药事管理.md
+    - 药事管理学: course/药事管理学.md
+    - 药物分析: course/药物分析.md
+    - 药物分析实验: course/药物分析实验.md
+    - 药物合成反应: course/药物合成反应.md
+    - 药物化学: course/药物化学.md
+    - 药物化学实验: course/药物化学实验.md
+    - 药物缓释与控释: course/药物缓释与控释.md
+    - 药物设计: course/药物设计.md
+    - 药物设计学: course/药物设计学.md
+    - 药学概论: course/药学概论.md
+    - 药学专业科研实践: course/药学专业科研实践.md
+    - 药学专业实践: course/药学专业实践.md
+    - 药学专业实验: course/药学专业实验.md
+    - 药学专业综合实验: course/药学专业综合实验.md
+    - 药用人工智能: course/药用人工智能.md
+    - 药用植物学: course/药用植物学.md
     - 冶金原理: course/冶金原理.md
     - 英语: course/英语.md
     - 英语诗歌欣赏: course/英语诗歌欣赏.md
@@ -1233,6 +1354,7 @@ nav:
     - 增材制造技术及应用: course/增材制造技术及应用.md
     - 照明光学系统设计与创新: course/照明光学系统设计与创新.md
     - 张量分析基础: course/张量分析基础.md
+    - 丈量美丽中国: course/丈量美丽中国.md
     - 真空与薄膜技术: course/真空与薄膜技术.md
     - 振动力学: course/振动力学.md
     - 振动信号处理与结构系统辨识: course/振动信号处理与结构系统辨识.md
@@ -1319,20 +1441,10 @@ nav:
     - 综合社会实践: course/综合社会实践.md
     - 综合项目课: course/综合项目课.md
     - 最优控制: course/最优控制.md
+    - 左传: course/左传.md
     # updateTrainingPlan.py _courseRead_ end
   - 未分类:
     # updateTrainingPlan.py _courseWrite_ start
-    - AIGC 视频短片创作: course/AIGC 视频短片创作.md
-    - An Introduction to Machine Learning: course/An Introduction to Machine Learning.md
-    - Big Questions: course/Big Questions.md
-    - Big Questions实践: course/Big Questions实践.md
-    - BioMed +X: course/BioMed +X.md
-    - C++程序设计技术: course/C++程序设计技术.md
-    - CG模型设计: course/CG模型设计.md
-    - CI设计: course/CI设计.md
-    - China in Transition: course/China in Transition.md
-    - Co: course/Co.md
-    - C程序设计技术: course/C程序设计技术.md
     - EDA基础及生物医学应用: course/EDA基础及生物医学应用.md
     - EDA设计与仿真实践: course/EDA设计与仿真实践.md
     - ESG管理概述: course/ESG管理概述.md
@@ -1348,18 +1460,10 @@ nav:
     - HSK考试技能: course/HSK考试技能.md
     - ISIE实习: course/ISIE实习.md
     - Independent  Study独立研究: course/Independent  Study独立研究.md
-    - Java EE程序设计: course/Java EE程序设计.md
-    - Java程序设计: course/Java程序设计.md
-    - Jessup国际模拟法庭技能培训: course/Jessup国际模拟法庭技能培训.md
-    - Jessup国际模拟法庭知识培训: course/Jessup国际模拟法庭知识培训.md
     - MEMS射频器件及应用: course/MEMS射频器件及应用.md
     - Modern Society: course/Modern Society.md
     - Numerical Methods For Engineers: course/Numerical Methods For Engineers.md
     - OpenBIM 协同创新与实践: course/OpenBIM 协同创新与实践.md
-    - Python图形化编程实践: course/Python图形化编程实践.md
-    - Python数据分析: course/Python数据分析.md
-    - Python程序设计技术: course/Python程序设计技术.md
-    - Python编程实践: course/Python编程实践.md
     - RISC CPU设计: course/RISC CPU设计.md
     - RS实习: course/RS实习.md
     - SECS编程: course/SECS编程.md
@@ -1388,7 +1492,6 @@ nav:
     - 《精神现象学》导论: course/《精神现象学》导论.md
     - 《锅炉原理》课程设计: course/《锅炉原理》课程设计.md
     - 《风能利用原理与技术》课程设计: course/《风能利用原理与技术》课程设计.md
-    - 丈量美丽中国: course/丈量美丽中国.md
     - 三礼: course/三礼.md
     - 三维CA: course/三维CA.md
     - 不动产信息管理: course/不动产信息管理.md
@@ -1545,12 +1648,6 @@ nav:
     - 书籍设计: course/书籍设计.md
     - 事故应急处置: course/事故应急处置.md
     - 事故调查与案例分析: course/事故调查与案例分析.md
-    - 二次资源循环利用: course/二次资源循环利用.md
-    - 二氧化碳-水: course/二氧化碳-水.md
-    - 二氧化碳地质封存: course/二氧化碳地质封存.md
-    - 二氧化碳提高油气采收率原理: course/二氧化碳提高油气采收率原理.md
-    - 二氧化碳转化与利用: course/二氧化碳转化与利用.md
-    - 二氧化碳输运技术: course/二氧化碳输运技术.md
     - 互换性与技术测量: course/互换性与技术测量.md
     - 井巷与隧道工程: course/井巷与隧道工程.md
     - 井巷与隧道工程课程设计: course/井巷与隧道工程课程设计.md
@@ -2064,9 +2161,6 @@ nav:
     - 地理信息系统设计: course/地理信息系统设计.md
     - 地质学基础: course/地质学基础.md
     - 地质实习: course/地质实习.md
-    - 场地与总图设计: course/场地与总图设计.md
-    - 场地认知与专业表达: course/场地认知与专业表达.md
-    - 场地设计: course/场地设计.md
     - 城乡交通规划: course/城乡交通规划.md
     - 城乡公用设施规划: course/城乡公用设施规划.md
     - 城乡实践与竞赛单元: course/城乡实践与竞赛单元.md
@@ -2365,7 +2459,6 @@ nav:
     - 工程造价软件应用: course/工程造价软件应用.md
     - 工程项目管理课程设计: course/工程项目管理课程设计.md
     - 工程项目融资: course/工程项目融资.md
-    - 左传: course/左传.md
     - 市场研究技术: course/市场研究技术.md
     - 市政工程施工技术与估价: course/市政工程施工技术与估价.md
     - 干细胞与组织修复: course/干细胞与组织修复.md
@@ -2585,29 +2678,6 @@ nav:
     - 文学理论与研究专题：文学中的科学与伦理: course/文学理论与研究专题：文学中的科学与伦理.md
     - 文学理论与研究专题：文学符号学导论: course/文学理论与研究专题：文学符号学导论.md
     - 文学理论与研究专题：族裔文学: course/文学理论与研究专题：族裔文学.md
-    - 新中国史: course/新中国史.md
-    - 新产品定义与导入策划设计: course/新产品定义与导入策划设计.md
-    - 新产品开发与商业创新: course/新产品开发与商业创新.md
-    - 新型电池材料: course/新型电池材料.md
-    - 新媒体营销与运营: course/新媒体营销与运营.md
-    - 新媒体运营入门: course/新媒体运营入门.md
-    - 新材料新技术发展动态: course/新材料新技术发展动态.md
-    - 新能源及其利用技术: course/新能源及其利用技术.md
-    - 新能源发电技术: course/新能源发电技术.md
-    - 新能源工程专业综合实验: course/新能源工程专业综合实验.md
-    - 新能源材料: course/新能源材料.md
-    - 新能源汽车关键技术与研究动态: course/新能源汽车关键技术与研究动态.md
-    - 新能源转化与控制技术: course/新能源转化与控制技术.md
-    - 新闻主持与出镜报道: course/新闻主持与出镜报道.md
-    - 新闻事实核查: course/新闻事实核查.md
-    - 新闻名篇选读: course/新闻名篇选读.md
-    - 新闻摄影: course/新闻摄影.md
-    - 新闻编辑: course/新闻编辑.md
-    - 新闻翻译: course/新闻翻译.md
-    - 新闻翻译与国际传播: course/新闻翻译与国际传播.md
-    - 新闻评论: course/新闻评论.md
-    - 新闻采编: course/新闻采编.md
-    - 新闻采访与写作: course/新闻采访与写作.md
     - 施工与房地产企业会计: course/施工与房地产企业会计.md
     - 日本历史与社会: course/日本历史与社会.md
     - 日本文学专题研讨: course/日本文学专题研讨.md
@@ -2840,20 +2910,6 @@ nav:
     - 武术运动: course/武术运动.md
     - 比较环境法: course/比较环境法.md
     - 比较行政制度: course/比较行政制度.md
-    - 毕业专项调研: course/毕业专项调研.md
-    - 毕业创作: course/毕业创作.md
-    - 毕业创作素材收集: course/毕业创作素材收集.md
-    - 毕业剧目: course/毕业剧目.md
-    - 毕业教学实习: course/毕业教学实习.md
-    - 毕业晚会专题: course/毕业晚会专题.md
-    - 毕业汇报演出实践: course/毕业汇报演出实践.md
-    - 毕业汇报音乐会: course/毕业汇报音乐会.md
-    - 毕业论文: course/毕业论文.md
-    - 毕业论文或设计: course/毕业论文或设计.md
-    - 毕业设计: course/毕业设计.md
-    - 毕业设计、毕业论文及答辩: course/毕业设计、毕业论文及答辩.md
-    - 毕业设计及答辩: course/毕业设计及答辩.md
-    - 毕业音乐会: course/毕业音乐会.md
     - 毛泽东思想概论: course/毛泽东思想概论.md
     - 民事诉讼法: course/民事诉讼法.md
     - 民事诉讼法案例研析: course/民事诉讼法案例研析.md
@@ -2960,9 +3016,6 @@ nav:
     - 测绘项目管理及法律法规: course/测绘项目管理及法律法规.md
     - 测量数据处理理论: course/测量数据处理理论.md
     - 测量美丽中国: course/测量美丽中国.md
-    - 消化系统与疾病: course/消化系统与疾病.md
-    - 消费者行为学: course/消费者行为学.md
-    - 消防工程: course/消防工程.md
     - 涉外法治全英文竞赛: course/涉外法治全英文竞赛.md
     - 液压传动与控制: course/液压传动与控制.md
     - 液压传动与控制基础: course/液压传动与控制基础.md
@@ -3275,26 +3328,6 @@ nav:
     - 矿物加工利用技术: course/矿物加工利用技术.md
     - 研究设计与论文写作: course/研究设计与论文写作.md
     - 硅光集成电路: course/硅光集成电路.md
-    - 碳中和政策: course/碳中和政策.md
-    - 碳中和概论: course/碳中和概论.md
-    - 碳中和管理概论: course/碳中和管理概论.md
-    - 碳储地质学: course/碳储地质学.md
-    - 碳储环境工程学: course/碳储环境工程学.md
-    - 碳储监测与安全: course/碳储监测与安全.md
-    - 碳储科学与工程创新实践: course/碳储科学与工程创新实践.md
-    - 碳储科学与工程前沿: course/碳储科学与工程前沿.md
-    - 碳储系统风险评估: course/碳储系统风险评估.md
-    - 碳储综合实验课: course/碳储综合实验课.md
-    - 碳封存技术开发与应用: course/碳封存技术开发与应用.md
-    - 碳工程经济学原理: course/碳工程经济学原理.md
-    - 碳市场政策与法规: course/碳市场政策与法规.md
-    - 碳捕集原理与技术: course/碳捕集原理与技术.md
-    - 碳排放权交易管理: course/碳排放权交易管理.md
-    - 碳排放管理: course/碳排放管理.md
-    - 碳资源循环利用: course/碳资源循环利用.md
-    - 碳资源循环系统虚拟仿真创新实验: course/碳资源循环系统虚拟仿真创新实验.md
-    - 碳资源管理: course/碳资源管理.md
-    - 碳转化与合成原理: course/碳转化与合成原理.md
     - 磁性物理: course/磁性物理.md
     - 社会契约论: course/社会契约论.md
     - 神经工程与人机接口: course/神经工程与人机接口.md
@@ -3317,7 +3350,6 @@ nav:
     - 科技论文写作: course/科技论文写作.md
     - 科技论文写作实践: course/科技论文写作实践.md
     - 科研素养训练: course/科研素养训练.md
-    - 秦汉史: course/秦汉史.md
     - 移动互联网: course/移动互联网.md
     - 移动工程系统开发技术: course/移动工程系统开发技术.md
     - 移动机器人技术: course/移动机器人技术.md
@@ -3348,18 +3380,9 @@ nav:
     - 管理沟通: course/管理沟通.md
     - 管理系统工程: course/管理系统工程.md
     - 篆刻: course/篆刻.md
-    - 篮球专项教学训练理论与实践: course/篮球专项教学训练理论与实践.md
-    - 篮球主项提高课: course/篮球主项提高课.md
-    - 篮球副项提高课: course/篮球副项提高课.md
-    - 篮球运动: course/篮球运动.md
     - 类型电影: course/类型电影.md
     - 类型节目制作: course/类型节目制作.md
     - 粉末冶金: course/粉末冶金.md
-    - 精化产品工艺学: course/精化产品工艺学.md
-    - 精密机械原理与设计: course/精密机械原理与设计.md
-    - 精密机械设计基础: course/精密机械设计基础.md
-    - 精密机械设计课程设计: course/精密机械设计课程设计.md
-    - 精益建造与智能供应链: course/精益建造与智能供应链.md
     - 系统动力学与振动: course/系统动力学与振动.md
     - 系统工程学实践: course/系统工程学实践.md
     - 系统建模与仿真: course/系统建模与仿真.md
@@ -3416,7 +3439,6 @@ nav:
     - 结构力学课程集: course/结构力学课程集.md
     - 结构动力学与抗震抗风设计课程集: course/结构动力学与抗震抗风设计课程集.md
     - 结构防护与修复材料: course/结构防护与修复材料.md
-    - 绘画: course/绘画.md
     - 统计学: course/统计学.md
     - 统计数据案例分析: course/统计数据案例分析.md
     - 统计计算: course/统计计算.md
@@ -3516,11 +3538,6 @@ nav:
     - 艺术设计思维训练: course/艺术设计思维训练.md
     - 艺用解剖: course/艺用解剖.md
     - 节能管理: course/节能管理.md
-    - 花样跳绳: course/花样跳绳.md
-    - 花鸟: course/花鸟.md
-    - 花鸟写意: course/花鸟写意.md
-    - 花鸟画创作: course/花鸟画创作.md
-    - 花鸟画素材收集: course/花鸟画素材收集.md
     - 英国文学: course/英国文学.md
     - 英国社会与文化: course/英国社会与文化.md
     - 英文会计文献阅读: course/英文会计文献阅读.md
@@ -3530,27 +3547,6 @@ nav:
     - 英汉翻译实践: course/英汉翻译实践.md
     - 英汉语言研究导论：英汉语言对比: course/英汉语言研究导论：英汉语言对比.md
     - 英美文学与电影: course/英美文学与电影.md
-    - 药事管理: course/药事管理.md
-    - 药事管理学: course/药事管理学.md
-    - 药剂学: course/药剂学.md
-    - 药剂学实验: course/药剂学实验.md
-    - 药学专业实践: course/药学专业实践.md
-    - 药学专业实验: course/药学专业实验.md
-    - 药学专业科研实践: course/药学专业科研实践.md
-    - 药学专业综合实验: course/药学专业综合实验.md
-    - 药学概论: course/药学概论.md
-    - 药物分析: course/药物分析.md
-    - 药物分析实验: course/药物分析实验.md
-    - 药物化学: course/药物化学.md
-    - 药物化学实验: course/药物化学实验.md
-    - 药物合成反应: course/药物合成反应.md
-    - 药物缓释与控释: course/药物缓释与控释.md
-    - 药物设计: course/药物设计.md
-    - 药物设计学: course/药物设计学.md
-    - 药理学: course/药理学.md
-    - 药理学实验: course/药理学实验.md
-    - 药用人工智能: course/药用人工智能.md
-    - 药用植物学: course/药用植物学.md
     - 荷载与结构设计方法课程集: course/荷载与结构设计方法课程集.md
     - 荷马史诗: course/荷马史诗.md
     - 营销渠道管理: course/营销渠道管理.md
