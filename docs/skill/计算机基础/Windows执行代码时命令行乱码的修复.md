@@ -4,7 +4,7 @@
 
 ## 1. 问题复现
 - 在 `Windows` 系统下执行 `C++` 或 `Python` 等程序的代码时，若该代码源码使用 `UTF-8` 编码，而系统语言为中文，则会出现命令行乱码，如下图所示
-    <center>![pic2](../../resourses/技巧_计算机基础_Windows执行代码时命令行乱码的修复_001.png)</center>  
+    <center><img src="../../resourses/技巧_计算机基础_Windows执行代码时命令行乱码的修复_001.png" alt="pic2"></center>  
 
 ## 2. 解决方法
 1. 打开 `设置` 或点击 ++win+i++ 快捷键
