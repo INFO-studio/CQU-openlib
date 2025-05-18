@@ -5,7 +5,5 @@
 
 - `#96`
     - :material-book: `人力资源管理 @MGMT20502` - :material-form-select: `人力资源管理-董克用-高等教育出版社-9787040574425`
-- `#88`
-    - :material-book: `弹性力学 @AEME30215` - :material-form-select: `弹性力学-张晓敏-科学出版社-9787030618856`
 - `#83`
     - :material-book: `高等代数 @HMATH11222` - :material-form-select: `高等代数简明教程-蓝以中-北京大学出版社-9787301342237` - :material-comment-text: `第三版、上下册`
