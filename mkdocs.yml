@@ -4222,6 +4222,7 @@ nav:
   - skirt_wind: contributor/skirt_wind.md
   - Funoke: contributor/Funoke.md
   - Tano: contributor/Tano.md
+  - Tony: contributor/Tony.md
 - 杂项:
   - sundry/index.md
   - 待办事项:
@@ -4328,6 +4329,8 @@ nav:
         - 2025-05-20: sundry/更新日志/2025/2025-05/2025-05-20.md
         - 2025-05-22: sundry/更新日志/2025/2025-05/2025-05-22.md
         - 2025-05-27: sundry/更新日志/2025/2025-05/2025-05-27.md
+      - 2025-06:
+        - 2025-06-11: sundry/更新日志/2025/2025-06/2025-06-11.md
     # updateLog.py end
   - 友情链接:
     - sundry/友情链接/index.md

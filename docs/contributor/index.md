@@ -28,6 +28,7 @@
 - [skirt_wind](skirt_wind.md)
 - [Funoke](Funoke.md)
 - [Tano](Tano.md)
+- [Tony](Tony.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -69,3 +70,4 @@
 - 凉皮
 - chaojijunjun
 - 祁琛
+- xx
