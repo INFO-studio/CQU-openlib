@@ -149,6 +149,8 @@ async function curriculumSaveEvents(force = false) {
 async function curriculumGetEventsFromApi(userCredentials) {
   try {
     const apiUrl = "https://cquopenlib-schedule.azure-api.net/v1/subscription";
+    // const apiUrl = "http://localhost:3001/api";
+    //本地调试用，反向代理
     const requestOptions = {
       method: "POST",
       headers: {
@@ -300,8 +302,8 @@ function resolveLectures(weeks) {
             uid,
             title: lecture.name,
             day,
-            startTime: startIndex,
-            endTime: endIndex,
+            startTime: startIndex - 1,
+            endTime: endIndex - 1,
             teacher: lecture.lecturer || '',
             classroom: lecture.position ? `${lecture.room || ''}${lecture.position}` : (lecture.room || ''),
             weekNumber,
@@ -375,6 +377,7 @@ function renderCurriculum(events) {
       }
       .date-nav-next {
         right: 0.5rem;
+        transform: translateY(-140%);
       }
       .curriculum-table-container {
         position: relative;
