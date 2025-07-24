@@ -30,6 +30,7 @@
 - [Tano](Tano.md)
 - [Tony](Tony.md)
 - [ok](ok.md)
+- [123kaze](123kaze.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -73,5 +74,4 @@
 - 祁琛
 - xx
 - 赵师傅
-- 123kaza
 - 花未泯
