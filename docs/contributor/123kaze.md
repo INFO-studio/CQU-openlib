@@ -8,6 +8,6 @@
 
 GitHub：[123kaze](https://github.com/123kaze)
 
-邮箱：`2480602711@qq.com
+邮箱：`2480602711@qq.com`
 
 欢迎学弟学妹问问题，十分乐意解答。
