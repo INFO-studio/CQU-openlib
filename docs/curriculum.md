@@ -134,26 +134,26 @@ hide:
     justify-content: center;
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell {
+.curriculum-table-cell {
     text-align: center !important;
     min-width: 2em;
     position: relative;
     overflow: hidden;
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell.curriculum-table-cell-scheduled {
+.curriculum-table-cell-scheduled {
     background-color: var(--md-typeset-table-color);
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell.curriculum-table-today {
+.curriculum-table-today {
     background-color: color-mix(in srgb, var(--md-default-bg-color) 50%, var(--md-primary-fg-color) 50%);
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell.curriculum-table-cell-scheduled.curriculum-table-today {
+.curriculum-table-today {
     background-color: color-mix(in srgb, var(--md-typeset-table-color) 50%, var(--md-primary-fg-color) 50%);
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-flexbox {
+.curriculum-event-flexbox {
     position: absolute;
     left: 0;
     right: 0;
@@ -167,7 +167,7 @@ hide:
     gap: 0.5em;
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-flexbox>.curriculum-event-title {
+.curriculum-event-title {
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -178,15 +178,15 @@ hide:
     height: calc(1.1em * 2);
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-flexbox>.curriculum-event-teacher,
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-flexbox>.curriculum-event-classroom {
+.curriculum-event-teacher,
+.curriculum-event-classroom {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-dialog {
+.curriculum-event-dialog {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -197,11 +197,11 @@ hide:
     background-color: var(--md-default-bg-color);
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-dialog::backdrop {
+.curriculum-event-dialog::backdrop {
     background: rgba(0, 0, 0, 0.3);
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-dialog>.curriculum-event-dialog-title {
+.curriculum-event-dialog-title {
     font-size: 3em;
     font-weight: bold;
     text-align: center;
@@ -214,7 +214,7 @@ hide:
     height: 60%;
 }
 
-.curriculum-table-time>table>tr>.curriculum-table-cell>.curriculum-event-dialog>.curriculum-event-dialog-teacher {
+.curriculum-event-dialog-teacher {
     font-size: 14px;
     margin: 5px 0;
 }
