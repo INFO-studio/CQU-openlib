@@ -9,9 +9,10 @@ hide:
 <div class="grid" markdown>
 
 !!! info "公告"
+    * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     * 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-07-25](sundry/更新日志/2025/2025-07/2025-07-25.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-07-26](sundry/更新日志/2025/2025-07/2025-07-26.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
