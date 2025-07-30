@@ -31,6 +31,8 @@
 - [Tony](Tony.md)
 - [ok](ok.md)
 - [123kaze](123kaze.md)
+- [tazy_wrld](tazy_wrld.md)
+- [重庆大学吧务组](重庆大学吧务组.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -76,5 +78,3 @@
 - 赵师傅
 - 花未泯
 - RF
-- tazy_wrld
-- 重庆大学吧务组
