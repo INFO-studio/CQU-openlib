@@ -14,6 +14,7 @@
 协作者名单（顺序不分先后）：
 
 - [123kaze](123kaze.md)
+- [Tano](Tano.md)
 
 贡献者名单（顺序不分先后）：  
 
@@ -31,7 +32,6 @@
 - [NitroFire](NitroFire.md)
 - [skirt_wind](skirt_wind.md)
 - [Funoke](Funoke.md)
-- [Tano](Tano.md)
 - [Tony](Tony.md)
 - [ok](ok.md)
 - [tazy_wrld](tazy_wrld.md)
