@@ -11,6 +11,10 @@
 
 - [茵符草](茵符草.md)
 
+协作者名单（顺序不分先后）：
+
+- [123kaze](123kaze.md)
+
 贡献者名单（顺序不分先后）：  
 
 - [xeri_chen](xeri_chen.md)  
@@ -30,7 +34,6 @@
 - [Tano](Tano.md)
 - [Tony](Tony.md)
 - [ok](ok.md)
-- [123kaze](123kaze.md)
 - [tazy_wrld](tazy_wrld.md)
 - [重庆大学吧务组](重庆大学吧务组.md)
 - georgeghl  
