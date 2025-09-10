@@ -37,6 +37,7 @@
 - [ok](ok.md)
 - [tazy_wrld](tazy_wrld.md)
 - [重庆大学吧务组](重庆大学吧务组.md)
+- [qzq](qzq.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
