@@ -230,10 +230,20 @@ hide:
 
 #curriculum-table-div .curriculum-action-icon-round {
     padding: 0;
-    height: 52px;
+    height: calc(2.25em);
+    width: calc(2.25em);
     display: flex;
     aspect-ratio: 1;
     justify-content: center;
     align-items: center;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(1080deg); }
+}
+
+.loading-spinner {
+    animation: rotate 2.4s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 </style>

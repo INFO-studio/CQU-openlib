@@ -213,7 +213,7 @@ def write_daily_log(
     publisher: str,
     include_tab_line: bool,
     include_form_line: bool,
-    form_index: int,
+    form_index: str,
 ) -> Path:
     today = dt.datetime.now()
     log_dir = LOG_ROOT / f"{today:%Y}" / f"{today:%Y}-{today:%m}"
@@ -237,7 +237,10 @@ def write_daily_log(
     lines.append(f"- 新增 [{course_name}](../../../../course/{course_name}.md) 页 `res: 教材-{textbook_name}-{editor_first}-{publisher}`")
 
     if include_form_line:
-        lines.append(f"- 完成 [待办事项-教材需求](../../../待办事项/textbook.md) `#{form_index}`")
+        if include_form_line == "1":
+            lines.append(f"- 完成 [待办事项-教材需求](../../../待办事项/textbook.md) `#{form_index}`")
+        elif include_form_line == "2":
+            lines.append(f"- 完成 [待办事项-文件上传](../../../待办事项/upload.md) `#{form_index}`")
 
     log_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[  log  ] wrote {log_file}")
@@ -270,8 +273,8 @@ class Args(TypedDict):
     key: str
     composite: str
     no_tab_line: bool
-    form_line: bool
-    form_index: int
+    form_line: str
+    form_index: str
     push: bool
     skip_pull: bool
     commit: str
@@ -284,8 +287,8 @@ def interactive_args(args) -> Args:
     key: str = args.key
     composite: str = args.composite
     no_tab_line: bool = args.no_tab_line
-    form_line: bool = args.form_line
-    form_index: int = int(args.form_index)
+    form_line: str = args.form_line
+    form_index: str = args.form_index
     push: bool = args.push
     skip_pull: bool = args.skip_pull
     commit: str = args.commit
@@ -327,8 +330,34 @@ def interactive_args(args) -> Args:
             else:
                 print("格式有误\n注意：格式类似「教材-高等数学-张三-重庆大学出版社」")
 
+    if not form_line:
+        form_line_correct = False
+        while not form_line_correct:
+            form_line = input("请选择是否写入表单行\n0 不写入（默认） | 1 写入教材收集 | 2 写入文件上传")
+            if form_line in ["", "0", "1", "2"]:
+                form_line_correct = True
+                if form_line == "":
+                    form_line = "0"
+            else:
+                print("格式有误\n注意：请直接回车或输入0、1、2之一")
+
+    if form_line != "0" and not form_index:
+        form_index_correct = False
+        while not form_index_correct:
+            form_index_correct = input("请输入对应表单索引").strip('#')
+            if re.match(r'^[1-9]\d*$'):
+                form_index_correct = True
+            else:
+                print("格式有误\n注意：请输入正整数")
+                 
     if push and not commit:
-        commit = input("请输入提交信息\n")
+        commit_correct = False
+        while not commit_correct:
+            commit = input("请输入提交信息\n")
+            if commit:
+                commit_correct = True
+            else:
+                continue
 
     return {
         "course_name": course_name,
@@ -352,8 +381,8 @@ def main() -> None:
     parser.add_argument("--key", help="蓝奏云12位或更长的Key，或分享/API链接")
     parser.add_argument("--composite", help="教材([上/下]册)-教材名-主编首位-出版社")
     parser.add_argument("--no-tab-line", action="store_true", help="日志中不写入新建tab行")
-    parser.add_argument("--form-line", action="store_true", help="日志中写入表单项完成行")
-    parser.add_argument("--form-index", default="0", help="对应表单项")
+    parser.add_argument("--form-line", help="日志中写入表单项完成行，0为不写入，1为写入教材收集，2为写入文件上传")
+    parser.add_argument("--form-index", help="对应表单索引")
     parser.add_argument("--push", action="store_true", help="执行 git add/commit/push 以上传变更")
     parser.add_argument("--skip-pull", action="store_true", help="跳过开始时的 git pull（本地脏工作区时可用）")
     parser.add_argument("--commit", default="更新: 新增教材资源", help="与 --push 搭配使用的提交信息")

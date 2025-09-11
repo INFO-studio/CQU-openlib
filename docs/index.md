@@ -13,7 +13,7 @@ hide:
     * 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     * 部分课程可能存在课程存在而检索不到的情况
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-09-11](sundry/更新日志/2025/2025-09/2025-09-11.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-09-12](sundry/更新日志/2025/2025-09/2025-09-12.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 

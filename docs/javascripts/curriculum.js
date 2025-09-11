@@ -104,7 +104,7 @@ function saveData() {
     
     const formFetchButton = document.getElementById("curriculum-form-action-fetch");
     if (formFetchButton) {
-      formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
+      formFetchButton.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; gap: 0.5em"><svg class="loading-spinner" width="1em" height="1em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg><span>正在获取</span></div>`;
       formFetchButton.disabled = true;
     }
     
