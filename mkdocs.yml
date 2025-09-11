@@ -10,8 +10,6 @@ copyright: Copyright &copy; 2024 - 2025 CQU-openlib Opensource Community
 theme:
   name: material
   language: zh
-  include_search_page: false
-  search_index_only: false
   features:
     - announce.dismiss
     - content.code.copy
@@ -39,7 +37,8 @@ theme:
 
 plugins:
   - tags
-  - search
+  - search:
+      separator: '[\s\-\.]+'
 
 
 
