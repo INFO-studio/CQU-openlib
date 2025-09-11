@@ -221,7 +221,7 @@ def write_daily_log(
     log_file = log_dir / f"{today:%Y}-{today:%m}-{today:%d}.md"
     
     if log_file.exists():
-        lines: list[str] = log_file.read_text(encoding="utf-8").split("\n")
+        lines: list[str] = log_file.read_text(encoding="utf-8").strip("\n").split("\n")
     else:
         lines: list[str] = [
             "---",
