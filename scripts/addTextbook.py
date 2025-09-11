@@ -138,8 +138,6 @@ def add_resource_to_course(
         lines.extend(["", "## 资源  ", ""]) 
 
     try:
-        if (l == tab_header_with_spaces) or (l.strip() == tab_header_trimmed):
-            tab_line = False
         idx = next(
             i for i, l in enumerate(lines)
             if (l == tab_header_with_spaces) or (l.strip() == tab_header_trimmed)
@@ -161,6 +159,7 @@ def add_resource_to_course(
         insert_at = (last_textbook_line + 1) if last_textbook_line is not None else (idx + 1)
         lines.insert(insert_at, resource_line)
         print(f"[ doc ] appended resource under existing tab {course_code}")
+        tab_line = False
     except StopIteration:
         resource_idx = max(i for i, l in enumerate(lines) if l.strip().startswith("## 资源"))
         insertion_point = resource_idx + 1
