@@ -219,14 +219,17 @@ def write_daily_log(
     log_dir = LOG_ROOT / f"{today:%Y}" / f"{today:%Y}-{today:%m}"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / f"{today:%Y}-{today:%m}-{today:%d}.md"
-
-    lines: list[str] = [
-        "---",
-        "search:",
-        "  exclude: true",
-        "---",
-        "",
-    ]
+    
+    if log_file.exists():
+        lines: list[str] = log_file.read_text().split("\n")
+    else:
+        lines: list[str] = [
+            "---",
+            "search:",
+            "  exclude: true",
+            "---",
+            "",
+        ]
 
     if include_tab_line:
         lines.append(f"- 新建 [{course_name}](../../../../course/{course_name}.md) 页 `tab: {course_code}`")
