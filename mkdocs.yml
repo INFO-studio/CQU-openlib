@@ -11,7 +11,7 @@ theme:
   name: material
   language: zh
   include_search_page: false
-  #search_index_only: false
+  search_index_only: false
   features:
     - announce.dismiss
     - content.code.copy
