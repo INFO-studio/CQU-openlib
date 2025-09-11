@@ -10,6 +10,8 @@ copyright: Copyright &copy; 2024 - 2025 CQU-openlib Opensource Community
 theme:
   name: material
   language: zh
+  include_search_page: false
+  #search_index_only: false
   features:
     - announce.dismiss
     - content.code.copy
@@ -39,13 +41,7 @@ plugins:
   - tags
   - search:
       lang: zh              # 控制搜索分词语言
-      type: flexsearch      # 启用flexsearch搜索引擎
-      separator: '[\s\-\.\/\=\_\+\#\?\!\:\;]+'
-      flexsearch:
-        encoder: simple
-        tokenize: forward
-        resolution: 9
-        context: true
+      separator: '[\s\u200b\-]'
 
 
 
