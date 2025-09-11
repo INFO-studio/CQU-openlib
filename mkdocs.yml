@@ -39,9 +39,7 @@ theme:
 
 plugins:
   - tags
-  - search:
-      lang: zh              # 控制搜索分词语言
-      separator: '[\s\u200b\-]'
+  - search
 
 
 
