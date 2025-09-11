@@ -39,10 +39,10 @@ def git_pull(
             run(["git", "fetch", "origin", "main"], cwd=REPO_ROOT)
             run(["git", "reset", "--hard", "origin/main"], cwd=REPO_ROOT)
             run(["git", "clean", "-fd"], cwd=REPO_ROOT)
-            print("[  git  ] repository reset to origin/main")
+            print("[ git ] repository reset to origin/main")
         else:
             run(["git", "pull", "origin", "main"], cwd=REPO_ROOT)
-            print("[  git  ] pulled origin main")
+            print("[ git ] pulled origin main")
     except subprocess.CalledProcessError as exc:
             print(exc.stdout)
             print(exc.stderr)
@@ -75,6 +75,8 @@ def ensure_course_page(course_name: str, error: bool = False) -> Union[Path, boo
     else:
         return course_file
 
+class AddResourceToCourseReturnType(TypedDict):
+    tab_line: bool
 
 def add_resource_to_course(
     course_file: Path,
@@ -84,7 +86,7 @@ def add_resource_to_course(
     editor_first: str,
     publisher: str,
     volume: str | None,
-) -> None:
+) -> AddResourceToCourseReturnType:
     lines = course_file.read_text(encoding="utf-8").splitlines()
 
     joined_preview = "\n".join(lines[:10])
@@ -123,10 +125,11 @@ def add_resource_to_course(
             i += 1
         return out
     lines = normalize_lines(lines)
-    print("[courses] normalized.")
+    print("[ doc ] normalized.")
 
     tab_header_with_spaces = f'=== ":material-book:`{course_code}`"  '
     tab_header_trimmed = f'=== ":material-book:`{course_code}`"'
+    tab_line = True
     resource_line = (
         f"    * [教材{volume if volume else ''}]({api_url}) - :material-format-quote-open:`{textbook_name}` - :material-account:`{editor_first}` - :material-printer:`{publisher}`  "
     )
@@ -135,6 +138,8 @@ def add_resource_to_course(
         lines.extend(["", "## 资源  ", ""]) 
 
     try:
+        if (l == tab_header_with_spaces) or (l.strip() == tab_header_trimmed):
+            tab_line = False
         idx = next(
             i for i, l in enumerate(lines)
             if (l == tab_header_with_spaces) or (l.strip() == tab_header_trimmed)
@@ -155,16 +160,20 @@ def add_resource_to_course(
             scan += 1
         insert_at = (last_textbook_line + 1) if last_textbook_line is not None else (idx + 1)
         lines.insert(insert_at, resource_line)
-        print(f"[courses] appended resource under existing tab {course_code}")
+        print(f"[ doc ] appended resource under existing tab {course_code}")
     except StopIteration:
         resource_idx = max(i for i, l in enumerate(lines) if l.strip().startswith("## 资源"))
         insertion_point = resource_idx + 1
         lines[insertion_point:insertion_point] = [tab_header_with_spaces, resource_line]
-        print(f"[courses] created new tab {course_code} and added resource")
+        print(f"[ doc ] created new tab {course_code} and added resource")
 
     while lines and lines[0].strip() == "":
         lines.pop(0)
     course_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return {
+        ['tab_line']: tab_line
+    }
+
 
 
 def parse_composite_info(composite: str, error: bool = False) -> Tuple[str, str, str, Optional[str]]:
@@ -243,7 +252,7 @@ def write_daily_log(
             lines.append(f"- 完成 [待办事项-文件上传](../../../待办事项/upload.md) `#{form_index}`")
 
     log_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"[  log  ] wrote {log_file}")
+    print(f"[ log ] wrote {log_file}")
     return log_file
 
 
@@ -254,7 +263,6 @@ def update_log() -> None:
             cwd=REPO_ROOT,
             env={"PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
         )
-        print("[scripts] updateLog.py executed")
     except subprocess.CalledProcessError as exc:
         print(exc.stdout)
         print(exc.stderr)
@@ -265,14 +273,13 @@ def push_changes(commit_message: str) -> None:
     run(["git", "add", "."], cwd=REPO_ROOT)
     run(["git", "commit", "-m", commit_message], cwd=REPO_ROOT)
     run(["git", "push"], cwd=REPO_ROOT)
-    print("[  git  ] changes pushed")
+    print("[ git ] changes pushed")
 
 class Args(TypedDict):
     course_name: str
     course_code: str
     key: str
     composite: str
-    no_tab_line: bool
     form_line: str
     form_index: str
     push: bool
@@ -286,7 +293,6 @@ def interactive_args(args) -> Args:
     course_code: str = args.course_code
     key: str = args.key
     composite: str = args.composite
-    no_tab_line: bool = args.no_tab_line
     form_line: str = args.form_line
     form_index: str = args.form_index
     push: bool = args.push
@@ -364,7 +370,6 @@ def interactive_args(args) -> Args:
         "course_code": course_code,
         "key": key,
         "composite": composite,
-        "no_tab_line": no_tab_line,
         "form_line": form_line,
         "form_index": form_index,
         "push": push,
@@ -375,12 +380,12 @@ def interactive_args(args) -> Args:
 
 
 def main() -> None:
+
     parser = argparse.ArgumentParser(description="Add textbook resource and update logs, with pull+push.")
     parser.add_argument("--course_name", help="课程名称，例如: 人工智能导论")
     parser.add_argument("--course_code", help="课程号，例如: ABC1234")
     parser.add_argument("--key", help="蓝奏云12位或更长的Key，或分享/API链接")
     parser.add_argument("--composite", help="教材([上/下]册)-教材名-主编首位-出版社")
-    parser.add_argument("--no-tab-line", action="store_true", help="日志中不写入新建tab行")
     parser.add_argument("--form-line", help="日志中写入表单项完成行，0为不写入，1为写入教材收集，2为写入文件上传")
     parser.add_argument("--form-index", help="对应表单索引")
     parser.add_argument("--push", action="store_true", help="执行 git add/commit/push 以上传变更")
@@ -391,21 +396,23 @@ def main() -> None:
 
     args = interactive_args(parser_args)
 
+    print("------- addTextbook.py -------")
+
     os.chdir(REPO_ROOT)
     if not args["skip_pull"]:
         git_pull(bool(args["force_pull"]))
     else:
-        print("[  git  ] skip pull as requested (--skip-pull)")
+        print("[ git ] skip pull as requested (--skip-pull)")
 
     key = extract_key(args["key"], True)
     api_url = f"http://api.cqu-openlib.cn/file?key={key}"
-    print(f"[  key  ] {key}\n[  url  ] {api_url}")
+    print(f"[ key ] {key}\n[ url ] {api_url}")
 
     course_file = ensure_course_page(args["course_name"], True)
 
     textbook_name, editor_first, publisher, volume = parse_composite_info(args["composite"], True)
 
-    add_resource_to_course(course_file, args["course_code"], api_url, textbook_name, editor_first, publisher, volume)
+    add_return = add_resource_to_course(course_file, args["course_code"], api_url, textbook_name, editor_first, publisher, volume)
 
     write_daily_log(
         course_name=args["course_name"],
@@ -413,12 +420,15 @@ def main() -> None:
         course_code=args["course_code"],
         editor_first=editor_first,
         publisher=publisher,
-        include_tab_line=not args["no_tab_line"],
+        include_tab_line=add_return["tab_line"],
         include_form_line=args["form_line"],
         form_index=args["form_index"]
     )
 
     update_log()
+    
+    print("------- addTextbook.py -------")
+
     if args["push"]:
         push_changes(args["commit"])
 
