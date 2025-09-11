@@ -1,1 +1,2 @@
 mkdocs-material==9.6.13
+jieba==0.42.1
