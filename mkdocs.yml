@@ -38,7 +38,7 @@ theme:
 plugins:
   - tags
   - search:
-      separator: '[\s\u200b\-]'
+
 
 extra: 
   analytics:
