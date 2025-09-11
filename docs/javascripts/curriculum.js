@@ -603,10 +603,8 @@ function renderCurriculum(events) {
     table.appendChild(tr);
   }
   
-  // 将表格和导航按钮添加到容器中
-  containerDiv.appendChild(prevButton);
+  // 将表格添加到容器中
   containerDiv.appendChild(table);
-  containerDiv.appendChild(nextButton);
   
   // 将容器添加到表格区域
   tableDiv.appendChild(containerDiv);
