@@ -230,8 +230,10 @@ hide:
 
 #curriculum-table-div .curriculum-action-icon-round {
     padding: 0;
-    height: calc(2.25em);
-    width: calc(2.25em);
+    height: 43.44px;
+    height: calc(1lh + 1.25em + 4px);
+    width: 43.44px;
+    width: calc(1lh + 1.25em + 4px);
     display: flex;
     aspect-ratio: 1;
     justify-content: center;

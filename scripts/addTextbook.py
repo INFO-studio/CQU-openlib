@@ -301,7 +301,7 @@ def interactive_args(args) -> Args:
             if ensure_course_page(course_name) != False:
                 course_name_correct = True
             else:
-                print("未找到对应文件\n注意：请不要包含任何的附加内容，「高等数学II」请改为「高等数学」，如无对应文件，请手动创建")
+                print("未找到对应文件\n注意：请不要包含任何的附加内容，「高等数学II」请改为「高等数学」，如无对应文件，请手动创建\n")
     
     if not course_code:
         course_code_correct = False
@@ -310,7 +310,7 @@ def interactive_args(args) -> Args:
             if re.match(r"^\*?[A-Z]*[0-9]*$", course_code):
                 course_code_correct = True
             else:
-                print("格式有误\n注意：格式类似ABC12345")
+                print("格式有误\n注意：格式类似ABC12345\n")
 
     if not key:
         key_correct = False
@@ -319,7 +319,7 @@ def interactive_args(args) -> Args:
             if extract_key(key) != False:
                 key_correct = True
             else:
-                print("格式有误\n注意：应为蓝奏云外链分享地址或密钥（操作 - 外链分享地址 - 最后一字段12字符密钥）")
+                print("格式有误\n注意：应为蓝奏云外链分享地址或密钥（操作 - 外链分享地址 - 最后一字段12字符密钥）\n")
 
     if not composite:
         composite_correct = False
@@ -328,36 +328,36 @@ def interactive_args(args) -> Args:
             if parse_composite_info(composite) != False:
                 composite_correct = True
             else:
-                print("格式有误\n注意：格式类似「教材-高等数学-张三-重庆大学出版社」")
+                print("格式有误\n注意：格式类似「教材-高等数学-张三-重庆大学出版社」\n")
 
     if not form_line:
         form_line_correct = False
         while not form_line_correct:
-            form_line = input("请选择是否写入表单行\n0 不写入（默认） | 1 写入教材收集 | 2 写入文件上传")
+            form_line = input("请选择是否写入表单行\n0 不写入（默认） | 1 写入教材收集 | 2 写入文件上传\n> ")
             if form_line in ["", "0", "1", "2"]:
                 form_line_correct = True
                 if form_line == "":
                     form_line = "0"
             else:
-                print("格式有误\n注意：请直接回车或输入0、1、2之一")
+                print("格式有误\n注意：请直接回车或输入0、1、2之一\n")
 
     if form_line != "0" and not form_index:
         form_index_correct = False
         while not form_index_correct:
-            form_index_correct = input("请输入对应表单索引").strip('#')
-            if re.match(r'^[1-9]\d*$'):
+            form_index = input("请输入对应表单索引\n> ").strip('#')
+            if re.match(r'^[1-9]\d*$', form_index):
                 form_index_correct = True
             else:
-                print("格式有误\n注意：请输入正整数")
+                print("格式有误\n注意：请输入正整数\n")
                  
     if push and not commit:
         commit_correct = False
         while not commit_correct:
-            commit = input("请输入提交信息\n")
+            commit = input("请输入提交信息\n> ")
             if commit:
                 commit_correct = True
             else:
-                continue
+                print("提交信息不可为空")
 
     return {
         "course_name": course_name,
