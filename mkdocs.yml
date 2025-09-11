@@ -9,26 +9,26 @@ copyright: Copyright &copy; 2024 - 2025 CQU-openlib Opensource Community
 
 theme:
   name: material
+  language: zh
   features:
-  - announce.dismiss
-  - content.code.copy
-  - navigation.indexes
-  - navigation.tabs
-  - navigation.tabs.sticky
+    - announce.dismiss
+    - content.code.copy
+    - navigation.indexes
+    - navigation.tabs
+    - navigation.tabs.sticky
   font:
     code: Fira Code
   palette:
-  - scheme: slate
-    toggle:
-      icon: material/toggle-switch
-      name: Switch to light mode
-  - scheme: defalt
-    toggle:
-      icon: material/toggle-switch-off-outline
-      name: Switch to dark mode
-    primary: indigo
-    accent: indigo
-  language: zh
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: indigo
+      accent: indigo
   logo: assets/openlib-logo.png
   favicon: assets/favicon.png
   icon:
@@ -37,7 +37,16 @@ theme:
 
 plugins:
   - tags
-  - search
+  - search:
+      lang: zh              # 控制搜索分词语言
+      type: flexsearch      # 启用flexsearch搜索引擎
+      separator: '[\s\-\.\/\=\_\+\#\?\!\:\;]+'
+      flexsearch:
+        encoder: simple
+        tokenize: forward
+        resolution: 9
+        context: true
+
 
 
 extra: 
