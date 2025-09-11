@@ -155,11 +155,11 @@ hide:
 }
 
 .curriculum-table-today {
-    background-color: color-mix(in srgb, var(--md-default-bg-color) 50%, var(--md-primary-fg-color) 50%);
+    background-color: color-mix(in srgb, var(--md-typeset-table-color) 50%, var(--md-primary-fg-color) 50%);
 }
 
-.curriculum-table-today {
-    background-color: color-mix(in srgb, var(--md-typeset-table-color) 50%, var(--md-primary-fg-color) 50%);
+.curriculum-table-today.curriculum-table-cell-scheduled {
+    background-color: color-mix(in srgb, var(--md-default-bg-color) 50%, var(--md-primary-fg-color) 50%);
 }
 
 .curriculum-event-flexbox {
