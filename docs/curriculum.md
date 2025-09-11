@@ -4,7 +4,7 @@ hide:
   - toc
 ---
 
-# 课表（正在重构中）
+# 课表
 
 <div id="curriculum-container">
   <div id="curriculum-form-div" style="display: none;">
@@ -33,11 +33,20 @@ hide:
   </div>
   <div id="curriculum-table-div" style="display: none;">
     <div class="curriculum-table-actions">
-      <button type="submit" class="md-button md-button--primary" id="curriculum-table-actions-refresh" aria-label="刷新课表">
+      <button class="md-button md-button--primary" id="curriculum-table-actions-refresh" aria-label="刷新课表">
         <span class="md-button__content">刷新课表</span>
       </button>
-      <button type="submit" class="md-button md-button--primary" id="curriculum-table-actions-reset" aria-label="重置本页">
+      <button class="md-button md-button--primary" id="curriculum-table-actions-reset" aria-label="重置本页">
         <span class="md-button__content">重置本页</span>
+      </button >
+      <button class="md-button md-button--primary curriculum-action-icon-round" id="curriculum-table-actions-prev" aria-label="<">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-left-icon lucide-circle-arrow-left"><circle cx="12" cy="12" r="10"></circle><path d="m12 8-4 4 4 4"></path><path d="M16 12H8"></path></svg>
+      </button>
+      <button class="md-button md-button--primary" id="curriculum-table-actions-now" aria-label="返回当前日期" style="display: none">
+          <span class="md-button__content" id="curriculum-form-action-fetch">返回当前日期</span>
+      </button>
+      <button class="md-button md-button--primary curriculum-action-icon-round" id="curriculum-table-actions-next" aria-label=">">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-right-icon lucide-circle-arrow-right"><circle cx="12" cy="12" r="10"/><path d="m12 16 4-4-4-4"/><path d="M8 12h8"/></svg>
       </button>
     </div>
     <div class="curriculum-table-time">
@@ -46,10 +55,10 @@ hide:
 </div>
 
 - [x] 实现基本功能
+- [x] 日期调整按钮
 - [ ] 重构原生json response版本
 - [ ] 实现日历导出功能
 - [ ] 课程冲突处理
-- [ ] 日期调整按钮
 
 
 [^1]: 基于[课表-DL444](./skill/推荐使用的网站等/课表.md)
@@ -217,5 +226,14 @@ hide:
 .curriculum-event-dialog-teacher {
     font-size: 14px;
     margin: 5px 0;
+}
+
+#curriculum-table-div .curriculum-action-icon-round {
+    padding: 0;
+    height: 52px;
+    display: flex;
+    aspect-ratio: 1;
+    justify-content: center;
+    align-items: center;
 }
 </style>
