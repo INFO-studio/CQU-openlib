@@ -56,6 +56,8 @@
     git push
     ```
 
+3. 为了简化多处编辑markdown流程，有一些重复工作已使用脚本代替，请查看[scripts readme](./scripts/README.md)
+
 ---
 
 ### 提醒  
