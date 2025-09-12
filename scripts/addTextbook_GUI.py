@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox, filedialog
 import re
 import os
 from datetime import datetime
-import subprocess
 import threading
 from pathlib import Path
 
@@ -11,31 +10,62 @@ from pathlib import Path
 class TextbookEntry:
     """教材条目类"""
     def __init__(self, volume, api_url, textbook_name, editor_first, publisher):
-        self.volume = volume  # 册数
+        self.volume = volume  # 类型/册数（如“教材上册”、“试卷”等）
         self.api_url = api_url  # API链接
         self.textbook_name = textbook_name  # 教材名称
         self.editor_first = editor_first  # 主编
         self.publisher = publisher  # 出版社
         self.sub_entries = []  # 子条目列表
-    
+
     def to_markdown(self, indent="    "):
-        """转换为Markdown格式"""
-        if self.api_url and self.textbook_name:
-            # 修正：使用"教材{self.volume}"格式，与解析期望一致
-            volume_text = f"教材{self.volume}" if self.volume else "教材"
-            result = f"{indent}* [{volume_text}]({self.api_url}) - :material-format-quote-open:`{self.textbook_name}` - :material-account:`{self.editor_first}` - :material-printer:`{self.publisher}`  \n"
-        elif self.api_url:
-            # 修正：使用"教材{self.volume}"格式
-            volume_text = f"教材{self.volume}" if self.volume else ""
-            title = volume_text if volume_text else self.textbook_name
-            result = f"{indent}* [{title}]({self.api_url})  \n"
+        """转换为Markdown格式，仅在字段非空时显示对应部分"""
+        parts = []
+
+        # 链接部分（必有）
+        if self.api_url:
+            display_text = self.volume if self.volume else "教材"
+            parts.append(f"[{display_text}]({self.api_url})")
         else:
-            result = f"{indent}* {self.textbook_name}  \n"
-        
+            parts.append(self.textbook_name or "未知条目")
+
+        # 教材名称（如果非空）
+        if self.textbook_name and self.textbook_name.strip():
+            parts.append(f":material-format-quote-open:`{self.textbook_name}`")
+
+        # 主编（如果非空）
+        if self.editor_first and self.editor_first.strip():
+            parts.append(f":material-account:`{self.editor_first}`")
+
+        # 出版社（如果非空）
+        if self.publisher and self.publisher.strip():
+            parts.append(f":material-printer:`{self.publisher}`")
+
+        # 拼接所有非空部分
+        result = f"{indent}* {' - '.join(parts)}  \n"
+
+        # 子条目
         for sub_entry in self.sub_entries:
             result += sub_entry.to_markdown(indent + "    ")
-        
+
         return result
+
+    def clone(self):
+        """创建当前条目的副本"""
+        new_entry = TextbookEntry(
+            self.volume, 
+            self.api_url, 
+            self.textbook_name, 
+            self.editor_first, 
+            self.publisher
+        )
+        for sub_entry in self.sub_entries:
+            new_sub_entry = TextbookSubEntry(
+                sub_entry.title, 
+                sub_entry.api_url, 
+                sub_entry.order_index
+            )
+            new_entry.sub_entries.append(new_sub_entry)
+        return new_entry
 
 
 class TextbookSubEntry:
@@ -49,92 +79,15 @@ class TextbookSubEntry:
         """转换为Markdown格式"""
         return f"{indent}* [{self.title}]({self.api_url})  \n"
 
-
-class GitOperationsDialog:
-    """Git操作对话框"""
-    def __init__(self, parent):
-        self.parent = parent
-        self.dialog = tk.Toplevel(parent)
-        self.dialog.title("Git操作")
-        self.dialog.geometry("500x400")
-        self.dialog.transient(parent)
-        self.dialog.grab_set()
-        
-        self.setup_ui()
-    
-    def setup_ui(self):
-        button_frame = ttk.Frame(self.dialog)
-        button_frame.pack(fill=tk.X, padx=10, pady=5)
-        
-        ttk.Button(button_frame, text="Git Status", command=self.git_status).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text="Git Pull", command=self.git_pull).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text="Git Add All", command=self.git_add_all).pack(side=tk.LEFT, padx=5)
-        
-        commit_frame = ttk.Frame(self.dialog)
-        commit_frame.pack(fill=tk.X, padx=10, pady=5)
-        
-        ttk.Label(commit_frame, text="提交信息:").pack(anchor=tk.W)
-        self.commit_entry = ttk.Entry(commit_frame)
-        self.commit_entry.pack(fill=tk.X, pady=2)
-        
-        ttk.Button(commit_frame, text="Git Commit", command=self.git_commit).pack(anchor=tk.W, pady=2)
-        ttk.Button(commit_frame, text="Git Push", command=self.git_push).pack(anchor=tk.W, pady=2)
-        
-        ttk.Label(self.dialog, text="输出:").pack(anchor=tk.W, padx=10)
-        
-        text_frame = ttk.Frame(self.dialog)
-        text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-        
-        self.output_text = tk.Text(text_frame, wrap=tk.WORD)
-        scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=self.output_text.yview)
-        self.output_text.configure(yscrollcommand=scrollbar.set)
-        
-        self.output_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-    
-    def run_git_command(self, command):
-        def execute():
-            try:
-                result = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=os.getcwd())
-                output = f"$ {command}\n{result.stdout}"
-                if result.stderr:
-                    output += f"\nError: {result.stderr}"
-                output += "\n" + "="*50 + "\n"
-                self.dialog.after(0, lambda: self.update_output(output))
-            except Exception as e:
-                error_msg = f"执行命令时出错: {str(e)}\n" + "="*50 + "\n"
-                self.dialog.after(0, lambda: self.update_output(error_msg))
-        
-        threading.Thread(target=execute, daemon=True).start()
-    
-    def update_output(self, text):
-        self.output_text.insert(tk.END, text)
-        self.output_text.see(tk.END)
-    
-    def git_status(self):
-        self.run_git_command("git status")
-    
-    def git_pull(self):
-        self.run_git_command("git pull")
-    
-    def git_add_all(self):
-        self.run_git_command("git add .")
-    
-    def git_commit(self):
-        commit_msg = self.commit_entry.get().strip()
-        if not commit_msg:
-            messagebox.showwarning("警告", "请输入提交信息")
-            return
-        self.run_git_command(f'git commit -m "{commit_msg}"')
-    
-    def git_push(self):
-        self.run_git_command("git push")
+    def clone(self):
+        """创建当前子条目的副本"""
+        return TextbookSubEntry(self.title, self.api_url, self.order_index)
 
 
 class TextbookManagerGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("CQU-Openlib教材文档管理系统 v1")
+        self.root.title("CQU-Openlib教材文档管理系统 v1.2")
         self.root.geometry("1200x800")
         
         self.courses = {}
@@ -144,6 +97,9 @@ class TextbookManagerGUI:
         self.textbook_entries = []
         self.file_path = ""
         self.file_content = []
+        
+        # 剪贴板用于存储复制的条目
+        self.clipboard = None
         
         self.setup_ui()
         self.load_courses()
@@ -172,6 +128,9 @@ class TextbookManagerGUI:
         self.code_listbox.pack(fill=tk.X, pady=2)
         self.code_listbox.bind('<<ListboxSelect>>', self.on_code_select)
         
+        # 添加"添加课程号"按钮
+        ttk.Button(left_frame, text="添加课程号", command=self.add_course_code).pack(fill=tk.X, pady=(5, 0))
+        
         right_frame = ttk.Frame(main_frame)
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         
@@ -190,6 +149,11 @@ class TextbookManagerGUI:
         ttk.Button(button_frame, text="删除", command=self.delete_entry).pack(side=tk.LEFT, padx=(0, 5))
         ttk.Button(button_frame, text="上移", command=self.move_up).pack(side=tk.LEFT, padx=(0, 5))
         ttk.Button(button_frame, text="下移", command=self.move_down).pack(side=tk.LEFT, padx=(0, 5))
+        
+        # 添加复制和粘贴按钮
+        ttk.Button(button_frame, text="复制条目", command=self.copy_entry).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(button_frame, text="粘贴条目", command=self.paste_entry).pack(side=tk.LEFT, padx=(0, 5))
+        
         ttk.Button(button_frame, text="保存", command=self.save_changes).pack(side=tk.LEFT, padx=(0, 5))
         
         list_frame = ttk.LabelFrame(right_frame, text="教材列表", padding=5)
@@ -215,6 +179,94 @@ class TextbookManagerGUI:
         
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         tree_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    def add_course_code(self):
+        """添加新的课程号"""
+        if not self.current_course_name:
+            messagebox.showwarning("警告", "请先选择一个课程")
+            return
+        
+        # 创建对话框让用户输入新的课程号
+        dialog = tk.Toplevel(self.root)
+        dialog.title("添加课程号")
+        dialog.geometry("300x150")
+        dialog.transient(self.root)
+        dialog.grab_set()
+        
+        frame = ttk.Frame(dialog, padding=20)
+        frame.pack(fill=tk.BOTH, expand=True)
+        
+        ttk.Label(frame, text="请输入新的课程号:").pack(anchor=tk.W, pady=(0, 10))
+        course_code_var = tk.StringVar()
+        course_code_entry = ttk.Entry(frame, textvariable=course_code_var, width=30)
+        course_code_entry.pack(fill=tk.X, pady=(0, 20))
+        course_code_entry.focus()
+        
+        def add_code():
+            new_code = course_code_var.get().strip()
+            if not new_code:
+                messagebox.showwarning("警告", "课程号不能为空")
+                return
+            
+            # 检查是否已存在
+            if new_code in self.courses[self.current_course_name]['codes']:
+                messagebox.showwarning("警告", "该课程号已存在")
+                return
+            
+            # 添加到课程号列表
+            self.courses[self.current_course_name]['codes'].append(new_code)
+            
+            # 更新界面
+            self.code_listbox.insert(tk.END, new_code)
+            
+            # 保存到文件
+            self.save_course_codes()
+            
+            messagebox.showinfo("成功", f"课程号 '{new_code}' 已添加")
+            dialog.destroy()
+        
+        button_frame = ttk.Frame(frame)
+        button_frame.pack(fill=tk.X)
+        ttk.Button(button_frame, text="确定", command=add_code).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(button_frame, text="取消", command=dialog.destroy).pack(side=tk.LEFT, padx=(0, 5))
+        
+        # 绑定回车键
+        course_code_entry.bind('<Return>', lambda e: add_code())
+        
+        dialog.wait_window()
+
+    def save_course_codes(self):
+        """保存课程号到文件 - 修改为在文件末尾添加新课程号"""
+        if not self.current_course_name:
+            return
+        
+        try:
+            filename = self.courses[self.current_course_name]['filename']
+            
+            # 读取文件内容
+            with open(filename, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # 获取最新的课程号（即刚添加的那个）
+            latest_code = self.courses[self.current_course_name]['codes'][-1]
+            
+            # 构建新的课程号行
+            new_course_line = f'=== ":material-book:`{latest_code}`"\n'
+            
+            # 在文件末尾添加新课程号
+            if not content.endswith('\n'):
+                content += '\n'
+            content += new_course_line
+            
+            # 写回文件
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(content)
+                
+            # 重新加载课程数据以确保一致性
+            self.load_courses()
+            
+        except Exception as e:
+            messagebox.showerror("错误", f"保存课程号时出错: {str(e)}")
 
     def load_courses(self):
         try:
@@ -496,7 +548,7 @@ class TextbookManagerGUI:
                     print(f"   - 行内容: {line.strip()}")
                     
                     # 尝试更宽松的匹配
-                    loose_match = re.search(r'\*\s*\[([^\]]+)\]\s*\(\s*($[^)]+)\s*\)', line)
+                    loose_match = re.search(r'\*\s*\[([^\]]+)\]\s*\(\s*([^)]+)\s*\)', line)
                     if loose_match:
                         print("   ✅ 松散匹配成功!")
                         title = loose_match.group(1)
@@ -510,8 +562,7 @@ class TextbookManagerGUI:
                         print(f"⚠️ 无链接条目: {title}")
             
             elif leading_spaces == 8 and line.strip().startswith('*') and current_main_entry:
-                # 修复：修正正则表达式，将 $$ 改为 \(
-                link_match = re.search(r'\*\s*\[([^\]]+)\]\s*\(\s*($[^)]+)\s*\)', line)
+                link_match = re.search(r'\*\s*\[([^\]]+)\]\s*\(\s*([^)]+)\s*\)', line)
                 if link_match:
                     title = link_match.group(1)
                     api_url = link_match.group(2)
@@ -562,6 +613,78 @@ class TextbookManagerGUI:
         
         for item in self.tree.get_children():
             self.tree.item(item, open=True)
+
+    def copy_entry(self):
+        """复制选中的条目到剪贴板"""
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("警告", "请选择要复制的条目")
+            return
+        
+        item = selected_item[0]
+        parent = self.tree.parent(item)
+        
+        if parent:
+            # 复制子条目
+            main_index = int(self.tree.item(parent)['text']) - 1
+            sub_index = int(self.tree.item(item)['text'].split('.')[1]) - 1
+            sub_entry = self.textbook_entries[main_index].sub_entries[sub_index]
+            self.clipboard = {
+                'type': 'sub_entry',
+                'data': sub_entry.clone()
+            }
+            messagebox.showinfo("成功", "子条目已复制到剪贴板")
+        else:
+            # 复制主条目
+            main_index = int(self.tree.item(item)['text']) - 1
+            entry = self.textbook_entries[main_index]
+            self.clipboard = {
+                'type': 'main_entry',
+                'data': entry.clone()
+            }
+            messagebox.showinfo("成功", "主条目已复制到剪贴板")
+
+    def paste_entry(self):
+        """将剪贴板中的条目粘贴到当前位置"""
+        if not self.clipboard:
+            messagebox.showwarning("警告", "剪贴板为空，请先复制条目")
+            return
+        
+        selected_item = self.tree.selection()
+        
+        if self.clipboard['type'] == 'main_entry':
+            # 粘贴主条目
+            new_entry = self.clipboard['data'].clone()
+            self.textbook_entries.append(new_entry)
+            self.update_tree_view()
+            messagebox.showinfo("成功", "主条目已粘贴")
+            
+        elif self.clipboard['type'] == 'sub_entry':
+            if not self.textbook_entries:
+                messagebox.showwarning("警告", "请先添加主教材")
+                return
+            
+            # 粘贴子条目
+            if selected_item:
+                item = selected_item[0]
+                parent = self.tree.parent(item)
+                if parent:
+                    # 如果选中的是子条目，粘贴到同一个主条目下
+                    main_index = int(self.tree.item(parent)['text']) - 1
+                else:
+                    # 如果选中的是主条目，粘贴到该主条目下
+                    main_index = int(self.tree.item(item)['text']) - 1
+            else:
+                # 如果没有选中任何条目，粘贴到最后一个主条目下
+                main_index = len(self.textbook_entries) - 1
+            
+            if main_index >= 0 and main_index < len(self.textbook_entries):
+                new_sub_entry = self.clipboard['data'].clone()
+                self.textbook_entries[main_index].sub_entries.append(new_sub_entry)
+                self.update_tree_view()
+                messagebox.showinfo("成功", "子条目已粘贴")
+            else:
+                messagebox.showwarning("警告", "无效的粘贴位置")
 
     # 以下方法未修改，保持原样
     def add_main_textbook(self):
@@ -773,14 +896,27 @@ class MainTextbookDialog:
         frame = ttk.Frame(self.dialog, padding=20)
         frame.pack(fill=tk.BOTH, expand=True)
         
-        ttk.Label(frame, text="册数:").grid(row=0, column=0, sticky=tk.W, pady=5)
+        ttk.Label(frame, text="类型/册数:").grid(row=0, column=0, sticky=tk.W, pady=5)
         self.volume_var = tk.StringVar(value=volume)
-        volume_combo = ttk.Combobox(frame, textvariable=self.volume_var, values=["上册", "中册", "下册", "第1册", "第2册", "第3册", ""])
+        volume_combo = ttk.Combobox(frame, textvariable=self.volume_var, values=[
+            "教材上册", "教材中册", "教材下册", 
+            "教材第1册", "教材第2册", "教材第3册",
+            "试卷", "习题集", "实验指导", "其他", ""
+        ])
         volume_combo.grid(row=0, column=1, sticky=tk.EW, pady=5, padx=(10, 0))
         
         ttk.Label(frame, text="API链接:").grid(row=1, column=0, sticky=tk.W, pady=5)
         self.api_url_var = tk.StringVar(value=api_url)
-        ttk.Entry(frame, textvariable=self.api_url_var).grid(row=1, column=1, sticky=tk.EW, pady=5, padx=(10, 0))
+        api_frame = ttk.Frame(frame)
+        api_frame.grid(row=1, column=1, sticky=tk.EW, pady=5, padx=(10, 0))
+        
+        api_entry = ttk.Entry(api_frame, textvariable=self.api_url_var)
+        api_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        # 添加"自动填写"按钮
+        auto_fill_button = ttk.Button(api_frame, text="自动填写", 
+                                    command=lambda: self.api_url_var.set("http://api.cqu-openlib.cn/file?key="))
+        auto_fill_button.pack(side=tk.RIGHT, padx=(5, 0))
         
         ttk.Label(frame, text="教材名称:").grid(row=2, column=0, sticky=tk.W, pady=5)
         self.textbook_name_var = tk.StringVar(value=textbook_name)
@@ -845,7 +981,16 @@ class SubEntryDialog:
         
         ttk.Label(frame, text="API链接:").grid(row=1, column=0, sticky=tk.W, pady=5)
         self.api_url_var = tk.StringVar(value=api_url)
-        ttk.Entry(frame, textvariable=self.api_url_var).grid(row=1, column=1, sticky=tk.EW, pady=5, padx=(10, 0))
+        api_frame = ttk.Frame(frame)
+        api_frame.grid(row=1, column=1, sticky=tk.EW, pady=5, padx=(10, 0))
+        
+        api_entry = ttk.Entry(api_frame, textvariable=self.api_url_var)
+        api_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        # 添加"自动填写"按钮
+        auto_fill_button = ttk.Button(api_frame, text="自动填写", 
+                                    command=lambda: self.api_url_var.set("http://api.cqu-openlib.cn/file?key="))
+        auto_fill_button.pack(side=tk.RIGHT, padx=(5, 0))
         
         button_frame = ttk.Frame(frame)
         button_frame.grid(row=2, column=0, columnspan=2, pady=20)
@@ -893,25 +1038,26 @@ def main():
     file_menu.add_separator()
     file_menu.add_command(label="退出", command=root.quit)
     
-    tools_menu = tk.Menu(menubar, tearoff=0)
-    menubar.add_cascade(label="工具", menu=tools_menu)
-    tools_menu.add_command(label="Git操作", command=lambda: GitOperationsDialog(root))
+    # 删除了工具菜单
     
     help_menu = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label="帮助", menu=help_menu)
     help_menu.add_command(label="关于", command=lambda: messagebox.showinfo("关于", 
-        "教材文档管理系统 v1\n\n"
-        "程序逻辑模块由何晟旭同学负责设计与开发；图形用户界面（GUI）的开发工作借助 Claude 与 Qwen 两款大语言模型辅助完成。\n"
+        "教材文档管理系统 v1.2\n\n"
+        "程序逻辑模块由何晟旭同学负责设计与开发；图形用户界面（GUI）的开发工作借助 Claude 与 Qwen 两款大语言模型辅助完成。不过本程序不支持log更新与自动git！\n"
         "功能特性:\n"
         "• 课程搜索和选择\n"
         "• 教材条目管理\n"
         "• Markdown格式支持\n"
-        "• Git集成\n\n"
+        "• 跨文件复制粘贴教材条目\n"
+        "• 新增：添加课程号功能（在文件末尾添加）\n"
+        "• 新增：API链接自动填写功能\n\n"
         "使用说明:\n"
         "1. 在左侧搜索并选择课程\n"
         "2. 选择课程编号（含'无课程号'）\n"
         "3. 管理教材条目\n"
-        "4. 保存更改"))
+        "4. 使用复制/粘贴按钮在不同课程间移动条目\n"
+        "5. 保存更改"))
 
     app = TextbookManagerGUI(root)
     
