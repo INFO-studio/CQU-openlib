@@ -18,6 +18,15 @@ def get_quarter(month):
     }
     return quarter_map[month]
 
+def quarter_order(q: str) -> int:
+    mapping = {
+        "第一季度": 1,
+        "第二季度": 2,
+        "第三季度": 3,
+        "第四季度": 4
+    }
+    return mapping[q]
+
 
 def get_log_structure(base_path):
     log_structure = {}
@@ -82,7 +91,7 @@ def update_sundary_updateLog_index(log_structure, latest_log):
             if log_quarter not in log_quarters:
                 log_quarters[log_quarter] = []
             log_quarters[log_quarter].append(log_month[0])
-        for log_quarter in sorted(log_quarters.keys(), reverse=True):
+        for log_quarter in sorted(log_quarters.keys(), key=quarter_order):
             new_content += f"    === \"{log_quarter}\"\n"
             for log_month in sorted(log_quarters[log_quarter], reverse=True):
                 new_content += f"        === \"{int(log_month)}月\"\n"

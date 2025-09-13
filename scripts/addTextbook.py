@@ -170,7 +170,7 @@ def add_resource_to_course(
         lines.pop(0)
     course_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return {
-        ['tab_line']: tab_line
+        'tab_line': tab_line
     }
 
 
