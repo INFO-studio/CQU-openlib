@@ -234,7 +234,7 @@ def read_xlsx_files(input_folder):
                 total_credits = row[header_index["总学分"]]
                 term_field = row[header_index["开课学期"]]
                 if "辅修" in major or "双学位" in major:
-                    raise RuntimeError(f"文件异常：检测到 {offending}，请筛选主修后再操作")
+                    raise RuntimeError(f"文件异常：检测到 {major}，请筛选主修后再操作")
                 if not all([college, major, year, course_category, course_nature, course_name, course_code, total_credits, term_field]):
                     continue
                 total_credits = normalize_credits(str(total_credits))

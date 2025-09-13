@@ -135,6 +135,7 @@ hide:
     justify-content: center;
     align-items: center;
     gap: 0.5em;
+    flex-wrap: wrap;
 }
 
 .curriculum-table-time {
