@@ -27,3 +27,5 @@
     - :material-book: `统计学 @CMRE20222` - :material-form-select: `新编统计学原理-陈嗣成-首都经济贸易大学出版社-9787563829606`
 - `#124`
     - :material-book: `分析化学 @CHEM10020` - :material-form-select: `分析化学-徐溢-科学出版社-9787030756077`
+- `#128`
+    - :material-book: `光学实验 @PHYS22110` - :material-form-select: `基础光学实验-赵艳-重庆大学出版社-9787568937337`
