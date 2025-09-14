@@ -29,3 +29,5 @@
     - :material-book: `分析化学 @CHEM10020` - :material-form-select: `分析化学-徐溢-科学出版社-9787030756077`
 - `#128`
     - :material-book: `光学实验 @PHYS22110` - :material-form-select: `基础光学实验-赵艳-重庆大学出版社-9787568937337`
+- `杂项`
+    - :material-book: `大学物理实验 @PHYS12010` - :material-form-select: `大学物理实验-何光宏-科学出版社-9787030820693`
