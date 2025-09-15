@@ -12,6 +12,8 @@ hide:
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     * 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
     * 部分课程可能存在课程存在而检索不到的情况
+    * [蓝盟官网下线通知](notice/蓝盟官网下线通知.md)
+    * [重庆大学开源镜像站维护通知](notice/重庆大学开源镜像站维护通知.md)
     <!--updateLog.py start-->
     * [更新日志](sundry/更新日志/index.md) / [2025-09-11](sundry/更新日志/2025/2025-09/2025-09-11.md)
     <!--updateLog.py end-->
