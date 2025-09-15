@@ -103,14 +103,18 @@ function saveData() {
     localStorage.setItem("userCredentials", base64Credentials);
     
     const formFetchButton = document.getElementById("curriculum-form-action-fetch");
+    const formFetchButtonInnerHTML = formFetchButton?.innerHTML;
     if (formFetchButton) {
-      formFetchButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在获取`;
+      formFetchButton.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; gap: 0.5em"><svg class="loading-spinner" width="1em" height="1em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg><span>正在获取</span></div>`;
       formFetchButton.disabled = true;
     }
     
     try {
       const userCredentials = JSON.parse(atob(localStorage.getItem("userCredentials")));
       const curriculumEvents = await curriculumGetEventsFromApi(userCredentials);
+      if (formFetchButton) {
+        formFetchButton.innerHTML = formFetchButtonInnerHTML;
+      }
       localStorage.setItem("curriculumEvents", JSON.stringify({ curriculumEvents, timeUpdated: Date.now() }));
       
       curriculum();
@@ -199,11 +203,13 @@ async function curriculumGetEventsFromApi(userCredentials) {
 async function curriculumRefreshEvents() {
   try {
     const tableRefreshButton = document.getElementById("curriculum-table-actions-refresh");
+    const tableRefreshButtonInnerHTML = tableRefreshButton.innerHTML;
     if (tableRefreshButton) {
-      tableRefreshButton.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg> 正在刷新`;
+      tableRefreshButton.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; gap: 0.5em"><svg class="loading-spinner" width="1em" height="1em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="42" stroke-dashoffset="15" stroke-linecap="round"></circle></svg><span>正在刷新</span></div>`;
       tableRefreshButton.disabled = true;
     }
     await curriculumSaveEvents(true);
+    tableRefreshButton.innerHTML = tableRefreshButtonInnerHTML;
     const eventsData = localStorage.getItem("curriculumEvents");
     if (eventsData) {
       const parsedData = JSON.parse(eventsData);
@@ -514,16 +520,10 @@ function renderCurriculum(events) {
   containerDiv.classList.add('curriculum-table-container');
   
   // 创建导航按钮
-  const prevButton = document.createElement('button');
-  prevButton.classList.add('date-nav-button', 'date-nav-prev');
-  prevButton.innerHTML = '&lt;';
-  prevButton.title = '查看上' + dateStep + '天';
+  const prevButton = document.getElementById('curriculum-table-actions-prev');
   prevButton.onclick = navigateDate(-dateStep);
   
-  const nextButton = document.createElement('button');
-  nextButton.classList.add('date-nav-button', 'date-nav-next');
-  nextButton.innerHTML = '&gt;';
-  nextButton.title = '查看下' + dateStep + '天';
+  const nextButton = document.getElementById('curriculum-table-actions-next');
   nextButton.onclick = navigateDate(dateStep);
   
   const table = document.createElement('table');
@@ -609,22 +609,16 @@ function renderCurriculum(events) {
     table.appendChild(tr);
   }
   
-  // 将表格和导航按钮添加到容器中
-  containerDiv.appendChild(prevButton);
+  // 将表格添加到容器中
   containerDiv.appendChild(table);
-  containerDiv.appendChild(nextButton);
   
   // 将容器添加到表格区域
   tableDiv.appendChild(containerDiv);
   
   // 如果当前偏移量为0，添加重置按钮
+  const resetDateButton = document.getElementById('curriculum-table-actions-now');
   if (currentDateOffset !== 0) {
-    const resetDateButton = document.createElement('button');
-    resetDateButton.textContent = '返回当前日期';
-    resetDateButton.classList.add('md-button');
-    resetDateButton.style.marginTop = '1rem';
-    resetDateButton.style.display = 'block';
-    resetDateButton.style.margin = '1rem auto';
+    resetDateButton.style.display = "inline"
     resetDateButton.onclick = function() {
       currentDateOffset = 0;
       const eventsData = localStorage.getItem("curriculumEvents");
@@ -633,6 +627,7 @@ function renderCurriculum(events) {
         renderCurriculum(parsedData.curriculumEvents);
       }
     };
-    tableDiv.appendChild(resetDateButton);
+  } else {
+    resetDateButton.style.display = "none"
   }
 }

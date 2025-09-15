@@ -15,7 +15,7 @@ hide:
     * [蓝盟官网下线通知](notice/蓝盟官网下线通知.md)
     * [重庆大学开源镜像站维护通知](notice/重庆大学开源镜像站维护通知.md)
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-09-11](sundry/更新日志/2025/2025-09/2025-09-11.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-09-14](sundry/更新日志/2025/2025-09/2025-09-14.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
