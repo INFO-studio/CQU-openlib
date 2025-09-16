@@ -4323,6 +4323,8 @@ nav:
   - 花未泯: contributor/花未泯.md
 - 杂项:
   - sundry/index.md
+  - 说明书:
+    - sundry/说明书/index.md
   - 待办事项:
     - sundry/待办事项/index.md
     - 教材需求: sundry/待办事项/textbook.md
@@ -4446,6 +4448,7 @@ nav:
         - 2025-09-11: sundry/更新日志/2025/2025-09/2025-09-11.md
         - 2025-09-12: sundry/更新日志/2025/2025-09/2025-09-12.md
         - 2025-09-14: sundry/更新日志/2025/2025-09/2025-09-14.md
+        - 2025-09-16: sundry/更新日志/2025/2025-09/2025-09-16.md
     # updateLog.py end
   - 友情链接:
     - sundry/友情链接/index.md
