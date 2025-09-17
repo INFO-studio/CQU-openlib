@@ -5,17 +5,15 @@ hide:
 ---
 
 # 欢迎  
-!!! warning "手机端需要点击左上方三杠出现页面列表"  
+!!! note " → 这里有[说明书](sundry/说明书/index.md) ←"  
 <div class="grid" markdown>
 
 !!! info "公告"
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
-    * 可以进入[专业培养方案](academic/专业培养方案/index.md)查询您专业的课程信息一览  
-    * 部分课程可能存在课程存在而检索不到的情况
     * [蓝盟官网下线通知](notice/蓝盟官网下线通知.md)
     * [重庆大学开源镜像站维护通知](notice/重庆大学开源镜像站维护通知.md)
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-09-17](sundry/更新日志/2025/2025-09/2025-09-17.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-09-18](sundry/更新日志/2025/2025-09/2025-09-18.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
@@ -33,9 +31,9 @@ hide:
 
 ---
 
-## 快来加频道捏
+## 快来加群捏
 
-- [QQ频道](https://pd.qq.com/s/4upbscwrl)
+- [QQ群组](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct)
 
 - [Tg群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
 
@@ -86,7 +84,7 @@ hide:
 ---
 
 !!! Failure "提醒"  
-    请注意我们是一个纯非盈利性质的组织，也并非官方机构。目前我们并不会考虑开通打赏渠道，同样，也不接受任何推广服务。如您认为您的版权受到了侵犯，请邮箱联系 `beta-s@outlook.com`，我们会为您删掉对应的数据。  
+    请注意我们是一个纯非盈利性质的组织，也并非官方机构。目前我们并不会考虑开通打赏渠道，同样，也不接受任何推广服务。如您认为您的版权受到了侵犯，请邮箱联系 `cqu-openlib@outlook.com`，我们会为您删掉对应的数据。  
 
 ---
 

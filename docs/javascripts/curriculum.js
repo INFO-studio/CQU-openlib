@@ -92,6 +92,33 @@ function getNextEvent() {
   // TODO
 }
 
+function simplifyCourseName(courseName) {
+  // 特殊匹配
+  if (courseName.includes("英语")) return "英语";
+  if (courseName.includes("体育")) return "体育";
+  if (courseName.includes("文明经典")) return "文明经典系列";
+  if (courseName.includes("Fourier分析") || courseName.includes("fourier分析")) {
+    return "Fourier分析";
+  }
+
+  let s = courseName;
+
+  // 替换符号
+  s = s.replace(/[\/]/g, "、");
+  s = s.replace(/（.*?）/g, "");
+  s = s.replace(/\(.*?）/g, "");
+  s = s.replace(/（.*?\)/g, "");
+  s = s.replace(/\(.*?\)/g, "");
+  s = s.replace(/[-—]\w+$/, "");
+  s = s.replace(/[IVXLCDMⅠⅡⅢⅣⅤⅥⅦⅧⅨ0-9]*+$/, ""); // 罗马数字 + 数字结尾
+
+  // 去空格和前缀 *
+  s = s.trim();
+  s = s.replace(/^\*/, "");
+
+  return s;
+}
+
 function saveData() {
   const form = document.getElementById("curriculum-form");
   form.addEventListener('submit', async (event) => {
@@ -598,6 +625,16 @@ function renderCurriculum(events) {
         dialogDate.classList.add('curriculum-event-dialog-date');
         dialogDate.innerHTML = `${event.day.year}年${event.day.month}月${event.day.day}日 ${formatTime(startTimeList[event.startTime])} - ${formatTime(endTimeList[event.endTime])}`;
         dialog.appendChild(dialogDate);
+        const dialogLink = document.createElement('div');
+        dialogLink.classList.add('curriculum-event-dialog-link')
+        const dialogLinkPrefix = document.createElement('div');
+        dialogLinkPrefix.innerHTML = '前往课程页面（可能404）：';
+        const dialogLinkA = document.createElement('a');
+        dialogLinkA.innerHTML = 'simplifyCourseName(event.title)'
+        dialogLinkA.setAttribute('src', `${(new URL(`/course/${simplifyCourseName(event.title)}`, window.location.origin)).toString()}`);
+        dialogLink.appendChild(dialogLinkPrefix);
+        dialogLink.appendChild(dialogLinkA);
+        dialog.appendChild(dialogLink);
         flexbox.onclick = () => {
           dialog.showModal();
         }

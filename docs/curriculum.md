@@ -229,6 +229,11 @@ hide:
     margin: 5px 0;
 }
 
+.curriculum-event-dialog-link {
+    display: flex;
+    align-items: center;
+}
+
 #curriculum-table-div .curriculum-action-icon-round {
     padding: 0;
     height: 43.44px;
