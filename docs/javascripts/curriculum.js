@@ -92,7 +92,7 @@ function getNextEvent() {
   // TODO
 }
 
-function simplifyCourseName(courseName) {
+export function simplifyCourseName(courseName) {
   // 特殊匹配
   if (courseName.includes("英语")) return "英语";
   if (courseName.includes("体育")) return "体育";
@@ -110,7 +110,7 @@ function simplifyCourseName(courseName) {
   s = s.replace(/（.*?\)/g, "");
   s = s.replace(/\(.*?\)/g, "");
   s = s.replace(/[-—]\w+$/, "");
-  s = s.replace(/[IVXLCDMⅠⅡⅢⅣⅤⅥⅦⅧⅨ0-9]*+$/, ""); // 罗马数字 + 数字结尾
+  s = s.replace(/[IVXLCDMⅠⅡⅢⅣⅤⅥⅦⅧⅨ0-9]*$/, "");
 
   // 去空格和前缀 *
   s = s.trim();
