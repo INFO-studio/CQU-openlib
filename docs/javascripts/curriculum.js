@@ -92,7 +92,7 @@ function getNextEvent() {
   // TODO
 }
 
-export function simplifyCourseName(courseName) {
+function simplifyCourseName(courseName) {
   // 特殊匹配
   if (courseName.includes("英语")) return "英语";
   if (courseName.includes("体育")) return "体育";

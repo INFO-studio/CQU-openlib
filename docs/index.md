@@ -5,7 +5,7 @@ hide:
 ---
 
 # 欢迎  
-!!! note " → 这里有[说明书](sundry/说明书/index.md) ←"  
+!!! note " :material-arrow-right: 这里有[说明书](sundry/说明书/index.md) :material-arrow-left:"  
 <div class="grid" markdown>
 
 !!! info "公告"
