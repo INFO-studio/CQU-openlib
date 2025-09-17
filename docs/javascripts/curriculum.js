@@ -630,8 +630,8 @@ function renderCurriculum(events) {
         const dialogLinkPrefix = document.createElement('div');
         dialogLinkPrefix.innerHTML = '前往课程页面（可能404）：';
         const dialogLinkA = document.createElement('a');
-        dialogLinkA.innerHTML = 'simplifyCourseName(event.title)'
-        dialogLinkA.setAttribute('src', `${(new URL(`/course/${simplifyCourseName(event.title)}`, window.location.origin)).toString()}`);
+        dialogLinkA.innerText = simplifyCourseName(event.title)
+        dialogLinkA.setAttribute('href', `${(new URL(`/course/${simplifyCourseName(event.title)}`, window.location.origin)).toString()}`);
         dialogLink.appendChild(dialogLinkPrefix);
         dialogLink.appendChild(dialogLinkA);
         dialog.appendChild(dialogLink);

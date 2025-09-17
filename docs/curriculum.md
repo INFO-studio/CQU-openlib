@@ -232,6 +232,7 @@ hide:
 .curriculum-event-dialog-link {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 #curriculum-table-div .curriculum-action-icon-round {
