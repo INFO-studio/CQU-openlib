@@ -16,11 +16,13 @@
 - [123kaze](123kaze.md)
 - [Tano](Tano.md)
 - [花未泯](花未泯.md)
+- [OddFish](OddFish.md)
+- 厚德载物
+- 几十分钟
 
 贡献者名单（顺序不分先后）：  
 
 - [xeri_chen](xeri_chen.md)  
-- [OddFish](OddFish.md)
 - [Hacoj](Hacoj.md)  
 - [林欲静](林欲静.md)  
 - [叶旭航](叶旭航.md)  
@@ -43,7 +45,6 @@
 - DL444
 - 温麟陇
 - 随光
-- 厚德载物
 - 攘莫
 - Dipper
 - 轴线
@@ -85,4 +86,3 @@
 - 圆滚滚2号
 - 给我唱泪桥
 - 冷水鱼
-- 几十分钟
