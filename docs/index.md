@@ -11,7 +11,6 @@ hide:
 !!! info "公告"
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     * [蓝盟纳新通知](https://mirrors.cqu.edu.cn/introductions/)
-    * [重庆大学开源镜像站维护通知](notice/重庆大学开源镜像站维护通知.md)
     <!--updateLog.py start-->
     * [更新日志](sundry/更新日志/index.md) / [2025-09-18](sundry/更新日志/2025/2025-09/2025-09-18.md)
     <!--updateLog.py end-->
