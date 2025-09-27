@@ -5,7 +5,6 @@ hide:
 ---
 
 # 欢迎  
-!!! error "文件下载功能异常，正在进行修复"  
 
 !!! note ":material-arrow-right: 这里有[说明书](sundry/说明书/index.md) :material-arrow-left:"  
 
