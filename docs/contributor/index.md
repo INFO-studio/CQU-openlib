@@ -19,6 +19,7 @@
 - [OddFish](OddFish.md)
 - 厚德载物
 - 几十分钟
+- [Funoke](Funoke.md)
 
 贡献者名单（顺序不分先后）：  
 
@@ -34,7 +35,6 @@
 - [IUPAC](IUPAC.md)
 - [NitroFire](NitroFire.md)
 - [skirt_wind](skirt_wind.md)
-- [Funoke](Funoke.md)
 - [Tony](Tony.md)
 - [ok](ok.md)
 - [tazy_wrld](tazy_wrld.md)

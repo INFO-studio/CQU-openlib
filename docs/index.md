@@ -14,7 +14,7 @@ hide:
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     * [蓝盟纳新通知](https://mirrors.cqu.edu.cn/introductions/)
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-09-25](sundry/更新日志/2025/2025-09/2025-09-25.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-10-04](sundry/更新日志/2025/2025-10/2025-10-04.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
