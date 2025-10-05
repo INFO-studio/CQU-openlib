@@ -35,7 +35,7 @@ hide:
 ## 快来加群捏
 
 - [QQ群组](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct)
-
+- [Discord频道](https://discord.gg/sPk3W96mJV)
 - [Tg群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
 
 能闲聊，能答疑，能提建议帮助网站更新，速速前往 (>_<)
