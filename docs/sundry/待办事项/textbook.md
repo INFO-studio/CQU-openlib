@@ -29,5 +29,11 @@
     - :material-book: `分析化学 @CHEM10020` - :material-form-select: `分析化学-徐溢-科学出版社-9787030756077`
 - `#128`
     - :material-book: `光学实验 @PHYS22110` - :material-form-select: `基础光学实验-赵艳-重庆大学出版社-9787568937337`
+- `#132`
+    - :material-book: `交通工程 @CE30809` - :material-form-select: `交通工程总论-徐吉谦-人民交通出版社-9787114166990`
+- `#133`
+    - :material-book: `电工材料 @EE30600` - :material-form-select: `电气材料基础-钟力生-机械工业出版社-9787111741176`
+- `#134`
+    - :material-book: `人工智能通识 @STG00047` - :material-form-select: `人工智能通识教程-王万良-清华大学出版社-9787302606734`
 - `杂项`
     - :material-book: `大学物理实验 @PHYS12010` - :material-form-select: `大学物理实验-何光宏-科学出版社-9787030820693`
