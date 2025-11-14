@@ -35,5 +35,17 @@
     - :material-book: `电工材料 @EE30600` - :material-form-select: `电气材料基础-钟力生-机械工业出版社-9787111741176`
 - `#134`
     - :material-book: `人工智能通识 @STG00047` - :material-form-select: `人工智能通识教程-王万良-清华大学出版社-9787302606734`
+- `#136`
+    - :material-book: `程序设计基础 @CST11103` - :material-form-select: `C++编程基础及应用-陈波-高等教育出版社-9787040619928`
+- `#137`
+    - :material-book: `计算材料学导论 @MSE30010` - :material-form-select: `计算材料学-汤爱涛-重庆大学出版社-9787568948098`
+- `#138`
+    - :material-book: `工程燃烧学 @EP31101` - :material-form-select: `工程燃烧学-冉景煜-中国电力出版社-9787519873462`
+- `#139`
+    - :material-book: `基础化学实验 @CHEM12112` - :material-form-select: `现代基础化学实验-徐彦芹-重庆大学出版社-9787568946414`
+- `#142`
+    - :material-book: `汽车控制理论 @ME30443` - :material-form-select: `汽车控制理论与应用-李以农-清华大学出版社-9787302589198`
+- `#143`
+    - :material-book: `地下管网工程 @USE30105` - :material-form-select: `城市地下管网工程-彭述权-中南大学出版社-9787548759799`
 - `杂项`
     - :material-book: `大学物理实验 @PHYS12010` - :material-form-select: `大学物理实验-何光宏-科学出版社-9787030820693`
