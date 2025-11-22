@@ -41,8 +41,6 @@
     - :material-book: `计算材料学导论 @MSE30010` - :material-form-select: `计算材料学-汤爱涛-重庆大学出版社-9787568948098`
 - `#138`
     - :material-book: `工程燃烧学 @EP31101` - :material-form-select: `工程燃烧学-冉景煜-中国电力出版社-9787519873462`
-- `#139`
-    - :material-book: `基础化学实验 @CHEM12112` - :material-form-select: `现代基础化学实验-徐彦芹-重庆大学出版社-9787568946414`
 - `#142`
     - :material-book: `汽车控制理论 @ME30443` - :material-form-select: `汽车控制理论与应用-李以农-清华大学出版社-9787302589198`
 - `#143`
