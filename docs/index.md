@@ -11,6 +11,7 @@ hide:
 <div class="grid" markdown>
 
 !!! info "公告"
+    * 文件下载故障，正在修复中......
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     <!--updateLog.py start-->
     * [更新日志](sundry/更新日志/index.md) / [2025-11-25](sundry/更新日志/2025/2025-11/2025-11-25.md)
