@@ -6,6 +6,8 @@ hide:
 
 # 欢迎  
 
+!!! error "由于托管被打爆了，文件下载目前处于异常状态，预计明天恢复"
+
 !!! note ":material-arrow-right: 这里有[说明书](sundry/说明书/index.md) :material-arrow-left:"  
 
 <div class="grid" markdown>
