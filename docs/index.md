@@ -6,8 +6,6 @@ hide:
 
 # 欢迎  
 
-!!! error "由于托管被打爆了，文件下载目前处于异常状态，预计明天恢复"
-
 !!! note ":material-arrow-right: 这里有[说明书](sundry/说明书/index.md) :material-arrow-left:"  
 
 <div class="grid" markdown>
@@ -15,7 +13,7 @@ hide:
 !!! info "公告"
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     <!--updateLog.py start-->
-    * [更新日志](sundry/更新日志/index.md) / [2025-12-02](sundry/更新日志/2025/2025-12/2025-12-02.md)
+    * [更新日志](sundry/更新日志/index.md) / [2025-12-10](sundry/更新日志/2025/2025-12/2025-12-10.md)
     <!--updateLog.py end-->
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
