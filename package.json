@@ -13,12 +13,25 @@
     "check:fix": "biome check . --write"
   },
   "dependencies": {
+    "@react-router/fs-routes": "^7.10.1",
     "@react-router/node": "7.10.1",
     "@react-router/serve": "7.10.1",
+    "html-react-parser": "^5.2.10",
     "isbot": "^5.1.31",
+    "lucide-react": "^0.561.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-router": "7.10.1"
+    "react-router": "7.10.1",
+    "rehype-raw": "^7.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "ts-pattern": "^5.9.0",
+    "unified": "^11.0.5",
+    "unist-util-remove-position": "^5.0.0",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
@@ -26,9 +39,11 @@
     "@types/node": "^22",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "remark": "^15.0.1",
     "typescript": "^5.9.2",
     "unocss": "^66.5.10",
     "vite": "^7.1.7",
+    "vite-plugin-static-copy": "^3.1.4",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }
