@@ -41,6 +41,7 @@
 - [重庆大学吧务组](重庆大学吧务组.md)
 - [qzq](qzq.md)
 - [Leo Moore](LeoMoore.md)
+- [仮屋和奏](仮屋和奏.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -88,4 +89,4 @@
 - 给我唱泪桥
 - 冷水鱼
 - puppyfish
-- [仮屋和奏](仮屋和奏.md)
+
