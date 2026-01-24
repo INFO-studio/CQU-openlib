@@ -17,9 +17,10 @@
 - [Tano](Tano.md)
 - [花未泯](花未泯.md)
 - [OddFish](OddFish.md)
+- [Funoke](Funoke.md)
 - 厚德载物
 - 几十分钟
-- [Funoke](Funoke.md)
+
 
 贡献者名单（顺序不分先后）：  
 
@@ -89,4 +90,5 @@
 - 给我唱泪桥
 - 冷水鱼
 - puppyfish
-
+- 阳启万象
+- 龙吟
