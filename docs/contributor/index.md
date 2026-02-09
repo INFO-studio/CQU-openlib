@@ -43,6 +43,7 @@
 - [qzq](qzq.md)
 - [Leo Moore](LeoMoore.md)
 - [仮屋和奏](仮屋和奏.md)
+- [Rium](Rium.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
