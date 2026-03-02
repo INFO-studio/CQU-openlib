@@ -55,9 +55,10 @@ def get_log_structure(base_path):
 
 
 def get_latest_log(log_structure):
-    latest_log = max(day for year in log_structure
-                     for month in log_structure[year]
-                     for day in log_structure[year][month][1:])
+    latest_log = max((day_log for year in log_structure
+                      for month in log_structure[year]
+                      for day_log in log_structure[year][month][1:]),
+                     key=lambda x: x[4])
     return latest_log
 
 
@@ -123,6 +124,9 @@ def update_yml(log_structure):
 
 
 def main():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    os.chdir(project_root)
     base_path = "docs/sundry/更新日志"
     print("-------- updateLog.py --------\n正在获取日志路径结构......", end='')
     log_structure = get_log_structure(base_path)
@@ -130,11 +134,11 @@ def main():
     latest_log = get_latest_log(log_structure)
     print(f"成功，最新日志{latest_log[4]}\n正在更新......专栏指引", end='')
     update_sundary_updateLog_index(log_structure, latest_log)
-    print("✔...主页", end='')
+    print("[OK]...主页", end='')
     update_main_page(latest_log)
-    print("✔...路由", end='')
+    print("[OK]...路由", end='')
     update_yml(log_structure)
-    print("✔\n-------- updateLog.py --------")
+    print("[OK]\n-------- updateLog.py --------")
 
 if __name__ == "__main__":
     main()

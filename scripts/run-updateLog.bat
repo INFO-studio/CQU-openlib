@@ -1,0 +1,2 @@
+python updateLog.py
+pause
