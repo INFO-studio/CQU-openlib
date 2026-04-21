@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from gui.models.course_model import CourseTableModel
 from gui.dialogs.add_resource_dialog import AddResourceDialog
 from gui.dialogs.create_course_dialog import CreateCourseDialog
-from gui.dialogs.course_editor_dialog import CourseEditorDialog
+
 from config import COURSE_DIR
 from workspace import WorkspaceManager
 from modifier import DocumentModifier
@@ -201,11 +201,21 @@ class CourseManagerView(QWidget):
             self.refresh()
 
     def _open_course_editor(self, course: dict):
-        """打开合规课程的表单编辑器"""
-        dialog = CourseEditorDialog(course, self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
-            self.refresh()
-            self.course_updated.emit()
+        """打开合规课程编辑 - 复制到暂存区处理"""
+        file_path = course["file_path"]
+
+        self.workspace.backup_file(file_path)
+
+        staging_path = self.workspace.move_to_staging(file_path)
+
+        QMessageBox.information(
+            self,
+            "已移入暂存区",
+            f"文档已复制到暂存区:\n{staging_path}\n\n"
+            "请在左侧导航点击「暂存区处理」进行编辑，\n"
+            "编辑完成后点击「覆盖」将修改写回课程库。",
+        )
+        self.refresh()
 
     def _on_edit_course(self):
         """编辑按钮点击"""

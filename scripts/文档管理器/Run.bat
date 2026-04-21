@@ -15,4 +15,3 @@ call conda activate %ENV_NAME%
 :: Ensure we are in the script's directory for relative execution
 cd /d "%~dp0"
 python "%APP_PATH%"
-pause
