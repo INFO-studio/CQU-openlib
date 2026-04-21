@@ -119,9 +119,11 @@ class MarkdownGenerator:
         return "\n".join(lines) + "\n"
 
     @staticmethod
-    def _generate_textbook_block(textbook: Dict) -> List[str]:
+    def _generate_textbook_block(textbook: Dict, indent_level: int = 1) -> List[str]:
         """生成教材块（含子资源）"""
         lines = []
+        indent = "    " * indent_level
+        child_indent = "    " * (indent_level + 1)
 
         url = textbook.get("url", "")
         name = textbook.get("name", "")
@@ -142,7 +144,7 @@ class MarkdownGenerator:
         if publisher:
             parts.append(f":material-printer:`{publisher}`")
 
-        lines.append("    * " + " - ".join(parts) + "  ")
+        lines.append(indent + "* " + " - ".join(parts) + "  ")
 
         children = textbook.get("children", [])
         for child in children:
@@ -160,20 +162,21 @@ class MarkdownGenerator:
                 else:
                     contrib_part = ""
 
-                child_line = f"        * [{child_name}]({child_url})"
+                child_line = f"{child_indent}* [{child_name}]({child_url})"
                 if contrib_part:
                     child_line += f" {contrib_part}"
                 child_line += "  "
                 lines.append(child_line)
             elif child_type == "备注":
                 child_text = child.get("text", "")
-                lines.append(f"        * {child_text}  ")
+                lines.append(f"{child_indent}* {child_text}  ")
 
         return lines
 
     @staticmethod
-    def _generate_document_line(doc: Dict) -> str:
+    def _generate_document_line(doc: Dict, indent_level: int = 1) -> str:
         """生成文档行"""
+        indent = "    " * indent_level
         url = doc.get("url", "")
         name = doc.get("name", "")
         contributor = doc.get("contributor", "")
@@ -193,29 +196,36 @@ class MarkdownGenerator:
         if contributor_part:
             parts.append(contributor_part)
 
-        return "    * " + " - ".join(parts) + "  "
+        return indent + "* " + " - ".join(parts) + "  "
 
     @staticmethod
-    def _generate_exam_groups_block(exam_groups: Dict) -> List[str]:
+    def _generate_exam_groups_block(
+        exam_groups: Dict, indent_level: int = 1
+    ) -> List[str]:
         """生成试卷分组块"""
         lines = []
+        indent = "    " * indent_level
 
         for group_name in EXAM_GROUP_ORDER:
             exams = exam_groups.get(group_name, [])
             if not exams:
                 continue
 
-            lines.append(f"    * {group_name}")
+            lines.append(f"{indent}* {group_name}")
             for exam in exams:
-                exam_lines = MarkdownGenerator._generate_exam_lines(exam)
+                exam_lines = MarkdownGenerator._generate_exam_lines(
+                    exam, indent_level + 1
+                )
                 lines.extend(exam_lines)
 
         return lines
 
     @staticmethod
-    def _generate_exam_lines(exam: Dict) -> List[str]:
+    def _generate_exam_lines(exam: Dict, indent_level: int = 2) -> List[str]:
         """生成试卷行（含视频链接）"""
         lines = []
+        indent = "    " * indent_level
+        video_indent = "    " * (indent_level + 1)
 
         url = exam.get("url", "")
         name = exam.get("name", "试卷+答案")
@@ -234,14 +244,14 @@ class MarkdownGenerator:
         if paper_type:
             parts.append(f":material-tag:`{paper_type}`")
 
-        lines.append("        * " + " - ".join(parts) + "  ")
+        lines.append(indent + "* " + " - ".join(parts) + "  ")
 
         video_url = exam.get("video_url", "")
         video_contributor = exam.get("video_contributor", "")
         has_video_contributor_link = exam.get("has_video_contributor_link", False)
 
         if video_url:
-            video_line = f"            * [讲解视频]({video_url})"
+            video_line = f"{video_indent}* [讲解视频]({video_url})"
             if video_contributor:
                 if has_video_contributor_link:
                     video_line += f" @[{video_contributor}](../contributor/{video_contributor}.md)"
@@ -253,8 +263,9 @@ class MarkdownGenerator:
         return lines
 
     @staticmethod
-    def _generate_online_course_line(online: Dict) -> str:
+    def _generate_online_course_line(online: Dict, indent_level: int = 1) -> str:
         """生成网课行"""
+        indent = "    " * indent_level
         platform = online.get("platform", "")
         course_url = online.get("course_url", "")
         course_name = online.get("course_name", "")
@@ -267,9 +278,9 @@ class MarkdownGenerator:
             contributor_part = f"@{contributor}" if contributor else ""
 
         if platform and course_url:
-            line = f"        * [{course_name}]({course_url}) {contributor_part}  "
+            line = f"{indent}* [{course_name}]({course_url}) {contributor_part}  "
         else:
-            line = f"        * {course_name} {contributor_part}  "
+            line = f"{indent}* {course_name} {contributor_part}  "
 
         return line
 
@@ -280,21 +291,21 @@ class MarkdownGenerator:
 
         textbooks = section_data.get("textbooks", [])
         for textbook in textbooks:
-            textbook_lines = MarkdownGenerator._generate_textbook_block(textbook)
+            textbook_lines = MarkdownGenerator._generate_textbook_block(
+                textbook, indent_level=0
+            )
             lines.extend(textbook_lines)
 
         documents = section_data.get("documents", [])
         for doc in documents:
-            line = MarkdownGenerator._generate_document_line(doc)
+            line = MarkdownGenerator._generate_document_line(doc, indent_level=0)
             lines.append(line)
 
         online_courses = section_data.get("online_courses", [])
         for online in online_courses:
-            line = f"    * [{online.get('course_name', '')}]({online.get('course_url', '')})"
-            contributor = online.get("contributor", "")
-            if contributor:
-                line += f" @{contributor}"
-            line += "  "
+            line = MarkdownGenerator._generate_online_course_line(
+                online, indent_level=0
+            )
             lines.append(line)
 
         return lines
