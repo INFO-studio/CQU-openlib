@@ -19,6 +19,41 @@ class MarkdownGenerator:
     """Markdown文档生成器"""
 
     @staticmethod
+    def _append_blank_line(lines: List[str]):
+        """追加一个空行，并避免连续空行膨胀。"""
+        if lines and lines[-1] == "":
+            return
+        lines.append("")
+
+    @staticmethod
+    def _is_markdown_list_line(line: str) -> bool:
+        return bool(re.match(r"^\s*(?:[-*+]|\d+[.)])\s+", line.strip()))
+
+    @staticmethod
+    def _normalize_strategy_lines(strategy_lines: List[str]) -> List[str]:
+        """规范攻略区列表，避免 Python-Markdown 把列表标记当普通文本。"""
+        normalized = []
+
+        for raw_line in strategy_lines:
+            line = raw_line.rstrip()
+            if not line.strip():
+                MarkdownGenerator._append_blank_line(normalized)
+                continue
+
+            line = re.sub(r"^(\s*)-\s+", r"\1* ", line)
+            is_list = MarkdownGenerator._is_markdown_list_line(line)
+            is_top_level = len(line) == len(line.lstrip())
+
+            if is_list and is_top_level and normalized:
+                previous = next((item for item in reversed(normalized) if item), "")
+                if previous and not MarkdownGenerator._is_markdown_list_line(previous):
+                    MarkdownGenerator._append_blank_line(normalized)
+
+            normalized.append(line + "  ")
+
+        return normalized
+
+    @staticmethod
     def generate_from_form_data(form_data: Dict) -> str:
         """
         从表单数据生成合规的Markdown文档
@@ -55,21 +90,22 @@ class MarkdownGenerator:
         lines = []
 
         lines.append("## 攻略  ")
+        lines.append("")
         strategy_lines = form_data.get("strategy_lines", [])
         if strategy_lines:
-            for strategy_line in strategy_lines:
-                if strategy_line.strip():
-                    lines.append(strategy_line)
+            lines.extend(MarkdownGenerator._normalize_strategy_lines(strategy_lines))
         else:
-            lines.append("- 暂无攻略，欢迎贡献")
-        lines.append("")
+            lines.append("* 暂无攻略，欢迎贡献  ")
+        MarkdownGenerator._append_blank_line(lines)
 
         lines.append("## 资源  ")
+        lines.append("")
 
         tabs = form_data.get("tabs", {})
 
         if not tabs:
             lines.append('=== ":material-book:`课程号`"  ')
+            lines.append("")
             lines.append(
                 "    * [教材]() - :material-format-quote-open:`教材名` - :material-account:`主编` - :material-printer:`出版社`  "
             )
@@ -78,8 +114,11 @@ class MarkdownGenerator:
                 "        * [试卷+答案]() - :material-calendar:`学期` - :material-domain:`学院` - :material-tag:`A卷`  "
             )
         else:
-            for course_code, resources in tabs.items():
+            for tab_index, (course_code, resources) in enumerate(tabs.items()):
+                if tab_index > 0:
+                    MarkdownGenerator._append_blank_line(lines)
                 lines.append(f'=== ":material-book:`{course_code}`"  ')
+                lines.append("")
 
                 textbooks = resources.get("textbooks", [])
                 for textbook in textbooks:
@@ -103,14 +142,17 @@ class MarkdownGenerator:
                 if online_courses:
                     lines.append("    * 网课")
                     for online in online_courses:
-                        line = MarkdownGenerator._generate_online_course_line(online)
+                        line = MarkdownGenerator._generate_online_course_line(
+                            online, indent_level=2
+                        )
                         lines.append(line)
 
         other_sections = form_data.get("other_sections", {})
         for section_name, section_data in other_sections.items():
             if section_data:
-                lines.append("")
+                MarkdownGenerator._append_blank_line(lines)
                 lines.append(f"## {section_name}  ")
+                lines.append("")
                 other_lines = MarkdownGenerator._generate_other_section_block(
                     section_data
                 )
@@ -221,11 +263,80 @@ class MarkdownGenerator:
         return lines
 
     @staticmethod
+    def _build_contributor_suffix(
+        contributor: str,
+        has_link: bool = False,
+        contributor_url: str = "",
+    ) -> str:
+        if not contributor:
+            return ""
+        if has_link:
+            return f" @[{contributor}](../contributor/{contributor}.md)"
+        if contributor_url:
+            return f" @[{contributor}]({contributor_url})"
+        return f" @{contributor}"
+
+    @staticmethod
+    def _collect_exam_children(exam: Dict) -> List[Dict]:
+        children = exam.get("children") or exam.get("subresources") or []
+        if children:
+            return [child for child in children if child]
+
+        video_url = exam.get("video_url", "")
+        if not video_url:
+            return []
+
+        return [
+            {
+                "type": "讲解视频",
+                "name": "讲解视频",
+                "url": video_url,
+                "contributor": exam.get("video_contributor", ""),
+                "has_contributor_link": exam.get("has_video_contributor_link", False),
+                "contributor_url": exam.get("video_contributor_url", ""),
+            }
+        ]
+
+    @staticmethod
+    def _generate_exam_child_line(child: Dict, indent: str) -> str:
+        child_type = child.get("type", "")
+        text = child.get("text", "")
+
+        if child_type == "备注" and text:
+            return f"{indent}* {text}  "
+
+        name = (
+            child.get("name")
+            or child.get("title")
+            or ("讲解视频" if child_type == "讲解视频" else "")
+            or child_type
+            or "子资源"
+        )
+        url = child.get("url") or child.get("video_url") or child.get("course_url", "")
+        contributor = child.get("contributor") or child.get("video_contributor", "")
+        has_link = child.get("has_contributor_link") or child.get(
+            "has_video_contributor_link", False
+        )
+        contributor_url = child.get("contributor_url") or child.get(
+            "video_contributor_url", ""
+        )
+
+        if url:
+            line = f"{indent}* [{name}]({url})"
+        else:
+            line = f"{indent}* {name}"
+
+        line += MarkdownGenerator._build_contributor_suffix(
+            contributor, has_link, contributor_url
+        )
+        return line + "  "
+
+    @staticmethod
     def _generate_exam_lines(exam: Dict, indent_level: int = 2) -> List[str]:
-        """生成试卷行（含视频链接）"""
+        """生成试卷行（含多个子资源）"""
         lines = []
         indent = "    " * indent_level
-        video_indent = "    " * (indent_level + 1)
+        child_indent = "    " * (indent_level + 1)
 
         url = exam.get("url", "")
         name = exam.get("name", "试卷+答案")
@@ -246,19 +357,10 @@ class MarkdownGenerator:
 
         lines.append(indent + "* " + " - ".join(parts) + "  ")
 
-        video_url = exam.get("video_url", "")
-        video_contributor = exam.get("video_contributor", "")
-        has_video_contributor_link = exam.get("has_video_contributor_link", False)
-
-        if video_url:
-            video_line = f"{video_indent}* [讲解视频]({video_url})"
-            if video_contributor:
-                if has_video_contributor_link:
-                    video_line += f" @[{video_contributor}](../contributor/{video_contributor}.md)"
-                else:
-                    video_line += f" @{video_contributor}"
-            video_line += "  "
-            lines.append(video_line)
+        for child in MarkdownGenerator._collect_exam_children(exam):
+            lines.append(
+                MarkdownGenerator._generate_exam_child_line(child, child_indent)
+            )
 
         return lines
 
@@ -266,7 +368,6 @@ class MarkdownGenerator:
     def _generate_online_course_line(online: Dict, indent_level: int = 1) -> str:
         """生成网课行"""
         indent = "    " * indent_level
-        platform = online.get("platform", "")
         course_url = online.get("course_url", "")
         course_name = online.get("course_name", "")
         contributor = online.get("contributor", "")
@@ -277,7 +378,7 @@ class MarkdownGenerator:
         else:
             contributor_part = f"@{contributor}" if contributor else ""
 
-        if platform and course_url:
+        if course_url:
             line = f"{indent}* [{course_name}]({course_url}) {contributor_part}  "
         else:
             line = f"{indent}* {course_name} {contributor_part}  "
@@ -401,6 +502,23 @@ class MarkdownGenerator:
 
                 if line.startswith("    * ") and not line.startswith("        * "):
                     content = stripped[2:].strip()
+
+                    if (
+                        current_parent == "网课"
+                        and "[" in content
+                        and "](" in content
+                        and "[教材" not in stripped
+                        and "[文档]" not in stripped
+                    ):
+                        online_data = MarkdownGenerator._parse_online_course_line(
+                            stripped
+                        )
+                        if online_data:
+                            form_data["tabs"][current_tab_code][
+                                "online_courses"
+                            ].append(online_data)
+                        continue
+
                     current_parent = content
 
                     if content in EXAM_GROUP_ORDER:
@@ -525,19 +643,13 @@ class MarkdownGenerator:
                 if line.startswith("            * "):
                     content = stripped[2:].strip()
 
-                    if current_exam and "[讲解视频]" in stripped:
-                        video_data = MarkdownGenerator._parse_exam_line(stripped)
-                        if video_data and video_data.get("is_video"):
-                            current_exam["video_url"] = video_data.get("video_url", "")
-                            current_exam["video_contributor"] = video_data.get(
-                                "video_contributor", ""
+                    if current_exam:
+                        child_data = MarkdownGenerator._parse_exam_child_line(stripped)
+                        if child_data:
+                            current_exam.setdefault("children", []).append(child_data)
+                            MarkdownGenerator._sync_legacy_exam_child(
+                                current_exam, child_data
                             )
-                            if video_data.get("has_video_contributor_link"):
-                                current_exam["has_video_contributor_link"] = True
-                            elif video_data.get("video_contributor_url"):
-                                current_exam["video_contributor_url"] = video_data.get(
-                                    "video_contributor_url", ""
-                                )
                     elif current_textbook:
                         issues.append(
                             f"第 {line_num} 行：教材子项应为二级缩进（8空格），请修改文档格式"
@@ -553,6 +665,54 @@ class MarkdownGenerator:
         return form_data, issues
 
     @staticmethod
+    def _parse_exam_child_line(line: str) -> Dict:
+        """解析试卷子资源行，支持讲解视频和任意链接资源。"""
+        content = line.strip()
+        if content.startswith("* "):
+            content = content[2:].strip()
+
+        link_match = re.search(r"\[([^\]]+)\]\(([^)]+)\)", content)
+        if not link_match:
+            return {"type": "备注", "text": content} if content else {}
+
+        name = link_match.group(1)
+        url = link_match.group(2)
+        data = {
+            "type": "讲解视频" if name == "讲解视频" else "子资源",
+            "name": name,
+            "url": url,
+        }
+
+        key_match = re.search(r"key=([A-Za-z0-9]{12})", url)
+        if key_match:
+            data["key"] = key_match.group(1)
+
+        contributor_match = re.search(r"@\[?([^\]\s@]+)\]?(?:\(([^)]+)\))?", content)
+        if contributor_match:
+            data["contributor"] = contributor_match.group(1)
+            if contributor_match.group(2):
+                contributor_url = contributor_match.group(2)
+                if contributor_url.startswith("../contributor/"):
+                    data["has_contributor_link"] = True
+                else:
+                    data["contributor_url"] = contributor_url
+
+        return data
+
+    @staticmethod
+    def _sync_legacy_exam_child(exam: Dict, child: Dict):
+        """把第一个讲解视频同步到旧字段，兼容旧 UI/脚本。"""
+        if child.get("name") != "讲解视频" or exam.get("video_url"):
+            return
+
+        exam["video_url"] = child.get("url", "")
+        exam["video_contributor"] = child.get("contributor", "")
+        if child.get("has_contributor_link"):
+            exam["has_video_contributor_link"] = True
+        if child.get("contributor_url"):
+            exam["video_contributor_url"] = child.get("contributor_url", "")
+
+    @staticmethod
     def _parse_other_section_line(
         line: str,
         stripped: str,
@@ -565,7 +725,12 @@ class MarkdownGenerator:
         if not stripped:
             return
 
-        if line.startswith("    * ") and not line.startswith("        * "):
+        is_top_level = (line.startswith("* ") and not line.startswith("    * ")) or (
+            line.startswith("    * ") and not line.startswith("        * ")
+        )
+        is_child_level = line.startswith("    * ") or line.startswith("        * ")
+
+        if is_top_level:
             content = stripped[2:].strip()
 
             if "[教材" in stripped:
@@ -579,8 +744,14 @@ class MarkdownGenerator:
                 issues.append(
                     f"第 {line_num} 行：'[教材解答]' 格式已废弃，请改为教材子资源"
                 )
+            elif "[文档]" in stripped:
+                doc_data = MarkdownGenerator._parse_document_line(stripped)
+                if doc_data:
+                    form_data["other_sections"][section_name]["documents"].append(
+                        doc_data
+                    )
             elif "[" in content and "](" in content:
-                link_match = re.search(r"\[([^\]]+)\]\(([^)]+)\)", stripped)
+                link_match = re.search(r"\[([^\]]+)\]\(([^)]*)\)", stripped)
                 if link_match:
                     link_name = link_match.group(1)
                     link_url = link_match.group(2)
@@ -623,7 +794,7 @@ class MarkdownGenerator:
                     "contributor": "",
                 }
                 form_data["other_sections"][section_name]["documents"].append(doc_data)
-        elif line.startswith("        * "):
+        elif is_child_level:
             content = stripped[2:].strip()
             textbooks = form_data["other_sections"][section_name]["textbooks"]
             if textbooks:
@@ -744,7 +915,7 @@ class MarkdownGenerator:
         """解析文档行"""
         data = {"type": "document"}
 
-        link_match = re.search(r"\[文档\]\(([^)]+)\)", line)
+        link_match = re.search(r"\[文档\]\(([^)]*)\)", line)
         if link_match:
             url = link_match.group(1)
             data["url"] = url
