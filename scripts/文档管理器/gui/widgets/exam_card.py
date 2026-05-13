@@ -12,7 +12,6 @@ from PySide6.QtWidgets import (
     QComboBox,
     QFrame,
     QSizePolicy,
-    QCheckBox,
 )
 from PySide6.QtCore import Qt, Signal, QMimeData, QPoint
 from PySide6.QtGui import QFont, QDrag
@@ -23,176 +22,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from utils import extract_lanzou_key, build_api_url
-
-
-class ExamChildResourceCard(QFrame):
-    """试卷子资源卡片（讲解视频/补充资料等链接）。"""
-
-    delete_requested = Signal(QWidget)
-    data_changed = Signal()
-
-    def __init__(self, initial_data: Optional[Dict] = None):
-        super().__init__()
-        self._data = initial_data or {}
-        self._init_ui()
-        self._load_initial_data()
-
-    def _init_ui(self):
-        self.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
-        self.setStyleSheet("""
-            ExamChildResourceCard {
-                background-color: #3a3a3a;
-                border: 1px solid #64B5F6;
-                border-radius: 4px;
-                margin: 2px;
-            }
-        """)
-
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(8, 6, 8, 6)
-        layout.setSpacing(8)
-
-        type_label = QLabel("🔗")
-        type_label.setStyleSheet("color: #64B5F6; font-size: 12px;")
-        layout.addWidget(type_label)
-
-        name_label = QLabel("名称:")
-        name_label.setStyleSheet("color: #B0B0B0; font-size: 10px;")
-        layout.addWidget(name_label)
-
-        self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("如：讲解视频、解析文档")
-        self.name_input.setMinimumHeight(24)
-        self.name_input.setStyleSheet("""
-            QLineEdit {
-                background-color: #2a2a2a;
-                color: #FFFFFF;
-                border: 1px solid #555;
-                border-radius: 3px;
-                padding: 2px 6px;
-                font-size: 10px;
-            }
-        """)
-        layout.addWidget(self.name_input, 2)
-
-        key_label = QLabel("链接:")
-        key_label.setStyleSheet("color: #B0B0B0; font-size: 10px;")
-        layout.addWidget(key_label)
-
-        self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("蓝奏云密钥或外链")
-        self.url_input.setMinimumHeight(24)
-        self.url_input.setStyleSheet("""
-            QLineEdit {
-                background-color: #2a2a2a;
-                color: #FFFFFF;
-                border: 1px solid #555;
-                border-radius: 3px;
-                padding: 2px 6px;
-                font-size: 10px;
-            }
-        """)
-        layout.addWidget(self.url_input, 3)
-
-        contributor_label = QLabel("贡献者:")
-        contributor_label.setStyleSheet("color: #B0B0B0; font-size: 10px;")
-        layout.addWidget(contributor_label)
-
-        self.contributor_input = QLineEdit()
-        self.contributor_input.setPlaceholderText("贡献者名称")
-        self.contributor_input.setMinimumHeight(24)
-        self.contributor_input.setStyleSheet("""
-            QLineEdit {
-                background-color: #2a2a2a;
-                color: #FFFFFF;
-                border: 1px solid #555;
-                border-radius: 3px;
-                padding: 2px 6px;
-                font-size: 10px;
-            }
-        """)
-        layout.addWidget(self.contributor_input, 2)
-
-        self.contributor_link_checkbox = QCheckBox("链接")
-        self.contributor_link_checkbox.setToolTip(
-            "勾选后自动生成 ../contributor/{名字}.md 链接"
-        )
-        layout.addWidget(self.contributor_link_checkbox)
-
-        delete_btn = QPushButton("×")
-        delete_btn.setFixedSize(22, 22)
-        delete_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #FF5722;
-                color: #FFFFFF;
-                border-radius: 3px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #E64A19;
-            }
-        """)
-        delete_btn.clicked.connect(self._on_delete)
-        layout.addWidget(delete_btn)
-
-        self.name_input.textChanged.connect(self._on_data_changed)
-        self.url_input.textChanged.connect(self._on_data_changed)
-        self.contributor_input.textChanged.connect(self._on_data_changed)
-        self.contributor_link_checkbox.stateChanged.connect(self._on_data_changed)
-
-    def _load_initial_data(self):
-        if not self._data:
-            return
-
-        name = self._data.get("name") or self._data.get("type")
-        if name:
-            self.name_input.setText(name)
-
-        url = self._data.get("url") or self._data.get("video_url", "")
-        if url:
-            self.url_input.setText(self._data.get("key", "") or url)
-
-        contributor = self._data.get("contributor") or self._data.get(
-            "video_contributor", ""
-        )
-        if contributor:
-            self.contributor_input.setText(contributor)
-
-        has_link = self._data.get("has_contributor_link") or self._data.get(
-            "has_video_contributor_link", False
-        )
-        if has_link:
-            self.contributor_link_checkbox.setChecked(True)
-
-        contributor_url = self._data.get("contributor_url") or self._data.get(
-            "video_contributor_url", ""
-        )
-        if contributor_url.startswith("../contributor/"):
-            self.contributor_link_checkbox.setChecked(True)
-
-    def _on_delete(self):
-        self.delete_requested.emit(self)
-
-    def _on_data_changed(self):
-        self.data_changed.emit()
-
-    def get_data(self) -> Dict:
-        url_raw = self.url_input.text().strip()
-        key = extract_lanzou_key(url_raw)
-        url = build_api_url(key) if key else url_raw
-        name = self.name_input.text().strip() or "讲解视频"
-
-        return {
-            "type": "讲解视频" if name == "讲解视频" else "子资源",
-            "name": name,
-            "key": key or url_raw,
-            "url": url,
-            "contributor": self.contributor_input.text().strip(),
-            "has_contributor_link": self.contributor_link_checkbox.isChecked(),
-        }
-
-    def is_valid(self) -> bool:
-        return bool(self.name_input.text().strip() and self.url_input.text().strip())
+from gui.widgets.generic_child_card import GenericChildCard
 
 
 class ExamCard(QFrame):
@@ -207,7 +37,7 @@ class ExamCard(QFrame):
         super().__init__()
         self._data = initial_data or {}
         self._is_collapsed = True
-        self._children_cards: List[ExamChildResourceCard] = []
+        self._children_cards: List[GenericChildCard] = []
         self.parent_group: Optional[QWidget] = None
         self.drag_start_pos: Optional[QPoint] = None
         self._init_ui()
@@ -416,8 +246,8 @@ class ExamCard(QFrame):
         children_btn_layout = QHBoxLayout()
         children_btn_layout.setSpacing(8)
 
-        add_video_btn = QPushButton("+ 添加讲解视频")
-        add_video_btn.setStyleSheet("""
+        add_child_btn = QPushButton("+ 添加子条目")
+        add_child_btn.setStyleSheet("""
             QPushButton {
                 background-color: #64B5F6;
                 color: white;
@@ -429,30 +259,8 @@ class ExamCard(QFrame):
                 background-color: #90CAF9;
             }
         """)
-        add_video_btn.clicked.connect(
-            lambda _checked=False: self._add_child_resource(
-                {"name": "讲解视频", "type": "讲解视频"}
-            )
-        )
-        children_btn_layout.addWidget(add_video_btn)
-
-        add_resource_btn = QPushButton("+ 添加子资源")
-        add_resource_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #00BCD4;
-                color: white;
-                font-size: 10px;
-                padding: 4px 8px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #26C6DA;
-            }
-        """)
-        add_resource_btn.clicked.connect(
-            lambda _checked=False: self._add_child_resource()
-        )
-        children_btn_layout.addWidget(add_resource_btn)
+        add_child_btn.clicked.connect(lambda _checked=False: self._add_child_resource())
+        children_btn_layout.addWidget(add_child_btn)
 
         children_btn_layout.addStretch()
         content_layout.addLayout(children_btn_layout)
@@ -488,31 +296,10 @@ class ExamCard(QFrame):
         self.header_btn.setText(summary)
 
     def _collect_initial_children(self) -> List[Dict]:
-        children = list(
-            self._data.get("children") or self._data.get("subresources") or []
-        )
-        if children:
-            return children
-
-        if not self._data.get("video_url"):
-            return []
-
-        return [
-            {
-                "type": "讲解视频",
-                "name": "讲解视频",
-                "url": self._data.get("video_url", ""),
-                "key": self._data.get("video_key", ""),
-                "contributor": self._data.get("video_contributor", ""),
-                "has_contributor_link": self._data.get(
-                    "has_video_contributor_link", False
-                ),
-                "contributor_url": self._data.get("video_contributor_url", ""),
-            }
-        ]
+        return list(self._data.get("children") or self._data.get("subresources") or [])
 
     def _add_child_resource(self, data: Optional[Dict] = None):
-        card = ExamChildResourceCard(data)
+        card = GenericChildCard(data)
         card.delete_requested.connect(self._remove_child_resource)
         card.data_changed.connect(self.data_changed.emit)
         self._children_cards.append(card)
@@ -562,13 +349,7 @@ class ExamCard(QFrame):
         else:
             url = key_raw if key_raw else ""
 
-        children = [
-            card.get_data() for card in self._children_cards if card.is_valid()
-        ]
-        first_video = next(
-            (child for child in children if child.get("name") == "讲解视频"),
-            children[0] if children else {},
-        )
+        children = [card.get_data() for card in self._children_cards if card.is_valid()]
 
         return {
             "type": "exam",
@@ -579,11 +360,6 @@ class ExamCard(QFrame):
             "college": self.college_input.text().strip(),
             "paper_type": self.type_combo.currentData(),
             "children": children,
-            "video_url": first_video.get("url", ""),
-            "video_contributor": first_video.get("contributor", ""),
-            "has_video_contributor_link": first_video.get(
-                "has_contributor_link", False
-            ),
         }
 
     def set_data(self, data: Dict):

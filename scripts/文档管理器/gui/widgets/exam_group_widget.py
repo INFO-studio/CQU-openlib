@@ -23,11 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from gui.widgets.exam_card import ExamCard
 from gui.widgets.draggable_cards_container import start_drag
 
-EXAM_GROUP_COLORS = {
-    "期末试卷": "#4CAF50",
-    "期中试卷": "#2196F3",
-    "小测": "#9C27B0",
-}
+PRESET_COLORS = ["#4CAF50", "#2196F3", "#9C27B0", "#FF9800", "#F44336", "#00BCD4"]
 
 
 class ExamGroupWidget(QFrame):
@@ -40,9 +36,15 @@ class ExamGroupWidget(QFrame):
 
     CARD_TYPE = "exam_group"
 
-    def __init__(self, group_name: str, initial_exams: Optional[List[Dict]] = None):
+    def __init__(
+        self,
+        group_name: str,
+        initial_exams: Optional[List[Dict]] = None,
+        color: str = PRESET_COLORS[0],
+    ):
         super().__init__()
         self._group_name = group_name
+        self._color = color
         self._exam_cards: List[ExamCard] = []
         self._is_collapsed = False
         self._drag_start_pos: Optional[QPoint] = None
@@ -51,7 +53,7 @@ class ExamGroupWidget(QFrame):
         self.setAcceptDrops(True)
 
     def _init_ui(self):
-        color = EXAM_GROUP_COLORS.get(self._group_name, "#4CAF50")
+        color = self._color
 
         self.setStyleSheet(f"""
             ExamGroupWidget {{

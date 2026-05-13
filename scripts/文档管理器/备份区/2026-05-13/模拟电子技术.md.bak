@@ -1,17 +1,7 @@
-## 攻略  
-
-暂无攻略，欢迎贡献。  
-
 ## 资源  
-
 === ":material-book:`EE21130`"  
-
-    * [教材](http://api.cqu-openlib.cn/file?key=iU43C3ju4yvc) - :material-format-quote-open:`模拟电子技术基础` - :material-account:`熊兰` - :material-printer:`科学出版社`  
-    * 期末试卷
-        * [试卷+答案](http://api.cqu-openlib.cn/file?key=i91eS3pdsmtg) - :material-calendar:`2011~2022期末考试` - :material-domain:`电气工程学院` - :material-tag:`A卷`  
-
+    * [教材](http://api.cqu-openlib.cn/file?key=iU43C3ju4yvc) - :material-format-quote-open:`模拟电子技术基础` - :material-account:`熊兰` - :material-printer:`科学出版社`  （注：这是电气专业最新版教材）
 === ":material-book:`EE21100`"  
-
     * [教材](http://api.cqu-openlib.cn/file?key=ic5uY291d02d) - :material-format-quote-open:`模拟电子技术基础` - :material-account:`唐治德` - :material-printer:`科学出版社`  
     * 期末试卷
         * [试卷+答案](http://api.cqu-openlib.cn/file?key=iOBk22i1fhnc) - :material-calendar:`2021秋` - :material-tag:`A卷`  
@@ -20,16 +10,11 @@
         * [试卷+答案](http://api.cqu-openlib.cn/file?key=icdqI2i1fh8h) - :material-calendar:`2018秋` - :material-tag:`B卷`  
         * [试卷+答案](http://api.cqu-openlib.cn/file?key=i2Xix2i1fgoh) - :material-calendar:`2016秋` - :material-tag:`B卷`  
         * [试卷+答案](http://api.cqu-openlib.cn/file?key=ircjr2i1fgha) - :material-calendar:`2014秋` - :material-tag:`B卷`  
-
 === ":material-book:`EE21140`"  
-
     * [教材](http://api.cqu-openlib.cn/file?key=ic5uY291d02d) - :material-format-quote-open:`模拟电子技术基础` - :material-account:`唐治德` - :material-printer:`科学出版社`  
-
 === ":material-book:`EST20300`"  
-
     * [教材](http://api.cqu-openlib.cn/file?key=iPL9A28y5flg) - :material-format-quote-open:`模拟电子技术基础` - :material-account:`清华大学电子学教研组` - :material-printer:`高等教育出版社`  
-
 === ":material-book:`MCI20300`"  
-
     * [教材](http://api.cqu-openlib.cn/file?key=iPL9A28y5flg) - :material-format-quote-open:`模拟电子技术基础` - :material-account:`清华大学电子学教研组` - :material-printer:`高等教育出版社`  
-    * [教材]() - :material-format-quote-open:`模拟电子线路实验与实践教程` - :material-account:`陈礼` - :material-printer:`重庆大学出版社`  
+=== ":material-book:`MCI20300`" 
+    * [教材](https://cqu-openlib.lanzout.com/iH3UY3jt2pji) - :material-format-quote-open:`模拟电子线路实验与实践教程` - :material-account:`陈礼` - :material-printer:`重庆大学出版社`（注：本教材文档由EUPB转化而来，排版与原版教材或有不同或出入，建议购买原版教材）

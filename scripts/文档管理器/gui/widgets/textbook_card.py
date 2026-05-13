@@ -22,8 +22,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from utils import extract_lanzou_key, build_api_url
-from gui.widgets.textbook_answer_child_card import TextbookAnswerChildCard
-from gui.widgets.textbook_note_card import TextbookNoteCard
+from gui.widgets.generic_child_card import GenericChildCard
 from gui.widgets.draggable_cards_container import DraggableCardsContainer, start_drag
 
 
@@ -220,8 +219,8 @@ class TextbookCard(QFrame):
         children_btn_layout = QHBoxLayout()
         children_btn_layout.setSpacing(8)
 
-        add_answer_btn = QPushButton("+ 添加习题解答")
-        add_answer_btn.setStyleSheet("""
+        add_child_btn = QPushButton("+ 添加子条目")
+        add_child_btn.setStyleSheet("""
             QPushButton {
                 background-color: #9C27B0;
                 color: white;
@@ -233,24 +232,8 @@ class TextbookCard(QFrame):
                 background-color: #AB47BC;
             }
         """)
-        add_answer_btn.clicked.connect(self._add_answer_child)
-        children_btn_layout.addWidget(add_answer_btn)
-
-        add_note_btn = QPushButton("+ 添加备注")
-        add_note_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #FF9800;
-                color: white;
-                font-size: 10px;
-                padding: 4px 8px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #FFB74D;
-            }
-        """)
-        add_note_btn.clicked.connect(self._add_note_child)
-        children_btn_layout.addWidget(add_note_btn)
+        add_child_btn.clicked.connect(self._add_child)
+        children_btn_layout.addWidget(add_child_btn)
 
         children_btn_layout.addStretch()
         content_layout.addLayout(children_btn_layout)
@@ -283,16 +266,8 @@ class TextbookCard(QFrame):
             summary = f"📚 教材{volume}: 未命名"
         self.header_btn.setText(summary)
 
-    def _add_answer_child(self, data: Optional[Dict] = None):
-        card = TextbookAnswerChildCard(data)
-        card.delete_requested.connect(self._remove_child)
-        card.data_changed.connect(self.data_changed.emit)
-        self._children_cards.append(card)
-        self.children_layout.addWidget(card)
-        self.data_changed.emit()
-
-    def _add_note_child(self, data: Optional[Dict] = None):
-        card = TextbookNoteCard(data)
+    def _add_child(self, data: Optional[Dict] = None):
+        card = GenericChildCard(data)
         card.delete_requested.connect(self._remove_child)
         card.data_changed.connect(self.data_changed.emit)
         self._children_cards.append(card)
@@ -342,11 +317,7 @@ class TextbookCard(QFrame):
 
         children = self._data.get("children", [])
         for child in children:
-            child_type = child.get("type", "")
-            if child_type == "习题解答":
-                self._add_answer_child(child)
-            elif child_type == "备注":
-                self._add_note_child(child)
+            self._add_child(child)
 
     def _on_delete(self):
         self.delete_requested.emit(self)

@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QLineEdit,
     QMenu,
+    QInputDialog,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont, QAction
@@ -26,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from gui.widgets.textbook_card import TextbookCard
 from gui.widgets.document_card import DocumentCard
 from gui.widgets.exam_card import ExamCard
-from gui.widgets.exam_group_widget import ExamGroupWidget
+from gui.widgets.exam_group_widget import ExamGroupWidget, PRESET_COLORS
 from gui.widgets.online_course_card import OnlineCourseCard
 from gui.widgets.draggable_cards_container import DraggableCardsContainer
 
@@ -45,6 +46,7 @@ class CourseTabCard(QFrame):
         self._textbook_cards: List[TextbookCard] = []
         self._document_cards: List[DocumentCard] = []
         self._exam_group_widgets: Dict[str, ExamGroupWidget] = {}
+        self._color_index = 0
         self._online_cards: List[OnlineCourseCard] = []
         self._drag_start_pos = None
         self._init_ui()
@@ -209,6 +211,8 @@ class CourseTabCard(QFrame):
         exam_group_menu.addAction("期末试卷", lambda: self._add_exam_group("期末试卷"))
         exam_group_menu.addAction("期中试卷", lambda: self._add_exam_group("期中试卷"))
         exam_group_menu.addAction("小测", lambda: self._add_exam_group("小测"))
+        exam_group_menu.addSeparator()
+        exam_group_menu.addAction("+ 自定义分组", self._add_custom_exam_group)
         exam_group_btn.setMenu(exam_group_menu)
         action_layout.addWidget(exam_group_btn)
 
@@ -274,15 +278,33 @@ class CourseTabCard(QFrame):
 
     def _add_exam_group(self, group_name: str, exams: Optional[List[Dict]] = None):
         """添加试卷分组"""
+        group_name = group_name.strip()
+        if not group_name:
+            return
         if group_name in self._exam_group_widgets:
             return
 
-        group_widget = ExamGroupWidget(group_name, exams)
+        color = self._next_group_color()
+        group_widget = ExamGroupWidget(group_name, exams, color=color)
         group_widget.group_deleted.connect(self._remove_exam_group)
         group_widget.data_changed.connect(self.data_changed.emit)
         self._exam_group_widgets[group_name] = group_widget
         self.cards_container.add_card(group_widget, ExamGroupWidget.CARD_TYPE)
         self.data_changed.emit()
+
+    def _next_group_color(self) -> str:
+        color = PRESET_COLORS[self._color_index % len(PRESET_COLORS)]
+        self._color_index += 1
+        return color
+
+    def _add_custom_exam_group(self):
+        group_name, accepted = QInputDialog.getText(
+            self,
+            "自定义试卷分组",
+            "分组名称:",
+        )
+        if accepted:
+            self._add_exam_group(group_name)
 
     def _remove_exam_group(self, group_name: str):
         """删除试卷分组"""
@@ -322,7 +344,13 @@ class CourseTabCard(QFrame):
     def get_data(self) -> Dict:
         """获取卡片数据"""
         exam_groups = {}
-        for group_name, group_widget in self._exam_group_widgets.items():
+        for card in self.cards_container.get_cards():
+            if not isinstance(card, ExamGroupWidget):
+                continue
+            group_name = card.get_group_name()
+            group_widget = self._exam_group_widgets.get(group_name)
+            if not group_widget:
+                continue
             exams = group_widget.get_data()
             if exams:
                 exam_groups[group_name] = exams
