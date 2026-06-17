@@ -20,7 +20,7 @@ PATTERNS = {
     "tab_header": r'^===\s*":material-book:`([^`]+)`"',
     "section_header": r"^##\s+(.+)$",
     "list_item": r"^(\s*)\*\s+(.+)$",
-    "link": r"\[([^\]]+)\]\(([^)]+)\)",
+    "link": r"\[([^\]]+)\]\(([^)]*)\)",
     "contributor": r"@\[?([^\]\s@]+)\]?(?:\(([^)]+)\))?",
     "calendar": r":material-calendar:`([^`]+)`",
     "tag": r":material-tag:`([^`]+)`",

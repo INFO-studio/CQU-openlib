@@ -110,7 +110,7 @@ def extract_link_info(text: str) -> Optional[Tuple[str, str]]:
     从文本中提取链接信息
     返回: (显示文本, URL) 或 None
     """
-    m = re.search(r"\[([^\]]+)\]\(([^)]+)\)", text)
+    m = re.search(r"\[([^\]]+)\]\(([^)]*)\)", text)
     if m:
         return m.group(1), m.group(2)
     return None

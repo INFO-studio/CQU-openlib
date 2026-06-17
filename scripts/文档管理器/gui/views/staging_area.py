@@ -140,6 +140,7 @@ class StagingAreaView(QWidget):
         preview_layout.addWidget(self.preview_editor)
 
         self.edit_tabs.addTab(preview_widget, "👁️ 预览")
+        self.preview_tab_index = self.edit_tabs.indexOf(preview_widget)
 
         self.edit_tabs.currentChanged.connect(self._on_tab_changed)
 
@@ -253,12 +254,12 @@ class StagingAreaView(QWidget):
         """表单内容变化时更新状态"""
         self._check_validity()
 
-        if self.edit_tabs.currentIndex() == 2:
+        if self.edit_tabs.currentIndex() == self.preview_tab_index:
             self._preview_markdown()
 
     def _on_tab_changed(self, index):
         """切换Tab时自动更新预览"""
-        if index == 2:
+        if index == self.preview_tab_index:
             self._preview_markdown()
 
     def _preview_markdown(self):
@@ -266,7 +267,7 @@ class StagingAreaView(QWidget):
         form_data = self._collect_form_data()
         markdown = MarkdownGenerator.generate_from_form_data(form_data)
         self.preview_editor.setPlainText(markdown)
-        self.edit_tabs.setCurrentIndex(2)
+        self.edit_tabs.setCurrentIndex(self.preview_tab_index)
 
     def _collect_form_data(self) -> Dict:
         """收集表单数据"""
@@ -283,33 +284,17 @@ class StagingAreaView(QWidget):
     def _check_validity(self):
         """检查当前内容是否合规"""
         form_data = self._collect_form_data()
-
-        has_strategy = bool(self.strategy_editor.get_raw_text().strip())
-        has_resources = self.resource_builder.has_content()
-        has_other_resources = not self.other_resource_widget.is_empty()
-
-        if has_resources:
-            tabs = form_data.get("tabs", {})
-            for course_code, resources in tabs.items():
-                if (
-                    not resources.get("textbooks")
-                    and not resources.get("exam_groups")
-                    and not resources.get("online_courses")
-                ):
-                    self._is_current_valid = False
-                    self.status_label.setText("请为每个课程编号添加资源")
-                    self.status_label.setStyleSheet("color: #FFA500;")
-                    self.replace_btn.setEnabled(False)
-                    return
-
-        self._is_current_valid = has_strategy or has_resources or has_other_resources
+        markdown = MarkdownGenerator.generate_from_form_data(form_data)
+        errors = MarkdownGenerator.validate_generated_markdown(markdown)
+        self._is_current_valid = not errors
 
         if self._is_current_valid:
             self.status_label.setText("合规 ✓")
             self.status_label.setStyleSheet("color: #4CAF50;")
             self.replace_btn.setEnabled(True)
         else:
-            self.status_label.setText("请填写攻略或添加资源")
+            message = errors[0] if errors else "请填写攻略或添加资源"
+            self.status_label.setText(message)
             self.status_label.setStyleSheet("color: #FFA500;")
             self.replace_btn.setEnabled(False)
 

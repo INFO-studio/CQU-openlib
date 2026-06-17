@@ -12,6 +12,17 @@ from config import PATTERNS, REQUIRED_SECTIONS
 class DocumentValidator:
     """文档校验器"""
 
+    TEMPLATE_COURSE_CODES = {"", "课程号", "COURSE_CODE"}
+    TEMPLATE_RESOURCE_TOKENS = {
+        "`教材名`",
+        "`主编`",
+        "`出版社`",
+        "`学期`",
+        "(贡献者链接)",
+        "[网课名称](",
+        "[链接文字](",
+    }
+
     def __init__(self, structure: DocumentStructure):
         self.structure = structure
         self.errors: List[str] = []
@@ -26,6 +37,7 @@ class DocumentValidator:
         self._check_required_sections()
         self._check_tab_syntax()
         self._check_no_placeholder()
+        self._check_template_placeholders()
 
         self.structure.validation_errors = self.errors
         self.structure.is_valid = len(self.errors) == 0
@@ -50,17 +62,13 @@ class DocumentValidator:
                 has_tab = True
                 break
 
-        if not has_tab:
+        if not has_tab and not self._has_real_strategy_content():
             self.errors.append("资源区缺少课程Tab语法: === :material-book:`课程号`")
 
     def _check_no_placeholder(self):
         """检查是否是占位符文档（暂无数据）"""
         first_10_lines = "\n".join(self.structure.lines[:10])
-        placeholder_keywords = [
-            "暂无数据",
-            "欢迎贡献",
-            "如果您知晓本门课程需要什么教材",
-        ]
+        placeholder_keywords = ["暂无数据", "如果您知晓本门课程需要什么教材"]
 
         for keyword in placeholder_keywords:
             if keyword in first_10_lines:
@@ -68,6 +76,70 @@ class DocumentValidator:
                     "提示: 该文档当前为空白模板，请在表单中添加真实的教材、试卷或网课信息。"
                 )
                 break
+
+        if "欢迎贡献" in first_10_lines and not self._has_real_resource_content():
+            self.errors.append(
+                "提示: 该文档当前为空白模板，请在表单中添加真实的教材、试卷或网课信息。"
+            )
+
+    def _check_template_placeholders(self):
+        """检查文档管理器模板残留项。"""
+        resource_section = self.structure.get_section("资源")
+        if not resource_section:
+            return
+
+        for tab in resource_section.tabs:
+            if tab.course_code.strip() in self.TEMPLATE_COURSE_CODES:
+                self.errors.append("资源区仍包含占位课程号，请填写真实课程编号。")
+                return
+
+            for item in self._iter_items(tab.items):
+                if any(token in item.content for token in self.TEMPLATE_RESOURCE_TOKENS):
+                    self.errors.append(
+                        "资源区仍包含模板占位内容，请替换为真实资源信息。"
+                    )
+                    return
+
+    def _has_real_resource_content(self) -> bool:
+        """判断资源区是否已经包含非模板资源。"""
+        resource_section = self.structure.get_section("资源")
+        if not resource_section:
+            return False
+
+        for tab in resource_section.tabs:
+            if tab.course_code.strip() in self.TEMPLATE_COURSE_CODES:
+                continue
+
+            for item in self._iter_items(tab.items):
+                content = item.content.strip()
+                if not content or content in {"期末试卷", "期中试卷", "网课"}:
+                    continue
+                if any(token in content for token in self.TEMPLATE_RESOURCE_TOKENS):
+                    continue
+                return True
+
+        return False
+
+    def _has_real_strategy_content(self) -> bool:
+        """判断攻略区是否包含用户填写的实际内容。"""
+        strategy_section = self.structure.get_section("攻略")
+        if not strategy_section:
+            return False
+
+        for line in strategy_section.content_lines:
+            content = line.strip().lstrip("*-+").strip()
+            if not content:
+                continue
+            if "暂无攻略" in content or "欢迎贡献" in content:
+                continue
+            return True
+
+        return False
+
+    def _iter_items(self, items):
+        for item in items:
+            yield item
+            yield from self._iter_items(item.children)
 
     def get_validation_report(self) -> str:
         """获取校验报告"""
@@ -84,7 +156,7 @@ class DocumentValidator:
     @staticmethod
     def is_empty_document(content: str) -> bool:
         """快速检查是否是空白/占位符文档"""
-        placeholder_keywords = ["暂无数据", "欢迎贡献"]
+        placeholder_keywords = ["暂无数据", "如果您知晓本门课程需要什么教材"]
         for keyword in placeholder_keywords:
             if keyword in content[:200]:
                 return True

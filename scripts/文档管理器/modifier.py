@@ -8,11 +8,10 @@ from pathlib import Path
 from typing import Optional, List, Tuple
 from dataclasses import dataclass
 
-from parser import DocumentParser, DocumentStructure, TabBlock, ListItem
+from parser import DocumentParser, DocumentStructure
 from validator import DocumentValidator
 from workspace import WorkspaceManager
-from config import RESOURCE_TEMPLATES
-from utils import build_api_url, extract_lanzou_key
+from utils import build_api_url
 
 
 @dataclass
@@ -61,16 +60,21 @@ class DocumentModifier:
         """规范化文档行（处理占位符文档）"""
         if self.structure is None:
             return []
-        lines = self.structure.lines
+        lines = list(self.structure.lines)
 
         first_10 = "\n".join(lines[:10])
-        placeholder_keywords = [
-            "暂无数据",
-            "欢迎贡献",
-            "如果您知晓本门课程需要什么教材",
-        ]
+        is_placeholder = any(
+            k in first_10 for k in ["暂无数据", "如果您知晓本门课程需要什么教材"]
+        )
 
-        if any(k in first_10 for k in placeholder_keywords):
+        if not is_placeholder and "欢迎贡献" in first_10:
+            validator = DocumentValidator(self.structure)
+            is_placeholder = (
+                not validator._has_real_resource_content()
+                and not validator._has_real_strategy_content()
+            )
+
+        if is_placeholder:
             lines = ["## 攻略  ", "- 暂无攻略，欢迎贡献", "", "## 资源  ", ""]
 
         normalized = []
@@ -107,6 +111,49 @@ class DocumentModifier:
 
         return normalized
 
+    def _find_tab_bounds(self, lines: List[str], course_code: str) -> Optional[Tuple[int, int]]:
+        """查找课程Tab在文档中的起止行。"""
+        tab_start = -1
+        tab_prefix = f'=== ":material-book:`{course_code}`'
+
+        for i, line in enumerate(lines):
+            if line.strip().startswith(tab_prefix):
+                tab_start = i
+                break
+
+        if tab_start < 0:
+            return None
+
+        tab_end = len(lines)
+        for i in range(tab_start + 1, len(lines)):
+            stripped = lines[i].strip()
+            if stripped.startswith('=== ":material-book:`') or stripped.startswith("## "):
+                tab_end = i
+                break
+
+        return tab_start, tab_end
+
+    def _ensure_tab(self, lines: List[str], course_code: str) -> Tuple[int, int]:
+        """确保资源区内存在指定课程Tab，并返回Tab边界。"""
+        bounds = self._find_tab_bounds(lines, course_code)
+        if bounds:
+            return bounds
+
+        if not any(l.strip().startswith("## 资源") for l in lines):
+            lines.extend(["", "## 资源  ", ""])
+
+        resource_idx = max(
+            (i for i, l in enumerate(lines) if l.strip().startswith("## 资源")),
+            default=len(lines) - 1,
+        )
+        insert_at = resource_idx + 1
+
+        while insert_at < len(lines) and lines[insert_at].strip() == "":
+            insert_at += 1
+
+        lines.insert(insert_at, f'=== ":material-book:`{course_code}`"  ')
+        return insert_at, insert_at + 1
+
     def add_textbook(
         self,
         course_code: str,
@@ -141,54 +188,21 @@ class DocumentModifier:
         volume_str = volume if volume else ""
         resource_line = f"    * [教材{volume_str}]({api_url}) - :material-format-quote-open:`{textbook_name}` - :material-account:`{author}` - :material-printer:`{publisher}`  "
 
-        tab_header = f'=== ":material-book:`{course_code}`"  '
+        tab_start, tab_end = self._ensure_tab(lines, course_code)
+        last_textbook_line = None
 
-        if not any(l.strip().startswith("## 资源") for l in lines):
-            lines.extend(["", "## 资源  ", ""])
-
-        tab_found = False
-        insert_at = -1
-
-        for i, line in enumerate(lines):
-            if line.strip().startswith(f'=== ":material-book:`{course_code}`'):
-                tab_found = True
-                scan = i + 1
-                last_textbook_line = None
-
-                while scan < len(lines):
-                    current = lines[scan]
-                    stripped = current.strip()
-
-                    if stripped.startswith(
-                        '=== ":material-book:`'
-                    ) or stripped.startswith("## "):
-                        break
-
-                    if current.startswith("    * [教材"):
-                        last_textbook_line = scan
-                        scan += 1
-                        continue
-
-                    if current.startswith("    * ") or current.startswith("        * "):
-                        break
-
-                    scan += 1
-
-                insert_at = (last_textbook_line + 1) if last_textbook_line else (i + 1)
+        for scan in range(tab_start + 1, tab_end):
+            current = lines[scan]
+            if current.startswith("    * [教材"):
+                last_textbook_line = scan
+                continue
+            if current.startswith("    * ") or current.startswith("        * "):
                 break
 
-        if tab_found and insert_at >= 0:
-            lines.insert(insert_at, resource_line)
+        if last_textbook_line is not None:
+            lines.insert(last_textbook_line + 1, resource_line)
         else:
-            resource_idx = max(
-                (i for i, l in enumerate(lines) if l.strip().startswith("## 资源")),
-                default=-1,
-            )
-            if resource_idx >= 0:
-                lines.insert(resource_idx + 1, tab_header)
-                lines.insert(resource_idx + 2, resource_line)
-            else:
-                lines.extend([tab_header, resource_line])
+            lines.insert(tab_start + 1, resource_line)
 
         while lines and lines[0].strip() == "":
             lines.pop(0)
@@ -223,62 +237,33 @@ class DocumentModifier:
         if self.structure is None or not self.structure.is_valid:
             return False
 
-        lines = self.structure.lines
+        lines = self._normalize_lines()
         api_url = build_api_url(key)
 
         resource_line = f"        * [{paper_name}]({api_url}) - :material-calendar:`{semester}` - :material-tag:`{paper_type}`  "
 
-        tab_header_pattern = f'=== ":material-book:`{course_code}`'
+        tab_start, tab_end = self._ensure_tab(lines, course_code)
+        exam_section_start = -1
+        exam_section_end = tab_end
 
-        for i, line in enumerate(lines):
-            if tab_header_pattern in line:
-                scan = i + 1
-                exam_section_start = -1
-                exam_section_end = -1
-
-                while scan < len(lines):
-                    current = lines[scan]
-                    stripped = current.strip()
-
-                    if stripped.startswith(
-                        '=== ":material-book:`'
-                    ) or stripped.startswith("## "):
-                        exam_section_end = scan
-                        break
-
-                    if current.startswith("    * 期末试卷") or current.startswith(
-                        "    * 期中试卷"
-                    ):
-                        exam_section_start = scan
-
-                    scan += 1
-
-                if exam_section_start >= 0:
-                    insert_start = exam_section_start + 1
-                    while insert_start < len(lines) and lines[insert_start].startswith(
-                        "        * "
-                    ):
-                        insert_start += 1
-
-                    if exam_section_end == -1:
-                        exam_section_end = len(lines)
-
-                    if insert_start < exam_section_end:
-                        lines.insert(insert_start, resource_line)
-                    else:
-                        lines.insert(exam_section_end, resource_line)
-                else:
-                    scan2 = i + 1
-                    while scan2 < len(lines) and not lines[scan2].strip().startswith(
-                        '=== ":material-book:`'
-                    ):
-                        if lines[scan2].strip().startswith("## "):
-                            break
-                        scan2 += 1
-                    lines.insert(scan2, "    * 期末试卷")
-                    lines.insert(scan2 + 1, resource_line)
-
+        for scan in range(tab_start + 1, tab_end):
+            current = lines[scan]
+            if current.startswith("    * 期末试卷") or current.startswith("    * 期中试卷"):
+                exam_section_start = scan
+                next_top = scan + 1
+                while next_top < tab_end and not lines[next_top].startswith("    * "):
+                    next_top += 1
+                exam_section_end = next_top
                 break
+
+        if exam_section_start >= 0:
+            insert_at = exam_section_start + 1
+            while insert_at < exam_section_end and lines[insert_at].startswith("        * "):
+                insert_at += 1
+            lines.insert(insert_at, resource_line)
+        else:
+            lines.insert(tab_end, "    * 期末试卷")
+            lines.insert(tab_end + 1, resource_line)
 
         self.workspace.write_file(self.file_path, "\n".join(lines) + "\n")
 
@@ -314,7 +299,7 @@ class DocumentModifier:
         if self.structure is None or not self.structure.is_valid:
             return False
 
-        lines = self.structure.lines
+        lines = self._normalize_lines()
 
         contributor_part = (
             f"@[{contributor_name}]({contributor_url})"
@@ -325,50 +310,28 @@ class DocumentModifier:
         platform_line = f"    * [{platform}]({platform_url})网课  "
         course_line = f"        * [{course_name}]({course_url}) {contributor_part}  "
 
-        tab_header_pattern = f'=== ":material-book:`{course_code}`'
+        tab_start, tab_end = self._ensure_tab(lines, course_code)
+        online_section_start = -1
+        online_section_end = tab_end
 
-        for i, line in enumerate(lines):
-            if tab_header_pattern in line:
-                scan = i + 1
-                online_section_start = -1
-
-                while scan < len(lines):
-                    current = lines[scan]
-                    stripped = current.strip()
-
-                    if stripped.startswith(
-                        '=== ":material-book:`'
-                    ) or stripped.startswith("## "):
-                        break
-
-                    if "网课" in current and current.startswith("    * "):
-                        online_section_start = scan
-
-                    scan += 1
-
-                if online_section_start >= 0:
-                    insert_at = online_section_start + 1
-                    while insert_at < len(lines) and lines[insert_at].startswith(
-                        "        * "
-                    ):
-                        insert_at += 1
-
-                    lines.insert(insert_at, course_line)
-                else:
-                    scan2 = i + 1
-                    end_of_tab = scan2
-                    while scan2 < len(lines):
-                        if lines[scan2].strip().startswith(
-                            '=== ":material-book:`'
-                        ) or lines[scan2].strip().startswith("## "):
-                            end_of_tab = scan2
-                            break
-                        scan2 += 1
-
-                    lines.insert(end_of_tab, platform_line)
-                    lines.insert(end_of_tab + 1, course_line)
-
+        for scan in range(tab_start + 1, tab_end):
+            current = lines[scan]
+            if "网课" in current and current.startswith("    * "):
+                online_section_start = scan
+                next_top = scan + 1
+                while next_top < tab_end and not lines[next_top].startswith("    * "):
+                    next_top += 1
+                online_section_end = next_top
                 break
+
+        if online_section_start >= 0:
+            insert_at = online_section_start + 1
+            while insert_at < online_section_end and lines[insert_at].startswith("        * "):
+                insert_at += 1
+            lines.insert(insert_at, course_line)
+        else:
+            lines.insert(tab_end, platform_line)
+            lines.insert(tab_end + 1, course_line)
 
         self.workspace.write_file(self.file_path, "\n".join(lines) + "\n")
 
@@ -393,43 +356,20 @@ class DocumentModifier:
         if self.structure is None or not self.structure.is_valid:
             return False
 
-        lines = self.structure.lines
+        lines = self._normalize_lines()
 
-        tab_header_pattern = f'=== ":material-book:`{course_code}`'
+        tab_start, tab_end = self._ensure_tab(lines, course_code)
+        insert_at = tab_end
 
-        for i, line in enumerate(lines):
-            if tab_header_pattern in line:
-                scan = i + 1
-
-                while scan < len(lines):
-                    current = lines[scan]
-                    stripped = current.strip()
-
-                    if stripped.startswith(
-                        '=== ":material-book:`'
-                    ) or stripped.startswith("## "):
-                        lines.insert(scan, resource_line)
-                        break
-
-                    if (
-                        current.strip() == f"    * {exam_type}"
-                        or f"    * {exam_type}" in current
-                    ):
-                        scan += 1
-                        while scan < len(lines) and lines[scan].startswith(
-                            "        * "
-                        ):
-                            scan += 1
-
-                        if scan < len(lines):
-                            lines.insert(scan, resource_line)
-                        else:
-                            lines.append(resource_line)
-                        break
-
-                    scan += 1
-
+        for scan in range(tab_start + 1, tab_end):
+            current = lines[scan]
+            if current.strip() == f"* {exam_type}" or current.strip() == f"    * {exam_type}":
+                insert_at = scan + 1
+                while insert_at < tab_end and lines[insert_at].startswith("        * "):
+                    insert_at += 1
                 break
+
+        lines.insert(insert_at, resource_line)
 
         self.workspace.write_file(self.file_path, "\n".join(lines) + "\n")
 
@@ -450,7 +390,7 @@ class DocumentModifier:
         if self.structure is None:
             return False
 
-        lines = self.structure.lines
+        lines = self._normalize_lines()
 
         if not any(l.strip().startswith("## 资源") for l in lines):
             lines.extend(["", "## 资源  ", ""])

@@ -99,8 +99,12 @@ class DocumentParser:
     def parse(self) -> DocumentStructure:
         """解析文档并返回结构化数据"""
         with open(self.file_path, "r", encoding="utf-8") as f:
-            self.lines = f.read().splitlines()
+            return self.parse_text(f.read())
 
+    def parse_text(self, content: str) -> DocumentStructure:
+        """解析Markdown文本并返回结构化数据。"""
+        self.structure = DocumentStructure(file_path=self.file_path)
+        self.lines = content.splitlines()
         self.structure.lines = self.lines
         self._parse_sections()
         self._parse_tabs()

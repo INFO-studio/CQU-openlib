@@ -140,9 +140,24 @@ class StrategyEditor(QWidget):
 
         return lines
 
+    def _is_placeholder_content(self, lines: List[str]) -> bool:
+        if not lines:
+            return True
+
+        normalized = []
+        for line in lines:
+            content = line.strip().removesuffix("  ").strip()
+            content = content.lstrip("*-+").strip()
+            if content:
+                normalized.append(content)
+
+        return bool(normalized) and all(
+            "暂无攻略" in line and "欢迎贡献" in line for line in normalized
+        )
+
     def set_content(self, lines: List[str]):
         """设置攻略内容"""
-        if not lines or lines == ["- 暂无攻略，欢迎贡献"]:
+        if self._is_placeholder_content(lines):
             self.editor.clear()
             return
 

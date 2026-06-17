@@ -100,17 +100,7 @@ class MarkdownGenerator:
 
         tabs = form_data.get("tabs", {})
 
-        if not tabs:
-            lines.append('=== ":material-book:`课程号`"  ')
-            lines.append("")
-            lines.append(
-                "    * [教材]() - :material-format-quote-open:`教材名` - :material-account:`主编` - :material-printer:`出版社`  "
-            )
-            lines.append("    * 期末试卷")
-            lines.append(
-                "        * [试卷+答案]() - :material-calendar:`学期` - :material-domain:`学院` - :material-tag:`A卷`  "
-            )
-        else:
+        if tabs:
             for tab_index, (course_code, resources) in enumerate(tabs.items()):
                 if tab_index > 0:
                     MarkdownGenerator._append_blank_line(lines)
@@ -136,9 +126,17 @@ class MarkdownGenerator:
                 lines.extend(exam_group_lines)
 
                 online_courses = resources.get("online_courses", [])
-                if online_courses:
-                    lines.append("    * 网课")
-                    for online in online_courses:
+                for group_index, group in enumerate(
+                    MarkdownGenerator._group_online_courses(online_courses)
+                ):
+                    if group_index > 0:
+                        MarkdownGenerator._append_blank_line(lines)
+                    lines.append(
+                        MarkdownGenerator._generate_online_platform_parent(
+                            group["platform"], group["platform_url"], indent_level=1
+                        )
+                    )
+                    for online in group["items"]:
                         line = MarkdownGenerator._generate_online_course_line(
                             online, indent_level=2
                         )
@@ -335,6 +333,45 @@ class MarkdownGenerator:
         return line
 
     @staticmethod
+    def _group_online_courses(online_courses: List[Dict]) -> List[Dict]:
+        """按平台分组网课，保留用户在卡片中填写的顺序。"""
+        groups = []
+        index_by_key = {}
+
+        for online in online_courses:
+            platform = online.get("platform", "").strip()
+            platform_url = online.get("platform_url", "").strip()
+            key = (platform, platform_url)
+
+            if key not in index_by_key:
+                index_by_key[key] = len(groups)
+                groups.append(
+                    {
+                        "platform": platform,
+                        "platform_url": platform_url,
+                        "items": [],
+                    }
+                )
+
+            groups[index_by_key[key]]["items"].append(online)
+
+        return groups
+
+    @staticmethod
+    def _generate_online_platform_parent(
+        platform: str, platform_url: str = "", indent_level: int = 1
+    ) -> str:
+        indent = "    " * indent_level
+        platform = (platform or "").strip()
+        platform_url = (platform_url or "").strip()
+
+        if not platform or platform == "网课":
+            return f"{indent}* 网课"
+        if platform_url:
+            return f"{indent}* [{platform}]({platform_url})网课  "
+        return f"{indent}* {platform}网课"
+
+    @staticmethod
     def _generate_other_section_block(section_data: Dict) -> List[str]:
         """生成课外资源块"""
         lines = []
@@ -352,17 +389,45 @@ class MarkdownGenerator:
             lines.append(line)
 
         online_courses = section_data.get("online_courses", [])
-        for online in online_courses:
-            line = MarkdownGenerator._generate_online_course_line(
-                online, indent_level=0
-            )
-            lines.append(line)
+        for group in MarkdownGenerator._group_online_courses(online_courses):
+            if group.get("platform") or group.get("platform_url"):
+                lines.append(
+                    MarkdownGenerator._generate_online_platform_parent(
+                        group["platform"], group["platform_url"], indent_level=0
+                    )
+                )
+                for online in group["items"]:
+                    line = MarkdownGenerator._generate_online_course_line(
+                        online, indent_level=1
+                    )
+                    lines.append(line)
+            else:
+                for online in group["items"]:
+                    line = MarkdownGenerator._generate_online_course_line(
+                        online, indent_level=0
+                    )
+                    lines.append(line)
 
         return lines
 
     @staticmethod
     def _strip_markdown_suffix(text: str) -> str:
         return text.rstrip().removesuffix("  ").strip()
+
+    @staticmethod
+    def validate_generated_markdown(markdown_content: str) -> List[str]:
+        """用文档管理器统一规则校验生成后的Markdown。"""
+        try:
+            from parser import DocumentParser
+            from validator import DocumentValidator
+
+            parser = DocumentParser("<generated>")
+            structure = parser.parse_text(markdown_content)
+            validator = DocumentValidator(structure)
+            validator.validate()
+            return structure.validation_errors
+        except Exception as exc:
+            return [f"生成内容校验失败: {exc}"]
 
     @staticmethod
     def _parse_contributor_from_content(content: str) -> Dict:
@@ -390,7 +455,7 @@ class MarkdownGenerator:
         if not content:
             return {}
 
-        link_match = re.search(r"\[([^\]]+)\]\(([^)]+)\)", content)
+        link_match = re.search(r"\[([^\]]+)\]\(([^)]*)\)", content)
         if not link_match:
             return {"type": "text", "text": content}
 
@@ -413,9 +478,17 @@ class MarkdownGenerator:
     def _looks_like_exam_group(content: str) -> bool:
         if not content or re.search(r"\[[^\]]*\]\([^)]*\)", content):
             return False
-        if content in {"网课"}:
+        if MarkdownGenerator._looks_like_online_parent(content):
             return False
         return "教材解答" not in content
+
+    @staticmethod
+    def _looks_like_online_parent(content: str) -> bool:
+        return bool(
+            content == "网课"
+            or content.endswith("网课")
+            or re.search(r"\[[^\]]+\]\([^)]*\)\s*网课", content)
+        )
 
     @staticmethod
     def parse_to_form_data(markdown_content: str) -> Tuple[Dict, List[str]]:
@@ -437,6 +510,7 @@ class MarkdownGenerator:
         current_exam = None
         current_textbook = None
         current_parent = None
+        current_online_parent = {}
         line_num = 0
 
         for idx, line in enumerate(lines, start=1):
@@ -453,6 +527,9 @@ class MarkdownGenerator:
                 current_section_name = "资源"
                 current_exam_group = None
                 current_textbook = None
+                current_exam = None
+                current_parent = None
+                current_online_parent = {}
                 continue
 
             if stripped.startswith("## ") and stripped not in [
@@ -499,6 +576,9 @@ class MarkdownGenerator:
                             }
                         current_exam_group = None
                         current_textbook = None
+                        current_exam = None
+                        current_parent = None
+                        current_online_parent = {}
                     continue
 
                 if not current_tab_code:
@@ -510,9 +590,9 @@ class MarkdownGenerator:
                     content = stripped[2:].strip()
 
                     if (
-                        current_parent == "网课"
-                        and "[" in content
-                        and "](" in content
+                        current_parent
+                        and MarkdownGenerator._looks_like_online_parent(current_parent)
+                        and re.search(r"\[[^\]]+\]\([^)]*\)", content)
                         and "[教材" not in stripped
                         and "[文档]" not in stripped
                     ):
@@ -520,6 +600,13 @@ class MarkdownGenerator:
                             stripped
                         )
                         if online_data:
+                            online_data.update(
+                                {
+                                    key: value
+                                    for key, value in current_online_parent.items()
+                                    if value and not online_data.get(key)
+                                }
+                            )
                             form_data["tabs"][current_tab_code][
                                 "online_courses"
                             ].append(online_data)
@@ -538,10 +625,14 @@ class MarkdownGenerator:
                             ] = []
                         current_textbook = None
                         current_exam = None
-                    elif content == "网课":
+                        current_online_parent = {}
+                    elif MarkdownGenerator._looks_like_online_parent(content):
                         current_exam_group = None
                         current_textbook = None
                         current_exam = None
+                        current_online_parent = (
+                            MarkdownGenerator._parse_online_platform_line(stripped)
+                        )
                     elif "[教材解答]" in stripped:
                         issues.append(
                             f"第 {line_num} 行：'[教材解答]' 格式已废弃，请改为教材子资源"
@@ -549,10 +640,12 @@ class MarkdownGenerator:
                         current_exam_group = None
                         current_textbook = None
                         current_exam = None
+                        current_online_parent = {}
                     elif "[文档]" in stripped:
                         current_exam_group = None
                         current_textbook = None
                         current_exam = None
+                        current_online_parent = {}
                         doc_data = MarkdownGenerator._parse_document_line(stripped)
                         if doc_data:
                             form_data["tabs"][current_tab_code]["documents"].append(
@@ -560,6 +653,7 @@ class MarkdownGenerator:
                             )
                     elif "[教材" in stripped:
                         current_exam_group = None
+                        current_online_parent = {}
                         textbook_data = MarkdownGenerator._parse_textbook_line(stripped)
                         if textbook_data:
                             textbook_data["children"] = []
@@ -572,6 +666,7 @@ class MarkdownGenerator:
                         current_exam_group = None
                         current_textbook = None
                         current_exam = None
+                        current_online_parent = {}
                     continue
 
                 if line.startswith("        * ") and not line.startswith(
@@ -580,7 +675,7 @@ class MarkdownGenerator:
                     content = stripped[2:].strip()
 
                     if current_exam_group:
-                        if "[" in content and "]" in content and "(" in content:
+                        if re.search(r"\[[^\]]+\]\([^)]*\)", content):
                             exam_data = MarkdownGenerator._parse_exam_line(stripped)
                             if exam_data and not exam_data.get("is_video"):
                                 form_data["tabs"][current_tab_code]["exam_groups"][
@@ -599,11 +694,20 @@ class MarkdownGenerator:
                         child_data = MarkdownGenerator._parse_child_line(stripped)
                         if child_data:
                             current_textbook["children"].append(child_data)
-                    elif current_parent and "网课" in current_parent:
+                    elif current_parent and MarkdownGenerator._looks_like_online_parent(
+                        current_parent
+                    ):
                         online_data = MarkdownGenerator._parse_online_course_line(
                             stripped
                         )
                         if online_data:
+                            online_data.update(
+                                {
+                                    key: value
+                                    for key, value in current_online_parent.items()
+                                    if value and not online_data.get(key)
+                                }
+                            )
                             form_data["tabs"][current_tab_code][
                                 "online_courses"
                             ].append(online_data)
@@ -624,7 +728,9 @@ class MarkdownGenerator:
                         issues.append(
                             f"第 {line_num} 行：教材子项应为二级缩进（8空格），请修改文档格式"
                         )
-                    elif current_parent and "网课" in current_parent:
+                    elif current_parent and MarkdownGenerator._looks_like_online_parent(
+                        current_parent
+                    ):
                         pass
                     else:
                         issues.append(
@@ -671,7 +777,7 @@ class MarkdownGenerator:
                     form_data["other_sections"][section_name]["documents"].append(
                         doc_data
                     )
-            elif "[" in content and "](" in content:
+            elif re.search(r"\[[^\]]+\]\([^)]*\)", content):
                 link_match = re.search(r"\[([^\]]+)\]\(([^)]*)\)", stripped)
                 if link_match:
                     link_name = link_match.group(1)
@@ -729,7 +835,7 @@ class MarkdownGenerator:
         """解析教材行"""
         data = {"type": "textbook"}
 
-        link_match = re.search(r"\[教材([^]]*)\]\(([^)]+)\)", line)
+        link_match = re.search(r"\[教材([^]]*)\]\(([^)]*)\)", line)
         if link_match:
             volume = link_match.group(1).strip()
             if volume:
@@ -760,7 +866,7 @@ class MarkdownGenerator:
         """解析试卷行"""
         data = {"type": "exam"}
 
-        link_match = re.search(r"\[([^]]+)\]\(([^)]+)\)", line)
+        link_match = re.search(r"\[([^]]+)\]\(([^)]*)\)", line)
         if link_match:
             data["name"] = link_match.group(1)
             url = link_match.group(2)
@@ -822,7 +928,7 @@ class MarkdownGenerator:
         """解析网课行"""
         data = {"type": "online_course"}
 
-        link_match = re.search(r"\[([^]]+)\]\(([^)]+)\)", line)
+        link_match = re.search(r"\[([^]]+)\]\(([^)]*)\)", line)
         if link_match:
             data["course_name"] = link_match.group(1)
             url = link_match.group(2)
@@ -841,5 +947,24 @@ class MarkdownGenerator:
                     data["has_contributor_link"] = True
                 else:
                     data["contributor_url"] = contributor_url
+
+        return data
+
+    @staticmethod
+    def _parse_online_platform_line(line: str) -> Dict:
+        """解析网课平台父项。"""
+        data = {}
+        content = MarkdownGenerator._strip_markdown_suffix(line.strip())
+        if content.startswith("* "):
+            content = content[2:].strip()
+
+        link_match = re.search(r"\[([^]]+)\]\(([^)]*)\)\s*网课", content)
+        if link_match:
+            data["platform"] = link_match.group(1)
+            data["platform_url"] = link_match.group(2)
+            return data
+
+        if content.endswith("网课"):
+            data["platform"] = content.removesuffix("网课").strip() or "网课"
 
         return data
