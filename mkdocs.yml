@@ -14,10 +14,10 @@ theme:
     - announce.dismiss
     - content.code.copy
     - navigation.indexes
+    - navigation.prune
     - navigation.tabs
     - navigation.tabs.sticky
-  font:
-    code: Fira Code
+  font: false
   palette:
     - scheme: slate
       toggle:
@@ -38,8 +38,11 @@ theme:
 plugins:
   - tags
   - search:
-      separator: '[\\s\\u200b\\-]'
+      lang: zh
+      separator: '[\s\u200b\u3000\-、，。！？；：：“”‘’（）()【】《》〈〉「」『』〔〕［］\[\]{}.,!?;:/+=*#%&@|~^`$]+'
 
+hooks:
+  - scripts/mkdocs_hooks/search_index.py
 
 
 extra: 
