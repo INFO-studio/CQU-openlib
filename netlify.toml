@@ -1,0 +1,13 @@
+[build]
+  command = "pnpm build"
+  publish = "build/client"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "11.15.1"
+
+# SPA: client routes fall through to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
