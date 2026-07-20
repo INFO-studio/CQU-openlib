@@ -53,14 +53,8 @@
     "tsx": "^4.23.1",
     "typescript": "^5.9.2",
     "unocss": "^66.5.10",
-    "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.5",
+    "vite-plus": "0.2.5"
   },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "11.15.1",
-      "onFail": "download"
-    }
-  }
+  "packageManager": "pnpm@11.15.1"
 }

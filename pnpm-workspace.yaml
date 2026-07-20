@@ -1,10 +1,7 @@
+overrides:
+  vite: npm:@voidzero-dev/vite-plus-core@0.2.5
 allowBuilds:
   esbuild: true
-catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@0.2.5
-  vite-plus: 0.2.5
-overrides:
-  vite: 'catalog:'
 peerDependencyRules:
   allowAny:
     - vite
