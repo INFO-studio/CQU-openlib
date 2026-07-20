@@ -1,8 +1,4 @@
 import type { MnInlineCode } from '~/types/mdast';
 
-const parserInlineCode = (mn: MnInlineCode) => (
-  <pre className={'inline'}>
-    <code>{mn.value}</code>
-  </pre>
-);
+const parserInlineCode = (mn: MnInlineCode) => <code>{mn.value}</code>;
 export default parserInlineCode;

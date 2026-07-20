@@ -22,7 +22,9 @@ const inlineToText = (curs: Mn[]): string =>
         ? (n.value ?? '')
         : n.type === 'link'
           ? inlineToText(n.children ?? [])
-          : '',
+          : n.type === 'inlineCode'
+            ? (n.value ?? '')
+            : '',
     )
     .join('');
 
@@ -51,8 +53,15 @@ export const extractTitle = (children?: Mn[]): Mn[] => {
     const nodeText = child.type === 'text' ? (child.value ?? '') : '';
     const start = charCount;
     const end = charCount + nodeText.length;
-    if ((end > quoteStart && start < quoteEnd) || child.type !== 'text') {
-      titleNodes.push(child);
+    // Text: overlap (quoteStart, quoteEnd). Zero-width nodes (icon/link/break)
+    // sit at `start` — include when inside the quotes, never after the closer.
+    const inTitle =
+      child.type === 'text'
+        ? end > quoteStart && start < quoteEnd
+        : start >= quoteStart && start < quoteEnd;
+    // Clone so trimming quotes never mutates the source AST.
+    if (inTitle) {
+      titleNodes.push(child.type === 'text' ? { ...child } : child);
     }
     charCount = end;
   });
@@ -76,6 +85,22 @@ type RemarkAdmonitionState = {
   meta: { type: MnAdmonitionType; title: Mn[] } | null;
 };
 
+const flushBroken = (pre: RemarkAdmonitionState) => {
+  // Failed / incomplete admonition must not swallow the rest of the document.
+  if (pre.meta) {
+    pre.out.push({
+      type: 'admonition',
+      admonitionType: pre.meta.type,
+      title: extractTitle(pre.meta.title),
+      children: pre.buffer ?? [],
+    } satisfies MnAdmonition);
+  } else if (pre.buffer?.length) {
+    pre.out.push(...pre.buffer);
+  }
+  pre.buffer = null;
+  pre.meta = null;
+};
+
 const remarkAdmonition = () => {
   return (tree: MnRoot) => {
     const pre = (tree.children ?? []).reduce<RemarkAdmonitionState>(
@@ -84,22 +109,16 @@ const remarkAdmonition = () => {
           .when(
             ({ cur }) => isStart(cur),
             ({ pre }) => {
+              if (pre.buffer) flushBroken(pre);
               pre.buffer = [];
               pre.meta = null;
               return pre;
             },
           )
           .when(
-            ({ pre, cur }) => isEnd(cur) && pre.buffer && pre.meta,
+            ({ pre, cur }) => isEnd(cur) && !!pre.buffer,
             ({ pre }) => {
-              pre.out.push({
-                type: 'admonition',
-                admonitionType: pre.meta?.type ?? 'info',
-                title: extractTitle(pre.meta?.title),
-                children: pre.buffer ?? [],
-              } satisfies MnAdmonition);
-              pre.buffer = null;
-              pre.meta = null;
+              flushBroken(pre);
               return pre;
             },
           )
@@ -114,9 +133,10 @@ const remarkAdmonition = () => {
                 (cur as MnParagraph).children ?? [],
               ).match(ADMONITION_PATTERN);
 
-              if (matchResult && isValidAdmonitionType(matchResult[1])) {
+              const typeRaw = matchResult?.[1]?.toLowerCase() ?? '';
+              if (matchResult && isValidAdmonitionType(typeRaw)) {
                 pre.meta = {
-                  type: matchResult[1] as MnAdmonitionType,
+                  type: typeRaw as MnAdmonitionType,
                   title: (cur as MnParagraph).children ?? [],
                 };
                 return pre;
@@ -144,6 +164,7 @@ const remarkAdmonition = () => {
       },
     );
 
+    if (pre.buffer) flushBroken(pre);
     tree.children = pre.out;
   };
 };

@@ -7,4 +7,5 @@ const parserList = (mn: MnList) =>
     .with({ ordered: true }, () => <ol>{mn.children.map(parser)}</ol>)
     .with({ ordered: false }, () => <ul>{mn.children.map(parser)}</ul>)
     .exhaustive();
+
 export default parserList;

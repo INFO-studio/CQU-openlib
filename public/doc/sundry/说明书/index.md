@@ -47,7 +47,7 @@ openlib 有若干板块，如：[课程](../../course/index.md)、[课表](../..
 
 !!! note "这是进入课程页查询课程内容的最佳实践"
 
-通过 [学业](../../academic/index.md) :material-arrow-right: [培养方案库](../../academic/专业培养方案/index.md) 的分类进入您专业的培养方案页
+通过 [学业](../../academic/index.md) :l-arrow-right: [培养方案库](../../academic/专业培养方案/index.md) 的分类进入您专业的培养方案页
 
 推荐使用收藏功能，以便快速进入培养方案页，从而快速定位并进入课程页
 
@@ -82,7 +82,7 @@ openlib 有若干板块，如：[课程](../../course/index.md)、[课表](../..
 - [教材收集表](https://forms.office.com/r/huSXS4xpuD)
     - 用于收集某个课程需要的教材、教材习题解答、教辅或课外读物
 - [页面反馈表](https://forms.office.com/r/huSXS4xpuD)
-    - 用于反馈某个页面的问题，您也可以点击所有页面最下方的 :material-emoticon-sad-outline: 来进入该收集表，页面会被自动填入
+    - 用于反馈某个页面的问题，您也可以点击所有页面最下方的 :l-frown: 来进入该收集表，页面会被自动填入
 
 #### 群组
 

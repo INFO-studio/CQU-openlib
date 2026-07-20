@@ -17,9 +17,10 @@
 - [Tano](Tano.md)
 - [花未泯](花未泯.md)
 - [OddFish](OddFish.md)
+- [四季音籁](四季音籁.md)
 - 厚德载物
 - 几十分钟
-- [Funoke](Funoke.md)
+
 
 贡献者名单（顺序不分先后）：  
 
@@ -41,6 +42,8 @@
 - [重庆大学吧务组](重庆大学吧务组.md)
 - [qzq](qzq.md)
 - [Leo Moore](LeoMoore.md)
+- [仮屋和奏](仮屋和奏.md)
+- [Rium](Rium.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
@@ -88,3 +91,5 @@
 - 给我唱泪桥
 - 冷水鱼
 - puppyfish
+- 阳启万象
+- 龙吟

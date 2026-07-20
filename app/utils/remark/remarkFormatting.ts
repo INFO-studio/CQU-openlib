@@ -31,13 +31,16 @@ const parseFormatting = (value: string): Mn[] => {
 };
 
 const recursivelyFormat = (nodes?: Mn[]): Mn[] =>
-  (nodes ?? []).flatMap((node) =>
-    isText(node)
-      ? parseFormatting(node.value)
-      : 'children' in node
-        ? [{ ...node, children: recursivelyFormat(node.children) }]
-        : [node],
-  );
+  (nodes ?? []).flatMap((node): Mn[] => {
+    if (isText(node)) return parseFormatting(node.value);
+    if (!('children' in node) || !node.children) return [node];
+    return [
+      {
+        ...node,
+        children: recursivelyFormat(node.children as Mn[]),
+      } as Mn,
+    ];
+  });
 
 const remarkFormatting = () => (tree: MnRoot) => {
   tree.children = recursivelyFormat(tree.children ?? []);

@@ -1,0 +1,15 @@
+# Raw markdown must declare UTF-8; otherwise browsers may decode as Latin-1.
+/*.md
+  Content-Type: text/markdown; charset=utf-8
+/*/*.md
+  Content-Type: text/markdown; charset=utf-8
+/*/*/*.md
+  Content-Type: text/markdown; charset=utf-8
+/*/*/*/*.md
+  Content-Type: text/markdown; charset=utf-8
+/*/*/*/*/*.md
+  Content-Type: text/markdown; charset=utf-8
+/*/*/*/*/*/*.md
+  Content-Type: text/markdown; charset=utf-8
+/*/*/*/*/*/*/*.md
+  Content-Type: text/markdown; charset=utf-8

@@ -1,4 +1,4 @@
-import type { Mn, MnIcon, MnRoot, MnText } from '~/types/mdast';
+import type { Mn, MnIcon, MnRoot, MnTabs, MnText } from '~/types/mdast';
 
 const isText = (n: Mn): n is MnText => n.type === 'text';
 
@@ -25,13 +25,23 @@ const recursivelyParseIcons = (nodes?: Mn[]): Mn[] =>
     if (isText(node)) {
       return parseIcons(node.value);
     }
+
+    if (node.type === 'tabs') {
+      const tabs = node as MnTabs;
+      for (const item of tabs.items) {
+        item.title = recursivelyParseIcons(item.title);
+        item.children = recursivelyParseIcons(item.children);
+      }
+      return [node];
+    }
+
     if ('children' in node && node.children) {
       node.children = recursivelyParseIcons(node.children);
     }
-    if ('title' in node && typeof node.title !== 'string') {
-      node.title = recursivelyParseIcons(node.title ?? []);
+    if ('title' in node && Array.isArray(node.title)) {
+      node.title = recursivelyParseIcons(node.title);
     }
-    return node;
+    return [node];
   });
 
 const remarkIcon = (): ((tree: MnRoot) => void) => (tree) => {

@@ -1,10 +1,29 @@
 .DS_Store
 .env
 /node_modules/
-
-# React Router
+/.pnpm-store/
+/.tanstack/
 /.react-router/
 /build/
+/dummy-non-existing-folder/
+/public/nav-index.json
+/public/search/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/e2e/shots/
+
+# Logo master renders (regenerate with pnpm logo:generate)
+/tools/logo/out/
 
 # IDE
 /.idea/
+
+# Logo tuning scratch
+/tools/logo/match/
+/tools/logo/reference-*.png
+/tools/logo/ref-*.png
+

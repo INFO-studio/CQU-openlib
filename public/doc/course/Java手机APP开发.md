@@ -1,3 +1,3 @@
 ## 资源  
-=== ":material-book:`ID21013`"  
-    * [教材](http://api.cqu-openlib.cn/file?key=iRvnx2wnf3ub) - :material-format-quote-open:`Java语言程序设计教程` - :material-account:`翁恺` - :material-printer:`浙江大学出版社`  
+=== ":l-book:`ID21013`"  
+    * [教材](http://api.cqu-openlib.cn/file?key=iRvnx2wnf3ub) - :l-quote:`Java语言程序设计教程` - :l-user:`翁恺` - :l-printer:`浙江大学出版社`  

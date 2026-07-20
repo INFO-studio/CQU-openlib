@@ -6,7 +6,8 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": ["**", "!**/routeTree.gen.ts", "!**/build"]
   },
   "formatter": {
     "enabled": true,
@@ -16,7 +17,13 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "style": {
+        "useConst": "error"
+      },
+      "complexity": {
+        "useArrowFunction": "error"
+      }
     }
   },
   "javascript": {
