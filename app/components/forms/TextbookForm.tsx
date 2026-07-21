@@ -13,6 +13,7 @@ import { useFormDraft } from '~/hooks/useFormDraft';
 import {
   type StagingFileRef,
   type UploadProgress,
+  IDLE_UPLOAD_PROGRESS,
   submitFormWithFiles,
 } from '~/lib/formSubmit';
 
@@ -85,12 +86,7 @@ const resizeBooks = (books: BookDraft[], count: number): BookDraft[] => {
   return next;
 };
 
-const IDLE_PROGRESS: UploadProgress = {
-  ratio: 0,
-  label: '',
-  fileIndex: 0,
-  fileTotal: 1,
-};
+const IDLE_PROGRESS = IDLE_UPLOAD_PROGRESS;
 
 export const TextbookForm = () => {
   const { values, setField, setValues, clear } = useFormDraft({
@@ -216,12 +212,15 @@ export const TextbookForm = () => {
     }
 
     setSubmitting(true);
-    setProgress({
-      ratio: 0,
-      label: uploadQueue.length ? '准备上传' : '提交表单',
-      fileIndex: 0,
-      fileTotal: Math.max(uploadQueue.length, 1),
-    });
+    setProgress(
+      uploadQueue.length
+        ? {
+            phase: 'upload',
+            fileIndex: 1,
+            fileTotal: uploadQueue.length,
+          }
+        : IDLE_UPLOAD_PROGRESS,
+    );
 
     try {
       await submitFormWithFiles({

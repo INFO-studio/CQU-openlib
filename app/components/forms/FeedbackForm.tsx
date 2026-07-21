@@ -19,6 +19,7 @@ import {
 } from '~/lib/formContributor';
 import {
   type UploadProgress,
+  IDLE_UPLOAD_PROGRESS,
   submitFormWithFiles,
 } from '~/lib/formSubmit';
 
@@ -43,15 +44,9 @@ const LEDE = '我们会认真聆听并对您的反馈作出适当的变化。';
 const FEEDBACK_CONTRIBUTOR_OPTS = {
   showAuthorCredit: false,
   showIntro: false,
-  contactMode: 'any' as const,
 };
 
-const IDLE_PROGRESS: UploadProgress = {
-  ratio: 0,
-  label: '',
-  fileIndex: 0,
-  fileTotal: 1,
-};
+const IDLE_PROGRESS = IDLE_UPLOAD_PROGRESS;
 
 export const FeedbackForm = ({ initialPage = '' }: Props) => {
   const { values, setField, clear } = useFormDraft({
@@ -99,7 +94,7 @@ export const FeedbackForm = ({ initialPage = '' }: Props) => {
     }
 
     setSubmitting(true);
-    setProgress({ ratio: 0, label: '提交表单', fileIndex: 0, fileTotal: 1 });
+    setProgress(IDLE_UPLOAD_PROGRESS);
 
     try {
       const contributor = toContributorPayload(
@@ -115,6 +110,7 @@ export const FeedbackForm = ({ initialPage = '' }: Props) => {
           page: values.page.trim(),
           credit: contributor.credit,
           canContact: contributor.canContact,
+          contactKind: contributor.contactKind,
           contact: contributor.contact,
         }),
       });

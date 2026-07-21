@@ -22,6 +22,7 @@ const FIELD_LABELS: Record<string, string> = {
   credit: '贡献者署名',
   authorCredit: '原作者署名',
   canContact: '可否联系',
+  contactKind: '联系渠道',
   contact: '联系方式',
   page: '相关页面',
   year: '入学学年',
@@ -52,7 +53,6 @@ const FIELD_LABELS: Record<string, string> = {
   formerName: '原社团名',
   recruitGroup: '纳新群号',
   intro: '简介',
-  qq: 'QQ',
   key: '对象键',
   size: '大小',
 };

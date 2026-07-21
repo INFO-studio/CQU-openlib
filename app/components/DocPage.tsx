@@ -199,7 +199,7 @@ const DocPage = ({ splat }: DocPageProps) => {
             return <Fragment key={i}>{parser(node)}</Fragment>;
           })}
           <footer className="mt-8 border-t border-line pt-3 text-[0.8125rem] text-muted">
-            内容来自社区贡献。
+            内容来自社区贡献。如有问题请通过
             <Link
               to="/form/$type"
               params={{ type: 'feedback' }}
@@ -208,8 +208,7 @@ const DocPage = ({ splat }: DocPageProps) => {
             >
               问题反馈
             </Link>
-            或邮件
-            <code className="mx-1">cqu-openlib@outlook.com</code>
+            联系我们。
           </footer>
         </article>
       </DocBaseContext.Provider>

@@ -8,10 +8,19 @@ import { SubmitProgressOverlay } from '~/components/forms/SubmitProgressOverlay'
 import { Button } from '~/components/ui/button';
 import { FormChoice } from '~/components/ui/form-choice';
 import { Input } from '~/components/ui/input';
+import { InputGroup } from '~/components/ui/input-group';
 import { Textarea } from '~/components/ui/textarea';
 import { useFormDraft } from '~/hooks/useFormDraft';
 import {
+  CONTACT_KIND_OPTIONS,
+  contactInputMode,
+  contactPlaceholder,
+  type ContactKind,
+  validateContactFields,
+} from '~/lib/formContact';
+import {
   type UploadProgress,
+  IDLE_UPLOAD_PROGRESS,
   submitFormWithFiles,
 } from '~/lib/formSubmit';
 
@@ -52,7 +61,8 @@ type ClubDraft = {
   formerName: string;
   recruitGroup: string;
   intro: string;
-  qq: string;
+  contactKind: '' | ContactKind;
+  contact: string;
 };
 
 const DEFAULTS: ClubDraft = {
@@ -63,15 +73,11 @@ const DEFAULTS: ClubDraft = {
   formerName: '',
   recruitGroup: '',
   intro: '',
-  qq: '',
+  contactKind: '',
+  contact: '',
 };
 
-const IDLE_PROGRESS: UploadProgress = {
-  ratio: 0,
-  label: '',
-  fileIndex: 0,
-  fileTotal: 1,
-};
+const IDLE_PROGRESS = IDLE_UPLOAD_PROGRESS;
 
 export const ClubForm = () => {
   const { values, setField, clear } = useFormDraft({
@@ -122,13 +128,17 @@ export const ClubForm = () => {
       return;
     }
 
-    if (!values.qq.trim()) {
-      setError('请填写 QQ 号');
+    const contactError = validateContactFields(
+      values.contactKind,
+      values.contact,
+    );
+    if (contactError) {
+      setError(contactError);
       return;
     }
 
     setSubmitting(true);
-    setProgress({ ratio: 0, label: '提交表单', fileIndex: 0, fileTotal: 1 });
+    setProgress(IDLE_UPLOAD_PROGRESS);
 
     try {
       await submitFormWithFiles({
@@ -151,7 +161,8 @@ export const ClubForm = () => {
               : '',
           intro:
             values.updateKind === 'intro' ? values.intro.trim() : '',
-          qq: values.qq.trim(),
+          contactKind: values.contactKind,
+          contact: values.contact.trim(),
         }),
       });
       clear();
@@ -177,7 +188,7 @@ export const ClubForm = () => {
     kind === 'change' && values.changeType === 'rename' ? '05' : null;
   const iRecruit = kind === 'recruit' ? '04' : null;
   const iIntro = kind === 'intro' ? '04' : null;
-  const iQq = (() => {
+  const iContact = (() => {
     if (kind === 'change') {
       return values.changeType === 'rename'
         ? '06'
@@ -279,18 +290,25 @@ export const ClubForm = () => {
           </FormQuestion>
         ) : null}
 
-        {kind && iQq ? (
+        {kind && iContact ? (
           <FormQuestion
-            index={iQq}
-            label="您的 QQ 号"
+            index={iContact}
+            label="您的联系方式是"
             required
             hint="以便进行后续交流。"
           >
-            <Input
-              value={values.qq}
-              onChange={(ev) => setField('qq', ev.target.value)}
-              inputMode="numeric"
-              autoComplete="off"
+            <InputGroup
+              options={CONTACT_KIND_OPTIONS}
+              selectValue={values.contactKind}
+              onSelectChange={(v) => setField('contactKind', v)}
+              selectLabel="联系渠道"
+              inputProps={{
+                value: values.contact,
+                onChange: (ev) => setField('contact', ev.target.value),
+                placeholder: contactPlaceholder(values.contactKind),
+                inputMode: contactInputMode(values.contactKind),
+                autoComplete: 'off',
+              }}
             />
           </FormQuestion>
         ) : null}

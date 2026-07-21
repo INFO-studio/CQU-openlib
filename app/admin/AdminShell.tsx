@@ -18,32 +18,44 @@ export const AdminShell = ({
 }: ShellProps) => (
   <div className="admin-root">
     <header className="admin-top">
-      <div className="admin-top__brand">
-        <span className="admin-top__mark" aria-hidden="true" />
-        <div>
-          <p className="admin-top__title">openlib 维护台</p>
-          <p className="admin-top__sub">不与主站共用布局</p>
+      <div className="admin-top__start">
+        <div className="admin-top__brand">
+          <span className="admin-top__logo" aria-hidden="true">
+            <img
+              src="/doc/assets/openlib-logo-dark.svg"
+              alt=""
+              width={28}
+              height={28}
+            />
+          </span>
+          <div>
+            <p className="admin-top__title">openlib 维护台</p>
+            <p className="admin-top__sub">独立维护后台</p>
+          </div>
         </div>
+        {unlocked ? (
+          <nav className="admin-nav" aria-label="维护模块">
+            {ADMIN_MODULES.map((mod) => (
+              <a
+                key={mod.id}
+                href={mod.path}
+                className={
+                  mod.id === activeModuleId
+                    ? 'admin-nav__item is-active'
+                    : 'admin-nav__item'
+                }
+              >
+                <span className="admin-nav__item-label">{mod.label}</span>
+                <span className="admin-nav__item-desc">{mod.description}</span>
+              </a>
+            ))}
+          </nav>
+        ) : null}
       </div>
       {unlocked ? (
-        <nav className="admin-nav" aria-label="维护模块">
-          {ADMIN_MODULES.map((mod) => (
-            <a
-              key={mod.id}
-              href={mod.path}
-              className={
-                mod.id === activeModuleId
-                  ? 'admin-nav__item is-active'
-                  : 'admin-nav__item'
-              }
-            >
-              {mod.label}
-            </a>
-          ))}
-          <button type="button" className="admin-nav__lock" onClick={onLock}>
-            锁定
-          </button>
-        </nav>
+        <button type="button" className="admin-nav__lock" onClick={onLock}>
+          锁定
+        </button>
       ) : null}
     </header>
     <main className="admin-main">{children}</main>

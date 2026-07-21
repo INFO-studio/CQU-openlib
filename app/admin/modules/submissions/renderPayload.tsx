@@ -15,6 +15,15 @@ const formatScalar = (key: string, value: unknown): string => {
     if (value === 'yes') return '是';
     if (value === 'no') return '否';
   }
+  if (key === 'contactKind') {
+    const map: Record<string, string> = {
+      qq: 'QQ',
+      wechat: '微信',
+      email: '邮箱',
+      phone: '手机',
+    };
+    return map[String(value)] ?? String(value);
+  }
   if (
     key === 'confirmAuthorized' ||
     key === 'confirmNoPii'

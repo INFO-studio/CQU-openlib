@@ -4,7 +4,14 @@ import { FormQuestion } from '~/components/forms/FormQuestion';
 import { FileInput } from '~/components/ui/file-input';
 import { FormChoice, YES_NO_OPTIONS } from '~/components/ui/form-choice';
 import { Input } from '~/components/ui/input';
+import { InputGroup } from '~/components/ui/input-group';
 import { Textarea } from '~/components/ui/textarea';
+import {
+  CONTACT_KIND_OPTIONS,
+  contactInputMode,
+  contactPlaceholder,
+  type ContactKind,
+} from '~/lib/formContact';
 import {
   type ContributorBlockOptions,
   type ContributorDraft,
@@ -51,9 +58,12 @@ export const IntroLabel = (): ReactNode => (
 const AUTHOR_CREDIT_LABEL =
   '该文件原作者同样可以对该贡献署名，若您并非文件原作者，文件为非出版物，且能与原作者取得联系，原作者希望的署名是';
 
+const CAN_CONTACT_LABEL = '我可以联系您来获取进一步信息吗';
+const CONTACT_LABEL = '您的联系方式是';
+
 /**
  * Shared contributor + contact questions.
- * Renders credit → optional author → optional intro → canContact → contact.
+ * Renders credit → optional author → optional intro → canContact → contact InputGroup.
  */
 export const ContributorFields = ({
   startIndex,
@@ -70,16 +80,7 @@ export const ContributorFields = ({
   const authorIndex = options.showAuthorCredit ? next() : null;
   const introIndex = options.showIntro ? next() : null;
   const canContactIndex = next();
-  const contactIndex =
-    values.canContact === 'yes' ? next() : null;
-
-  const canContactLabel =
-    options.contactMode === 'qq'
-      ? '我可以联系您 QQ 来获取进一步信息吗'
-      : '我可以联系您来获取进一步信息吗';
-
-  const contactLabel =
-    options.contactMode === 'qq' ? '您的 QQ 号是' : '联系方式';
+  const contactIndex = values.canContact === 'yes' ? next() : null;
 
   return (
     <>
@@ -147,28 +148,35 @@ export const ContributorFields = ({
         </FormQuestion>
       ) : null}
 
-      <FormQuestion index={canContactIndex} label={canContactLabel} required>
+      <FormQuestion index={canContactIndex} label={CAN_CONTACT_LABEL} required>
         <FormChoice
           value={values.canContact}
           options={YES_NO_OPTIONS}
           onChange={(v) => {
             setField('canContact', v);
-            if (v !== 'yes') setField('contact', '');
+            if (v !== 'yes') {
+              setField('contactKind', '');
+              setField('contact', '');
+            }
           }}
-          aria-label={canContactLabel}
+          aria-label={CAN_CONTACT_LABEL}
         />
       </FormQuestion>
 
       {contactIndex ? (
-        <FormQuestion index={contactIndex} label={contactLabel} required>
-          <Input
-            value={values.contact}
-            onChange={(ev) => setField('contact', ev.target.value)}
-            placeholder={
-              options.contactMode === 'qq' ? 'QQ 号' : 'QQ / 邮箱 / Telegram'
-            }
-            inputMode={options.contactMode === 'qq' ? 'numeric' : undefined}
-            autoComplete={options.contactMode === 'qq' ? 'off' : 'email'}
+        <FormQuestion index={contactIndex} label={CONTACT_LABEL} required>
+          <InputGroup
+            options={CONTACT_KIND_OPTIONS}
+            selectValue={values.contactKind}
+            onSelectChange={(v) => setField('contactKind', v as ContactKind)}
+            selectLabel="联系渠道"
+            inputProps={{
+              value: values.contact,
+              onChange: (ev) => setField('contact', ev.target.value),
+              placeholder: contactPlaceholder(values.contactKind),
+              inputMode: contactInputMode(values.contactKind),
+              autoComplete: 'off',
+            }}
           />
         </FormQuestion>
       ) : null}

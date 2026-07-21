@@ -7,10 +7,7 @@ export type StagingFileRef = {
 };
 
 export type UploadProgress = {
-  /** Overall 0–1 across all files + final form POST. */
-  ratio: number;
-  /** Human label under the ring. */
-  label: string;
+  phase: 'idle' | 'upload' | 'submit';
   fileIndex: number;
   fileTotal: number;
 };
@@ -24,6 +21,12 @@ type TokenResponse = {
 };
 
 const MAX_BYTES = 50 * 1024 * 1024;
+
+export const IDLE_UPLOAD_PROGRESS: UploadProgress = {
+  phase: 'idle',
+  fileIndex: 0,
+  fileTotal: 0,
+};
 
 const readErrorMessage = async (res: Response, fallback: string) => {
   try {
@@ -92,11 +95,10 @@ export const uploadToQiniu = (
 
 /**
  * Serial upload: mint token → Qiniu for each file, one after another.
- * `onProgress.ratio` covers only the file phase (0–1).
  */
 export const uploadFilesSerially = async (
   files: File[],
-  onProgress?: (progress: Omit<UploadProgress, 'label'> & { label?: string }) => void,
+  onProgress?: (progress: UploadProgress) => void,
 ): Promise<StagingFileRef[]> => {
   const total = files.length;
   if (total === 0) return [];
@@ -105,30 +107,22 @@ export const uploadFilesSerially = async (
   for (let i = 0; i < total; i += 1) {
     const file = files[i];
     onProgress?.({
-      ratio: i / total,
+      phase: 'upload',
       fileIndex: i + 1,
       fileTotal: total,
-      label: `上传文件 ${i + 1}/${total}`,
     });
 
     const minted = await mintStagingToken(file.name);
-    const ref = await uploadToQiniu(file, minted, (fileRatio) => {
+    const ref = await uploadToQiniu(file, minted, () => {
       onProgress?.({
-        ratio: (i + fileRatio) / total,
+        phase: 'upload',
         fileIndex: i + 1,
         fileTotal: total,
-        label: `上传文件 ${i + 1}/${total}`,
       });
     });
     results.push(ref);
   }
 
-  onProgress?.({
-    ratio: 1,
-    fileIndex: total,
-    fileTotal: total,
-    label: '文件已上传',
-  });
   return results;
 };
 
@@ -147,17 +141,18 @@ export const submitForm = async <TPayload>(
   if (!res.ok) {
     throw new Error(await readErrorMessage(res, `提交失败（${res.status}）`));
   }
-  const data = (await res.json()) as { success?: boolean; id?: string; message?: string };
+  const data = (await res.json()) as {
+    success?: boolean;
+    id?: string;
+    message?: string;
+  };
   if (!data.success || !data.id) {
     throw new Error(data.message?.trim() || '提交失败');
   }
   return { id: data.id };
 };
 
-/**
- * Upload files (if any), then submit form.
- * Progress: files take 0–0.9, final POST takes 0.9–1.
- */
+/** Upload files (if any), then submit form. */
 export const submitFormWithFiles = async <TPayload>(opts: {
   type: string;
   files: File[];
@@ -165,35 +160,18 @@ export const submitFormWithFiles = async <TPayload>(opts: {
   onProgress?: (progress: UploadProgress) => void;
 }): Promise<SubmitFormResult> => {
   const { type, files, buildPayload, onProgress } = opts;
-  const fileWeight = files.length > 0 ? 0.9 : 0;
+  const fileTotal = files.length;
 
   const uploaded =
-    files.length === 0
+    fileTotal === 0
       ? []
-      : await uploadFilesSerially(files, (p) => {
-          onProgress?.({
-            ratio: p.ratio * fileWeight,
-            label: p.label ?? '上传中',
-            fileIndex: p.fileIndex,
-            fileTotal: p.fileTotal,
-          });
-        });
+      : await uploadFilesSerially(files, onProgress);
 
   onProgress?.({
-    ratio: fileWeight,
-    label: '提交表单',
-    fileIndex: files.length,
-    fileTotal: Math.max(files.length, 1),
+    phase: 'submit',
+    fileIndex: fileTotal,
+    fileTotal,
   });
 
-  const result = await submitForm(type, buildPayload(uploaded));
-
-  onProgress?.({
-    ratio: 1,
-    label: '完成',
-    fileIndex: files.length,
-    fileTotal: Math.max(files.length, 1),
-  });
-
-  return result;
+  return submitForm(type, buildPayload(uploaded));
 };

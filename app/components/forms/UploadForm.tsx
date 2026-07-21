@@ -22,6 +22,7 @@ import {
 import {
   type StagingFileRef,
   type UploadProgress,
+  IDLE_UPLOAD_PROGRESS,
   submitFormWithFiles,
 } from '~/lib/formSubmit';
 
@@ -69,12 +70,7 @@ const DEFAULTS: UploadDraft = {
   ...CONTRIBUTOR_DEFAULTS,
 };
 
-const IDLE_PROGRESS: UploadProgress = {
-  ratio: 0,
-  label: '',
-  fileIndex: 0,
-  fileTotal: 1,
-};
+const IDLE_PROGRESS = IDLE_UPLOAD_PROGRESS;
 
 const contributorOptionsFor = (
   category: Category,
@@ -83,21 +79,18 @@ const contributorOptionsFor = (
     return {
       showAuthorCredit: false,
       showIntro: false,
-      contactMode: 'qq',
     };
   }
   if (category === 'textbook') {
     return {
       showAuthorCredit: false,
       showIntro: true,
-      contactMode: 'qq',
     };
   }
   // exam / notes / other
   return {
     showAuthorCredit: true,
     showIntro: true,
-    contactMode: 'qq',
   };
 };
 
@@ -213,8 +206,7 @@ export const UploadForm = () => {
 
     setSubmitting(true);
     setProgress({
-      ratio: 0,
-      label: '准备上传',
+      phase: 'upload',
       fileIndex: 1,
       fileTotal: uploadFiles.length,
     });
