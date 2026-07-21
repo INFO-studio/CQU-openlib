@@ -60,4 +60,29 @@ describe('fetchDocMarkdown', () => {
 
     await expect(fetchDocMarkdown('missing')).resolves.toBeNull();
   });
+
+  it('skips SPA HTML that is mislabeled as markdown (Netlify rewrite)', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response('<!doctype html><html lang="zh-CN"></html>', {
+          status: 200,
+          headers: { 'content-type': 'text/markdown; charset=utf-8' },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('# 社团', {
+          status: 200,
+          headers: { 'content-type': 'text/markdown; charset=utf-8' },
+        }),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(fetchDocMarkdown('club')).resolves.toBe('# 社团');
+    expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
+      '/doc/club.md',
+      '/doc/club/index.md',
+    ]);
+  });
 });
+

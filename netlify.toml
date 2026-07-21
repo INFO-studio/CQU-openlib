@@ -6,6 +6,14 @@
   NODE_VERSION = "22"
   PNPM_VERSION = "11.15.1"
 
+# Missing /doc/* must 404 (not SPA HTML). Existing files still win via CDN shadowing,
+# so /doc/club/index.md is served; /doc/club.md falls through to 404 and the
+# client can try …/index.md next.
+[[redirects]]
+  from = "/doc/*"
+  to = "/index.html"
+  status = 404
+
 # SPA: client routes fall through to index.html
 [[redirects]]
   from = "/*"
