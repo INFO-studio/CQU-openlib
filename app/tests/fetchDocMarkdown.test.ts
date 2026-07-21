@@ -8,14 +8,14 @@ describe('docMarkdownUrls', () => {
     expect(docMarkdownUrls('///')).toEqual(['/doc/index.md']);
   });
 
-  it('tries flat file then folder index', () => {
+  it('tries folder index then sibling folder.md', () => {
     expect(docMarkdownUrls('sundry/说明书')).toEqual([
-      '/doc/sundry/说明书.md',
       '/doc/sundry/说明书/index.md',
+      '/doc/sundry/说明书.md',
     ]);
     expect(docMarkdownUrls('sundry/说明书/')).toEqual([
-      '/doc/sundry/说明书.md',
       '/doc/sundry/说明书/index.md',
+      '/doc/sundry/说明书.md',
     ]);
   });
 });
@@ -44,7 +44,10 @@ describe('fetchDocMarkdown', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(fetchDocMarkdown('sundry/说明书')).resolves.toBe('# hi');
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
+      '/doc/sundry/说明书/index.md',
+      '/doc/sundry/说明书.md',
+    ]);
   });
 
   it('skips html SPA fallback responses', async () => {
@@ -82,9 +85,8 @@ describe('fetchDocMarkdown', () => {
 
     await expect(fetchDocMarkdown('club')).resolves.toBe('# 社团');
     expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
-      '/doc/club.md',
       '/doc/club/index.md',
+      '/doc/club.md',
     ]);
   });
 });
-

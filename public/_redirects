@@ -1,1 +1,6 @@
-/*    /index.html   200
+# Missing /doc files must 404 (do NOT serve the SPA shell).
+# Existing files under /doc/ still win via Netlify shadowing.
+/doc/*  /doc-not-found.txt  404
+
+# SPA fallback for client routes
+/*    /index.html  200
