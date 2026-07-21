@@ -20,7 +20,6 @@ const formatScalar = (key: string, value: unknown): string => {
       qq: 'QQ',
       wechat: '微信',
       email: '邮箱',
-      phone: '手机',
     };
     return map[String(value)] ?? String(value);
   }
