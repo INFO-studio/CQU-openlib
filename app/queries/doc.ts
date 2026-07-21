@@ -9,16 +9,20 @@ export type DocProcessor = {
   parse: (file: string) => unknown;
   run: (tree: unknown) => Promise<unknown> | unknown;
 };
+export type LoadedDoc = {
+  ast: MnRoot;
+  baseDir: string;
+};
 export const loadDocAst = async (
   page: string,
   processor: DocProcessor,
-): Promise<MnRoot | null> => {
+): Promise<LoadedDoc | null> => {
   const value = await fetchDocMarkdown(page);
   if (value == null) return null;
-  const preprocessed = preprocess(value);
+  const preprocessed = preprocess(value.markdown);
   const parsed = processor.parse(preprocessed);
   const next = removePosition((await processor.run(parsed)) as Mn);
-  return next as MnRoot;
+  return { ast: next as MnRoot, baseDir: value.baseDir };
 };
 export const docAstQueryOptions = (page: string, processor: DocProcessor) => {
   return queryOptions({

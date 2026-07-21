@@ -90,15 +90,24 @@ const buildTree = (docRoot: string, sectionDir: string): SidebarNode[] => {
     if (entry.isDirectory()) {
       const indexFile = join(full, 'index.md');
       const children = buildTree(docRoot, full);
-      const path = existsSync(indexFile)
-        ? urlFromDocFile(docRoot, indexFile)
-        : children[0]?.path;
-      if (!path) continue;
-      nodes.push({
-        title: entry.name,
-        path,
-        children: children.length ? children : undefined,
-      });
+      const dirRel = relative(docRoot, full).replace(/\\/g, '/');
+      const dirPath = `/${dirRel}`;
+      if (existsSync(indexFile)) {
+        nodes.push({
+          title: entry.name,
+          path: urlFromDocFile(docRoot, indexFile),
+          children: children.length ? children : undefined,
+        });
+      } else {
+        const first = children[0]?.path;
+        if (!first) continue;
+        nodes.push({
+          title: entry.name,
+          path: first,
+          matchPrefix: dirPath,
+          children: children.length ? children : undefined,
+        });
+      }
       continue;
     }
     if (!/\.mdx?$/i.test(entry.name)) continue;

@@ -1,3 +1,3 @@
-# CQU-openlib React Rebuild
+# CQU-openlib
 
 Under development.

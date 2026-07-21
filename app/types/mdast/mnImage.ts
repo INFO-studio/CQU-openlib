@@ -3,4 +3,6 @@ export type MnImage = {
   url: string;
   title?: string | null;
   alt?: string | null;
+  /** MkDocs `{.class}` attribute list. */
+  className?: string;
 };

@@ -9,6 +9,8 @@ type Props = {
   onNavigate?: () => void;
   /** Default false so browser back/forward works. */
   replace?: boolean;
+  /** Marks the current page for scroll-into-view helpers. */
+  'data-active'?: 'true';
 };
 
 /** Soft navigation: client route change + content reload (no full page refresh). */
@@ -18,6 +20,7 @@ const DocLink = ({
   children,
   onNavigate,
   replace = false,
+  'data-active': dataActive,
 }: Props) => {
   const navigate = useNavigate();
   const href = cleanPath(path);
@@ -44,7 +47,12 @@ const DocLink = ({
   };
 
   return (
-    <a href={href} className={className} onClick={onClick}>
+    <a
+      href={href}
+      className={className}
+      onClick={onClick}
+      data-active={dataActive}
+    >
       {children}
     </a>
   );

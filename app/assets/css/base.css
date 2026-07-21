@@ -134,6 +134,14 @@ input {
   outline: none;
 }
 
+/* Form fields use border color as the only focus cue — don't stack the
+   global :focus-visible outline (reads as a double border). */
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
 /* Keyboard shortcut chip — reads as a physical key, not body text */
 .docs-kbd {
   display: inline-flex;
@@ -325,6 +333,22 @@ aside ul,
   max-width: 100%;
   height: auto;
   margin: 0.6rem 0;
+}
+
+/* MkDocs visual-identity previews (`{:.cqu-logo}`) */
+.docs-prose :where(img.cqu-logo) {
+  max-height: 12rem;
+  width: auto;
+  margin-inline: auto;
+}
+
+/* Extracted <figcaption> from MkDocs <figure> blocks */
+.docs-prose :where(.docs-figcaption) {
+  margin: -0.15rem 0 0.85rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--c-muted);
 }
 
 .docs-prose :where(blockquote) {
@@ -648,3 +672,4 @@ html[data-theme="dark"] .docs-dialog-popup {
     background: var(--c-mist);
   }
 }
+

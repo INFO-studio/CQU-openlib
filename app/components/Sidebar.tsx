@@ -14,6 +14,34 @@ type Props = {
   onNavigate?: () => void;
 };
 
+type ActiveTone = 'exact' | 'ancestor' | 'none';
+
+/** Exact page vs ancestor folder (lighter). */
+export const sidebarActiveTone = (
+  node: SidebarNode,
+  currentPath: string,
+): ActiveTone => {
+  const hasChildren = Boolean(node.children?.length);
+  const prefix = node.matchPrefix ?? node.path;
+
+  if (!hasChildren) {
+    return currentPath === node.path ? 'exact' : 'none';
+  }
+
+  // Folder with its own index page.
+  if (currentPath === prefix) return 'exact';
+
+  // Any descendant under the directory, or the first-child alias target.
+  if (
+    currentPath.startsWith(`${prefix}/`) ||
+    (node.matchPrefix != null && currentPath === node.path)
+  ) {
+    return 'ancestor';
+  }
+
+  return 'none';
+};
+
 const TreeNode = ({
   node,
   currentPath,
@@ -27,15 +55,15 @@ const TreeNode = ({
 }) => {
   const { isExpanded, setOpen } = useSidebarStore();
   const hasChildren = Boolean(node.children?.length);
-  const active =
-    currentPath === node.path || currentPath.startsWith(`${node.path}/`);
-  const open = isExpanded(node.path);
+  const expandKey = node.matchPrefix ?? node.path;
+  const tone = sidebarActiveTone(node, currentPath);
+  const open = isExpanded(expandKey);
 
   const linkClass = cn(
     'min-w-0 flex-1 truncate rounded px-1.5 py-0.5 text-[0.8125rem] no-underline transition-colors',
-    active
-      ? 'bg-primary-soft font-medium text-ink'
-      : 'text-muted hover:bg-mist hover:text-ink',
+    tone === 'exact' && 'bg-primary-soft font-medium text-ink',
+    tone === 'ancestor' && 'bg-[var(--c-primary-faint)] text-ink',
+    tone === 'none' && 'text-muted hover:bg-mist hover:text-ink',
   );
 
   const row = (
@@ -62,10 +90,11 @@ const TreeNode = ({
       <DocLink
         path={node.path}
         onNavigate={() => {
-          if (hasChildren) setOpen(node.path, true);
+          if (hasChildren) setOpen(expandKey, true);
           onNavigate?.();
         }}
         className={linkClass}
+        data-active={tone === 'exact' ? 'true' : undefined}
       >
         {node.title}
       </DocLink>
@@ -80,7 +109,7 @@ const TreeNode = ({
     <li>
       <Collapsible.Root
         open={open}
-        onOpenChange={(next) => setOpen(node.path, next)}
+        onOpenChange={(next) => setOpen(expandKey, next)}
       >
         {row}
         <Collapsible.Panel>
@@ -126,7 +155,7 @@ const Sidebar = ({
       <ul className="flex flex-col gap-px">
         {tree.map((node) => (
           <TreeNode
-            key={node.path}
+            key={node.matchPrefix ?? node.path}
             node={node}
             currentPath={currentPath}
             onNavigate={onNavigate}

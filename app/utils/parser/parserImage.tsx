@@ -17,6 +17,7 @@ const ParserImage = ({ mn }: { mn: MnImage }) => {
       src={src}
       alt={mn.alt ?? ''}
       title={mn.title ?? undefined}
+      className={mn.className}
       loading="lazy"
     />
   );

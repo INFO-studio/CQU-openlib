@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vite-plus/test';
 import type { Mn, MnTabs } from '~/types/mdast';
 import preprocess from '~/utils/preprocess';
 import {
+  remarkAttrList,
   remarkContentTabs,
   remarkDisableIndentedCode,
   remarkFormatting,
@@ -22,6 +23,7 @@ const toAst = async (source: string): Promise<Mn> => {
     .use(remarkFrontmatter)
     .use(remarkGfm)
     .use(remarkContentTabs)
+    .use(remarkAttrList)
     .use(remarkFormatting)
     .use(remarkIcon);
   return removePosition(
@@ -94,5 +96,9 @@ describe('nested content tabs', () => {
     const nestedTitles = nested!.items.map((_, i) => tabTitleText(nested!, i));
     expect(nestedTitles.some((t) => t.includes('蓝色'))).toBe(true);
     expect(nestedTitles.some((t) => t.includes('黑色'))).toBe(true);
+
+    const dump = JSON.stringify(ast);
+    expect(dump).not.toContain('{:download=');
+    expect(dump).toContain('"download":"校徽_蓝色_1024x1024.png"');
   });
 });

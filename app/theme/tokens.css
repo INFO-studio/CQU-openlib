@@ -58,6 +58,11 @@
   --admonition-bug: #b04a78;
   --admonition-example: #6b5cb0;
   --admonition-quote: #7a7f8a;
+
+  /* Form validation — solid pair so fg/bg never collapse */
+  --form-error-fg: #9b2c2c;
+  --form-error-bg: #fde8e8;
+  --form-error-border: #e8a4a4;
 }
 
 html[data-theme="dark"] {
@@ -96,4 +101,8 @@ html[data-theme="dark"] {
   --admonition-bug: #b47a98;
   --admonition-example: #9588b8;
   --admonition-quote: #8a909c;
+
+  --form-error-fg: #f0b4b4;
+  --form-error-bg: #3a1f24;
+  --form-error-border: #7a3a42;
 }

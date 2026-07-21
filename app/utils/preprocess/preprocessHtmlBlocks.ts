@@ -1,25 +1,44 @@
 import type { Preprocess } from '~/utils/preprocess/index';
 
 /**
- * MkDocs/Material often embeds one-line <figure> / <center> HTML.
- * CommonMark HTML blocks (type 6) run until a blank line, so a figure
- * without a trailing blank line swallows subsequent `<!-- TABS_* -->`
- * markers. Convert known patterns to markdown and isolate leftover HTML.
+ * MkDocs/Material often embeds <figure> / <center> HTML.
+ * CommonMark HTML blocks (type 6) run until a blank line, so a multi-line
+ * <figure> swallows the inner `![...](...)` and it never becomes an image
+ * node. Convert known patterns to markdown and isolate leftover HTML.
  */
-const FIGURE = /^\s*<figure\b[^>]*>[\s\S]*?<\/figure>\s*$/i;
+const FIGURE_OPEN = /^\s*<figure\b[^>]*>/i;
+const FIGURE_CLOSE = /<\/figure>/i;
 const CENTER_IMG =
   /^\s*<center>\s*<img\b[^>]*src=["']([^"']+)["'][^>]*>\s*<\/center>\s*$/i;
 
-const extractMdImage = (line: string): string | null => {
-  const md = line.match(/!\[([^\]]*)\]\(([^)\s]+)\)/);
-  if (md) return `![${md[1]}](${md[2]})`;
-  const img = line.match(/<img\b[^>]*src=["']([^"']+)["'][^>]*>/i);
+const extractMdImage = (block: string): string | null => {
+  const md = block.match(/!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]+\})?/);
+  if (md) return `![${md[1]}](${md[2]})${md[3] ?? ''}`;
+  const img = block.match(/<img\b[^>]*src=["']([^"']+)["'][^>]*>/i);
   if (img) {
-    const alt = line.match(/\balt=["']([^"']*)["']/i)?.[1] ?? '';
+    const alt = block.match(/\balt=["']([^"']*)["']/i)?.[1] ?? '';
     return `![${alt}](${img[1]})`;
   }
   return null;
 };
+
+const extractFigcaption = (block: string): string | null => {
+  const m = block.match(/<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/i);
+  if (!m) return null;
+  const text = m[1].replace(/<[^>]+>/g, '').trim();
+  return text || null;
+};
+
+const escapeHtml = (text: string): string =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+/** Centered muted caption — keeps figcaption semantics without a real <figure>. */
+const figcaptionMarkdown = (indent: string, caption: string): string =>
+  `${indent}<p class="docs-figcaption">${escapeHtml(caption)}</p>`;
 
 const preprocessHtmlBlocks: Preprocess = (lines) => {
   const out: string[] = [];
@@ -30,12 +49,27 @@ const preprocessHtmlBlocks: Preprocess = (lines) => {
     out.push('');
   };
 
-  for (const cur of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const cur = lines[i];
     const indent = cur.match(/^\s*/)?.[0] ?? '';
 
-    if (FIGURE.test(cur)) {
-      const image = extractMdImage(cur);
-      pushIsolated(image ? `${indent}${image}` : cur.trim());
+    if (FIGURE_OPEN.test(cur)) {
+      let block = cur;
+      if (!FIGURE_CLOSE.test(cur)) {
+        while (i + 1 < lines.length) {
+          i += 1;
+          block += `\n${lines[i]}`;
+          if (FIGURE_CLOSE.test(lines[i])) break;
+        }
+      }
+      const image = extractMdImage(block);
+      const caption = extractFigcaption(block);
+      if (image) {
+        pushIsolated(`${indent}${image}`);
+        if (caption) pushIsolated(figcaptionMarkdown(indent, caption));
+      } else {
+        pushIsolated(block.trim());
+      }
       continue;
     }
 

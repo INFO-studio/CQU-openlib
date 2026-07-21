@@ -47,7 +47,20 @@ export const resolveDocHref = (href: string, baseDir: string): string => {
     return cleanPath(`/${normalized}`);
   }
 };
-export const docBaseDirFromPathname = (pathname: string): string => {
-  const clean = cleanPath(pathname);
-  return clean === '/' ? '/' : clean;
+/**
+ * Directory used to resolve relative markdown links/images.
+ * Derived from the on-disk doc URL that actually loaded:
+ * - `/doc/foo/bar/index.md` → `/foo/bar` (folder index)
+ * - `/doc/foo/bar.md` → `/foo` (leaf page; `../` climbs from the parent)
+ */
+export const baseDirFromDocUrl = (docUrl: string): string => {
+  const withoutPrefix = docUrl.replace(/^\/doc\/?/, '');
+  const path = withoutPrefix.replace(/\.mdx?$/i, '');
+  if (!path || path === 'index') return '/';
+  if (path.endsWith('/index')) {
+    return cleanPath(`/${path.slice(0, -'/index'.length)}`);
+  }
+  const slash = path.lastIndexOf('/');
+  if (slash === -1) return '/';
+  return cleanPath(`/${path.slice(0, slash)}`);
 };

@@ -1,9 +1,17 @@
+import { baseDirFromDocUrl } from '~/utils/normalizeDocHref';
+
 /** Candidate static URLs for a clean page path (folder → index.md). */
 export const docMarkdownUrls = (page: string): string[] => {
   const normalized = page.replace(/\/+$/, '') || 'index';
   if (normalized === 'index') return ['/doc/index.md'];
   // Prefer …/index.md (MkDocs layout on disk), then sibling folder.md.
   return [`/doc/${normalized}/index.md`, `/doc/${normalized}.md`];
+};
+
+export type FetchedDoc = {
+  markdown: string;
+  /** Base directory for relative link resolution (MkDocs semantics). */
+  baseDir: string;
 };
 
 const isHtmlResponse = (res: Response): boolean => {
@@ -37,12 +45,12 @@ const isUsableMarkdown = (res: Response, text: string): boolean => {
 /** Fetch markdown for a page path, falling back across index.md / folder.md. */
 export const fetchDocMarkdown = async (
   page: string,
-): Promise<string | null> => {
+): Promise<FetchedDoc | null> => {
   for (const url of docMarkdownUrls(page)) {
     const response = await fetch(url);
     const text = await response.text();
     if (!isUsableMarkdown(response, text)) continue;
-    return text;
+    return { markdown: text, baseDir: baseDirFromDocUrl(url) };
   }
   return null;
 };

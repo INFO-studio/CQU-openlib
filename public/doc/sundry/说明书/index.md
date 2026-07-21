@@ -75,14 +75,16 @@ openlib 有若干板块，如：[课程](../../course/index.md)、[课表](../..
 
 #### 表单
 
-目前 openlib 有三种表单
+目前 openlib 有以下表单
 
-- [文件上传表](https://forms.office.com/r/kTeau3KCVh)
-    - 用于上传您拥有的，与 openlib 相关的文件，包括但不限于：教材、试卷、课件、笔记
-- [教材收集表](https://forms.office.com/r/huSXS4xpuD)
+- [文件上传](/form/upload)
+    - 贡献教材、试卷、课件、笔记等文件；提交时串行上传到对象存储
+- [教材收集表](/form/textbook)
     - 用于收集某个课程需要的教材、教材习题解答、教辅或课外读物
-- [页面反馈表](https://forms.office.com/r/huSXS4xpuD)
-    - 用于反馈某个页面的问题，您也可以点击所有页面最下方的 :l-frown: 来进入该收集表，页面会被自动填入
+- [页面反馈表](/form/feedback)
+    - 用于反馈某个页面的问题，您也可以点击所有页面最下方的「问题反馈」，当前页面路径会被自动填入
+- [社团信息表](/form/club)
+    - 社长或管理人员提交社团信息更正与补充
 
 #### 群组
 

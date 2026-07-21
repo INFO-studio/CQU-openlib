@@ -1,6 +1,6 @@
 # 教材需求
 
-本页为教材需求，由 [收集表](https://forms.office.com/r/huSXS4xpuD) 整合而来
+本页为教材需求，由 [收集表](/form/textbook) 整合而来
 格式：:l-book: `课程名 @课程号` - :l-list-checks: `书籍名-书籍第一作者-出版社-ISBN13` (- :l-message-square-text: `额外内容`)
 
 - `#62`

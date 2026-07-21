@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { normalizeDocHref, resolveDocHref } from '~/utils/normalizeDocHref';
+import {
+  baseDirFromDocUrl,
+  normalizeDocHref,
+  resolveDocHref,
+} from '~/utils/normalizeDocHref';
 
 describe('normalizeDocHref', () => {
   it('strips .md / .mdx and keeps hash/query', () => {
@@ -29,6 +33,25 @@ describe('normalizeDocHref', () => {
   });
 });
 
+describe('baseDirFromDocUrl', () => {
+  it('uses the folder itself for index.md sources', () => {
+    expect(baseDirFromDocUrl('/doc/index.md')).toBe('/');
+    expect(baseDirFromDocUrl('/doc/academic/index.md')).toBe('/academic');
+    expect(baseDirFromDocUrl('/doc/academic/入学必看/index.md')).toBe(
+      '/academic/入学必看',
+    );
+  });
+
+  it('uses the parent folder for leaf .md sources', () => {
+    expect(baseDirFromDocUrl('/doc/club.md')).toBe('/');
+    expect(
+      baseDirFromDocUrl(
+        '/doc/academic/专业培养方案/大数据与软件学院/软件工程.md',
+      ),
+    ).toBe('/academic/专业培养方案/大数据与软件学院');
+  });
+});
+
 describe('resolveDocHref', () => {
   it('resolves relative index links against the current doc directory', () => {
     expect(resolveDocHref('入学必看/index.md', '/academic')).toBe(
@@ -39,6 +62,13 @@ describe('resolveDocHref', () => {
     );
     expect(resolveDocHref('../contributor/茵符草.md', '/academic')).toBe(
       '/contributor/茵符草',
+    );
+  });
+
+  it('resolves MkDocs-style climbs from leaf curriculum pages into /course', () => {
+    const base = '/academic/专业培养方案/大数据与软件学院';
+    expect(resolveDocHref('../../../course/软件生产实习.md', base)).toBe(
+      '/course/软件生产实习',
     );
   });
 

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Navigate, useRouterState } from '@tanstack/react-router';
+import { Link, Navigate, useRouterState } from '@tanstack/react-router';
 import { Fragment, type ReactNode, useEffect, useMemo } from 'react';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
@@ -15,10 +15,10 @@ import { titleFromPath } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
 import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
 import type { MnRoot } from '~/types/mdast';
-import { docBaseDirFromPathname } from '~/utils/normalizeDocHref';
 import parser from '~/utils/parser';
 import {
   remarkAdmonition,
+  remarkAttrList,
   remarkContentTabs,
   remarkDisableIndentedCode,
   remarkFormatting,
@@ -47,6 +47,7 @@ const useDocAst = (page: string, enabled: boolean) => {
         .use(remarkGfm)
         .use(remarkContentTabs)
         .use(remarkAdmonition)
+        .use(remarkAttrList)
         .use(remarkFormatting)
         .use(remarkIcon),
     [],
@@ -68,7 +69,6 @@ const DocPage = ({ splat }: DocPageProps) => {
   });
   const page = resolvePagePath(splat);
   const isRawMarkdownRequest = Boolean(splat && /\.mdx?$/i.test(splat));
-  const docBase = docBaseDirFromPathname(pathname);
 
   type Redirect =
     | { to: '/'; params?: undefined }
@@ -97,12 +97,15 @@ const DocPage = ({ splat }: DocPageProps) => {
     refetch,
   } = useDocAst(page, !shouldRedirect);
 
-  const toc = useMemo(() => (file ? extractToc(file) : []), [file]);
+  const toc = useMemo(() => (file ? extractToc(file.ast) : []), [file]);
   const pathTitle = useMemo(() => decodePathname(titleFromPath(page)), [page]);
-  const hasH1 = useMemo(() => (file ? hasH1Heading(file) : true), [file]);
+  const hasH1 = useMemo(
+    () => (file ? hasH1Heading(file.ast) : true),
+    [file],
+  );
   const title = useMemo(() => {
     if (!file) return pathTitle || 'CQU-openlib';
-    if (hasH1) return pageTitleFromAst(file);
+    if (hasH1) return pageTitleFromAst(file.ast);
     return pathTitle || 'CQU-openlib';
   }, [file, hasH1, pathTitle]);
 
@@ -157,13 +160,13 @@ const DocPage = ({ splat }: DocPageProps) => {
     if (!file) return <div className="text-muted">空文档</div>;
 
     const showBookmark = pathname !== '/';
-    const nodes = file.children ?? [];
+    const nodes = file.ast.children ?? [];
     const firstH1Index = hasH1
       ? nodes.findIndex((n) => n.type === 'heading' && n.depth === 1)
       : -1;
 
     return (
-      <DocBaseContext.Provider value={docBase}>
+      <DocBaseContext.Provider value={file.baseDir}>
         <article className="min-w-0 docs-prose">
           {!hasH1 ? (
             <div className="docs-title-row">
@@ -196,7 +199,16 @@ const DocPage = ({ splat }: DocPageProps) => {
             return <Fragment key={i}>{parser(node)}</Fragment>;
           })}
           <footer className="mt-8 border-t border-line pt-3 text-[0.8125rem] text-muted">
-            内容来自社区贡献。问题反馈
+            内容来自社区贡献。
+            <Link
+              to="/form/$type"
+              params={{ type: 'feedback' }}
+              search={{ page: pathname }}
+              className="mx-1 text-primary no-underline hover:underline"
+            >
+              问题反馈
+            </Link>
+            或邮件
             <code className="mx-1">cqu-openlib@outlook.com</code>
           </footer>
         </article>

@@ -18,14 +18,32 @@ const isExternal = (href: string) => {
   }
   return false;
 };
+
+/** Static files under /doc — must not go through SPA DocLink. */
+const isStaticAsset = (href: string) => {
+  if (href.startsWith('/doc/resources/')) return true;
+  const path = href.split(/[?#]/)[0] ?? '';
+  return /\.(?:png|jpe?g|gif|webp|svg|pdf|zip|rar|7z|mp[34]|wav|docx?|xlsx?|pptx?|txt|csv)$/i.test(
+    path,
+  );
+};
+
 const ParserLink = ({ mn }: { mn: MnLink }) => {
   const base = useDocBase();
   const href = resolveDocHref(mn.url || '', base);
   const children = mn.children.map(parser);
-  if (isExternal(href)) {
+  const download =
+    mn.download === true ? true : mn.download ? mn.download : undefined;
+  const className = mn.className
+    ? `text-primary no-underline hover:underline ${mn.className}`
+    : 'text-primary no-underline hover:underline';
+
+  if (download !== undefined || isStaticAsset(href) || isExternal(href)) {
     return (
       <TextLink
         href={href}
+        className={className}
+        download={download === true ? '' : download}
         target={href.startsWith('http') ? '_blank' : undefined}
         rel={href.startsWith('http') ? 'noreferrer' : undefined}
       >
@@ -34,10 +52,14 @@ const ParserLink = ({ mn }: { mn: MnLink }) => {
     );
   }
   if (href.startsWith('#')) {
-    return <TextLink href={href}>{children}</TextLink>;
+    return (
+      <TextLink href={href} className={className}>
+        {children}
+      </TextLink>
+    );
   }
   return (
-    <DocLink path={href} className="text-primary no-underline hover:underline">
+    <DocLink path={href} className={className}>
       {children}
     </DocLink>
   );

@@ -75,7 +75,13 @@ export type SearchChunkFile = {
 };
 export type SidebarNode = {
   title: string;
+  /** Click / navigation target. */
   path: string;
+  /**
+   * Directory URL used for ancestor expand + highlight.
+   * Set when a folder has no index.md and `path` aliases the first child.
+   */
+  matchPrefix?: string;
   children?: SidebarNode[];
   /** Course codes from metadata (course section). */
   codes?: string[];

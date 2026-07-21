@@ -43,7 +43,10 @@ describe('fetchDocMarkdown', () => {
       );
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchDocMarkdown('sundry/说明书')).resolves.toBe('# hi');
+    await expect(fetchDocMarkdown('sundry/说明书')).resolves.toEqual({
+      markdown: '# hi',
+      baseDir: '/sundry',
+    });
     expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
       '/doc/sundry/说明书/index.md',
       '/doc/sundry/说明书.md',
@@ -83,10 +86,30 @@ describe('fetchDocMarkdown', () => {
       );
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchDocMarkdown('club')).resolves.toBe('# 社团');
+    await expect(fetchDocMarkdown('club')).resolves.toEqual({
+      markdown: '# 社团',
+      baseDir: '/',
+    });
     expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
       '/doc/club/index.md',
       '/doc/club.md',
     ]);
+  });
+
+  it('sets baseDir from index.md when the folder index wins', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('# index', {
+          status: 200,
+          headers: { 'content-type': 'text/markdown; charset=utf-8' },
+        }),
+      ),
+    );
+
+    await expect(fetchDocMarkdown('academic')).resolves.toEqual({
+      markdown: '# index',
+      baseDir: '/academic',
+    });
   });
 });

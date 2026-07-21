@@ -18,9 +18,11 @@ import { useUiStore } from '~/stores/uiStore';
 type Props = {
   children: ReactNode;
   toc?: TocItem[];
+  /** Desktop left column slot (e.g. form back). Hidden on mobile. */
+  leftRail?: ReactNode;
 };
 
-const DocsShell = ({ children, toc = [] }: Props) => {
+const DocsShell = ({ children, toc = [], leftRail }: Props) => {
   const pathname = useRouterState({
     select: (s) => cleanPath(decodePathname(s.location.pathname)),
   });
@@ -45,6 +47,8 @@ const DocsShell = ({ children, toc = [] }: Props) => {
   const showNavSkeleton = useDeferredFlag(loading);
   const showSidebarChrome =
     wantsSidebar && (loading || Boolean(errorMessage) || hasSidebar);
+  const showLeftRail = Boolean(leftRail);
+  const showLeftColumn = showSidebarChrome || showLeftRail;
   const hasToc = toc.length > 0;
 
   useEffect(() => {
@@ -103,23 +107,26 @@ const DocsShell = ({ children, toc = [] }: Props) => {
       <div className="mx-auto grid w-full max-w-[96rem] grid-cols-1 gap-x-[var(--shell-gap)] px-3 md:px-5 lg:grid-cols-[var(--sidebar-w)_minmax(0,1fr)] xl:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_var(--toc-w)]">
         <aside
           className={cn(
-            'hidden lg:sticky lg:top-[var(--header-h)] lg:block lg:h-[calc(100vh-var(--header-h))] lg:py-2',
+            // Desktop: top pad matches main (2× the old py-2); mobile drawer untouched.
+            'hidden lg:sticky lg:top-[var(--header-h)] lg:block lg:h-[calc(100vh-var(--header-h))] lg:pt-4 lg:pb-2',
             isCourse && hasSidebar && !loading && !errorMessage
               ? 'lg:flex lg:flex-col lg:overflow-hidden'
-              : 'lg:overflow-y-auto',
-            showSidebarChrome
+              : showLeftRail
+                ? 'lg:flex lg:items-start lg:justify-end lg:overflow-visible'
+                : 'lg:overflow-y-auto',
+            showLeftColumn
               ? undefined
               : 'lg:invisible lg:pointer-events-none',
           )}
         >
-          {sidebarBody}
+          {showLeftRail ? leftRail : sidebarBody}
         </aside>
 
-        <main className="min-w-0 py-3">{children}</main>
+        <main className="min-w-0 py-3 lg:pt-4">{children}</main>
 
         <aside
           className={cn(
-            'sticky top-[calc(var(--header-h)+0.35rem)] hidden h-[calc(100vh-var(--header-h)-0.5rem)] overflow-y-auto py-2 xl:block',
+            'sticky top-[calc(var(--header-h)+0.35rem)] hidden h-[calc(100vh-var(--header-h)-0.5rem)] overflow-y-auto pt-4 pb-2 xl:block',
             hasToc ? undefined : 'xl:invisible xl:pointer-events-none',
           )}
         >
