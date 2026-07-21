@@ -1,12 +1,9 @@
-/** Backend API origin, e.g. https://api.cqu-openlib.cn */
-export const apiBase = (): string => {
-  const raw = import.meta.env.VITE_API_BASE as string | undefined;
-  return (raw ?? '').replace(/\/+$/, '');
-};
+/** Backend API origin. */
+export const API_BASE = 'https://api.cqu-openlib.cn';
+
+export const apiBase = (): string => API_BASE;
 
 export const apiUrl = (path: string): string => {
-  const base = apiBase();
   const p = path.startsWith('/') ? path : `/${path}`;
-  if (!base) return p;
-  return `${base}${p}`;
+  return `${API_BASE}${p}`;
 };
