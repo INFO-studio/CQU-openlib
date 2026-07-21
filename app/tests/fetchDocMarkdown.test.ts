@@ -48,13 +48,15 @@ describe('fetchDocMarkdown', () => {
   });
 
   it('skips html SPA fallback responses', async () => {
+    // Fresh Response per call: `missing` tries two URLs and must not reuse one body.
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(
-        new Response('<html></html>', {
-          status: 200,
-          headers: { 'content-type': 'text/html; charset=utf-8' },
-        }),
+      vi.fn().mockImplementation(
+        () =>
+          new Response('<html></html>', {
+            status: 200,
+            headers: { 'content-type': 'text/html; charset=utf-8' },
+          }),
       ),
     );
 
