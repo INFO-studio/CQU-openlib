@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { SubmissionItem } from '~/admin/lib/api';
 import { transitionSubmissionStatus } from '~/admin/lib/api';
 import {
@@ -21,9 +21,14 @@ export const StatusControls = ({
   onUnauthorized,
 }: Props) => {
   const targets = nextStatuses(item.status);
+  const canMarkCompleted = targets.includes('completed');
   const [note, setNote] = useState(item.completionNote ?? '');
   const [busy, setBusy] = useState<SubmissionStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNote(item.completionNote ?? '');
+  }, [item.id, item.completionNote]);
 
   const run = async (next: SubmissionStatus, withNote: boolean) => {
     if (busy) return;
@@ -59,23 +64,21 @@ export const StatusControls = ({
       <div className="admin-status__row">
         <span className="admin-status__label">状态流转</span>
         <div className="admin-status__actions">
-          {targets
-            .filter((s) => s !== 'completed')
-            .map((s) => (
-              <button
-                key={s}
-                type="button"
-                className="admin-status__btn"
-                disabled={Boolean(busy)}
-                onClick={() => void run(s, false)}
-              >
-                {busy === s ? '…' : statusLabel(s)}
-              </button>
-            ))}
+          {targets.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className="admin-status__btn"
+              disabled={Boolean(busy)}
+              onClick={() => void run(s, false)}
+            >
+              {busy === s ? '…' : statusLabel(s)}
+            </button>
+          ))}
         </div>
       </div>
 
-      {targets.includes('completed') ? (
+      {canMarkCompleted ? (
         <form className="admin-status__complete" onSubmit={onComplete}>
           <label className="admin-status__note-label" htmlFor={`note-${item.id}`}>
             变更完成备注
@@ -98,7 +101,7 @@ export const StatusControls = ({
         </form>
       ) : null}
 
-      {item.status === 'completed' || item.completedAt ? (
+      {item.status === 'completed' ? (
         <dl className="admin-status__meta">
           <div>
             <dt>完成时间</dt>

@@ -37,7 +37,7 @@ export const STATUS_TRANSITIONS: Record<
   pending_change: ['invalid', 'blocked', 'completed'],
   invalid: ['pending_change', 'blocked', 'completed'],
   blocked: ['pending_change', 'invalid', 'completed'],
-  completed: [...WORK_STATUSES, 'completed'],
+  completed: [...WORK_STATUSES],
 };
 
 export const statusLabel = (status: string): string =>
