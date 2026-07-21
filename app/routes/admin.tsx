@@ -1,30 +1,12 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { useCallback, useState } from 'react';
 import '~/admin/admin.css';
 import { AdminGate, AdminShell, unlockWithKey } from '~/admin/AdminShell';
+import { SubmissionsPage } from '~/admin/modules/submissions/SubmissionsPage';
 import { fetchSubmissions } from '~/admin/lib/api';
 import { clearAdminKey, readAdminKey } from '~/admin/lib/session';
 
-export type AdminOutletContext = {
-  refreshToken: number;
-  onUnauthorized: () => void;
-};
-
-const AdminCtx = createContext<AdminOutletContext | null>(null);
-
-export const useAdminContext = (): AdminOutletContext => {
-  const ctx = useContext(AdminCtx);
-  if (!ctx) throw new Error('useAdminContext outside /admin');
-  return ctx;
-};
-
-const AdminLayout = () => {
+const AdminPage = () => {
   const [unlocked, setUnlocked] = useState(() => Boolean(readAdminKey()));
   const [refreshToken, setRefreshToken] = useState(0);
 
@@ -53,11 +35,6 @@ const AdminLayout = () => {
     return err;
   }, []);
 
-  const value = useMemo(
-    () => ({ refreshToken, onUnauthorized }),
-    [refreshToken, onUnauthorized],
-  );
-
   return (
     <AdminShell
       unlocked={unlocked}
@@ -65,9 +42,10 @@ const AdminLayout = () => {
       activeModuleId="submissions"
     >
       {unlocked ? (
-        <AdminCtx.Provider value={value}>
-          <Outlet />
-        </AdminCtx.Provider>
+        <SubmissionsPage
+          refreshToken={refreshToken}
+          onUnauthorized={onUnauthorized}
+        />
       ) : (
         <AdminGate onUnlock={onUnlock} />
       )}
@@ -76,5 +54,5 @@ const AdminLayout = () => {
 };
 
 export const Route = createFileRoute('/admin')({
-  component: AdminLayout,
+  component: AdminPage,
 });

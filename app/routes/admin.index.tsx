@@ -1,17 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { SubmissionsPage } from '~/admin/modules/submissions/SubmissionsPage';
-import { useAdminContext } from '~/routes/admin';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
-const AdminIndex = () => {
-  const { refreshToken, onUnauthorized } = useAdminContext();
-  return (
-    <SubmissionsPage
-      refreshToken={refreshToken}
-      onUnauthorized={onUnauthorized}
-    />
-  );
-};
-
+/** Keep `/admin/` working; content lives on `/admin`. */
 export const Route = createFileRoute('/admin/')({
-  component: AdminIndex,
+  beforeLoad: () => {
+    throw redirect({ to: '/admin' });
+  },
 });
