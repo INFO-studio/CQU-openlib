@@ -13,7 +13,7 @@ type Props = {
  */
 export const FormStack = ({ children, onSubmit, className }: Props) => (
   <form
-    className={cn('relative flex flex-col gap-7 pl-5', className)}
+    className={cn('relative flex flex-col gap-9 pl-5', className)}
     onSubmit={onSubmit}
     noValidate
   >

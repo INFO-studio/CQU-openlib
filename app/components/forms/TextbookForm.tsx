@@ -78,6 +78,16 @@ const DEFAULTS: TextbookDraft = {
 };
 
 const MAX_BOOKS = 8;
+const BOOK_COUNT_OPTIONS = [
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+  { value: '6', label: '6' },
+  { value: '7', label: '7' },
+  { value: '8', label: '8' },
+] as const;
 const padIndex = (n: number) => String(n).padStart(2, '0');
 
 const resizeBooks = (books: BookDraft[], count: number): BookDraft[] => {
@@ -331,12 +341,12 @@ export const TextbookForm = () => {
           required
           hint={`最多 ${MAX_BOOKS} 本；更改数量会增减下方教材条目。`}
         >
-          <Input
-            type="number"
-            min={1}
-            max={MAX_BOOKS}
+          <FormChoice
             value={values.bookCount}
-            onChange={(ev) => setBookCount(ev.target.value)}
+            options={BOOK_COUNT_OPTIONS}
+            columns={4}
+            onChange={setBookCount}
+            aria-label="该课程教材数量"
           />
         </FormQuestion>
 
@@ -344,7 +354,7 @@ export const TextbookForm = () => {
           const start = bookQuestionStarts[i] ?? 7;
           const title = books.length > 1 ? `教材 ${i + 1}` : '教材';
           return (
-            <div key={i} className="flex flex-col gap-7">
+            <div key={i} className="flex flex-col gap-9">
               {books.length > 1 ? (
                 <p className="mt-1 border-t border-line pt-4 font-display text-lg font-semibold text-ink">
                   {title}
