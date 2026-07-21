@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import { ADMIN_MODULES, clearAdminKey, writeAdminKey } from '~/admin/lib/session';
@@ -29,9 +28,9 @@ export const AdminShell = ({
       {unlocked ? (
         <nav className="admin-nav" aria-label="维护模块">
           {ADMIN_MODULES.map((mod) => (
-            <Link
+            <a
               key={mod.id}
-              to={mod.path as '/admin'}
+              href={mod.path}
               className={
                 mod.id === activeModuleId
                   ? 'admin-nav__item is-active'
@@ -39,7 +38,7 @@ export const AdminShell = ({
               }
             >
               {mod.label}
-            </Link>
+            </a>
           ))}
           <button type="button" className="admin-nav__lock" onClick={onLock}>
             锁定
