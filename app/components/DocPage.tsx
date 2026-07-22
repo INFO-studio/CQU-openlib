@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, Navigate, useRouterState } from '@tanstack/react-router';
-import { type ReactNode, useEffect, useMemo } from 'react';
+import { Fragment, type ReactNode, useEffect, useMemo } from 'react';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
@@ -14,6 +14,7 @@ import { titleFromPath } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
 import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
 import type { MnRoot } from '~/types/mdast';
+import { frontmatterFromAst } from '~/utils/docFrontmatter';
 import parser from '~/utils/parser';
 import { mapDocNodes } from '~/utils/parser/mapDocNodes';
 import {
@@ -26,6 +27,12 @@ import {
   remarkKeys,
 } from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
+
+const UpdatedMeta = ({ updated }: { updated: string }) => (
+  <p className="m-0 -mt-0.5 mb-1 text-[0.8125rem] leading-relaxed text-muted">
+    编辑于 <time dateTime={updated}>{updated}</time>
+  </p>
+);
 
 const resolvePagePath = (splat: string | undefined): string => {
   return splat?.replace(/\.mdx?$/i, '') || 'index';
@@ -102,6 +109,10 @@ const DocPage = ({ splat }: DocPageProps) => {
   const toc = useMemo(() => (file ? extractToc(file.ast) : []), [file]);
   const pathTitle = useMemo(() => decodePathname(titleFromPath(page)), [page]);
   const hasH1 = useMemo(() => (file ? hasH1Heading(file.ast) : true), [file]);
+  const frontmatter = useMemo(
+    () => (file ? frontmatterFromAst(file.ast) : {}),
+    [file],
+  );
   const title = useMemo(() => {
     if (!file) return pathTitle || 'CQU-openlib';
     if (hasH1) return pageTitleFromAst(file.ast);
@@ -163,27 +174,40 @@ const DocPage = ({ splat }: DocPageProps) => {
     const firstH1Index = hasH1
       ? nodes.findIndex((n) => n.type === 'heading' && n.depth === 1)
       : -1;
+    const updatedMeta = frontmatter.updated ? (
+      <UpdatedMeta updated={frontmatter.updated} />
+    ) : null;
 
     return (
       <DocBaseContext.Provider value={file.baseDir}>
         <article className="min-w-0 docs-prose">
           {!hasH1 ? (
-            <div className="docs-title-row">
-              <h1 className="m-0 mb-2 font-display text-[1.75rem] font-semibold leading-[1.25] tracking-[-0.02em]">
-                {title}
-              </h1>
-              {showBookmark ? (
-                <BookmarkButton path={pathname} title={title} />
-              ) : null}
-            </div>
+            <>
+              <div className="docs-title-row">
+                <h1 className="m-0 mb-2 font-display text-[1.75rem] font-semibold leading-[1.25] tracking-[-0.02em]">
+                  {title}
+                </h1>
+                {showBookmark ? (
+                  <BookmarkButton path={pathname} title={title} />
+                ) : null}
+              </div>
+              {updatedMeta}
+            </>
           ) : null}
           {mapDocNodes(nodes, (node, i) => {
-            if (showBookmark && i === firstH1Index) {
+            if (i === firstH1Index) {
               return (
-                <div className="docs-title-row">
-                  {parser(node)}
-                  <BookmarkButton path={pathname} title={title} />
-                </div>
+                <Fragment key={`title-${i}`}>
+                  {showBookmark ? (
+                    <div className="docs-title-row">
+                      {parser(node)}
+                      <BookmarkButton path={pathname} title={title} />
+                    </div>
+                  ) : (
+                    parser(node)
+                  )}
+                  {updatedMeta}
+                </Fragment>
               );
             }
             return parser(node);
