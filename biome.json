@@ -11,7 +11,6 @@
       "**",
       "!**/routeTree.gen.ts",
       "!**/build",
-      "!**/public/doc/javascripts",
       "!**/public/metadata"
     ]
   },
