@@ -468,7 +468,8 @@ aside ul,
 
 .docs-home-pair > .admonition {
   margin: 0;
-  flex: 1 1 auto;
+  /* Equal columns: basis 0 so empty vs filled bookmarks don't skew widths. */
+  flex: 1 1 0;
   min-width: 0;
 }
 
@@ -480,9 +481,31 @@ aside ul,
 }
 
 /* Bookmark clear: ghost, absolutely placed so title height stays stable */
+.docs-bookmarks.admonition {
+  display: flex;
+  flex-direction: column;
+}
+
 .docs-bookmarks .admonition-title {
   position: relative;
   padding-right: 4.75rem;
+}
+
+.docs-bookmarks .admonition-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.docs-bookmarks__empty {
+  min-height: 5.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.docs-bookmarks__empty > p {
+  margin: 0;
+  text-align: center;
 }
 
 .docs-bookmarks__clear {
