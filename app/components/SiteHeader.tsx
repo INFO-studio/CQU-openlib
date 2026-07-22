@@ -17,7 +17,7 @@ const SiteHeader = ({ currentPath }: Props) => {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-panel/90 backdrop-blur-md">
-      <div className="site-header-bar mx-auto grid min-h-[var(--header-h)] w-full max-w-[96rem] grid-cols-[minmax(0,1fr)_auto] items-center lg:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_auto] xl:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_var(--toc-w)]">
+      <div className="mx-auto grid min-h-[var(--header-h)] w-full max-w-[96rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 min-[400px]:gap-3 min-[400px]:px-3 md:gap-[var(--shell-gap)] md:px-5 lg:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_auto] xl:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_var(--toc-w)]">
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
           <Button
             variant="icon"
@@ -28,23 +28,33 @@ const SiteHeader = ({ currentPath }: Props) => {
             <Menu size={18} />
           </Button>
 
-          <div className="site-brand">
-            <DocLink path="/" className="site-brand__link group no-underline">
-              <span className="site-brand__logo shrink-0" aria-hidden>
+          <div className="min-w-0 flex-auto overflow-hidden">
+            <DocLink
+              path="/"
+              className="group flex max-w-full min-w-0 items-center gap-2 no-underline"
+            >
+              <span
+                className="relative inline-flex h-7 w-7 shrink-0 max-[320px]:hidden"
+                aria-hidden
+              >
                 <img
                   src="/doc/assets/openlib-logo-light.svg"
                   alt=""
-                  className="site-brand__logo-img site-brand__logo-img--light h-7 w-7 object-contain"
+                  className="h-7 w-7 object-contain dark:hidden"
                 />
                 <img
                   src="/doc/assets/openlib-logo-dark.svg"
                   alt=""
-                  className="site-brand__logo-img site-brand__logo-img--dark h-7 w-7 object-contain"
+                  className="hidden h-7 w-7 object-contain dark:block"
                 />
               </span>
-              <div className="site-brand__text leading-[1.15]">
-                <div className="site-brand__title text-ink">重庆大学</div>
-                <div className="site-brand__sub text-muted">资源共享计划</div>
+              <div className="min-w-0 overflow-hidden leading-[1.15]">
+                <div className="truncate text-[0.9rem] font-semibold tracking-[-0.01em] text-ink">
+                  重庆大学
+                </div>
+                <div className="truncate text-[0.68rem] font-medium text-muted">
+                  资源共享计划
+                </div>
               </div>
             </DocLink>
           </div>
@@ -79,8 +89,6 @@ const SiteHeader = ({ currentPath }: Props) => {
         <div className="flex shrink-0 items-center justify-end gap-0.5">
           <Button
             onClick={openSearch}
-            aria-label="搜索目录（快捷键 /）"
-            title="搜索目录（按 /）"
             className="sm:rounded-full sm:border sm:border-line sm:bg-mist/60 sm:px-3 sm:hover:bg-mist"
           >
             <Search size={15} className="text-icon" />
@@ -95,7 +103,6 @@ const SiteHeader = ({ currentPath }: Props) => {
             rel="noopener noreferrer"
             className="inline-flex h-8 w-8 items-center justify-center rounded text-icon no-underline hover:bg-mist hover:text-ink"
             aria-label="GitHub 仓库"
-            title="GitHub"
           >
             <Github size={16} />
           </a>

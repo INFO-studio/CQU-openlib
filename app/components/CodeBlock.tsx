@@ -1,5 +1,6 @@
 import { Check, Copy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '~/lib/cn';
 
 type Props = {
   value: string;
@@ -30,13 +31,20 @@ const CodeBlock = ({ value, lang }: Props) => {
   };
 
   return (
-    <div className="docs-codeblock">
+    <div className="group relative my-[0.6rem]">
       <button
         type="button"
-        className="docs-codeblock__copy"
-        data-copied={copied ? 'true' : undefined}
+        className={cn(
+          'absolute top-[0.35rem] right-[0.35rem] z-1 inline-flex h-7 w-7 items-center justify-center rounded-[0.3rem] border border-line bg-panel text-icon shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[opacity,color,background,border-color] duration-150',
+          'hover:border-primary-soft hover:bg-mist hover:text-ink',
+          'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary',
+          'opacity-100 [@media(hover:hover)_and_(pointer:fine)]:opacity-0',
+          '[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100',
+          '[@media(hover:hover)_and_(pointer:fine)]:group-focus-within:opacity-100',
+          copied &&
+            'text-[var(--admonition-success)] opacity-100! [@media(hover:hover)_and_(pointer:fine)]:opacity-100!',
+        )}
         aria-label={copied ? '已复制' : '复制代码'}
-        title={copied ? '已复制' : '复制'}
         onClick={onCopy}
       >
         {copied ? (
@@ -45,8 +53,19 @@ const CodeBlock = ({ value, lang }: Props) => {
           <Copy size={14} strokeWidth={2} />
         )}
       </button>
-      <pre data-language={lang || undefined}>
-        <code className={lang ? `language-${lang}` : undefined}>{value}</code>
+      <pre
+        data-language={lang || undefined}
+        className="m-0 overflow-x-auto rounded-[0.35rem] bg-code-bg py-[0.65rem] pr-[2.4rem] pl-[0.8rem] font-mono text-[0.84rem] leading-[1.5]"
+      >
+        <code
+          className={
+            lang
+              ? `language-${lang} bg-transparent p-0 text-[length:inherit]`
+              : 'bg-transparent p-0 text-[length:inherit]'
+          }
+        >
+          {value}
+        </code>
       </pre>
     </div>
   );

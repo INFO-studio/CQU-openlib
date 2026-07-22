@@ -172,7 +172,9 @@ const DocPage = ({ splat }: DocPageProps) => {
         <article className="min-w-0 docs-prose">
           {!hasH1 ? (
             <div className="docs-title-row">
-              <h1>{title}</h1>
+              <h1 className="m-0 mb-2 font-display text-[1.75rem] font-semibold leading-[1.25] tracking-[-0.02em]">
+                {title}
+              </h1>
               {showBookmark ? (
                 <BookmarkButton path={pathname} title={title} />
               ) : null}

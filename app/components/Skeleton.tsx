@@ -6,7 +6,15 @@ type BoneProps = {
   style?: CSSProperties;
 };
 export const Bone = ({ className, style }: BoneProps) => {
-  return <span className={cn('docs-skeleton-bone', className)} style={style} />;
+  return (
+    <span
+      className={cn(
+        'block animate-skeleton-shimmer rounded bg-[linear-gradient(90deg,var(--c-mist)_0%,var(--c-line)_45%,var(--c-mist)_100%)] bg-[length:200%_100%] motion-reduce:animate-none motion-reduce:bg-mist',
+        className,
+      )}
+      style={style}
+    />
+  );
 };
 export const NavSkeleton = ({ course = false }: { course?: boolean }) => {
   return (

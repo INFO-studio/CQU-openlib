@@ -1,3 +1,4 @@
+import Admonition from '~/components/Admonition';
 import DocLink from '~/components/DocLink';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/cn';
@@ -9,29 +10,33 @@ const HomeBookmarks = () => {
   const empty = items.length === 0;
 
   return (
-    <div className="admonition abstract docs-bookmarks">
-      <p className="admonition-title">
-        <span>您的收藏页</span>
-        {!empty ? (
+    <Admonition
+      type="abstract"
+      className="flex flex-1 flex-col"
+      title={<span>您的收藏页</span>}
+      titleAside={
+        !empty ? (
           <Button
             variant="ghost"
-            className="docs-bookmarks__clear"
+            className="absolute top-1/2 right-[0.85rem] h-auto min-h-0 -translate-y-1/2 bg-transparent p-0 text-xs font-medium leading-[1.45] hover:bg-transparent"
             onClick={clear}
           >
             清空收藏
           </Button>
-        ) : null}
-      </p>
+        ) : null
+      }
+    >
       <div
         className={cn(
-          'admonition-content',
-          empty && 'docs-bookmarks__empty',
+          'flex flex-1 flex-col',
+          empty &&
+            'min-h-[5.5rem] items-center justify-center [&>p]:m-0 [&>p]:text-center',
         )}
       >
         {empty ? (
           <p>您还没有收藏任何页面 _:(´□`」 ∠):_</p>
         ) : (
-          <ul>
+          <ul className="my-1 list-disc pl-5 [&>li]:my-[0.15rem] [&>li::marker]:text-muted">
             {items.map((item) => (
               <li key={item.path}>
                 <DocLink
@@ -45,7 +50,7 @@ const HomeBookmarks = () => {
           </ul>
         )}
       </div>
-    </div>
+    </Admonition>
   );
 };
 export default HomeBookmarks;

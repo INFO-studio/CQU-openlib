@@ -203,9 +203,7 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
                       : String(item.createdAt),
                   )}
                 </span>
-                <span className="admin-card__id" title={item.id}>
-                  {item.id.slice(-8)}
-                </span>
+                <span className="admin-card__id">{item.id.slice(-8)}</span>
                 <span className="admin-card__chev" aria-hidden="true">
                   {open ? '▾' : '▸'}
                 </span>

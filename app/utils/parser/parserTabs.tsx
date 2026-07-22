@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { cn } from '~/lib/cn';
 import type { MnTabs } from '~/types/mdast';
 import parser from '~/utils/parser/index';
 
@@ -13,14 +14,20 @@ const TabsView = ({ mn }: { mn: MnTabs }) => {
   const items = mn.items ?? [];
   if (!items.length) return null;
   return (
-    <div className="docs-tabs">
-      <div className="docs-tabs__list" role="tablist">
+    <div className="my-[0.65rem]">
+      <div
+        className="mb-2 flex flex-wrap gap-[0.15rem] border-b border-line"
+        role="tablist"
+      >
         {items.map((item, i) => (
           <button
             key={titleKey(item.title, i)}
             type="button"
             role="tab"
-            className="docs-tabs__tab"
+            className={cn(
+              '-mb-px border-b-2 border-transparent bg-transparent px-[0.55rem] py-[0.35rem] text-sm text-muted',
+              active === i && 'border-b-primary font-semibold text-ink',
+            )}
             aria-selected={active === i}
             onClick={() => setActive(i)}
           >
@@ -31,7 +38,6 @@ const TabsView = ({ mn }: { mn: MnTabs }) => {
       {items.map((item, i) => (
         <div
           key={`panel-${titleKey(item.title, i)}`}
-          className="docs-tabs__panel"
           role="tabpanel"
           hidden={active !== i}
         >

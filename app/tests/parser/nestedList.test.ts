@@ -2,7 +2,7 @@ import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import { describe, expect, it } from 'vite-plus/test';
-import type { Mn, MnList } from '~/types/mdast';
+import type { Mn, MnList, MnListItem } from '~/types/mdast';
 import preprocess from '~/utils/preprocess';
 import { remarkDisableIndentedCode, removePosition } from '~/utils/remark';
 
@@ -15,6 +15,7 @@ const toAst = async (md: string): Promise<Mn> => {
     (await processor.run(processor.parse(preprocess(md)))) as Mn,
   );
 };
+
 describe('nested lists', () => {
   it('keeps 2-level nesting in the AST', async () => {
     const ast = await toAst(`* a
@@ -25,16 +26,21 @@ describe('nested lists', () => {
       ast as {
         children?: Mn[];
       }
-    ).children?.find((n) => n.type === 'list') as MnList | undefined;
+    ).children?.find((n): n is MnList => n.type === 'list');
     expect(rootList).toBeTruthy();
-    expect(rootList!.children).toHaveLength(1);
-    const firstItem = rootList!.children[0]!;
-    const nested = firstItem.children?.find((n) => n.type === 'list') as
-      | MnList
-      | undefined;
+    if (!rootList) return;
+
+    expect(rootList.children).toHaveLength(1);
+    const firstItem = rootList.children[0] as MnListItem;
+    const nested = firstItem.children.find(
+      (n): n is MnList => n.type === 'list',
+    );
     expect(nested).toBeTruthy();
-    expect(nested!.children).toHaveLength(1);
-    const deep = nested!.children[0]!.children?.find((n) => n.type === 'list');
+    if (!nested) return;
+
+    expect(nested.children).toHaveLength(1);
+    const deepItem = nested.children[0] as MnListItem;
+    const deep = deepItem.children.find((n): n is MnList => n.type === 'list');
     expect(deep).toBeTruthy();
   });
 });

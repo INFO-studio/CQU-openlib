@@ -23,8 +23,8 @@ const htmlOf = (node: ReactNode) => {
 describe('parser coverage for former unknown nodes', () => {
   it('renders fenced code', async () => {
     const html = htmlOf(parser(await toAst('```ts\nconst x = 1\n```\n')));
-    expect(html).toContain('docs-codeblock');
-    expect(html).toContain('docs-codeblock__copy');
+    expect(html).toContain('group');
+    expect(html).toContain('aria-label="复制代码"');
     expect(html).toContain('<pre');
     expect(html).toContain('const x = 1');
     expect(html).not.toContain('unknown node');
@@ -32,8 +32,8 @@ describe('parser coverage for former unknown nodes', () => {
   });
   it('renders footnotes', async () => {
     const html = htmlOf(parser(await toAst('Hello[^1]\n\n[^1]: a note\n')));
-    expect(html).toContain('docs-footnote-ref');
-    expect(html).toContain('docs-footnote-def');
+    expect(html).toContain('fnref-');
+    expect(html).toContain('fn-');
     expect(html).not.toContain('unknown node');
   });
   it('renders image and emphasis', async () => {
@@ -42,7 +42,7 @@ describe('parser coverage for former unknown nodes', () => {
     );
     expect(html).toContain('<img');
     expect(html).toContain('<em>');
-    expect(html).toContain('docs-strike');
+    expect(html).toContain('<del');
     expect(html).not.toContain('unknown node');
   });
 });

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { cn } from '~/lib/cn';
 import type {
   MnTable,
   MnTableAlign,
@@ -6,6 +7,8 @@ import type {
   MnTableRow,
 } from '~/types/mdast';
 import parser from '~/utils/parser/index';
+
+const cellClass = 'border-b border-line px-2 py-[0.35rem] text-left';
 
 const parserTableCell = (
   mn: MnTableCell,
@@ -16,7 +19,14 @@ const parserTableCell = (
   const style: CSSProperties | undefined = align
     ? { textAlign: align }
     : undefined;
-  return <Tag style={style}>{mn.children.map(parser)}</Tag>;
+  return (
+    <Tag
+      style={style}
+      className={cn(cellClass, tag === 'th' && 'font-semibold text-muted')}
+    >
+      {mn.children.map(parser)}
+    </Tag>
+  );
 };
 
 const parserTableRow = (
@@ -36,7 +46,7 @@ const parserTableRow = (
 
 const parserTable = (mn: MnTable) => (
   <div className="overflow-x-auto">
-    <table>
+    <table className="my-[0.6rem] w-full border-collapse text-[0.9rem]">
       <tbody>
         {mn.children.map((row, i) => parserTableRow(row, i, mn.align))}
       </tbody>

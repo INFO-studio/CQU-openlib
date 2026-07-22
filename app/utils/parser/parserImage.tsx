@@ -1,4 +1,5 @@
 import { useDocBase } from '~/contexts/DocBaseContext';
+import { cn } from '~/lib/cn';
 import type { MnImage } from '~/types/mdast';
 import { resolveDocHref } from '~/utils/normalizeDocHref';
 
@@ -16,8 +17,7 @@ const ParserImage = ({ mn }: { mn: MnImage }) => {
     <img
       src={src}
       alt={mn.alt ?? ''}
-      title={mn.title ?? undefined}
-      className={mn.className}
+      className={cn('my-[0.6rem] block h-auto max-w-full', mn.className)}
       loading="lazy"
     />
   );

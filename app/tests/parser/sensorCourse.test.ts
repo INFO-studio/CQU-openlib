@@ -43,6 +43,6 @@ describe('传感器技术.md pipeline', () => {
     expect(html).not.toContain('`传感器');
     expect(html).toContain('传感器原理与实验教程');
     expect(html).toContain('<svg');
-    expect(html).toContain('<code>');
+    expect(html).toContain('<code');
   });
 });

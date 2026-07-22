@@ -39,7 +39,10 @@ const highlightMatch = (text: string, query: string): ReactNode => {
   while (idx !== -1) {
     if (idx > start) parts.push(text.slice(start, idx));
     parts.push(
-      <mark key={key++} className="docs-search-mark">
+      <mark
+        key={key++}
+        className="rounded-[0.15em] bg-primary-soft px-[0.1em] text-inherit"
+      >
         {text.slice(idx, idx + needle.length)}
       </mark>,
     );
@@ -244,8 +247,11 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="docs-dialog-backdrop" />
-        <Dialog.Popup className="docs-dialog-popup" aria-label="目录搜索">
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-[var(--c-backdrop)]" />
+        <Dialog.Popup
+          className="fixed top-[10vh] left-1/2 z-51 w-[min(34rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-hidden rounded-[0.65rem] border border-line bg-elev shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
+          aria-label="目录搜索"
+        >
           <div
             className={cn(
               'flex items-center gap-2 px-3',
@@ -259,7 +265,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={onKeyDown}
               placeholder="搜索标题或课程代码…"
-              className="docs-search-input h-11 flex-1 bg-transparent text-sm placeholder:text-muted"
+              className="h-11 flex-1 border-none bg-transparent text-sm shadow-none outline-none! placeholder:text-muted focus:border-none focus:shadow-none focus:outline-none! focus-visible:outline-none!"
               aria-autocomplete="list"
               aria-controls="docs-search-results"
               aria-activedescendant={
@@ -279,7 +285,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
             <div
               ref={listRef}
               id="docs-search-results"
-              className="docs-scroll-hidden max-h-[min(50vh,24rem)] overflow-y-auto"
+              className="max-h-[min(50vh,24rem)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
             >
               {showSkeleton ? (
                 <SearchSkeleton />
