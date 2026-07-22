@@ -12,7 +12,12 @@ export const normalizeDocHref = (href: string): string => {
   }
   const match = href.match(/^([^?#]*)([?#].*)?$/);
   const suffix = match?.[2] ?? '';
-  const stripped = (match?.[1] ?? href).replace(/\.mdx?$/i, '');
+  const pathPart = match?.[1] ?? href;
+  // `/doc/*` is the static publish tree — keep `.md` so raw markdown URLs work.
+  if (pathPart.startsWith('/doc/')) {
+    return `${pathPart}${suffix}`;
+  }
+  const stripped = pathPart.replace(/\.mdx?$/i, '');
   const path =
     stripped === 'index' || stripped === './index' || stripped === '/index'
       ? stripped.startsWith('/')

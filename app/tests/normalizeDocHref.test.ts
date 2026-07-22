@@ -28,6 +28,15 @@ describe('normalizeDocHref', () => {
     expect(normalizeDocHref('#anchor')).toBe('#anchor');
   });
 
+  it('keeps absolute /doc/* markdown URLs intact for raw fetch', () => {
+    expect(normalizeDocHref('/doc/sundry/说明书/index.md')).toBe(
+      '/doc/sundry/说明书/index.md',
+    );
+    expect(normalizeDocHref('/doc/course/高等数学.md?x=1')).toBe(
+      '/doc/course/高等数学.md?x=1',
+    );
+  });
+
   it('handles empty input', () => {
     expect(normalizeDocHref('')).toBe('');
   });
@@ -74,6 +83,9 @@ describe('resolveDocHref', () => {
 
   it('keeps absolute and external hrefs', () => {
     expect(resolveDocHref('/course/foo.md', '/academic')).toBe('/course/foo');
+    expect(resolveDocHref('/doc/sundry/说明书/index.md', '/academic')).toBe(
+      '/doc/sundry/说明书/index.md',
+    );
     expect(resolveDocHref('https://a.com/x.md', '/academic')).toBe(
       'https://a.com/x.md',
     );

@@ -1,0 +1,28 @@
+# 重庆大学资源共享计划（CQU-openlib）
+
+> 重庆大学非官方、非营利的学生资源整合站点，收录课程资料、培养方案、校园生活与常用技巧等。任意页面可在 URL 后加 `.md` 获取 Markdown 纯文本（如 `/academic` → `/academic.md`）。
+
+站点域名：https://cqu-openlib.cn  
+仓库：https://github.com/INFO-studio/CQU-openlib  
+联系：cqu-openlib@outlook.com
+
+如何取纯文本：在正文路径后追加 `.md`。详见说明书「AI 友好」：https://cqu-openlib.cn/sundry/说明书.md
+
+## Docs
+
+- [说明书](https://cqu-openlib.cn/sundry/说明书.md): 站点用法、搜索、收藏、进课路径与贡献渠道
+- [首页](https://cqu-openlib.cn/index.md): 公告、简介与社群入口
+- [学业](https://cqu-openlib.cn/academic.md): 入学、培养方案、转专业等学业信息
+- [课程](https://cqu-openlib.cn/course.md): 按课程检索教材、笔记、试卷等
+- [课表](https://cqu-openlib.cn/curriculum.md): 个人课表查询说明
+- [社团](https://cqu-openlib.cn/club.md): 校内官方社团 / 组织信息
+- [技巧](https://cqu-openlib.cn/skill.md): 软件安装、环境配置等
+- [生活](https://cqu-openlib.cn/life.md): 餐饮、住宿、校园网、校车等
+- [贡献者](https://cqu-openlib.cn/contributor.md): 贡献者与协作者名单
+
+## Optional
+
+- [更新日志](https://cqu-openlib.cn/sundry/更新日志.md): 站点近期变更
+- [待办事项](https://cqu-openlib.cn/sundry/待办事项.md): 缺页与计划事项
+- [友情链接](https://cqu-openlib.cn/sundry/友情链接.md): 相关外链
+- [GitHub 仓库](https://github.com/INFO-studio/CQU-openlib): 源码与 Issue / PR

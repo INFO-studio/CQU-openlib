@@ -6,35 +6,12 @@ import {
   readdirSync,
   statSync,
 } from 'node:fs';
-import { dirname, join, normalize, relative, sep } from 'node:path';
+import { basename, dirname, join, normalize, relative, sep } from 'node:path';
 import type { Connect, Plugin } from 'vite';
 
 const MARKDOWN_CONTENT_TYPE = 'text/markdown; charset=utf-8';
-export const mirrorDocMarkdown = (srcDir: string, destDir: string): void => {
-  for (const entry of readdirSync(srcDir, { withFileTypes: true })) {
-    const from = join(srcDir, entry.name);
-    const to = join(destDir, entry.name);
-    if (entry.isDirectory()) {
-      mirrorDocMarkdown(from, to);
-      continue;
-    }
-    if (!/\.mdx?$/i.test(entry.name)) continue;
-    mkdirSync(dirname(to), { recursive: true });
-    cpSync(from, to);
-  }
-};
-const isMarkdownPath = (pathname: string): boolean => {
-  return /\.mdx?$/i.test(pathname);
-};
-const resolveDocFile = (docRoot: string, pathname: string): string | null => {
-  let rel = pathname.startsWith('/doc/')
-    ? pathname.slice('/doc/'.length)
-    : pathname.replace(/^\//, '');
-  try {
-    rel = decodeURIComponent(rel);
-  } catch {
-    return null;
-  }
+
+const tryDocFile = (docRoot: string, rel: string): string | null => {
   const file = normalize(join(docRoot, rel));
   const root = normalize(docRoot);
   const relToRoot = relative(root, file);
@@ -46,6 +23,73 @@ const resolveDocFile = (docRoot: string, pathname: string): string | null => {
   }
   return file;
 };
+
+/**
+ * Copy markdown under public/doc into the publish root so /path.md is a static
+ * file (Netlify/GH Pages shadow the SPA fallback).
+ *
+ * Folder indexes (foo/index.md) also emit foo.md so clean page URLs map to raw
+ * markdown the Fumadocs / llms.txt way: /academic → /academic.md.
+ */
+export const mirrorDocMarkdown = (
+  srcDir: string,
+  destDir: string,
+  destRoot = destDir,
+): void => {
+  for (const entry of readdirSync(srcDir, { withFileTypes: true })) {
+    const from = join(srcDir, entry.name);
+    const to = join(destDir, entry.name);
+    if (entry.isDirectory()) {
+      mirrorDocMarkdown(from, to, destRoot);
+      continue;
+    }
+    if (!/\.mdx?$/i.test(entry.name)) continue;
+    mkdirSync(dirname(to), { recursive: true });
+    cpSync(from, to);
+
+    if (!/^index\.mdx?$/i.test(entry.name)) continue;
+    const folderPath = dirname(to);
+    if (normalize(folderPath) === normalize(destRoot)) continue;
+    const ext = entry.name.match(/\.mdx?$/i)?.[0] ?? '.md';
+    const aliasPath = join(
+      dirname(folderPath),
+      `${basename(folderPath)}${ext}`,
+    );
+    mkdirSync(dirname(aliasPath), { recursive: true });
+    cpSync(from, aliasPath);
+  }
+};
+
+const isMarkdownPath = (pathname: string): boolean => {
+  return /\.mdx?$/i.test(pathname);
+};
+
+/** Resolve `/academic.md` → `academic.md` or `academic/index.md`. */
+export const resolveDocFile = (
+  docRoot: string,
+  pathname: string,
+): string | null => {
+  let rel = pathname.startsWith('/doc/')
+    ? pathname.slice('/doc/'.length)
+    : pathname.replace(/^\//, '');
+  try {
+    rel = decodeURIComponent(rel);
+  } catch {
+    return null;
+  }
+
+  const exact = tryDocFile(docRoot, rel);
+  if (exact) return exact;
+
+  if (!/\.mdx?$/i.test(rel)) return null;
+  const withoutExt = rel.replace(/\.mdx?$/i, '');
+  if (!withoutExt || withoutExt.endsWith('/index')) return null;
+  return (
+    tryDocFile(docRoot, `${withoutExt}/index.md`) ??
+    tryDocFile(docRoot, `${withoutExt}/index.mdx`)
+  );
+};
+
 const serveMarkdown = (
   getDocRoot: () => string,
 ): Connect.NextHandleFunction => {
@@ -80,6 +124,7 @@ const serveMarkdown = (
     createReadStream(file).pipe(res);
   };
 };
+
 export const docMarkdownPlugin = (): Plugin => {
   let docRoot = '';
   let outDir = 'build/client';

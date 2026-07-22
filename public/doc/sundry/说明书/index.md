@@ -125,7 +125,7 @@ openlib 有若干板块：
 
 #### 其他渠道
 
-- QQ 群组 [许愿池 群1](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct) [许愿池 群2](https://qm.qq.com/cgi-bin/qm/qr?k=-ZQ_q7bzxh-sY_vLdQhU9tao7Y49clgQ&jump_from=webapi&authKey=gtlhqQCelj2dyH9FXTgJkz2ZLsDjaCvQsjervVkLRmB6hwTYYy4fMzglNOlwP17r)
+- QQ 群组 [许愿池 群1](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct)、[许愿池 群2](https://qm.qq.com/cgi-bin/qm/qr?k=-ZQ_q7bzxh-sY_vLdQhU9tao7Y49clgQ&jump_from=webapi&authKey=gtlhqQCelj2dyH9FXTgJkz2ZLsDjaCvQsjervVkLRmB6hwTYYy4fMzglNOlwP17r)
 - [Discord 频道](https://discord.gg/sPk3W96mJV)
 - [Telegram 群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
 - [站长](../../contributor/茵符草.md) QQ：`2247977881`
@@ -137,3 +137,17 @@ openlib 有若干板块：
 如果您觉得本站缺少某样内容，欢迎通过页面反馈表或上述渠道告知运行维护小组。
 
 若说明书与站点实际功能不一致，欢迎通过 [页面反馈表](/form/feedback) 告知，我们会据此修订。
+
+## AI 友好
+
+本站正文以 Markdown 编写。任意文档页可在 URL 末尾加上 `.md`，直接获取该页纯文本（`text/markdown`），便于复制、交给 AI 助手或脚本抓取。
+
+**用法：**在正文页路径后追加 `.md`（不要经过 SPA 软跳转，直接打开或请求该地址）：
+
+- 正文 `/academic` → 纯文本 [`/academic.md`](/academic.md)
+- 正文 `/sundry/说明书` → 纯文本 [`/sundry/说明书.md`](/sundry/说明书.md)
+- 正文 `/curriculum` → 纯文本 [`/curriculum.md`](/curriculum.md)
+
+磁盘上的源文件仍位于 `/doc/...`（例如 `/doc/academic/index.md`），构建时会镜像到与页面同路径的 `.md`，供上述地址访问。
+
+站点根路径另提供 [`/llms.txt`](/llms.txt)，按 [llms.txt](https://llmstxt.org/) 约定列出主要入口。

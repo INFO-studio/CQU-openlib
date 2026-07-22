@@ -21,9 +21,9 @@ const isExternal = (href: string) => {
 
 /** Static files under /doc — must not go through SPA DocLink. */
 const isStaticAsset = (href: string) => {
-  if (href.startsWith('/doc/resources/')) return true;
+  if (href.startsWith('/doc/')) return true;
   const path = href.split(/[?#]/)[0] ?? '';
-  return /\.(?:png|jpe?g|gif|webp|svg|pdf|zip|rar|7z|mp[34]|wav|docx?|xlsx?|pptx?|txt|csv)$/i.test(
+  return /\.(?:png|jpe?g|gif|webp|svg|pdf|zip|rar|7z|mp[34]|wav|docx?|xlsx?|pptx?|txt|csv|md|mdx)$/i.test(
     path,
   );
 };

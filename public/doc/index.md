@@ -23,7 +23,7 @@ hide:
 
 ## 快来加群捏
 
-- QQ群组 [许愿池 群1](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct) [许愿池 群2](https://qm.qq.com/cgi-bin/qm/qr?k=-ZQ_q7bzxh-sY_vLdQhU9tao7Y49clgQ&jump_from=webapi&authKey=gtlhqQCelj2dyH9FXTgJkz2ZLsDjaCvQsjervVkLRmB6hwTYYy4fMzglNOlwP17r)
+- QQ群组 [许愿池 群1](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct)、[许愿池 群2](https://qm.qq.com/cgi-bin/qm/qr?k=-ZQ_q7bzxh-sY_vLdQhU9tao7Y49clgQ&jump_from=webapi&authKey=gtlhqQCelj2dyH9FXTgJkz2ZLsDjaCvQsjervVkLRmB6hwTYYy4fMzglNOlwP17r)
 - [Discord频道](https://discord.gg/sPk3W96mJV)
 - [Tg群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
 
