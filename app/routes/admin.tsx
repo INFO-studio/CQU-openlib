@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useState } from 'react';
 import '~/admin/admin.css';
 import { AdminGate, AdminShell, unlockWithKey } from '~/admin/AdminShell';
-import { SubmissionsPage } from '~/admin/modules/submissions/SubmissionsPage';
 import { fetchSubmissions } from '~/admin/lib/api';
 import { clearAdminKey, readAdminKey } from '~/admin/lib/session';
+import { SubmissionsPage } from '~/admin/modules/submissions/SubmissionsPage';
 
 const AdminPage = () => {
   const [unlocked, setUnlocked] = useState(() => Boolean(readAdminKey()));

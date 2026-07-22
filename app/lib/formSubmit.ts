@@ -48,7 +48,9 @@ export const mintStagingToken = async (
     body: JSON.stringify({ filename }),
   });
   if (!res.ok) {
-    throw new Error(await readErrorMessage(res, `签发上传凭证失败（${res.status}）`));
+    throw new Error(
+      await readErrorMessage(res, `签发上传凭证失败（${res.status}）`),
+    );
   }
   const data = (await res.json()) as TokenResponse;
   if (!data.token || !data.key || !data.uploadHost) {
@@ -163,9 +165,7 @@ export const submitFormWithFiles = async <TPayload>(opts: {
   const fileTotal = files.length;
 
   const uploaded =
-    fileTotal === 0
-      ? []
-      : await uploadFilesSerially(files, onProgress);
+    fileTotal === 0 ? [] : await uploadFilesSerially(files, onProgress);
 
   onProgress?.({
     phase: 'submit',

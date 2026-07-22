@@ -21,9 +21,16 @@
 
   min-height: 100vh;
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(91, 132, 247, 0.12), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, rgba(106, 181, 154, 0.08), transparent 50%),
-    var(--admin-bg);
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(91, 132, 247, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px 500px at 100% 0%,
+      rgba(106, 181, 154, 0.08),
+      transparent 50%
+    ), var(--admin-bg);
   color: var(--admin-ink);
   font-family: var(--admin-sans);
 }

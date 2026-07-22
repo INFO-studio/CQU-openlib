@@ -6,9 +6,7 @@ describe('sidebarActiveTone', () => {
   const leaf = (path: string): SidebarNode => ({ title: path, path });
 
   it('marks the current leaf as exact', () => {
-    expect(
-      sidebarActiveTone(leaf('/skill/a/b'), '/skill/a/b'),
-    ).toBe('exact');
+    expect(sidebarActiveTone(leaf('/skill/a/b'), '/skill/a/b')).toBe('exact');
     expect(sidebarActiveTone(leaf('/skill/a/b'), '/skill/a/c')).toBe('none');
   });
 
@@ -36,9 +34,9 @@ describe('sidebarActiveTone', () => {
     expect(
       sidebarActiveTone(folder, '/skill/计算机基础/「蓝盟」电脑维修'),
     ).toBe('ancestor');
-    expect(
-      sidebarActiveTone(folder, '/skill/计算机基础/关于epub文件'),
-    ).toBe('ancestor');
+    expect(sidebarActiveTone(folder, '/skill/计算机基础/关于epub文件')).toBe(
+      'ancestor',
+    );
     expect(
       sidebarActiveTone(
         leaf('/skill/计算机基础/「蓝盟」电脑维修'),

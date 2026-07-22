@@ -1,6 +1,10 @@
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
-import { ADMIN_MODULES, clearAdminKey, writeAdminKey } from '~/admin/lib/session';
+import {
+  ADMIN_MODULES,
+  clearAdminKey,
+  writeAdminKey,
+} from '~/admin/lib/session';
 
 type ShellProps = {
   children: ReactNode;
@@ -89,9 +93,7 @@ export const AdminGate = ({ onUnlock }: GateProps) => {
       <form className="admin-gate__card" onSubmit={onSubmit}>
         <p className="admin-gate__eyebrow">通行校验</p>
         <h1 className="admin-gate__title">输入维护密钥</h1>
-        <p className="admin-gate__lede">
-          校验通过后，本会话可查看收集结果。
-        </p>
+        <p className="admin-gate__lede">校验通过后，本会话可查看收集结果。</p>
         <label className="admin-gate__label" htmlFor="admin-key">
           Admin Key
         </label>

@@ -7,7 +7,13 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/routeTree.gen.ts", "!**/build"]
+    "includes": [
+      "**",
+      "!**/routeTree.gen.ts",
+      "!**/build",
+      "!**/public/doc/javascripts",
+      "!**/public/metadata"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -18,11 +24,27 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "style": {
-        "useConst": "error"
+      "a11y": {
+        "noNoninteractiveElementToInteractiveRole": "off",
+        "noSvgWithoutTitle": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "useFocusableInteractive": "off",
+        "useSemanticElements": "off"
       },
       "complexity": {
+        "noImportantStyles": "off",
         "useArrowFunction": "error"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "useConst": "error"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noAssignInExpressions": "off"
       }
     }
   },

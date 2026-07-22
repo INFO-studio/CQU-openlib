@@ -1,14 +1,12 @@
 import type { FormType } from '~/admin/lib/api';
 
-export const FORM_TYPE_META: Record<
-  FormType,
-  { label: string; tone: string }
-> = {
-  feedback: { label: '页面反馈', tone: '#6aa8c4' },
-  textbook: { label: '教材收集', tone: '#6ab59a' },
-  upload: { label: '文件上传', tone: '#7a9fd0' },
-  club: { label: '社团信息', tone: '#c4a06a' },
-};
+export const FORM_TYPE_META: Record<FormType, { label: string; tone: string }> =
+  {
+    feedback: { label: '页面反馈', tone: '#6aa8c4' },
+    textbook: { label: '教材收集', tone: '#6ab59a' },
+    upload: { label: '文件上传', tone: '#7a9fd0' },
+    club: { label: '社团信息', tone: '#c4a06a' },
+  };
 
 export const typeLabel = (type: string): string =>
   FORM_TYPE_META[type as FormType]?.label ?? type;
@@ -57,8 +55,7 @@ const FIELD_LABELS: Record<string, string> = {
   size: '大小',
 };
 
-export const fieldLabel = (key: string): string =>
-  FIELD_LABELS[key] ?? key;
+export const fieldLabel = (key: string): string => FIELD_LABELS[key] ?? key;
 
 export const CATEGORY_LABELS: Record<string, string> = {
   textbook: '教材',

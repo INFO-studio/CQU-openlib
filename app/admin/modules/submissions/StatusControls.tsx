@@ -4,8 +4,8 @@ import type { SubmissionItem } from '~/admin/lib/api';
 import { transitionSubmissionStatus } from '~/admin/lib/api';
 import {
   nextStatuses,
-  statusLabel,
   type SubmissionStatus,
+  statusLabel,
 } from '~/admin/lib/status';
 import { formatShanghai } from '~/admin/modules/submissions/labels';
 
@@ -15,11 +15,7 @@ type Props = {
   onUnauthorized: () => void;
 };
 
-export const StatusControls = ({
-  item,
-  onUpdated,
-  onUnauthorized,
-}: Props) => {
+export const StatusControls = ({ item, onUpdated, onUnauthorized }: Props) => {
   const targets = nextStatuses(item.status);
   const canMarkCompleted = targets.includes('completed');
   const [note, setNote] = useState(item.completionNote ?? '');
@@ -38,9 +34,7 @@ export const StatusControls = ({
       const res = await transitionSubmissionStatus({
         id: item.id,
         status: next,
-        ...(withNote || next === 'completed'
-          ? { completionNote: note }
-          : {}),
+        ...(withNote || next === 'completed' ? { completionNote: note } : {}),
       });
       if (!res.success || !res.item) {
         if (res.message === 'unauthorized') onUnauthorized();
@@ -80,7 +74,10 @@ export const StatusControls = ({
 
       {canMarkCompleted ? (
         <form className="admin-status__complete" onSubmit={onComplete}>
-          <label className="admin-status__note-label" htmlFor={`note-${item.id}`}>
+          <label
+            className="admin-status__note-label"
+            htmlFor={`note-${item.id}`}
+          >
             变更完成备注
           </label>
           <textarea

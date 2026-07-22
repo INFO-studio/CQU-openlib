@@ -1,10 +1,10 @@
-import { apiUrl } from '~/lib/apiBase';
 import { clearAdminKey, readAdminKey } from '~/admin/lib/session';
 import {
   DEFAULT_SUBMISSION_STATUS,
   normalizeStatus,
   type SubmissionStatus,
 } from '~/admin/lib/status';
+import { apiUrl } from '~/lib/apiBase';
 
 export type FormType = 'feedback' | 'textbook' | 'upload' | 'club';
 
@@ -33,7 +33,9 @@ export type StatusTransitionResponse = {
   message?: string;
 };
 
-const mapItem = (raw: Partial<SubmissionItem> & { id: string }): SubmissionItem => ({
+const mapItem = (
+  raw: Partial<SubmissionItem> & { id: string },
+): SubmissionItem => ({
   id: raw.id,
   type: raw.type ?? '',
   payload: (raw.payload ?? {}) as Record<string, unknown>,

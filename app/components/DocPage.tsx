@@ -101,10 +101,7 @@ const DocPage = ({ splat }: DocPageProps) => {
 
   const toc = useMemo(() => (file ? extractToc(file.ast) : []), [file]);
   const pathTitle = useMemo(() => decodePathname(titleFromPath(page)), [page]);
-  const hasH1 = useMemo(
-    () => (file ? hasH1Heading(file.ast) : true),
-    [file],
-  );
+  const hasH1 = useMemo(() => (file ? hasH1Heading(file.ast) : true), [file]);
   const title = useMemo(() => {
     if (!file) return pathTitle || 'CQU-openlib';
     if (hasH1) return pageTitleFromAst(file.ast);

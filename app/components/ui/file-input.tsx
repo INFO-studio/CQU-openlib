@@ -75,7 +75,9 @@ export const FileInput = ({
 
       <button
         type="button"
-        aria-label={file ? `已选文件 ${file.name}，点击重新选择` : '选择或拖拽文件'}
+        aria-label={
+          file ? `已选文件 ${file.name}，点击重新选择` : '选择或拖拽文件'
+        }
         onClick={() => inputRef.current?.click()}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}

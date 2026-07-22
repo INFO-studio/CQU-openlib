@@ -49,7 +49,9 @@ const logoContainerHtml = (indent: string, image: string): string | null => {
   const m = image.match(/^!\[([^\]]*)\]\(([^)\s]+)\)(?:\{([^}]+)\})?$/);
   if (!m) return null;
   const [, alt, src, attrs = ''] = m;
-  const classNames = [...attrs.matchAll(/\.([A-Za-z0-9_-]+)/g)].map((x) => x[1]);
+  const classNames = [...attrs.matchAll(/\.([A-Za-z0-9_-]+)/g)].map(
+    (x) => x[1],
+  );
   const cls = classNames.length ? ` class="${classNames.join(' ')}"` : '';
   return `${indent}<div class="cqu-logo-container"><img${cls} src="${src}" alt="${escapeHtml(alt)}" /></div>`;
 };
@@ -79,10 +81,9 @@ const preprocessHtmlBlocks: Preprocess = (lines) => {
       const image = extractMdImage(block);
       const caption = extractFigcaption(block);
       if (image) {
-        const wrapped =
-          /class=["'][^"']*\bcqu-logo-container\b/.test(block)
-            ? logoContainerHtml(indent, image)
-            : null;
+        const wrapped = /class=["'][^"']*\bcqu-logo-container\b/.test(block)
+          ? logoContainerHtml(indent, image)
+          : null;
         pushIsolated(wrapped ?? `${indent}${image}`);
         if (caption) pushIsolated(figcaptionMarkdown(indent, caption));
       } else {

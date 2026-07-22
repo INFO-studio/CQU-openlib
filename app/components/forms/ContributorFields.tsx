@@ -8,9 +8,9 @@ import { InputGroup } from '~/components/ui/input-group';
 import { Textarea } from '~/components/ui/textarea';
 import {
   CONTACT_KIND_OPTIONS,
+  type ContactKind,
   contactInputMode,
   contactPlaceholder,
-  type ContactKind,
 } from '~/lib/formContact';
 import {
   type ContributorBlockOptions,

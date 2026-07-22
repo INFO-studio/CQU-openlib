@@ -13,15 +13,15 @@ import { Textarea } from '~/components/ui/textarea';
 import { useFormDraft } from '~/hooks/useFormDraft';
 import {
   CONTACT_KIND_OPTIONS,
+  type ContactKind,
   contactInputMode,
   contactPlaceholder,
-  type ContactKind,
   validateContactFields,
 } from '~/lib/formContact';
 import {
-  type UploadProgress,
   IDLE_UPLOAD_PROGRESS,
   submitFormWithFiles,
+  type UploadProgress,
 } from '~/lib/formSubmit';
 
 const TITLE = '社团信息表单';
@@ -152,18 +152,14 @@ export const ClubForm = () => {
           name: values.name.trim(),
           affiliation: values.affiliation,
           updateKind: values.updateKind,
-          changeType:
-            values.updateKind === 'change' ? values.changeType : '',
+          changeType: values.updateKind === 'change' ? values.changeType : '',
           formerName:
             values.updateKind === 'change' && values.changeType === 'rename'
               ? values.formerName.trim()
               : '',
           recruitGroup:
-            values.updateKind === 'recruit'
-              ? values.recruitGroup.trim()
-              : '',
-          intro:
-            values.updateKind === 'intro' ? values.intro.trim() : '',
+            values.updateKind === 'recruit' ? values.recruitGroup.trim() : '',
+          intro: values.updateKind === 'intro' ? values.intro.trim() : '',
           contactKind: values.contactKind,
           contact: values.contact.trim(),
         }),

@@ -23,10 +23,7 @@ const formatScalar = (key: string, value: unknown): string => {
     };
     return map[String(value)] ?? String(value);
   }
-  if (
-    key === 'confirmAuthorized' ||
-    key === 'confirmNoPii'
-  ) {
+  if (key === 'confirmAuthorized' || key === 'confirmNoPii') {
     if (value === 'yes') return '已确认';
   }
   if (key === 'category' && typeof value === 'string') {

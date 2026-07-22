@@ -14,7 +14,9 @@ test.describe('docs shell smoke', () => {
     await expect(page.getByLabel('字母索引')).toBeVisible();
     // Expand a letter that should exist for 高等数学 → G
     await page.getByRole('button', { name: 'G', exact: true }).click();
-    await expect(page.getByRole('link', { name: '高等数学' }).first()).toBeVisible({
+    await expect(
+      page.getByRole('link', { name: '高等数学' }).first(),
+    ).toBeVisible({
       timeout: 15_000,
     });
   });
@@ -24,7 +26,11 @@ test.describe('docs shell smoke', () => {
     await page.getByRole('button', { name: '收藏本页' }).click();
     await expect(page.getByRole('button', { name: '取消收藏' })).toBeVisible();
     await page.getByRole('link', { name: 'CQU-openlib' }).click();
-    await expect(page.getByRole('heading', { name: '您的收藏页' })).toBeVisible();
-    await expect(page.locator('a', { hasText: /技巧|skill/i }).first()).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: '您的收藏页' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('a', { hasText: /技巧|skill/i }).first(),
+    ).toBeVisible();
   });
 });

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   type FormType,
-  type SubmissionItem,
   fetchSubmissions,
+  type SubmissionItem,
 } from '~/admin/lib/api';
 import {
   STATUS_META,
@@ -90,9 +90,7 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
       <header className="admin-submissions__head">
         <div>
           <h1 className="admin-submissions__title">表单收集</h1>
-          <p className="admin-submissions__lede">
-            全量字段 · 共 {count} 条
-          </p>
+          <p className="admin-submissions__lede">全量字段 · 共 {count} 条</p>
         </div>
         <button
           type="button"
@@ -167,91 +165,91 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
       ) : null}
 
       {!loading ? (
-      <ul className="admin-list">
-        {items.map((item) => {
-          const open = openId === item.id;
-          return (
-            <li key={item.id} className="admin-card">
-              <button
-                type="button"
-                className="admin-card__head"
-                onClick={() => setOpenId(open ? null : item.id)}
-                aria-expanded={open}
-              >
-                <span
-                  className="admin-card__badge"
-                  style={{
-                    color: typeTone(item.type),
-                    borderColor: typeTone(item.type),
-                  }}
+        <ul className="admin-list">
+          {items.map((item) => {
+            const open = openId === item.id;
+            return (
+              <li key={item.id} className="admin-card">
+                <button
+                  type="button"
+                  className="admin-card__head"
+                  onClick={() => setOpenId(open ? null : item.id)}
+                  aria-expanded={open}
                 >
-                  {typeLabel(item.type)}
-                </span>
-                <span
-                  className="admin-card__badge"
-                  style={{
-                    color: statusTone(item.status),
-                    borderColor: statusTone(item.status),
-                  }}
-                >
-                  {statusLabel(item.status)}
-                </span>
-                <span className="admin-card__time">
-                  {formatShanghai(
-                    typeof item.createdAt === 'string'
-                      ? item.createdAt
-                      : String(item.createdAt),
-                  )}
-                </span>
-                <span className="admin-card__id">{item.id.slice(-8)}</span>
-                <span className="admin-card__chev" aria-hidden="true">
-                  {open ? '▾' : '▸'}
-                </span>
-              </button>
-
-              {open ? (
-                <div className="admin-card__body">
-                  <StatusControls
-                    item={item}
-                    onUpdated={(next) => {
-                      if (status && next.status !== status) {
-                        setItems((prev) =>
-                          prev.filter((it) => it.id !== next.id),
-                        );
-                        setCount((n) => Math.max(0, n - 1));
-                        return;
-                      }
-                      patchItem(next);
+                  <span
+                    className="admin-card__badge"
+                    style={{
+                      color: typeTone(item.type),
+                      borderColor: typeTone(item.type),
                     }}
-                    onUnauthorized={onUnauthorized}
-                  />
-                  {renderPayload(
-                    (item.payload ?? {}) as Record<string, unknown>,
-                  )}
-                  <dl className="admin-meta">
-                    <div>
-                      <dt>id</dt>
-                      <dd>
-                        <code>{item.id}</code>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>ipHash</dt>
-                      <dd>
-                        <code>{item.ipHash ?? '—'}</code>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>ua</dt>
-                      <dd className="admin-meta__ua">{item.ua ?? '—'}</dd>
-                    </div>
-                  </dl>
-                </div>
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
+                  >
+                    {typeLabel(item.type)}
+                  </span>
+                  <span
+                    className="admin-card__badge"
+                    style={{
+                      color: statusTone(item.status),
+                      borderColor: statusTone(item.status),
+                    }}
+                  >
+                    {statusLabel(item.status)}
+                  </span>
+                  <span className="admin-card__time">
+                    {formatShanghai(
+                      typeof item.createdAt === 'string'
+                        ? item.createdAt
+                        : String(item.createdAt),
+                    )}
+                  </span>
+                  <span className="admin-card__id">{item.id.slice(-8)}</span>
+                  <span className="admin-card__chev" aria-hidden="true">
+                    {open ? '▾' : '▸'}
+                  </span>
+                </button>
+
+                {open ? (
+                  <div className="admin-card__body">
+                    <StatusControls
+                      item={item}
+                      onUpdated={(next) => {
+                        if (status && next.status !== status) {
+                          setItems((prev) =>
+                            prev.filter((it) => it.id !== next.id),
+                          );
+                          setCount((n) => Math.max(0, n - 1));
+                          return;
+                        }
+                        patchItem(next);
+                      }}
+                      onUnauthorized={onUnauthorized}
+                    />
+                    {renderPayload(
+                      (item.payload ?? {}) as Record<string, unknown>,
+                    )}
+                    <dl className="admin-meta">
+                      <div>
+                        <dt>id</dt>
+                        <dd>
+                          <code>{item.id}</code>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>ipHash</dt>
+                        <dd>
+                          <code>{item.ipHash ?? '—'}</code>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>ua</dt>
+                        <dd className="admin-meta__ua">{item.ua ?? '—'}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
       ) : null}
     </section>
   );

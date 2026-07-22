@@ -34,7 +34,7 @@ let changedFiles = 0;
 let replacements = 0;
 
 for (const file of walk(ROOT)) {
-  let text = readFileSync(file, 'utf8');
+  const text = readFileSync(file, 'utf8');
   let next = text;
   for (const [from, to] of Object.entries(MAP)) {
     const re = new RegExp(`:${from}:`, 'g');

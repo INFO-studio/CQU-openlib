@@ -12,15 +12,15 @@ import { Input } from '~/components/ui/input';
 import { Textarea } from '~/components/ui/textarea';
 import { useFormDraft } from '~/hooks/useFormDraft';
 import {
-  type ContributorDraft,
   CONTRIBUTOR_DEFAULTS,
+  type ContributorDraft,
   toContributorPayload,
   validateContributor,
 } from '~/lib/formContributor';
 import {
-  type UploadProgress,
   IDLE_UPLOAD_PROGRESS,
   submitFormWithFiles,
+  type UploadProgress,
 } from '~/lib/formSubmit';
 
 type Props = {

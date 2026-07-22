@@ -114,9 +114,7 @@ const DocsShell = ({ children, toc = [], leftRail }: Props) => {
               : showLeftRail
                 ? 'lg:flex lg:items-start lg:justify-end lg:overflow-visible'
                 : 'lg:overflow-y-auto',
-            showLeftColumn
-              ? undefined
-              : 'lg:invisible lg:pointer-events-none',
+            showLeftColumn ? undefined : 'lg:invisible lg:pointer-events-none',
           )}
         >
           {showLeftRail ? leftRail : sidebarBody}

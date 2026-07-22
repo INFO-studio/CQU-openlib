@@ -11,10 +11,10 @@ import { FormChoice, YES_NO_OPTIONS } from '~/components/ui/form-choice';
 import { Input } from '~/components/ui/input';
 import { useFormDraft } from '~/hooks/useFormDraft';
 import {
-  type StagingFileRef,
-  type UploadProgress,
   IDLE_UPLOAD_PROGRESS,
+  type StagingFileRef,
   submitFormWithFiles,
+  type UploadProgress,
 } from '~/lib/formSubmit';
 
 const TITLE = '教材收集表';

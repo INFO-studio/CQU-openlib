@@ -12,18 +12,18 @@ import { FormChoice } from '~/components/ui/form-choice';
 import { Input } from '~/components/ui/input';
 import { useFormDraft } from '~/hooks/useFormDraft';
 import {
+  CONTRIBUTOR_DEFAULTS,
   type ContributorBlockOptions,
   type ContributorDraft,
-  CONTRIBUTOR_DEFAULTS,
   padQuestionIndex,
   toContributorPayload,
   validateContributor,
 } from '~/lib/formContributor';
 import {
-  type StagingFileRef,
-  type UploadProgress,
   IDLE_UPLOAD_PROGRESS,
+  type StagingFileRef,
   submitFormWithFiles,
+  type UploadProgress,
 } from '~/lib/formSubmit';
 
 const TITLE = '文件上传';
@@ -72,9 +72,7 @@ const DEFAULTS: UploadDraft = {
 
 const IDLE_PROGRESS = IDLE_UPLOAD_PROGRESS;
 
-const contributorOptionsFor = (
-  category: Category,
-): ContributorBlockOptions => {
+const contributorOptionsFor = (category: Category): ContributorBlockOptions => {
   if (category === 'slides') {
     return {
       showAuthorCredit: false,
@@ -107,9 +105,7 @@ export const UploadForm = () => {
   const [progress, setProgress] = useState<UploadProgress>(IDLE_PROGRESS);
 
   const category = values.category;
-  const contributorOpts = category
-    ? contributorOptionsFor(category)
-    : null;
+  const contributorOpts = category ? contributorOptionsFor(category) : null;
 
   const setContributorField = <K extends keyof ContributorDraft>(
     key: K,
@@ -199,9 +195,7 @@ export const UploadForm = () => {
 
     const uploadFiles: File[] = [file];
     const includeIntroFile =
-      contributorOpts.showIntro &&
-      values.introKind === 'file' &&
-      introFile;
+      contributorOpts.showIntro && values.introKind === 'file' && introFile;
     if (includeIntroFile && introFile) uploadFiles.push(introFile);
 
     setSubmitting(true);

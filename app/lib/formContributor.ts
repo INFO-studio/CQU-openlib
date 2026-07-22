@@ -1,9 +1,6 @@
 /** Shared contributor / contact draft fields used across community forms. */
 
-import {
-  type ContactKind,
-  validateContactFields,
-} from '~/lib/formContact';
+import { type ContactKind, validateContactFields } from '~/lib/formContact';
 
 export type IntroKind = 'text' | 'file';
 export type YesNo = 'yes' | 'no';

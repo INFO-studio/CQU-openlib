@@ -26,7 +26,10 @@ test('capture key pages', async ({ page }) => {
 
   await page.getByRole('button', { name: 'G', exact: true }).click();
   await page.waitForTimeout(400);
-  await page.screenshot({ path: `${OUT}/03-course-az-open.png`, fullPage: false });
+  await page.screenshot({
+    path: `${OUT}/03-course-az-open.png`,
+    fullPage: false,
+  });
 
   await page.goto('/course/传感器技术');
   await page.waitForLoadState('networkidle');
@@ -38,7 +41,10 @@ test('capture key pages', async ({ page }) => {
 
   await page.goto('/skill');
   await page.waitForLoadState('networkidle');
-  await page.screenshot({ path: `${OUT}/05-skill-sidebar.png`, fullPage: false });
+  await page.screenshot({
+    path: `${OUT}/05-skill-sidebar.png`,
+    fullPage: false,
+  });
 
   const chevron = page.locator('[aria-label="展开"]').first();
   if (await chevron.count()) {
