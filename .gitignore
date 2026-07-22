@@ -9,13 +9,6 @@
 /public/nav-index.json
 /public/search/
 
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/e2e/shots/
-
 # Logo master renders (regenerate with pnpm logo:generate)
 /tools/logo/out/
 

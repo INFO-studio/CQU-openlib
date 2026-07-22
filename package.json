@@ -9,9 +9,6 @@
     "preview": "vp preview",
     "typecheck": "tsc",
     "test": "vp test",
-    "test:e2e": "playwright test",
-    "icons:rewrite": "node scripts/rewrite-material-icons.mjs",
-    "codes:extract": "node scripts/extract-course-codes.mjs",
     "logo:generate": "tsx tools/logo/generate.ts",
     "lint": "biome lint .",
     "format": "biome format .",
@@ -42,7 +39,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
-    "@playwright/test": "^1.61.1",
     "@tanstack/router-plugin": "^1.141.2",
     "@types/node": "^22",
     "@types/react": "^19.2.7",
