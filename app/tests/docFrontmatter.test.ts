@@ -22,8 +22,12 @@ describe('parseDocFrontmatterYaml', () => {
   });
 
   it('ignores invalid updated values', () => {
-    expect(parseDocFrontmatterYaml('updated: tomorrow\n').updated).toBeUndefined();
-    expect(parseDocFrontmatterYaml('updated: 2026/07/22\n').updated).toBeUndefined();
+    expect(
+      parseDocFrontmatterYaml('updated: tomorrow\n').updated,
+    ).toBeUndefined();
+    expect(
+      parseDocFrontmatterYaml('updated: 2026/07/22\n').updated,
+    ).toBeUndefined();
   });
 
   it('returns empty object for invalid yaml', () => {
@@ -37,7 +41,11 @@ describe('frontmatterFromAst', () => {
       type: 'root',
       children: [
         { type: 'yaml', value: 'updated: "2026-07-21"\n' },
-        { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Hi' }] },
+        {
+          type: 'heading',
+          depth: 1,
+          children: [{ type: 'text', value: 'Hi' }],
+        },
       ],
     };
     expect(frontmatterFromAst(root)).toEqual({ updated: '2026-07-21' });
@@ -47,7 +55,11 @@ describe('frontmatterFromAst', () => {
     const root: MnRoot = {
       type: 'root',
       children: [
-        { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Hi' }] },
+        {
+          type: 'heading',
+          depth: 1,
+          children: [{ type: 'text', value: 'Hi' }],
+        },
       ],
     };
     expect(frontmatterFromAst(root)).toEqual({});

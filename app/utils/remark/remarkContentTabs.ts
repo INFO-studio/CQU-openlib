@@ -67,7 +67,6 @@ export const sliceSerialized = (
         );
         if (value) out.push({ type: 'text', value } satisfies MnText);
       }
-      continue;
     }
 
     // softbreak inside title / body slice: skip
@@ -76,10 +75,7 @@ export const sliceSerialized = (
 };
 
 /** Drop the first `offset` serialized characters; keep the rest of the tree. */
-export const dropSerializedPrefix = (
-  children: Mn[],
-  offset: number,
-): Mn[] => {
+export const dropSerializedPrefix = (children: Mn[], offset: number): Mn[] => {
   if (offset <= 0) return children;
   let cursor = 0;
   for (let i = 0; i < children.length; i += 1) {

@@ -3,8 +3,8 @@ import { TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
 import type { Mn, MnRoot } from '~/types/mdast';
 import remarkContentTabs, {
   dropSerializedPrefix,
-  serializeInline,
   serializedLen,
+  serializeInline,
   sliceSerialized,
   splitTabMarkerParagraph,
 } from '~/utils/remark/remarkContentTabs';
@@ -99,8 +99,6 @@ describe('sliceSerialized / dropSerializedPrefix', () => {
 
   it('drops a full marker prefix and keeps the glued body', () => {
     const flat = serializeInline(nodes);
-    const markerEnd = flat.indexOf('"') + 1; // first closing quote after open
-    // More precisely: full marker `=== ":l-book:`CODE`"`
     const fullMarker = '=== ":l-book:`CODE`"';
     expect(flat.startsWith(fullMarker)).toBe(true);
     expect(dropSerializedPrefix(nodes, fullMarker.length)).toEqual([
@@ -287,9 +285,9 @@ describe('remarkContentTabs', () => {
       { type: 'text', value: ':l-book:' },
       { type: 'inlineCode', value: 'MATH10821' },
     ]);
-    expect(tabs.items[0]!.title.some((n) => n.type === 'text' && n.value === 'Tab')).toBe(
-      false,
-    );
+    expect(
+      tabs.items[0]!.title.some((n) => n.type === 'text' && n.value === 'Tab'),
+    ).toBe(false);
     expect(tabs.items[1]!.title).toEqual([{ type: 'text', value: '普通' }]);
   });
 

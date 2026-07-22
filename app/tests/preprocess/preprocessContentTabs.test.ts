@@ -76,9 +76,15 @@ describe('preprocessContentTabs', () => {
   });
 
   it('keeps blank lines inside an open group without closing', () => {
-    expect(
-      preprocessContentTabs(['=== "A"', '', '    body', '']),
-    ).toEqual([TABS_START, TAB_ITEM, '=== "A"', '', '    body', '', TABS_END]);
+    expect(preprocessContentTabs(['=== "A"', '', '    body', ''])).toEqual([
+      TABS_START,
+      TAB_ITEM,
+      '=== "A"',
+      '',
+      '    body',
+      '',
+      TABS_END,
+    ]);
   });
 
   it('closes open groups at EOF', () => {

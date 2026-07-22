@@ -1,4 +1,10 @@
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vite-plus/test';
@@ -25,11 +31,13 @@ describe('resolveDocFile', () => {
     writeFileSync(join(root, 'academic', 'index.md'), '# 学业\n');
     writeFileSync(join(root, 'curriculum.md'), '# 课表\n');
 
-    expect(resolveDocFile(root, '/curriculum.md')?.endsWith('curriculum.md')).toBe(
-      true,
-    );
     expect(
-      resolveDocFile(root, '/academic.md')?.endsWith(join('academic', 'index.md')),
+      resolveDocFile(root, '/curriculum.md')?.endsWith('curriculum.md'),
+    ).toBe(true);
+    expect(
+      resolveDocFile(root, '/academic.md')?.endsWith(
+        join('academic', 'index.md'),
+      ),
     ).toBe(true);
     expect(
       resolveDocFile(root, '/academic/index.md')?.endsWith(
