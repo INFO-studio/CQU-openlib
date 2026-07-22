@@ -33,7 +33,7 @@ export const mapDocNodes = (
       out.push(
         <div
           key={`home-pair-${start}`}
-          className="my-3 flex flex-col gap-3 md:flex-row md:items-stretch [&>*]:m-0 [&>*]:min-w-0 [&>*]:flex-[1_1_0]"
+          className="my-3 flex flex-col gap-3 md:flex-row md:items-stretch [&>*]:m-0 [&>*]:min-w-0 md:[&>*]:flex-[1_1_0]"
         >
           {inner}
         </div>,
