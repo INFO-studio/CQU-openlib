@@ -14,6 +14,7 @@ import type { MnHtml } from '~/types/mdast/mnHtml';
 import type { MnIcon } from '~/types/mdast/mnIcon';
 import type { MnImage } from '~/types/mdast/mnImage';
 import type { MnInlineCode } from '~/types/mdast/mnInlineCode';
+import type { MnKbd } from '~/types/mdast/mnKbd';
 import type { MnLink } from '~/types/mdast/mnLink';
 import type { MnList } from '~/types/mdast/mnList';
 import type { MnListItem } from '~/types/mdast/mnListItem';
@@ -42,6 +43,7 @@ export type Mn =
   | MnIcon
   | MnImage
   | MnInlineCode
+  | MnKbd
   | MnLink
   | MnList
   | MnListItem
@@ -73,6 +75,7 @@ export type { MnHtml } from '~/types/mdast/mnHtml';
 export type { MnIcon } from '~/types/mdast/mnIcon';
 export type { MnImage } from '~/types/mdast/mnImage';
 export type { MnInlineCode } from '~/types/mdast/mnInlineCode';
+export type { MnKbd, MnKbdKey } from '~/types/mdast/mnKbd';
 export type { MnLink } from '~/types/mdast/mnLink';
 export type { MnList } from '~/types/mdast/mnList';
 export type { MnListItem } from '~/types/mdast/mnListItem';

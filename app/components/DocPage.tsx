@@ -23,6 +23,7 @@ import {
   remarkDisableIndentedCode,
   remarkFormatting,
   remarkIcon,
+  remarkKeys,
 } from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
 
@@ -49,6 +50,7 @@ const useDocAst = (page: string, enabled: boolean) => {
         .use(remarkAdmonition)
         .use(remarkAttrList)
         .use(remarkFormatting)
+        .use(remarkKeys)
         .use(remarkIcon),
     [],
   );

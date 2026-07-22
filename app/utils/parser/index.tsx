@@ -17,6 +17,7 @@ import parserHtml from '~/utils/parser/parserHtml';
 import parserIcon from '~/utils/parser/parserIcon';
 import parserImage from '~/utils/parser/parserImage';
 import parserInlineCode from '~/utils/parser/parserInlineCode';
+import parserKbd from '~/utils/parser/parserKbd';
 import parserLink from '~/utils/parser/parserLink';
 import parserList from '~/utils/parser/parserList';
 import parserListItem from '~/utils/parser/parserListItem';
@@ -46,6 +47,7 @@ const parser = (mn: Mn) =>
     .with({ type: 'icon' }, parserIcon)
     .with({ type: 'image' }, parserImage)
     .with({ type: 'inlineCode' }, parserInlineCode)
+    .with({ type: 'kbd' }, parserKbd)
     .with({ type: 'link' }, parserLink)
     .with({ type: 'list' }, parserList)
     .with({ type: 'listItem' }, parserListItem)

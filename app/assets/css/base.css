@@ -143,6 +143,20 @@ textarea:focus-visible {
 }
 
 /* Keyboard shortcut chip — reads as a physical key, not body text */
+.docs-keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  vertical-align: 0.05em;
+}
+
+.docs-keys__sep {
+  color: var(--c-muted);
+  font-size: 0.7rem;
+  line-height: 1;
+  user-select: none;
+}
+
 .docs-kbd {
   display: inline-flex;
   align-items: center;
