@@ -61,7 +61,7 @@ export default defineConfig({
     'docs-title-row':
       'mb-2 flex items-center gap-2 [&>h1]:m-0 [&>h1]:min-w-0 [&>h1]:flex-1 [&>button]:shrink-0 [&>button]:self-center',
     'docs-kbd':
-      'inline-flex h-5 min-w-5 items-center justify-center rounded border border-line border-b-2 bg-mist px-[0.3rem] font-mono text-[0.7rem] font-semibold leading-none text-muted',
+      'inline-flex h-[1.125rem] min-w-[1.125rem] shrink-0 items-center justify-center rounded-[0.25rem] border border-line bg-panel px-1 font-mono text-[0.6875rem] font-medium leading-none text-muted select-none',
     'docs-figcaption':
       'mt-[-0.15rem] mb-[0.85rem] text-center text-[0.8125rem] leading-[1.45] text-muted',
     'cqu-logo-container':

@@ -89,11 +89,13 @@ const SiteHeader = ({ currentPath }: Props) => {
         <div className="flex shrink-0 items-center justify-end gap-0.5">
           <Button
             onClick={openSearch}
-            className="sm:rounded-full sm:border sm:border-line sm:bg-mist/60 sm:px-3 sm:hover:bg-mist"
+            className="gap-2 sm:rounded-full sm:border sm:border-line sm:bg-mist/60 sm:px-2.5 sm:hover:bg-mist"
           >
-            <Search size={15} className="text-icon" />
-            <span className="hidden sm:inline">搜索</span>
-            <kbd className="docs-kbd ml-1 hidden md:inline" aria-hidden>
+            <span className="inline-flex items-center gap-1.5">
+              <Search size={15} className="shrink-0 text-icon" aria-hidden />
+              <span className="hidden sm:inline">搜索</span>
+            </span>
+            <kbd className="docs-kbd hidden md:inline-flex" aria-hidden>
               /
             </kbd>
           </Button>

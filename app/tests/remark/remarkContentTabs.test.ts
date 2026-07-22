@@ -21,6 +21,7 @@ describe('serializedLen', () => {
     expect(
       serializedLen({
         type: 'link',
+        title: null,
         url: 'https://example.com',
         children: [{ type: 'text', value: 'a' }],
       }),
@@ -45,6 +46,7 @@ describe('serializeInline', () => {
         { type: 'text', value: '=== "A"' },
         {
           type: 'link',
+          title: null,
           url: 'https://example.com',
           children: [{ type: 'text', value: 'x' }],
         },
@@ -275,8 +277,9 @@ describe('remarkContentTabs', () => {
 
     remarkContentTabs()(tree);
 
-    expect(tree.children).toHaveLength(1);
-    const tabs = tree.children[0];
+    const children = tree.children ?? [];
+    expect(children).toHaveLength(1);
+    const tabs = children[0];
     expect(tabs).toMatchObject({ type: 'tabs' });
     if (tabs?.type !== 'tabs') throw new Error('expected tabs');
     expect(tabs.items).toHaveLength(2);
@@ -312,7 +315,7 @@ describe('remarkContentTabs', () => {
     };
 
     remarkContentTabs()(tree);
-    const outer = tree.children[0];
+    const outer = (tree.children ?? [])[0];
     expect(outer?.type).toBe('tabs');
     if (outer?.type !== 'tabs') throw new Error('expected tabs');
     expect(outer.items[0]!.title).toEqual([{ type: 'text', value: '外' }]);
