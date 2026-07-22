@@ -36,6 +36,8 @@ describe('homepage index.md', () => {
     expect(json).toContain('快来加群捏');
     expect(json).toContain('简介');
     expect(json).toContain('友情链接');
+    expect(json).toContain('<HomeBookmarks />');
+    expect(json).toContain('docs-home-pair');
 
     const failure = (ast as { children?: Mn[] }).children?.find(
       (n) => n.type === 'admonition' && n.admonitionType === 'failure',

@@ -51,45 +51,48 @@ export const FormChoice = <T extends string>({
     >
       {options.map((opt) => {
         const selected = value === opt.value;
-        const isOther = other && opt.value === other.value;
+        const isOther = Boolean(other && opt.value === other.value);
 
         return (
           <div
             key={opt.value}
+            role="radio"
+            aria-checked={selected}
+            tabIndex={0}
             className={cn(
-              'flex items-center gap-2.5 rounded-md border px-3 py-3 text-left text-sm transition-colors',
+              'flex cursor-pointer items-center gap-2.5 rounded-md border px-3 py-3 text-left text-sm transition-colors',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
               selected
                 ? 'border-primary bg-primary-soft text-ink'
                 : 'border-line bg-panel text-muted hover:border-primary/40 hover:text-ink',
             )}
+            onClick={() => onChange(opt.value)}
+            onKeyDown={(ev) => {
+              if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                onChange(opt.value);
+              }
+            }}
           >
-            <button
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              className="flex min-w-0 flex-1 items-center gap-2.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              onClick={() => onChange(opt.value)}
-            >
-              <span
-                className={cn(
-                  'box-border h-4 w-4 shrink-0 rounded-full border-[1.5px]',
-                  selected
-                    ? 'border-primary shadow-[inset_0_0_0_0.28rem_var(--c-primary)]'
-                    : 'border-current opacity-55',
-                )}
-                aria-hidden="true"
-              />
-              <span className="shrink-0 font-medium">{opt.label}</span>
-            </button>
+            <span
+              className={cn(
+                'box-border h-4 w-4 shrink-0 rounded-full border-[1.5px]',
+                selected
+                  ? 'border-primary shadow-[inset_0_0_0_0.28rem_var(--c-primary)]'
+                  : 'border-current opacity-55',
+              )}
+              aria-hidden="true"
+            />
+            <span className="shrink-0 font-medium">{opt.label}</span>
 
-            {isOther ? (
+            {isOther && other ? (
               <input
                 type="text"
                 value={other.text}
                 placeholder={other.placeholder ?? '请注明'}
                 aria-label={other.placeholder ?? '请注明'}
                 className={cn(
-                  'min-w-0 flex-1 rounded border-0 bg-transparent px-0 py-0 text-sm text-ink outline-none placeholder:text-muted/70',
+                  'min-w-0 flex-1 cursor-text rounded border-0 bg-transparent px-0 py-0 text-sm text-ink outline-none placeholder:text-muted/70',
                   'focus:outline-none',
                 )}
                 onFocus={() => {
@@ -100,6 +103,7 @@ export const FormChoice = <T extends string>({
                   other.onTextChange(ev.target.value);
                 }}
                 onClick={(ev) => ev.stopPropagation()}
+                onKeyDown={(ev) => ev.stopPropagation()}
               />
             ) : null}
           </div>

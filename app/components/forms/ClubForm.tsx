@@ -128,13 +128,16 @@ export const ClubForm = () => {
       return;
     }
 
-    const contactError = validateContactFields(
-      values.contactKind,
-      values.contact,
-    );
-    if (contactError) {
-      setError(contactError);
-      return;
+    // 纳新群号只需群号；联系方式可选
+    if (values.updateKind !== 'recruit') {
+      const contactError = validateContactFields(
+        values.contactKind,
+        values.contact,
+      );
+      if (contactError) {
+        setError(contactError);
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -294,7 +297,7 @@ export const ClubForm = () => {
           <FormQuestion
             index={iContact}
             label="您的联系方式是"
-            required
+            required={kind !== 'recruit'}
             hint="以便进行后续交流。"
           >
             <InputGroup

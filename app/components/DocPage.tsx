@@ -1,13 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, Navigate, useRouterState } from '@tanstack/react-router';
-import { Fragment, type ReactNode, useEffect, useMemo } from 'react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import BookmarkButton from '~/components/BookmarkButton';
 import DocsShell from '~/components/DocsShell';
-import HomeBookmarks from '~/components/HomeBookmarks';
 import { DocSkeleton } from '~/components/Skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
@@ -16,6 +15,7 @@ import { cleanPath, decodePathname } from '~/lib/paths';
 import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
 import type { MnRoot } from '~/types/mdast';
 import parser from '~/utils/parser';
+import { mapDocNodes } from '~/utils/parser/mapDocNodes';
 import {
   remarkAdmonition,
   remarkAttrList,
@@ -176,39 +176,63 @@ const DocPage = ({ splat }: DocPageProps) => {
               ) : null}
             </div>
           ) : null}
-          {nodes.map((node, i) => {
+          {mapDocNodes(nodes, (node, i) => {
             if (showBookmark && i === firstH1Index) {
               return (
-                <div key={i} className="docs-title-row">
+                <div className="docs-title-row">
                   {parser(node)}
                   <BookmarkButton path={pathname} title={title} />
                 </div>
               );
             }
-            if (pathname === '/') {
-              return (
-                <Fragment key={i}>
-                  {parser(node)}
-                  {node.type === 'admonition' &&
-                  node.admonitionType === 'info' ? (
-                    <HomeBookmarks />
-                  ) : null}
-                </Fragment>
-              );
-            }
-            return <Fragment key={i}>{parser(node)}</Fragment>;
+            return parser(node);
           })}
-          <footer className="mt-8 border-t border-line pt-3 text-[0.8125rem] text-muted">
-            内容来自社区贡献。如有问题请通过
-            <Link
-              to="/form/$type"
-              params={{ type: 'feedback' }}
-              search={{ page: pathname }}
-              className="mx-1 text-primary no-underline hover:underline"
-            >
-              问题反馈
-            </Link>
-            联系我们。
+          <footer className="mt-8 mb-16 border-t border-line pt-3 text-[0.8125rem] text-muted">
+            <p className="m-0">
+              内容来自社区贡献。如有问题请通过
+              <Link
+                to="/form/$type"
+                params={{ type: 'feedback' }}
+                search={{ page: pathname }}
+                className="mx-1 text-primary no-underline hover:underline"
+              >
+                问题反馈
+              </Link>
+              联系我们。
+            </p>
+            {pathname === '/club' || pathname.startsWith('/club/') ? (
+              <p className="mt-2 m-0">
+                社长或管理人员可通过
+                <Link
+                  to="/form/$type"
+                  params={{ type: 'club' }}
+                  className="mx-1 text-primary no-underline hover:underline"
+                >
+                  社团信息表单
+                </Link>
+                更新本页信息。
+              </p>
+            ) : null}
+            <p className="mt-4 m-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-left leading-relaxed">
+              <span>Copyright © 2024 - 2026</span>
+              <a
+                href="https://github.com/INFO-studio/CQU-openlib"
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary no-underline hover:underline"
+              >
+                CQU-openlib Opensource Community
+              </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="https://www.gnu.org/licenses/gpl-3.0.html"
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary no-underline hover:underline"
+              >
+                GPL-3.0
+              </a>
+            </p>
           </footer>
         </article>
       </DocBaseContext.Provider>

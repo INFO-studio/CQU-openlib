@@ -458,6 +458,51 @@ aside ul,
   color: var(--c-muted);
 }
 
+/* Home: explicit <div class="docs-home-pair"> around 公告 + <HomeBookmarks /> */
+.docs-home-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.docs-home-pair > .admonition {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .docs-home-pair {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+/* Bookmark clear: ghost, absolutely placed so title height stays stable */
+.docs-bookmarks .admonition-title {
+  position: relative;
+  padding-right: 4.75rem;
+}
+
+.docs-bookmarks__clear {
+  position: absolute;
+  top: 50%;
+  right: 0.85rem;
+  transform: translateY(-50%);
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.45;
+  background: transparent;
+}
+
+.docs-bookmarks__clear:hover {
+  background: transparent;
+}
+
 /* Admonition — soft callout, Material-like types, resilient empty states */
 .admonition {
   --admonition-color: var(--admonition-note);
