@@ -1,30 +1,61 @@
 import { TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
-import type { Mn, MnRoot, MnTabs, MnText } from '~/types/mdast';
+import type { Mn, MnParagraph, MnRoot, MnTabs, MnText } from '~/types/mdast';
 
 const isHtml = (n: Mn, value: string) => n.type === 'html' && n.value === value;
-export const extractTabTitle = (paragraphChildren: Mn[]): Mn[] => {
-  const cloned: Mn[] = paragraphChildren.map((c) =>
-    c.type === 'text' ? ({ ...c, value: c.value } satisfies MnText) : c,
-  );
-  const first = cloned.find((c) => c.type === 'text');
-  if (first && first.type === 'text' && first.value) {
-    first.value = first.value
-      .replace(/^===\s*/, '')
-      .replace(/^"/, '')
-      .replace(/^'/, '');
+
+/** `=== "Title"` / `=== 'Title'` at the start of a tab marker line. */
+const TAB_MARKER = /^===\s*(["'])([^"']*)\1\s*/;
+
+/**
+ * Soft-break may glue the marker line to the next indented body line into one
+ * paragraph (codeIndented is disabled). Only the marker is the title; the rest
+ * stays as tab body.
+ */
+const splitTabMarkerParagraph = (
+  children: Mn[],
+): { title: Mn[]; body: MnParagraph | null } => {
+  const first = children[0];
+  if (!first || first.type !== 'text' || !first.value) {
+    return { title: [{ type: 'text', value: 'Tab' }], body: null };
   }
-  for (let i = cloned.length - 1; i >= 0; i--) {
-    const node = cloned[i];
-    if (node.type === 'text' && node.value) {
-      node.value = node.value.replace(/"\s*$/, '').replace(/'\s*$/, '');
-      break;
-    }
+
+  const m = first.value.match(TAB_MARKER);
+  if (!m) {
+    return { title: [{ type: 'text', value: 'Tab' }], body: null };
   }
-  return cloned.filter(
-    (c) => !(c.type === 'text' && !(c.value && c.value.length > 0)),
-  );
+
+  const title: Mn[] = [{ type: 'text', value: m[2] }];
+  const rest: Mn[] = [];
+  const after = first.value.slice(m[0].length);
+  if (after.trim()) {
+    rest.push({
+      type: 'text',
+      value: after.replace(/^\s+/, ''),
+    } satisfies MnText);
+  }
+
+  let i = 1;
+  if (!after.trim() && children[i]?.type === 'break') i += 1;
+  rest.push(...children.slice(i));
+
+  while (rest[0]?.type === 'break') rest.shift();
+  if (rest[0]?.type === 'text') {
+    const trimmed = rest[0].value.replace(/^\s+/, '');
+    if (trimmed) rest[0] = { ...rest[0], value: trimmed };
+    else rest.shift();
+  }
+
+  if (!rest.length) return { title, body: null };
+  return { title, body: { type: 'paragraph', children: rest } };
 };
+
 type TabItem = MnTabs['items'][number];
+
+const isPendingTitle = (item: TabItem) =>
+  item.title.length === 1 &&
+  item.title[0]?.type === 'text' &&
+  item.title[0].value === 'Tab';
+
 const parseTabsGroup = (nodes: Mn[], start: number): [MnTabs, number] => {
   const items: TabItem[] = [];
   let current: TabItem | null = null;
@@ -60,11 +91,11 @@ const parseTabsGroup = (nodes: Mn[], start: number): [MnTabs, number] => {
     if (
       current.children.length === 0 &&
       cur.type === 'paragraph' &&
-      current.title.length === 1 &&
-      current.title[0]?.type === 'text' &&
-      current.title[0].value === 'Tab'
+      isPendingTitle(current)
     ) {
-      current.title = extractTabTitle(cur.children ?? []);
+      const { title, body } = splitTabMarkerParagraph(cur.children ?? []);
+      current.title = title;
+      if (body) current.children.push(body);
       i += 1;
       continue;
     }
@@ -73,7 +104,8 @@ const parseTabsGroup = (nodes: Mn[], start: number): [MnTabs, number] => {
   }
   return [{ type: 'tabs', items }, i];
 };
-export const convertTabsInNodes = (nodes: Mn[]): Mn[] => {
+
+const convertTabsInNodes = (nodes: Mn[]): Mn[] => {
   const out: Mn[] = [];
   let i = 0;
   while (i < nodes.length) {
@@ -89,7 +121,9 @@ export const convertTabsInNodes = (nodes: Mn[]): Mn[] => {
   }
   return out;
 };
+
 const remarkContentTabs = () => (tree: MnRoot) => {
   tree.children = convertTabsInNodes(tree.children ?? []);
 };
+
 export default remarkContentTabs;

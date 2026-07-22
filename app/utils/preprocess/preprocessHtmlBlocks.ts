@@ -40,6 +40,20 @@ const escapeHtml = (text: string): string =>
 const figcaptionMarkdown = (indent: string, caption: string): string =>
   `${indent}<p class="docs-figcaption">${escapeHtml(caption)}</p>`;
 
+/**
+ * Visual-identity pages wrap previews in `.cqu-logo-container` (gray box).
+ * Keep that wrapper as a single-line HTML block so CommonMark does not
+ * swallow the image, and so CSS background still applies.
+ */
+const logoContainerHtml = (indent: string, image: string): string | null => {
+  const m = image.match(/^!\[([^\]]*)\]\(([^)\s]+)\)(?:\{([^}]+)\})?$/);
+  if (!m) return null;
+  const [, alt, src, attrs = ''] = m;
+  const classNames = [...attrs.matchAll(/\.([A-Za-z0-9_-]+)/g)].map((x) => x[1]);
+  const cls = classNames.length ? ` class="${classNames.join(' ')}"` : '';
+  return `${indent}<div class="cqu-logo-container"><img${cls} src="${src}" alt="${escapeHtml(alt)}" /></div>`;
+};
+
 const preprocessHtmlBlocks: Preprocess = (lines) => {
   const out: string[] = [];
 
@@ -65,7 +79,11 @@ const preprocessHtmlBlocks: Preprocess = (lines) => {
       const image = extractMdImage(block);
       const caption = extractFigcaption(block);
       if (image) {
-        pushIsolated(`${indent}${image}`);
+        const wrapped =
+          /class=["'][^"']*\bcqu-logo-container\b/.test(block)
+            ? logoContainerHtml(indent, image)
+            : null;
+        pushIsolated(wrapped ?? `${indent}${image}`);
         if (caption) pushIsolated(figcaptionMarkdown(indent, caption));
       } else {
         pushIsolated(block.trim());

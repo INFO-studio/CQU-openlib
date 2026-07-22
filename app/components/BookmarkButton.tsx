@@ -1,4 +1,4 @@
-import { Bookmark, BookmarkCheck } from 'lucide-react';
+import { BookmarkMinus, BookmarkPlus } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { useBookmarkStore } from '~/stores/bookmarkStore';
 
@@ -20,11 +20,11 @@ const BookmarkButton = ({ path, title }: Props) => {
       }}
     >
       {saved ? (
-        <BookmarkCheck size={14} className="text-icon" />
+        <BookmarkMinus size={14} className="text-icon" />
       ) : (
-        <Bookmark size={14} className="text-icon" />
+        <BookmarkPlus size={14} className="text-icon" />
       )}
-      {saved ? '已收藏' : '收藏'}
+      {saved ? '取消收藏' : '收藏本页'}
     </Button>
   );
 };

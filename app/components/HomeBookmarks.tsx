@@ -16,14 +16,14 @@ const HomeBookmarks = () => {
               className="px-1.5 py-0.5 text-[0.75rem] font-normal"
               onClick={clear}
             >
-              清空
+              清空收藏
             </Button>
           ) : null}
         </span>
       </p>
       <div className="admonition-content">
         {items.length === 0 ? (
-          <p>在任意文档页点击「收藏」，会出现在这里（本地存储）。</p>
+          <p className="text-center">您还没有收藏任何页面 _:(´□`」 ∠):_</p>
         ) : (
           <ul>
             {items.map((item) => (

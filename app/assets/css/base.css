@@ -328,6 +328,69 @@ aside ul,
   font-size: inherit;
 }
 
+/* Fenced code: hover copy button (Material content.code.copy) */
+.docs-prose :where(.docs-codeblock) {
+  position: relative;
+  margin: 0.6rem 0;
+}
+
+.docs-prose :where(.docs-codeblock pre) {
+  margin: 0;
+  padding-right: 2.4rem;
+}
+
+.docs-prose :where(.docs-codeblock__copy) {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.3rem;
+  color: var(--c-icon);
+  background: var(--c-panel);
+  border: 1px solid var(--c-line);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.docs-prose :where(.docs-codeblock__copy:hover) {
+  color: var(--c-ink);
+  background: var(--c-mist);
+  border-color: var(--c-primary-soft);
+}
+
+.docs-prose :where(.docs-codeblock__copy:focus-visible) {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 1px;
+}
+
+.docs-prose :where(.docs-codeblock__copy[data-copied='true']) {
+  color: var(--admonition-success);
+  opacity: 1;
+}
+
+/* Pointer devices: show on hover / focus; touch: keep visible */
+@media (hover: hover) and (pointer: fine) {
+  .docs-prose :where(.docs-codeblock__copy) {
+    opacity: 0;
+  }
+
+  .docs-prose :where(.docs-codeblock:hover .docs-codeblock__copy),
+  .docs-prose :where(.docs-codeblock:focus-within .docs-codeblock__copy),
+  .docs-prose :where(.docs-codeblock__copy[data-copied='true']) {
+    opacity: 1;
+  }
+}
+
 .docs-prose :where(img) {
   display: block;
   max-width: 100%;
@@ -335,11 +398,30 @@ aside ul,
   margin: 0.6rem 0;
 }
 
-/* MkDocs visual-identity previews (`{:.cqu-logo}`) */
+/* MkDocs visual-identity previews (`.cqu-logo-container` + `{:.cqu-logo}`) */
+.docs-prose :where(.cqu-logo-container) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 256px;
+  height: 256px;
+  max-width: 100%;
+  margin: 1.25rem auto;
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 5px;
+}
+
+.docs-prose :where(.cqu-logo-container img),
 .docs-prose :where(img.cqu-logo) {
-  max-height: 12rem;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
-  margin-inline: auto;
+  height: auto;
+  margin: 0;
+  object-fit: contain;
 }
 
 /* Extracted <figcaption> from MkDocs <figure> blocks */
@@ -404,13 +486,13 @@ aside ul,
 
 .admonition-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   margin: 0;
   padding: 0.55rem 0.85rem;
   font-weight: 650;
   font-size: 0.875rem;
-  line-height: 1.25;
+  line-height: 1.45;
   background: var(--admonition-title-bg);
 }
 
@@ -419,7 +501,8 @@ aside ul,
   flex: 0 0 1rem;
   width: 1rem;
   height: 1rem;
-  margin: 0;
+  /* Sit on the first text line, not the vertical center of a multi-line title. */
+  margin-top: 0.2em;
   background-color: var(--admonition-color);
   mask-repeat: no-repeat;
   mask-position: center;

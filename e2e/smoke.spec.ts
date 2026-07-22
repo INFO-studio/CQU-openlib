@@ -22,7 +22,7 @@ test.describe('docs shell smoke', () => {
   test('bookmark persists via soft navigation', async ({ page }) => {
     await page.goto('/skill');
     await page.getByRole('button', { name: '收藏本页' }).click();
-    await expect(page.getByRole('button', { name: '已收藏' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '取消收藏' })).toBeVisible();
     await page.getByRole('link', { name: 'CQU-openlib' }).click();
     await expect(page.getByRole('heading', { name: '您的收藏页' })).toBeVisible();
     await expect(page.locator('a', { hasText: /技巧|skill/i }).first()).toBeVisible();

@@ -23,6 +23,8 @@ const htmlOf = (node: ReactNode) => {
 describe('parser coverage for former unknown nodes', () => {
   it('renders fenced code', async () => {
     const html = htmlOf(parser(await toAst('```ts\nconst x = 1\n```\n')));
+    expect(html).toContain('docs-codeblock');
+    expect(html).toContain('docs-codeblock__copy');
     expect(html).toContain('<pre');
     expect(html).toContain('const x = 1');
     expect(html).not.toContain('unknown node');

@@ -101,4 +101,28 @@ describe('nested content tabs', () => {
     expect(dump).not.toContain('{:download=');
     expect(dump).toContain('"download":"校徽_蓝色_1024x1024.png"');
   });
+
+  it('keeps plain-text tab body out of the title (FiraCode 安装)', async () => {
+    const md = [
+      '## 2. 安装',
+      '=== "简洁版"',
+      '    下载后打开，点击 `安装字体` 等类似字样即可安装成功',
+      '=== "完整版"',
+      '    下载后解压并打开内部某一文件夹（推荐为 `ttf` 文件夹）的全部文件，逐一点击 `安装字体` 等类似字样即可安装成功',
+      '',
+    ].join('\n');
+    const ast = await toAst(md);
+    const tabs = firstTabs(ast);
+    expect(tabs).toBeTruthy();
+    expect(tabTitleText(tabs!, 0)).toBe('简洁版');
+    expect(tabTitleText(tabs!, 1)).toBe('完整版');
+    expect(tabTitleText(tabs!, 0)).not.toContain('下载后');
+    expect(tabTitleText(tabs!, 1)).not.toContain('下载后');
+    const body0 = JSON.stringify(tabs!.items[0]!.children);
+    const body1 = JSON.stringify(tabs!.items[1]!.children);
+    expect(body0).toContain('下载后打开');
+    expect(body0).toContain('安装字体');
+    expect(body1).toContain('下载后解压');
+    expect(body1).toContain('ttf');
+  });
 });

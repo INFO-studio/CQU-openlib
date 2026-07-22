@@ -15,6 +15,19 @@ describe('preprocessHtmlBlocks', () => {
     );
   });
 
+  it('keeps cqu-logo-container wrapper for visual-identity previews', () => {
+    const input =
+      '<figure markdown="span"><div class="cqu-logo-container">![preview](/doc/a.svg){.cqu-logo}</div><figcaption>预览</figcaption></figure>';
+    expect(preprocess(input)).toBe(
+      [
+        '<div class="cqu-logo-container"><img class="cqu-logo" src="/doc/a.svg" alt="preview" /></div>',
+        '',
+        '<p class="docs-figcaption">预览</p>',
+        '',
+      ].join('\n'),
+    );
+  });
+
   it('extracts images from multi-line MkDocs figures (魔法领域)', () => {
     const input = [
       '<figure markdown="span">',
