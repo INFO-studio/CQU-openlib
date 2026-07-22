@@ -200,7 +200,7 @@ const DocPage = ({ splat }: DocPageProps) => {
               </Link>
               联系我们。
             </p>
-            {pathname === '/club' || pathname.startsWith('/club/') ? (
+            {pathname.startsWith('/club/') ? (
               <p className="mt-2 m-0">
                 社长或管理人员可通过
                 <Link
@@ -215,14 +215,7 @@ const DocPage = ({ splat }: DocPageProps) => {
             ) : null}
             <p className="mt-4 m-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-left leading-relaxed">
               <span>Copyright © 2024 - 2026</span>
-              <a
-                href="https://github.com/INFO-studio/CQU-openlib"
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary no-underline hover:underline"
-              >
-                CQU-openlib Opensource Community
-              </a>
+              <span>CQU-openlib Opensource Community</span>
               <span aria-hidden="true">·</span>
               <a
                 href="https://www.gnu.org/licenses/gpl-3.0.html"
