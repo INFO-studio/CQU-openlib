@@ -42,9 +42,23 @@ const firstTabs = (node: Mn): MnTabs | null => {
 };
 const tabTitleText = (tabs: MnTabs, index: number): string => {
   return (tabs.items[index]?.title ?? [])
-    .map((n) => (n.type === 'text' ? (n.value ?? '') : ''))
+    .map((n) => {
+      if (n.type === 'text') return n.value ?? '';
+      if (n.type === 'inlineCode') return n.value ?? '';
+      if (n.type === 'icon') return `:${n.icon}:`;
+      return '';
+    })
     .join('');
 };
+
+const titleHasFallbackTab = (tabs: MnTabs) =>
+  tabs.items.some(
+    (item) =>
+      item.title.length === 1 &&
+      item.title[0]?.type === 'text' &&
+      item.title[0].value === 'Tab',
+  );
+
 describe('nested content tabs', () => {
   it('preserves 3-level nesting from indent', async () => {
     const md = [
@@ -100,6 +114,40 @@ describe('nested content tabs', () => {
     const dump = JSON.stringify(ast);
     expect(dump).not.toContain('{:download=');
     expect(dump).toContain('"download":"校徽_蓝色_1024x1024.png"');
+  });
+
+  it('keeps icon+backtick course codes as tab titles (高等数学)', async () => {
+    const md = [
+      '=== ":l-book:`MATH10821`"',
+      '    * 上册',
+      '=== ":l-book:`MATH10822`"',
+      '    * 下册',
+      '',
+    ].join('\n');
+    const ast = await toAst(md);
+    const tabs = firstTabs(ast);
+    expect(tabs).toBeTruthy();
+    expect(tabs!.items).toHaveLength(2);
+    expect(titleHasFallbackTab(tabs!)).toBe(false);
+    expect(tabTitleText(tabs!, 0)).toBe(':l-book:MATH10821');
+    expect(tabTitleText(tabs!, 1)).toBe(':l-book:MATH10822');
+    expect(tabs!.items[0]!.title).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'icon', icon: 'l-book' }),
+        expect.objectContaining({ type: 'inlineCode', value: 'MATH10821' }),
+      ]),
+    );
+  });
+
+  it('parses public/doc/course/高等数学.md without fallback Tab titles', async () => {
+    const raw = readFileSync(resolve('public/doc/course/高等数学.md'), 'utf8');
+    const ast = await toAst(raw);
+    const tabs = firstTabs(ast);
+    expect(tabs).toBeTruthy();
+    expect(tabs!.items.length).toBeGreaterThanOrEqual(2);
+    expect(titleHasFallbackTab(tabs!)).toBe(false);
+    expect(tabTitleText(tabs!, 0)).toContain('MATH10821');
+    expect(tabTitleText(tabs!, 1)).toContain('MATH10822');
   });
 
   it('keeps plain-text tab body out of the title (FiraCode 安装)', async () => {

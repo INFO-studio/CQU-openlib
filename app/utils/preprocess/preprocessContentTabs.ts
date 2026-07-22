@@ -1,13 +1,15 @@
 import { TAB, TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
 import type { Preprocess } from '~/utils/preprocess/index';
 
-const tabHead = (line: string) => {
+/** Indent width of a content-tab head (`=== ...`), or null if not a head. */
+export const tabHead = (line: string): number | null => {
   const m = line.match(/^(\s*)===\s+\S/);
   if (!m) return null;
   return m[1].replace(/\t/g, '    ').length;
 };
 
-const lineIndent = (line: string) => {
+/** Leading indent in spaces (`\\t` → 4). */
+export const lineIndent = (line: string): number => {
   const m = line.match(/^(\s*)/);
   return (m?.[1] ?? '').replace(/\t/g, '    ').length;
 };
