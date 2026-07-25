@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import { docMarkdownUrls, fetchDocMarkdown } from '~/utils/fetchDocMarkdown';
 
+// `academic` is a real folder page (public/doc/academic/index.md); the
+// `未收录` paths are deliberately absent so they exercise the leaf branch.
 describe('docMarkdownUrls', () => {
   it('returns index.md for root page', () => {
     expect(docMarkdownUrls('index')).toEqual(['/doc/index.md']);
@@ -8,14 +10,18 @@ describe('docMarkdownUrls', () => {
     expect(docMarkdownUrls('///')).toEqual(['/doc/index.md']);
   });
 
-  it('tries folder index then sibling folder.md', () => {
+  it('asks only for index.md when the page is a known folder', () => {
+    expect(docMarkdownUrls('academic')).toEqual(['/doc/academic/index.md']);
+    expect(docMarkdownUrls('academic/')).toEqual(['/doc/academic/index.md']);
     expect(docMarkdownUrls('sundry/说明书')).toEqual([
       '/doc/sundry/说明书/index.md',
-      '/doc/sundry/说明书.md',
     ]);
-    expect(docMarkdownUrls('sundry/说明书/')).toEqual([
-      '/doc/sundry/说明书/index.md',
-      '/doc/sundry/说明书.md',
+  });
+
+  it('prefers the leaf file otherwise, keeping index.md as a fallback', () => {
+    expect(docMarkdownUrls('sundry/未收录')).toEqual([
+      '/doc/sundry/未收录.md',
+      '/doc/sundry/未收录/index.md',
     ]);
   });
 });
@@ -24,6 +30,24 @@ describe('fetchDocMarkdown', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+  });
+
+  it('fetches a folder page in a single request', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response('# index', {
+        status: 200,
+        headers: { 'content-type': 'text/markdown; charset=utf-8' },
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(fetchDocMarkdown('academic')).resolves.toEqual({
+      markdown: '# index',
+      baseDir: '/academic',
+    });
+    expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
+      '/doc/academic/index.md',
+    ]);
   });
 
   it('returns the first successful non-html response', async () => {
@@ -43,13 +67,13 @@ describe('fetchDocMarkdown', () => {
       );
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchDocMarkdown('sundry/说明书')).resolves.toEqual({
+    await expect(fetchDocMarkdown('sundry/未收录')).resolves.toEqual({
       markdown: '# hi',
-      baseDir: '/sundry',
+      baseDir: '/sundry/未收录',
     });
     expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
-      '/doc/sundry/说明书/index.md',
-      '/doc/sundry/说明书.md',
+      '/doc/sundry/未收录.md',
+      '/doc/sundry/未收录/index.md',
     ]);
   });
 
@@ -86,30 +110,13 @@ describe('fetchDocMarkdown', () => {
       );
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchDocMarkdown('club')).resolves.toEqual({
+    await expect(fetchDocMarkdown('life/未收录')).resolves.toEqual({
       markdown: '# 社团',
-      baseDir: '/',
+      baseDir: '/life/未收录',
     });
     expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
-      '/doc/club/index.md',
-      '/doc/club.md',
+      '/doc/life/未收录.md',
+      '/doc/life/未收录/index.md',
     ]);
-  });
-
-  it('sets baseDir from index.md when the folder index wins', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue(
-        new Response('# index', {
-          status: 200,
-          headers: { 'content-type': 'text/markdown; charset=utf-8' },
-        }),
-      ),
-    );
-
-    await expect(fetchDocMarkdown('academic')).resolves.toEqual({
-      markdown: '# index',
-      baseDir: '/academic',
-    });
   });
 });

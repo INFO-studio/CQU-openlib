@@ -1,11 +1,22 @@
 import { baseDirFromDocUrl } from '~/utils/normalizeDocHref';
+// Written by vite/doc-nav-index on every build; see vite/doc-markdown.
+import folderPages from '../../metadata/doc-folder-pages.json';
 
-/** Candidate static URLs for a clean page path (folder → index.md). */
+const FOLDER_PAGES = new Set<string>(folderPages);
+
+/**
+ * Candidate static URLs for a clean page path, best guess first.
+ *
+ * A page in FOLDER_PAGES resolves in one request. A miss keeps the
+ * `<page>/index.md` fallback: absence from the set is weaker evidence than
+ * presence (a path that failed to match, e.g. over Unicode normalisation,
+ * lands here), and the fallback costs nothing when the leaf URL hits.
+ */
 export const docMarkdownUrls = (page: string): string[] => {
   const normalized = page.replace(/\/+$/, '') || 'index';
   if (normalized === 'index') return ['/doc/index.md'];
-  // Prefer …/index.md (MkDocs layout on disk), then sibling folder.md.
-  return [`/doc/${normalized}/index.md`, `/doc/${normalized}.md`];
+  if (FOLDER_PAGES.has(normalized)) return [`/doc/${normalized}/index.md`];
+  return [`/doc/${normalized}.md`, `/doc/${normalized}/index.md`];
 };
 
 export type FetchedDoc = {

@@ -59,7 +59,20 @@
    pnpm preview
    ```
 
-2. PR 提交
+2. 加了新图之后
+
+   ```bash
+   pnpm image:optimize        # 就地处理
+   pnpm image:optimize --dry  # 只报告，不写文件
+   ```
+
+   脚本会把 `public/doc` 下超过 1600px 的位图缩到 1600px（正文栏约 800 CSS px，1600 已覆盖 2 倍屏）、转成 WebP、剥掉 EXIF（手机和单反直出的照片常带 GPS 坐标），然后改写 Markdown 里的全部引用，并把每张图的宽高写进 `metadata/image-sizes.json`。首次执行是 85.8 MB → 11.7 MB。
+
+   **`metadata/image-sizes.json` 要一起提交。** 页面靠它在图片到达前把版面占好并显示骨架屏，缺了就会出现布局抖动。
+
+   只处理体积真的能变小的图；已经是 WebP 且宽度合规的会跳过，所以重复执行是安全的。以下几类刻意不碰：`{:download="xxx.png"}` 链接指向的文件（那是在承诺一个特定格式，改了读者会下到扩展名对不上的东西）、`public/doc/assets/`（`pnpm logo:generate` 的产物）、SVG 与 PDF、多帧动图。阈值在 `tools/image/optimize.ts` 顶部。
+
+3. PR 提交
 
    ```bash
    cd {库根文件夹}

@@ -60,6 +60,35 @@ export const mirrorDocMarkdown = (
   }
 };
 
+/**
+ * Clean page paths backed by `<page>/index.md` instead of `<page>.md`.
+ *
+ * The two layouts need different base dirs for relative links (`/academic` vs
+ * `/course`), so a single URL shape cannot serve both and the client has to
+ * know which is which before it fetches. Writing the list to
+ * metadata/doc-folder-pages.json lets the bundle inline it, turning that
+ * question into zero bytes of latency instead of a speculative 404.
+ */
+export const listFolderPages = (docRoot: string): string[] => {
+  const out: string[] = [];
+  const walk = (dir: string, prefix: string): void => {
+    if (!existsSync(dir)) return;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+      const page = prefix ? `${prefix}/${entry.name}` : entry.name;
+      if (
+        tryDocFile(docRoot, `${page}/index.md`) ||
+        tryDocFile(docRoot, `${page}/index.mdx`)
+      ) {
+        out.push(page);
+      }
+      walk(join(dir, entry.name), page);
+    }
+  };
+  walk(docRoot, '');
+  return out.sort();
+};
+
 const isMarkdownPath = (pathname: string): boolean => {
   return /\.mdx?$/i.test(pathname);
 };
@@ -69,7 +98,8 @@ export const resolveDocFile = (
   docRoot: string,
   pathname: string,
 ): string | null => {
-  let rel = pathname.startsWith('/doc/')
+  const underDoc = pathname.startsWith('/doc/');
+  let rel = underDoc
     ? pathname.slice('/doc/'.length)
     : pathname.replace(/^\//, '');
   try {
@@ -81,6 +111,9 @@ export const resolveDocFile = (
   const exact = tryDocFile(docRoot, rel);
   if (exact) return exact;
 
+  // Only the root mirror aliases <folder>/index.md as <folder>.md. Under /doc/
+  // the tree is served verbatim, so dev must 404 exactly where production does.
+  if (underDoc) return null;
   if (!/\.mdx?$/i.test(rel)) return null;
   const withoutExt = rel.replace(/\.mdx?$/i, '');
   if (!withoutExt || withoutExt.endsWith('/index')) return null;

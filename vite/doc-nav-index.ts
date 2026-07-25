@@ -19,6 +19,7 @@ import {
   titleFromPath,
 } from '../app/lib/nav';
 import { letterOfTitle } from './courseLetter';
+import { listFolderPages } from './doc-markdown';
 
 type CourseCodesMeta = {
   courses?: Record<
@@ -299,6 +300,19 @@ const writeIndex = (
   writeFileSync(outFile, `${JSON.stringify(index)}\n`, 'utf8');
   return index;
 };
+/**
+ * Committed so a fresh clone typechecks, but rewritten here on every build and
+ * dev change, which keeps a stale copy from ever reaching the bundle. Only
+ * written when the content actually moves — otherwise every keystroke in a doc
+ * would trigger a full reload through the JSON import.
+ */
+const writeFolderPages = (docRoot: string, projectRoot: string) => {
+  const file = join(projectRoot, 'metadata', 'doc-folder-pages.json');
+  const next = `${JSON.stringify(listFolderPages(docRoot), null, 2)}\n`;
+  if (existsSync(file) && readFileSync(file, 'utf8') === next) return;
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, next, 'utf8');
+};
 const copyNavArtifacts = (publicRoot: string, destRoot: string) => {
   mkdirSync(destRoot, { recursive: true });
   writeFileSync(
@@ -320,6 +334,7 @@ export const docNavIndexPlugin = (): Plugin => {
     const docRoot = join(root, 'public', 'doc');
     const publicRoot = join(root, 'public');
     writeIndex(docRoot, publicRoot, root);
+    writeFolderPages(docRoot, root);
   };
   return {
     name: 'doc-nav-index',

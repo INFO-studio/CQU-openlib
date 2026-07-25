@@ -46,6 +46,19 @@ describe('resolveDocFile', () => {
     ).toBe(true);
     expect(resolveDocFile(root, '/missing.md')).toBeNull();
   });
+
+  it('serves /doc/ verbatim, without the folder alias production lacks', () => {
+    const root = tempDir();
+    mkdirSync(join(root, 'academic'), { recursive: true });
+    writeFileSync(join(root, 'academic', 'index.md'), '# 学业\n');
+
+    expect(
+      resolveDocFile(root, '/doc/academic/index.md')?.endsWith(
+        join('academic', 'index.md'),
+      ),
+    ).toBe(true);
+    expect(resolveDocFile(root, '/doc/academic.md')).toBeNull();
+  });
 });
 
 describe('mirrorDocMarkdown', () => {
