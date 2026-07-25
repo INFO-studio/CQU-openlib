@@ -1,10 +1,3 @@
----
-hide:
-  - feedback
-search:
-  exclude: true
----
-
 # 魔法领域
 
 <figure markdown="span">

@@ -16,7 +16,6 @@ import {
   ALPHA_LETTERS,
   type AlphaLetter,
   groupCoursesByAlpha,
-  letterOfTitle,
 } from '~/lib/courseAlpha';
 import type { SidebarNode } from '~/lib/nav';
 import { decodePathname } from '~/lib/paths';
@@ -208,7 +207,7 @@ const CourseSidebar = ({
       setActiveLetter(null);
       return;
     }
-    const letter = letterOfTitle(activeCourse.title);
+    const letter = activeCourse.letter ?? '#';
     setOpen(`course-alpha:${letter}`, true);
     setActiveLetter(letter);
     window.requestAnimationFrame(() => scrollLetterToTop(letter));

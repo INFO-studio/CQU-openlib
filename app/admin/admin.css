@@ -15,9 +15,12 @@
   --admin-accent-soft: rgba(91, 132, 247, 0.14);
   --admin-danger: #e08a8a;
   --admin-danger-bg: rgba(224, 138, 138, 0.12);
-  --admin-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --admin-sans: "IBM Plex Sans", "PingFang SC", "Hiragino Sans GB", sans-serif;
-  --admin-display: "Source Serif 4", "Songti SC", serif;
+  --admin-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --admin-sans:
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --admin-display: "Source Serif 4", ui-serif, Georgia, "Songti SC", serif;
 
   min-height: 100vh;
   background:

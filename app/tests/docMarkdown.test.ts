@@ -29,10 +29,10 @@ describe('resolveDocFile', () => {
     const root = tempDir();
     mkdirSync(join(root, 'academic'), { recursive: true });
     writeFileSync(join(root, 'academic', 'index.md'), '# 学业\n');
-    writeFileSync(join(root, 'curriculum.md'), '# 课表\n');
+    writeFileSync(join(root, 'standalone.md'), '# 单页\n');
 
     expect(
-      resolveDocFile(root, '/curriculum.md')?.endsWith('curriculum.md'),
+      resolveDocFile(root, '/standalone.md')?.endsWith('standalone.md'),
     ).toBe(true);
     expect(
       resolveDocFile(root, '/academic.md')?.endsWith(
@@ -54,7 +54,7 @@ describe('mirrorDocMarkdown', () => {
     const dest = tempDir();
     mkdirSync(join(src, 'academic'), { recursive: true });
     writeFileSync(join(src, 'academic', 'index.md'), '# 学业\n');
-    writeFileSync(join(src, 'curriculum.md'), '# 课表\n');
+    writeFileSync(join(src, 'standalone.md'), '# 单页\n');
     writeFileSync(join(src, 'index.md'), '# 首页\n');
 
     mirrorDocMarkdown(src, dest);
@@ -63,7 +63,7 @@ describe('mirrorDocMarkdown', () => {
       '学业',
     );
     expect(readFileSync(join(dest, 'academic.md'), 'utf8')).toContain('学业');
-    expect(readFileSync(join(dest, 'curriculum.md'), 'utf8')).toContain('课表');
+    expect(readFileSync(join(dest, 'standalone.md'), 'utf8')).toContain('单页');
     expect(readFileSync(join(dest, 'index.md'), 'utf8')).toContain('首页');
   });
 });

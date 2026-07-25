@@ -1,10 +1,3 @@
----
-hide:
-  - feedback
-search:
-  exclude: true
----
-
 !!! warning "本站不支持盗版，仅供交流技术使用"
 
 ## 0. 前情提要  

@@ -22,7 +22,6 @@
     "hox": "^2.1.1",
     "html-react-parser": "^5.2.10",
     "lucide-react": "^0.561.0",
-    "pinyin-pro": "^3.28.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "rehype-raw": "^7.0.0",
@@ -34,8 +33,7 @@
     "ts-pattern": "^5.9.0",
     "unified": "^11.0.5",
     "unist-util-remove-position": "^5.0.0",
-    "unist-util-visit": "^5.0.0",
-    "yaml": "^2.9.0"
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
@@ -45,6 +43,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "opentype.js": "^2.0.0",
+    "pinyin-pro": "^3.28.1",
     "remark": "^15.0.1",
     "sharp": "^0.35.3",
     "tsx": "^4.23.1",

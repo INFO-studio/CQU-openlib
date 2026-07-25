@@ -3,8 +3,11 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { HoxRoot } from 'hox';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { purgeLegacyStorage } from '~/lib/purgeLegacyStorage';
 import { createAppQueryClient } from '~/lib/queryClient';
 import { routeTree } from './routeTree.gen';
+
+purgeLegacyStorage();
 
 const router = createRouter({ routeTree });
 const queryClient = createAppQueryClient();

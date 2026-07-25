@@ -28,6 +28,8 @@ export const docAstQueryOptions = (page: string, processor: DocProcessor) => {
   return queryOptions({
     queryKey: queryKeys.doc(page),
     queryFn: () => loadDocAst(page, processor),
-    staleTime: 30000,
+    // Doc content only changes on deploy, and re-parsing costs up to 65 ms, so
+    // keep parsed ASTs around long enough for back/forward within a session.
+    gcTime: 1800000,
   });
 };

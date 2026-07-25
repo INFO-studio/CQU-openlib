@@ -15,9 +15,12 @@ describe('parseDocFrontmatterYaml', () => {
     });
   });
 
-  it('reads hide list', () => {
-    expect(parseDocFrontmatterYaml('hide:\n  - feedback\n')).toEqual({
-      hide: ['feedback'],
+  it('strips surrounding quotes', () => {
+    expect(parseDocFrontmatterYaml('updated: "2026-07-21"\n')).toEqual({
+      updated: '2026-07-21',
+    });
+    expect(parseDocFrontmatterYaml("description: 'hi'\n")).toEqual({
+      description: 'hi',
     });
   });
 
@@ -30,7 +33,29 @@ describe('parseDocFrontmatterYaml', () => {
     ).toBeUndefined();
   });
 
-  it('returns empty object for invalid yaml', () => {
+  it('skips nested blocks', () => {
+    expect(
+      parseDocFrontmatterYaml(
+        'search:\n  exclude: true\nhide:\n  - feedback\nupdated: 2026-07-22\n',
+      ),
+    ).toEqual({ updated: '2026-07-22' });
+  });
+
+  it('keeps colons inside a value', () => {
+    expect(parseDocFrontmatterYaml('description: a: b\n')).toEqual({
+      description: 'a: b',
+    });
+  });
+
+  it('tolerates trailing whitespace', () => {
+    expect(parseDocFrontmatterYaml('updated: 2026-07-22   \n')).toEqual({
+      updated: '2026-07-22',
+    });
+  });
+
+  it('returns empty object for empty or malformed input', () => {
+    expect(parseDocFrontmatterYaml('')).toEqual({});
+    expect(parseDocFrontmatterYaml('\n\n')).toEqual({});
     expect(parseDocFrontmatterYaml(': :\n[')).toEqual({});
   });
 });

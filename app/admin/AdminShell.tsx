@@ -1,5 +1,8 @@
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
+// Lives here rather than in routes/admin.tsx: the route module is eagerly
+// imported by routeTree.gen, which would hoist this CSS into index.html.
+import '~/admin/admin.css';
 import {
   ADMIN_MODULES,
   clearAdminKey,

@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useState } from 'react';
-import '~/admin/admin.css';
 import { AdminGate, AdminShell, unlockWithKey } from '~/admin/AdminShell';
 import { fetchSubmissions } from '~/admin/lib/api';
 import { clearAdminKey, readAdminKey } from '~/admin/lib/session';

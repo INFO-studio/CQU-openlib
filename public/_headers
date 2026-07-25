@@ -13,3 +13,16 @@
   Content-Type: text/markdown; charset=utf-8
 /*/*/*/*/*/*/*.md
   Content-Type: text/markdown; charset=utf-8
+
+# Filenames under /assets carry a content hash, so they can never go stale.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.png
+  Cache-Control: public, max-age=604800
+
+# Fixed filenames: keep the window short so new docs surface quickly.
+/nav-index.json
+  Cache-Control: public, max-age=60, stale-while-revalidate=600
+/search/chunks/*
+  Cache-Control: public, max-age=60, stale-while-revalidate=600

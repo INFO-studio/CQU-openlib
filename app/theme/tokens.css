@@ -30,14 +30,21 @@
   --c-accent: var(--c-primary);
   --c-accent-soft: var(--c-primary-soft);
 
-  /* Latin: Source Serif 4 / IBM Plex (Google Fonts). CJK: system only. */
+  /*
+    No webfonts are shipped. IBM Plex / Source Serif lead each stack so locally
+    installed copies still win; everything after is a system fallback.
+    Latin families must precede CJK ones, or the CJK font claims Latin glyphs.
+  */
   --font-display:
-    "Source Serif 4", "Songti SC", "Noto Serif CJK SC", "STSong", serif;
+    "Source Serif 4", ui-serif, Georgia, "Songti SC", "Noto Serif CJK SC",
+    "STSong", serif;
   --font-sans:
-    "IBM Plex Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
-    "Microsoft YaHei", sans-serif;
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei",
+    sans-serif;
   --font-mono:
-    "IBM Plex Mono", "Sarasa Mono SC", "SF Mono", ui-monospace, monospace;
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Sarasa Mono SC", monospace;
 
   --header-h: 3.25rem;
   --sidebar-w: 15rem;

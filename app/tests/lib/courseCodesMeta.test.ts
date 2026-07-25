@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vite-plus/test';
 describe('course-codes metadata', () => {
   it('maps MATH10821 to 高等数学', () => {
     const raw = JSON.parse(
-      readFileSync(resolve('public/metadata/course-codes.json'), 'utf8'),
+      readFileSync(resolve('metadata/course-codes.json'), 'utf8'),
     ) as {
       byCode: Record<string, string>;
       courses: Record<string, { codes: string[] }>;

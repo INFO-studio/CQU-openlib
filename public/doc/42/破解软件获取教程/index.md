@@ -1,10 +1,3 @@
----
-hide:
-  - feedback
-search:
-  exclude: true
----
-
 # 破解软件获取教程
 
 === "编程类"

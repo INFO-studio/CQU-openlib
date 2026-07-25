@@ -14,7 +14,6 @@
 - [首页](https://cqu-openlib.cn/index.md): 公告、简介与社群入口
 - [学业](https://cqu-openlib.cn/academic.md): 入学、培养方案、转专业等学业信息
 - [课程](https://cqu-openlib.cn/course.md): 按课程检索教材、笔记、试卷等
-- [课表](https://cqu-openlib.cn/curriculum.md): 个人课表查询说明
 - [社团](https://cqu-openlib.cn/club.md): 校内官方社团 / 组织信息
 - [技巧](https://cqu-openlib.cn/skill.md): 软件安装、环境配置等
 - [生活](https://cqu-openlib.cn/life.md): 餐饮、住宿、校园网、校车等

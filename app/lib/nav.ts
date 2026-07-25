@@ -1,3 +1,5 @@
+import type { AlphaLetter } from '~/lib/courseAlpha';
+
 export type NavSection = {
   id: string;
   label: string;
@@ -17,14 +19,6 @@ export const NAV_SECTIONS: NavSection[] = [
     path: '/course',
     source: 'course',
     kind: 'dir',
-  },
-  {
-    id: 'curriculum',
-    label: '课表',
-    path: '/curriculum',
-    source: 'curriculum.md',
-    kind: 'file',
-    hiddenInNav: true,
   },
   {
     id: 'academic',
@@ -85,6 +79,8 @@ export type SidebarNode = {
   children?: SidebarNode[];
   /** Course codes from metadata (course section). */
   codes?: string[];
+  /** A–Z bucket, computed at build time (course section leaves only). */
+  letter?: AlphaLetter;
 };
 export type DocNavIndex = {
   generatedAt: string;

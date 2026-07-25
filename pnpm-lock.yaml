@@ -29,9 +29,6 @@ importers:
       lucide-react:
         specifier: ^0.561.0
         version: 0.561.0(react@19.2.3)
-      pinyin-pro:
-        specifier: ^3.28.1
-        version: 3.28.1
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -68,9 +65,6 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
-      yaml:
-        specifier: ^2.9.0
-        version: 2.9.0
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.8
@@ -93,6 +87,9 @@ importers:
       opentype.js:
         specifier: ^2.0.0
         version: 2.0.0
+      pinyin-pro:
+        specifier: ^3.28.1
+        version: 3.28.1
       remark:
         specifier: ^15.0.1
         version: 15.0.1
@@ -5022,7 +5019,8 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.9.0: {}
+  yaml@2.9.0:
+    optional: true
 
   yuku-codegen@0.5.48:
     dependencies:

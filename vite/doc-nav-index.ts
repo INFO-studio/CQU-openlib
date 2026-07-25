@@ -8,7 +8,7 @@ import {
 } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import type { Plugin } from 'vite';
-import { ALPHA_LETTERS, letterOfTitle } from '../app/lib/courseAlpha';
+import { ALPHA_LETTERS } from '../app/lib/courseAlpha';
 import {
   type DocNavIndex,
   NAV_SECTIONS,
@@ -18,6 +18,7 @@ import {
   type SidebarNode,
   titleFromPath,
 } from '../app/lib/nav';
+import { letterOfTitle } from './courseLetter';
 
 type CourseCodesMeta = {
   courses?: Record<
@@ -28,7 +29,8 @@ type CourseCodesMeta = {
   >;
 };
 const loadCourseCodes = (root: string): Map<string, string[]> => {
-  const file = join(root, 'public', 'metadata', 'course-codes.json');
+  // Outside public/: build-time input only, never fetched by the client.
+  const file = join(root, 'metadata', 'course-codes.json');
   const map = new Map<string, string[]>();
   if (!existsSync(file)) return map;
   try {
@@ -53,6 +55,18 @@ const attachCodes = (
       : undefined,
   }));
 };
+/**
+ * Bakes the A–Z bucket into the tree so the client never needs pinyin-pro.
+ * Only leaves carry it, since that is all groupCoursesByAlpha reads.
+ */
+const attachLetters = (nodes: SidebarNode[]): SidebarNode[] => {
+  return nodes.map((node) =>
+    node.children?.length
+      ? { ...node, children: attachLetters(node.children) }
+      : { ...node, letter: letterOfTitle(node.title) },
+  );
+};
+/** Excluded from both the sidebar tree and the search index. */
 const SKIP_DIRS = new Set([
   'assets',
   'javascripts',
@@ -60,6 +74,19 @@ const SKIP_DIRS = new Set([
   '42',
   'notice',
 ]);
+/**
+ * Doc-root-relative prefixes that stay browsable in the sidebar but are kept
+ * out of search. The changelog is 130 date-titled stubs whose text is a diff of
+ * other pages, so it only ever crowds out the pages a reader was looking for.
+ * Each prefix keeps its own index.md, which is the page people do search for.
+ */
+const SKIP_SEARCH_PREFIXES = ['sundry/更新日志/'];
+const isSearchable = (docRoot: string, file: string): boolean => {
+  const rel = relative(docRoot, file).replace(/\\/g, '/');
+  return !SKIP_SEARCH_PREFIXES.some(
+    (prefix) => rel.startsWith(prefix) && rel !== `${prefix}index.md`,
+  );
+};
 const listMarkdownFiles = (dir: string): string[] => {
   if (!existsSync(dir)) return [];
   const out: string[] = [];
@@ -181,10 +208,12 @@ export const buildDocNavIndex = (
       return { ...section, tree: [] as SidebarNode[] };
     }
     const sectionDir = join(docRoot, section.source);
-    const tree = attachCodes(buildTree(docRoot, sectionDir), codesByPath);
+    const withCodes = attachCodes(buildTree(docRoot, sectionDir), codesByPath);
+    const tree = section.id === 'course' ? attachLetters(withCodes) : withCodes;
     const files = listMarkdownFiles(sectionDir);
     const sectionEntries: SearchEntry[] = [];
     for (const file of files) {
+      if (!isSearchable(docRoot, file)) continue;
       const path = urlFromDocFile(docRoot, file);
       const entry: SearchEntry = {
         title: titleFromPath(relative(docRoot, file)),
@@ -305,7 +334,7 @@ export const docNavIndexPlugin = (): Plugin => {
       emit();
       const docRoot = join(root, 'public', 'doc');
       server.watcher.add(docRoot);
-      const meta = join(root, 'public', 'metadata');
+      const meta = join(root, 'metadata');
       if (existsSync(meta)) server.watcher.add(meta);
       server.watcher.on('all', (event, file) => {
         if (!file.startsWith(docRoot) && !file.startsWith(meta)) return;
