@@ -52,7 +52,7 @@ const useDocAst = (page: string, enabled: boolean) => {
         .use(remarkDisableIndentedCode)
         .use(remarkParse)
         .use(remarkFrontmatter)
-        .use(remarkGfm)
+        .use(remarkGfm, { singleTilde: false })
         .use(remarkContentTabs)
         .use(remarkAdmonition)
         .use(remarkAttrList)

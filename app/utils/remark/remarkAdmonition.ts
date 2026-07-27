@@ -1,7 +1,7 @@
 import { match } from 'ts-pattern';
 import { ADMONITION_PATTERN } from '~/consts/admonition';
 import { ADMONITION_END, ADMONITION_START } from '~/consts/placeholders';
-import type { Mn } from '~/types/mdast';
+import type { Mn, MnTabs } from '~/types/mdast';
 import {
   isValidAdmonitionType,
   type MnAdmonition,
@@ -11,9 +11,16 @@ import type { MnParagraph } from '~/types/mdast/mnParagraph';
 import type { MnRoot } from '~/types/mdast/mnRoot';
 import type { MnText } from '~/types/mdast/mnText';
 
-const isStart = (n: Mn) => n.type === 'html' && n.value === ADMONITION_START;
+/**
+ * A placeholder nested in a list item keeps whatever indent the list marker did
+ * not consume, so compare on the trimmed value.
+ */
+const isMarker = (n: Mn, marker: string) =>
+  n.type === 'html' && n.value?.trim() === marker;
 
-const isEnd = (n: Mn) => n.type === 'html' && n.value === ADMONITION_END;
+const isStart = (n: Mn) => isMarker(n, ADMONITION_START);
+
+const isEnd = (n: Mn) => isMarker(n, ADMONITION_END);
 
 const inlineToText = (curs: Mn[]): string =>
   curs
@@ -101,71 +108,93 @@ const flushBroken = (pre: RemarkAdmonitionState) => {
   pre.meta = null;
 };
 
+const convertAdmonitions = (nodes: Mn[]): Mn[] => {
+  const pre = nodes.reduce<RemarkAdmonitionState>(
+    (pre, cur) =>
+      match({ pre, cur })
+        .when(
+          ({ cur }) => isStart(cur),
+          ({ pre }) => {
+            if (pre.buffer) flushBroken(pre);
+            pre.buffer = [];
+            pre.meta = null;
+            return pre;
+          },
+        )
+        .when(
+          ({ pre, cur }) => isEnd(cur) && !!pre.buffer,
+          ({ pre }) => {
+            flushBroken(pre);
+            return pre;
+          },
+        )
+        .when(
+          ({ pre, cur }) =>
+            !!pre.buffer &&
+            !pre.meta &&
+            cur.type === 'paragraph' &&
+            cur.children,
+          ({ pre, cur }) => {
+            const matchResult = inlineToText(
+              (cur as MnParagraph).children ?? [],
+            ).match(ADMONITION_PATTERN);
+
+            const typeRaw = matchResult?.[1]?.toLowerCase() ?? '';
+            if (matchResult && isValidAdmonitionType(typeRaw)) {
+              pre.meta = {
+                type: typeRaw as MnAdmonitionType,
+                title: (cur as MnParagraph).children ?? [],
+              };
+              return pre;
+            }
+
+            pre.buffer?.push(cur);
+            return pre;
+          },
+        )
+        .when(
+          ({ pre }) => !!pre.buffer,
+          ({ pre, cur }) => {
+            pre.buffer?.push(cur);
+            return pre;
+          },
+        )
+        .otherwise(({ pre, cur }) => {
+          pre.out.push(cur);
+          return pre;
+        }),
+    {
+      out: [],
+      buffer: null,
+      meta: null,
+    },
+  );
+
+  if (pre.buffer) flushBroken(pre);
+  return pre.out;
+};
+
+/**
+ * Material allows an admonition inside a list item, where the fold above never
+ * looked — `tabs` hides its content in `items[]` for the same reason.
+ */
+const descend = (nodes: Mn[]): Mn[] =>
+  convertAdmonitions(nodes).map((node) => {
+    if (node.type === 'tabs') {
+      for (const item of (node as MnTabs).items) {
+        item.children = descend(item.children);
+      }
+      return node;
+    }
+    if ('children' in node && node.children) {
+      (node as { children: Mn[] }).children = descend(node.children as Mn[]);
+    }
+    return node;
+  });
+
 const remarkAdmonition = () => {
   return (tree: MnRoot) => {
-    const pre = (tree.children ?? []).reduce<RemarkAdmonitionState>(
-      (pre, cur) =>
-        match({ pre, cur })
-          .when(
-            ({ cur }) => isStart(cur),
-            ({ pre }) => {
-              if (pre.buffer) flushBroken(pre);
-              pre.buffer = [];
-              pre.meta = null;
-              return pre;
-            },
-          )
-          .when(
-            ({ pre, cur }) => isEnd(cur) && !!pre.buffer,
-            ({ pre }) => {
-              flushBroken(pre);
-              return pre;
-            },
-          )
-          .when(
-            ({ pre, cur }) =>
-              !!pre.buffer &&
-              !pre.meta &&
-              cur.type === 'paragraph' &&
-              cur.children,
-            ({ pre, cur }) => {
-              const matchResult = inlineToText(
-                (cur as MnParagraph).children ?? [],
-              ).match(ADMONITION_PATTERN);
-
-              const typeRaw = matchResult?.[1]?.toLowerCase() ?? '';
-              if (matchResult && isValidAdmonitionType(typeRaw)) {
-                pre.meta = {
-                  type: typeRaw as MnAdmonitionType,
-                  title: (cur as MnParagraph).children ?? [],
-                };
-                return pre;
-              }
-
-              pre.buffer?.push(cur);
-              return pre;
-            },
-          )
-          .when(
-            ({ pre }) => !!pre.buffer,
-            ({ pre, cur }) => {
-              pre.buffer?.push(cur);
-              return pre;
-            },
-          )
-          .otherwise(({ pre, cur }) => {
-            pre.out.push(cur);
-            return pre;
-          }),
-      {
-        out: [],
-        buffer: null,
-        meta: null,
-      },
-    );
-
-    if (pre.buffer) flushBroken(pre);
-    tree.children = pre.out;
+    tree.children = descend(tree.children ?? []);
   };
 };
 

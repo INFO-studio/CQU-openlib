@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   type FormType,
@@ -11,6 +12,7 @@ import {
   statusLabel,
   statusTone,
 } from '~/admin/lib/status';
+import { CopyJsonButton } from '~/admin/modules/submissions/CopyJsonButton';
 import {
   FORM_TYPE_META,
   formatShanghai,
@@ -202,13 +204,20 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
                     )}
                   </span>
                   <span className="admin-card__id">{item.id.slice(-8)}</span>
-                  <span className="admin-card__chev" aria-hidden="true">
-                    {open ? '▾' : '▸'}
-                  </span>
+                  <ChevronRight
+                    size={16}
+                    aria-hidden="true"
+                    className={
+                      open ? 'admin-card__chev is-open' : 'admin-card__chev'
+                    }
+                  />
                 </button>
 
                 {open ? (
                   <div className="admin-card__body">
+                    <div className="admin-card__tools">
+                      <CopyJsonButton value={item} />
+                    </div>
                     <StatusControls
                       item={item}
                       onUpdated={(next) => {

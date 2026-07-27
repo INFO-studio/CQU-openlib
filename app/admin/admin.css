@@ -378,12 +378,42 @@
 
 .admin-card__chev {
   color: var(--admin-muted);
-  font-size: 0.85rem;
+  transition: transform 0.15s ease;
+}
+
+.admin-card__chev.is-open {
+  transform: rotate(90deg);
 }
 
 .admin-card__body {
   padding: 0 1rem 1rem;
   border-top: 1px solid var(--admin-line);
+}
+
+.admin-card__tools {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.85rem;
+}
+
+.admin-card__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--admin-line);
+  color: var(--admin-ink);
+  background: var(--admin-elev);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--admin-mono);
+}
+
+/* Same green as the `completed` status tone in lib/status.ts. */
+.admin-card__copy.is-done {
+  color: #6ab59a;
+  border-color: currentcolor;
 }
 
 .admin-fields {

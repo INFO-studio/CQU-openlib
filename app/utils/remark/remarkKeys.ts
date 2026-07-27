@@ -1,7 +1,6 @@
 import { kbdKeyLabel, splitKbdTokens } from '~/lib/kbdKeys';
-import type { Mn, MnKbd, MnRoot, MnTabs, MnText } from '~/types/mdast';
-
-const isText = (n: Mn): n is MnText => n.type === 'text';
+import type { Mn, MnKbd, MnRoot } from '~/types/mdast';
+import { mapTextNodes } from '~/utils/remark/mapTextNodes';
 
 /**
  * pymdownx.keys: `++ctrl+f++`, `++cmd+spc++`, `++win+i++`, `++plus++`
@@ -43,30 +42,8 @@ const parseKeys = (value: string): Mn[] => {
   return parts.length ? parts : [{ type: 'text', value }];
 };
 
-const recursivelyParseKeys = (nodes?: Mn[]): Mn[] =>
-  (nodes ?? []).flatMap((node) => {
-    if (isText(node)) return parseKeys(node.value);
-
-    if (node.type === 'tabs') {
-      const tabs = node as MnTabs;
-      for (const item of tabs.items) {
-        item.title = recursivelyParseKeys(item.title);
-        item.children = recursivelyParseKeys(item.children);
-      }
-      return [node];
-    }
-
-    if ('children' in node && node.children) {
-      node.children = recursivelyParseKeys(node.children);
-    }
-    if ('title' in node && Array.isArray(node.title)) {
-      node.title = recursivelyParseKeys(node.title);
-    }
-    return [node];
-  });
-
 const remarkKeys = (): ((tree: MnRoot) => void) => (tree) => {
-  tree.children = recursivelyParseKeys(tree.children);
+  tree.children = mapTextNodes(tree.children, parseKeys);
 };
 
 export default remarkKeys;

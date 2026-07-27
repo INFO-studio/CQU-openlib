@@ -1,6 +1,5 @@
-import type { Mn, MnIcon, MnRoot, MnTabs, MnText } from '~/types/mdast';
-
-const isText = (n: Mn): n is MnText => n.type === 'text';
+import type { Mn, MnIcon, MnRoot } from '~/types/mdast';
+import { mapTextNodes } from '~/utils/remark/mapTextNodes';
 
 const parseIcons = (value: string): Mn[] => {
   if (!value.length) return [];
@@ -20,32 +19,8 @@ const parseIcons = (value: string): Mn[] => {
   return [...before, ...icon, ...parseIcons(after)];
 };
 
-const recursivelyParseIcons = (nodes?: Mn[]): Mn[] =>
-  (nodes ?? []).flatMap((node) => {
-    if (isText(node)) {
-      return parseIcons(node.value);
-    }
-
-    if (node.type === 'tabs') {
-      const tabs = node as MnTabs;
-      for (const item of tabs.items) {
-        item.title = recursivelyParseIcons(item.title);
-        item.children = recursivelyParseIcons(item.children);
-      }
-      return [node];
-    }
-
-    if ('children' in node && node.children) {
-      node.children = recursivelyParseIcons(node.children);
-    }
-    if ('title' in node && Array.isArray(node.title)) {
-      node.title = recursivelyParseIcons(node.title);
-    }
-    return [node];
-  });
-
 const remarkIcon = (): ((tree: MnRoot) => void) => (tree) => {
-  tree.children = recursivelyParseIcons(tree.children);
+  tree.children = mapTextNodes(tree.children, parseIcons);
 };
 
 export default remarkIcon;

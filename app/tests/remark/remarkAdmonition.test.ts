@@ -72,4 +72,63 @@ describe('remarkAdmonition', () => {
       },
     ]);
   });
+
+  it('collapses one nested in a list item, indent and all', () => {
+    const tree: MnRoot = {
+      type: 'root',
+      children: [
+        {
+          type: 'list',
+          ordered: false,
+          start: null,
+          spread: true,
+          children: [
+            {
+              type: 'listItem',
+              spread: true,
+              checked: null,
+              children: [
+                {
+                  type: 'paragraph',
+                  children: [{ type: 'text', value: '条目' }],
+                },
+                // The list marker eats part of the indent, so the placeholder
+                // arrives with whatever is left over.
+                { type: 'html', value: `  ${ADMONITION_START}` },
+                {
+                  type: 'paragraph',
+                  children: [{ type: 'text', value: '!!! warning "注意"' }],
+                },
+                {
+                  type: 'paragraph',
+                  children: [{ type: 'text', value: 'body' }],
+                },
+                { type: 'html', value: `  ${ADMONITION_END}` },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    remarkAdmonition()(tree);
+
+    expect(tree.children?.[0]).toMatchObject({
+      type: 'list',
+      children: [
+        {
+          type: 'listItem',
+          children: [
+            { type: 'paragraph', children: [{ value: '条目' }] },
+            {
+              type: 'admonition',
+              admonitionType: 'warning',
+              title: [{ type: 'text', value: '注意' }],
+              children: [{ type: 'paragraph', children: [{ value: 'body' }] }],
+            },
+          ],
+        },
+      ],
+    });
+  });
 });

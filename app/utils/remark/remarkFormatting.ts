@@ -1,13 +1,14 @@
-import type { Mn, MnRoot, MnText } from '~/types/mdast';
+import type { Mn, MnRoot } from '~/types/mdast';
+import { mapTextNodes } from '~/utils/remark/mapTextNodes';
 
-const isText = (n: Mn): n is MnText => n.type === 'text';
+/** dotAll so a soft-wrapped paragraph still matches; a text node never spans one. */
+const MARKER_RE = /({==.*?==})|({--.*?--})/gs;
 
 const parseFormatting = (value: string): Mn[] => {
-  const regex = /({==.*?==})|({--.*?--})/g;
   let lastIndex = 0;
   const parts: Mn[] = [];
 
-  value.replace(regex, (match, _1, _2, offset) => {
+  value.replace(MARKER_RE, (match, _1, _2, offset) => {
     if (offset > lastIndex) {
       parts.push({ type: 'text', value: value.slice(lastIndex, offset) });
     }
@@ -30,20 +31,8 @@ const parseFormatting = (value: string): Mn[] => {
   return parts;
 };
 
-const recursivelyFormat = (nodes?: Mn[]): Mn[] =>
-  (nodes ?? []).flatMap((node): Mn[] => {
-    if (isText(node)) return parseFormatting(node.value);
-    if (!('children' in node) || !node.children) return [node];
-    return [
-      {
-        ...node,
-        children: recursivelyFormat(node.children as Mn[]),
-      } as Mn,
-    ];
-  });
-
 const remarkFormatting = () => (tree: MnRoot) => {
-  tree.children = recursivelyFormat(tree.children ?? []);
+  tree.children = mapTextNodes(tree.children, parseFormatting);
 };
 
 export default remarkFormatting;

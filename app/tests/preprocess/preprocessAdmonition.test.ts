@@ -17,6 +17,27 @@ describe('preprocessAdmonition', () => {
     ]);
   });
 
+  it('keeps an indented head inside its list item', () => {
+    expect(
+      preprocessAdmonition([
+        '- 列表项',
+        '',
+        '    !!! warning "注意"',
+        '        正文',
+        '- 下一项',
+      ]),
+    ).toEqual([
+      '- 列表项',
+      '',
+      `    ${ADMONITION_START}`,
+      '    !!! warning "注意"',
+      '',
+      '    正文',
+      `    ${ADMONITION_END}`,
+      '- 下一项',
+    ]);
+  });
+
   it('closes an open admonition at EOF', () => {
     expect(preprocessAdmonition(['!!! tip "t"', '    still open'])).toEqual([
       ADMONITION_START,
