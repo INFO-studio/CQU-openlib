@@ -1,5 +1,6 @@
 ---
 description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共享平台，非官方非赢利组织，提供课件、教材pdf、各种杂项信息。
+updated: 2026-07-29
 ---
 
 # 欢迎  
@@ -10,7 +11,7 @@ description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共�
 
 !!! info "公告"
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
-    * [更新日志](sundry/更新日志/index.md) / [2026-07-22](sundry/更新日志/2026/2026-07/2026-07-22.md)
+    * [更新日志](sundry/更新日志/index.md) / [2026-07-29](sundry/更新日志/2026/2026-07/2026-07-29.md)
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
 <HomeBookmarks />

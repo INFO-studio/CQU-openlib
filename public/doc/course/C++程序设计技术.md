@@ -1,5 +1,14 @@
-## 暂无数据，欢迎贡献
-!!! info "如果您知晓本门课程需要什么教材，欢迎[填表贡献](/form/textbook)，您只需要告知信息，并不必要持有pdf文件"
+---
+updated: 2026-07-29
+---
 
-- Github: [https://github.com/INFO-studio/CQU-openlib](https://github.com/INFO-studio/CQU-openlib)
-- 站长QQ: `2247977881`
+## 资源
+
+=== ":l-book:`CST11031`"
+
+    * 学长共享资源
+        * [希冀系统 C++ 题库](https://api.cqu-openlib.cn/file?key=iVyiX3zgdrwh) @[阳启万象](../contributor/阳启万象.md)
+
+## 课外资源
+
+暂无资源，欢迎贡献。

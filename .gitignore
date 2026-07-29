@@ -5,9 +5,18 @@
 /.tanstack/
 /.react-router/
 /build/
+/site/
 /dummy-non-existing-folder/
 /public/nav-index.json
 /public/search/
+
+# Local tooling caches and agent state
+**/.ruff_cache/
+/.agents/
+
+# Local maintenance notes
+/任务列表.txt
+/运维AgentPrompt.txt
 
 # Logo master renders (regenerate with pnpm logo:generate)
 /tools/logo/out/
