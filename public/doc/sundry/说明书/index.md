@@ -143,7 +143,7 @@ openlib 有若干板块：
 
 本站正文以 Markdown 编写。任意文档页可在 URL 末尾加上 `.md`，直接获取该页纯文本（`text/markdown`），便于复制、交给 AI 助手或脚本抓取。
 
-**用法：**在正文页路径后追加 `.md`（不要经过 SPA 软跳转，直接打开或请求该地址）：
+**用法**：在正文页路径后追加 `.md`（不要经过 SPA 软跳转，直接打开或请求该地址）：
 
 - 正文 `/academic` → 纯文本 [`/academic.md`](/academic.md)
 - 正文 `/sundry/说明书` → 纯文本 [`/sundry/说明书.md`](/sundry/说明书.md)

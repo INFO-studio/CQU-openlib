@@ -36,7 +36,7 @@ Nothing but coding. (Actually a rookie)
 
     ★**Attention**：This item may not be totally free, since it  took a lot of effort to collect indeed.
 
-- If you are confused about the **latest format of undergraduate thesis (**本科生毕业设计论文格式),
+- If you are confused about the **latest format of undergraduate thesis** (本科生毕业设计论文格式),
   - pay attention to my github repository([LeoMooreCST/CQU-ThesisWriting: 重庆大学本科论文撰写word及latex模板（202312修订，最新）](https://github.com/LeoMooreCST/CQU-ThesisWriting)), which is empty now, but we hope to make it available as soon as possible.
   - or just contact the author. 
 - If you are interested in the research of **computer architecture concerning acceleration of artificial intelligence**,
