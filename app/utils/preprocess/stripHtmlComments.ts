@@ -1,6 +1,6 @@
 import type { Preprocess } from '~/utils/preprocess/index';
 
-/** Drop HTML comments that MkDocs embeds for tooling (e.g. updateLog). */
+/** Drop HTML comments authors leave in source (e.g. `<!--TODO-->`). */
 const stripHtmlComments: Preprocess = (lines) => {
   const text = lines.join('\n').replace(/<!--[\s\S]*?-->/g, '');
   return text.split('\n');
