@@ -1,4 +1,4 @@
-import Admonition from '~/components/Admonition';
+import Admonition from '~/components/ui/admonition';
 import DocLink from '~/components/DocLink';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/cn';

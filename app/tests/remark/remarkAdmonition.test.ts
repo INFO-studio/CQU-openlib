@@ -47,6 +47,7 @@ describe('extractTitle', () => {
     const link: Mn = {
       type: 'link',
       url: '/form/group',
+      title: null,
       children: [{ type: 'text', value: '学生团体收录表' }],
     };
     const nodes: Mn[] = [

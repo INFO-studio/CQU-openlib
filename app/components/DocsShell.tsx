@@ -6,7 +6,7 @@ import NavLoadError from '~/components/NavLoadError';
 import SearchDialog from '~/components/SearchDialog';
 import Sidebar from '~/components/Sidebar';
 import SiteHeader from '~/components/SiteHeader';
-import { NavSkeleton } from '~/components/Skeleton';
+import { NavSkeleton } from '~/components/ui/skeleton';
 import Toc, { type TocItem } from '~/components/Toc';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { cn } from '~/lib/cn';

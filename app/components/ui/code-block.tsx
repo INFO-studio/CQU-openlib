@@ -31,11 +31,11 @@ const CodeBlock = ({ value, lang }: Props) => {
   };
 
   return (
-    <div className="group relative my-[0.6rem]">
+    <div className="cquol-code-block group relative my-[0.6rem]">
       <button
         type="button"
         className={cn(
-          'absolute top-[0.35rem] right-[0.35rem] z-1 inline-flex h-7 w-7 items-center justify-center rounded-[0.3rem] border border-line bg-panel text-icon shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[opacity,color,background,border-color] duration-150',
+          'cquol-code-block__copy absolute top-[0.35rem] right-[0.35rem] z-1 inline-flex h-7 w-7 items-center justify-center rounded-[0.3rem] border border-line bg-panel text-icon shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[opacity,color,background,border-color] duration-150',
           'hover:border-primary-soft hover:bg-mist hover:text-ink',
           'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary',
           'opacity-100 [@media(hover:hover)_and_(pointer:fine)]:opacity-0',
@@ -55,7 +55,7 @@ const CodeBlock = ({ value, lang }: Props) => {
       </button>
       <pre
         data-language={lang || undefined}
-        className="m-0 overflow-x-auto rounded-[0.35rem] bg-code-bg py-[0.65rem] pr-[2.4rem] pl-[0.8rem] font-mono text-[0.84rem] leading-[1.5]"
+        className="cquol-code-block__pre m-0 overflow-x-auto rounded-[0.35rem] bg-code-bg py-[0.65rem] pr-[2.4rem] pl-[0.8rem] font-mono text-[0.84rem] leading-[1.5]"
       >
         <code
           className={

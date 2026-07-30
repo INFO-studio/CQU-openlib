@@ -1,4 +1,4 @@
-import CodeBlock from '~/components/CodeBlock';
+import CodeBlock from '~/components/ui/code-block';
 import type { MnCode } from '~/types/mdast';
 
 const parserCode = (mn: MnCode) => {

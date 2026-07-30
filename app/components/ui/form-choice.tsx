@@ -45,7 +45,11 @@ export const FormChoice = <T extends string>({
 }: Props<T>) => {
   return (
     <div
-      className={cn('mt-3 grid gap-2', colClass[columns], className)}
+      className={cn(
+        'cquol-form-choice mt-3 grid gap-2',
+        colClass[columns],
+        className,
+      )}
       role="radiogroup"
       aria-label={ariaLabel}
     >

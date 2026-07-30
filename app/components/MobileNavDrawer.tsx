@@ -4,7 +4,7 @@ import CourseSidebar from '~/components/CourseSidebar';
 import DocLink from '~/components/DocLink';
 import NavLoadError from '~/components/NavLoadError';
 import Sidebar from '~/components/Sidebar';
-import { NavSkeleton } from '~/components/Skeleton';
+import { NavSkeleton } from '~/components/ui/skeleton';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { cn } from '~/lib/cn';
 import {

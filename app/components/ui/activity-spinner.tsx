@@ -21,7 +21,7 @@ export const ActivitySpinner = ({
   label = '加载中',
 }: Props) => (
   <span
-    className={cn('activity-spinner', className)}
+    className={cn('cquol-activity-spinner', className)}
     style={{ width: size, height: size }}
     role="status"
     aria-label={label}
@@ -29,7 +29,7 @@ export const ActivitySpinner = ({
     {Array.from({ length: BLADES }, (_, i) => (
       <span
         key={i}
-        className="activity-spinner__arm"
+        className="cquol-activity-spinner__arm"
         style={
           {
             '--blade': i,
@@ -40,16 +40,16 @@ export const ActivitySpinner = ({
       />
     ))}
     <style>{`
-      .activity-spinner {
+      .cquol-activity-spinner {
         position: relative;
         display: inline-block;
         color: inherit;
       }
-      .activity-spinner__arm {
+      .cquol-activity-spinner__arm {
         position: absolute;
         inset: 0;
       }
-      .activity-spinner__arm::before {
+      .cquol-activity-spinner__arm::before {
         content: '';
         position: absolute;
         top: 6%;
@@ -59,15 +59,15 @@ export const ActivitySpinner = ({
         margin-left: -5.75%;
         border-radius: 999px;
         background: currentColor;
-        animation: activity-blade 0.8s linear infinite;
+        animation: cquol-activity-blade 0.8s linear infinite;
         animation-delay: calc(var(--blade) * -0.1s);
       }
-      @keyframes activity-blade {
+      @keyframes cquol-activity-blade {
         0% { opacity: 1; }
         100% { opacity: 0.12; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .activity-spinner__arm::before {
+        .cquol-activity-spinner__arm::before {
           animation: none;
           opacity: calc(0.18 + var(--blade) * 0.08);
         }

@@ -1,4 +1,4 @@
-import Admonition from '~/components/Admonition';
+import Admonition from '~/components/ui/admonition';
 import type { MnAdmonition } from '~/types/mdast';
 import parser from '~/utils/parser/index';
 

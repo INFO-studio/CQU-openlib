@@ -7,7 +7,7 @@ import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import BookmarkButton from '~/components/BookmarkButton';
 import DocsShell from '~/components/DocsShell';
-import { DocSkeleton } from '~/components/Skeleton';
+import { DocSkeleton } from '~/components/ui/skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { titleFromPath } from '~/lib/nav';

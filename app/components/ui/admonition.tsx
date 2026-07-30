@@ -150,17 +150,17 @@ const Admonition = ({
   );
 
   const shell = cn(
-    'my-3 overflow-hidden rounded-[0.35rem] border border-l-[3px] border-l-[var(--admonition-color)] bg-[var(--admonition-bg)] text-sm text-ink',
+    'cquol-admonition my-3 overflow-hidden rounded-[0.35rem] border border-l-[3px] border-l-[var(--admonition-color)] bg-[var(--admonition-bg)] text-sm text-ink',
     className,
   );
 
   const titleRow = cn(
-    'relative flex items-start gap-2 bg-[var(--admonition-title-bg)] px-[0.85rem] py-[0.55rem] text-sm font-semibold leading-[1.45]',
+    'cquol-admonition__title relative flex items-start gap-2 bg-[var(--admonition-title-bg)] px-[0.85rem] py-[0.55rem] text-sm font-semibold leading-[1.45]',
     titleAside ? 'pr-[4.75rem]' : undefined,
   );
 
   const body = hasContent ? (
-    <div className="flex min-h-0 flex-1 flex-col px-[0.85rem] pb-3 pt-[0.65rem] [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+    <div className="cquol-admonition__body flex min-h-0 flex-1 flex-col px-[0.85rem] pb-3 pt-[0.65rem] [&>:first-child]:mt-0 [&>:last-child]:mb-0">
       {children}
     </div>
   ) : null;
@@ -184,13 +184,13 @@ const Admonition = ({
     return (
       <div
         className={cn(
-          'my-3 grid grid-cols-[1rem_minmax(0,1fr)] items-start gap-x-2 overflow-hidden rounded-[0.35rem] border border-l-[3px] border-l-[var(--admonition-color)] bg-[var(--admonition-bg)] px-[0.85rem] py-[0.7rem] text-sm text-ink',
+          'cquol-admonition my-3 grid grid-cols-[1rem_minmax(0,1fr)] items-start gap-x-2 overflow-hidden rounded-[0.35rem] border border-l-[3px] border-l-[var(--admonition-color)] bg-[var(--admonition-bg)] px-[0.85rem] py-[0.7rem] text-sm text-ink',
           className,
         )}
         style={style}
       >
         {icon}
-        <div className="min-w-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+        <div className="cquol-admonition__body min-w-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0">
           {children}
         </div>
       </div>

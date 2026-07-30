@@ -5,21 +5,23 @@ type BoneProps = {
   className?: string;
   style?: CSSProperties;
 };
+
 export const Bone = ({ className, style }: BoneProps) => {
   return (
     <span
       className={cn(
-        'block animate-skeleton-shimmer rounded bg-[linear-gradient(90deg,var(--c-mist)_0%,var(--c-line)_45%,var(--c-mist)_100%)] bg-[length:200%_100%] motion-reduce:animate-none motion-reduce:bg-mist',
+        'cquol-bone block animate-skeleton-shimmer rounded bg-[linear-gradient(90deg,var(--c-mist)_0%,var(--c-line)_45%,var(--c-mist)_100%)] bg-[length:200%_100%] motion-reduce:animate-none motion-reduce:bg-mist',
         className,
       )}
       style={style}
     />
   );
 };
+
 export const NavSkeleton = ({ course = false }: { course?: boolean }) => {
   return (
     <div
-      className="flex h-full min-h-0 flex-col gap-3 py-1"
+      className="cquol-nav-skeleton flex h-full min-h-0 flex-col gap-3 py-1"
       aria-busy
       aria-label="目录加载中"
     >
@@ -43,9 +45,14 @@ export const NavSkeleton = ({ course = false }: { course?: boolean }) => {
     </div>
   );
 };
+
 export const DocSkeleton = () => {
   return (
-    <div className="docs-prose min-w-0" aria-busy aria-label="文档加载中">
+    <div
+      className="cquol-doc-skeleton docs-prose min-w-0"
+      aria-busy
+      aria-label="文档加载中"
+    >
       <Bone className="mb-4 h-8 w-[min(18rem,70%)]" />
       <div className="flex flex-col gap-3">
         <Bone className="h-3.5 w-full" />
@@ -62,9 +69,14 @@ export const DocSkeleton = () => {
     </div>
   );
 };
+
 export const SearchSkeleton = ({ rows = 5 }: { rows?: number }) => {
   return (
-    <ul className="flex flex-col gap-1 p-1.5" aria-busy aria-label="搜索中">
+    <ul
+      className="cquol-search-skeleton flex flex-col gap-1 p-1.5"
+      aria-busy
+      aria-label="搜索中"
+    >
       {Array.from({ length: rows }, (_, i) => (
         <li
           key={i}

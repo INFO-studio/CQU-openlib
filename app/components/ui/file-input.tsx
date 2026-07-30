@@ -63,7 +63,7 @@ export const FileInput = ({
   };
 
   return (
-    <div className={cn('mt-2 w-full', className)}>
+    <div className={cn('cquol-file-input mt-2 w-full', className)}>
       <input
         ref={inputRef}
         id={inputId}
@@ -84,7 +84,7 @@ export const FileInput = ({
         onDragOver={onDragOver}
         onDrop={onDrop}
         className={cn(
-          'file-drop relative flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border border-dashed px-4 py-8 text-center transition-[border-color,background-color,transform,box-shadow] duration-200 ease-out',
+          'cquol-file-input__drop relative flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border border-dashed px-4 py-8 text-center transition-[border-color,background-color,transform,box-shadow] duration-200 ease-out',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
           dragging
             ? 'scale-[1.015] border-primary bg-primary-soft shadow-[0_0_0_4px_var(--c-primary-soft)]'
@@ -163,7 +163,7 @@ export const FileInput = ({
 
       <style>{`
         @media (prefers-reduced-motion: reduce) {
-          .file-drop {
+          .cquol-file-input__drop {
             transition: none !important;
             transform: none !important;
           }

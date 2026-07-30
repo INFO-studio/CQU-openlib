@@ -39,7 +39,7 @@ export const InputGroup = <T extends string>({
   return (
     <div
       className={cn(
-        'mt-2 flex h-11 w-full items-stretch overflow-hidden rounded-md border border-line bg-panel transition-colors',
+        'cquol-input-group mt-2 flex h-11 w-full items-stretch overflow-hidden rounded-md border border-line bg-panel transition-colors',
         'focus-within:border-primary',
         className,
       )}

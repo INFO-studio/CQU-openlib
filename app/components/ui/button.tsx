@@ -22,7 +22,11 @@ export const Button = ({
   ...rest
 }: Props) => {
   return (
-    <button type={type} className={cn(variants[variant], className)} {...rest}>
+    <button
+      type={type}
+      className={cn('cquol-button', variants[variant], className)}
+      {...rest}
+    >
       {children}
     </button>
   );

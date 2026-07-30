@@ -8,7 +8,7 @@ export const TextLink = ({ className, children, ...rest }: Props) => {
   return (
     <a
       className={cn(
-        'text-ink/90 no-underline hover:text-primary transition-colors',
+        'cquol-link text-ink/90 no-underline hover:text-primary transition-colors',
         className,
       )}
       {...rest}

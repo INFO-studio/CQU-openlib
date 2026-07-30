@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Bone } from '~/components/Skeleton';
+import { Bone } from '~/components/ui/skeleton';
 import { useDocBase } from '~/contexts/DocBaseContext';
 import { cn } from '~/lib/cn';
 import { lookupImageSize } from '~/lib/imageSizes';

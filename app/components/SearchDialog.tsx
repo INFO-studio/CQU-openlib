@@ -11,7 +11,8 @@ import {
   useState,
 } from 'react';
 import DocLink from '~/components/DocLink';
-import { SearchSkeleton } from '~/components/Skeleton';
+import { ActivitySpinner } from '~/components/ui/activity-spinner';
+import { SearchSkeleton } from '~/components/ui/skeleton';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { cn } from '~/lib/cn';
 import type { SearchChunkMeta, SearchEntry } from '~/lib/nav';
@@ -96,7 +97,6 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
           return;
         }
         const meta = chunks[cursor]!;
-        setStatus(`加载 ${meta.label}…`);
         try {
           const entries = await queryClient.fetchQuery(
             searchChunkQueryOptions(meta),
@@ -346,16 +346,14 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
                   })}
                   <li
                     ref={sentinelRef}
-                    className="px-3 py-2 text-center text-[0.7rem] text-muted"
-                    aria-hidden
+                    className="flex justify-center px-3 py-2 text-center text-[0.7rem] text-muted"
+                    aria-hidden={!loading}
                   >
-                    {loading
-                      ? status || '加载中…'
-                      : canLoadMore
-                        ? ''
-                        : matched.length
-                          ? `共 ${matched.length} 条`
-                          : null}
+                    {loading ? (
+                      <ActivitySpinner size={16} label="加载中" />
+                    ) : canLoadMore ? null : matched.length ? (
+                      `共 ${matched.length} 条`
+                    ) : null}
                   </li>
                 </ul>
               )}
