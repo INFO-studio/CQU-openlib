@@ -1,9 +1,20 @@
-export const FORM_SLUGS = ['feedback', 'textbook', 'upload', 'club'] as const;
+export const FORM_SLUGS = [
+  'feedback',
+  'textbook',
+  'upload',
+  'club',
+  'group',
+] as const;
 
 export type FormSlug = (typeof FORM_SLUGS)[number];
 
 /** API `type` field */
-export type FormApiType = 'feedback' | 'textbook' | 'upload' | 'club';
+export type FormApiType =
+  | 'feedback'
+  | 'textbook'
+  | 'upload'
+  | 'club'
+  | 'group';
 
 export const isFormSlug = (value: string): value is FormSlug =>
   (FORM_SLUGS as readonly string[]).includes(value);
@@ -31,5 +42,9 @@ export const FORM_META: Record<
   club: {
     title: '社团信息表单',
     description: '社长或管理人员提交社团信息更正与补充。',
+  },
+  group: {
+    title: '学生团体收录表',
+    description: '非官方学生团体申请收录：简介、QQ 群号与联系方式。',
   },
 };

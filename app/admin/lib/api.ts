@@ -6,7 +6,7 @@ import {
 } from '~/admin/lib/status';
 import { apiUrl } from '~/lib/apiBase';
 
-export type FormType = 'feedback' | 'textbook' | 'upload' | 'club';
+export type FormType = 'feedback' | 'textbook' | 'upload' | 'club' | 'group';
 
 export type SubmissionItem = {
   id: string;

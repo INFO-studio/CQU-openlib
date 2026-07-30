@@ -238,6 +238,19 @@ const DocPage = ({ splat }: DocPageProps) => {
                 更新本页信息。
               </p>
             ) : null}
+            {pathname.startsWith('/life/学生团体') ? (
+              <p className="mt-2 m-0">
+                若希望收录或更新学生团体信息，请填写
+                <Link
+                  to="/form/$type"
+                  params={{ type: 'group' }}
+                  className="mx-1 text-primary no-underline hover:underline"
+                >
+                  学生团体收录表
+                </Link>
+                。
+              </p>
+            ) : null}
             <p className="mt-4 m-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-left leading-relaxed">
               <span>Copyright © 2024 - 2026</span>
               <span>CQU-openlib Opensource Community</span>

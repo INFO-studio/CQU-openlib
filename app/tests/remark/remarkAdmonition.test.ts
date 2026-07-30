@@ -43,6 +43,26 @@ describe('extractTitle', () => {
     ]);
   });
 
+  it('keeps a trailing link immediately before the closing quote', () => {
+    const link: Mn = {
+      type: 'link',
+      url: '/form/group',
+      children: [{ type: 'text', value: '学生团体收录表' }],
+    };
+    const nodes: Mn[] = [
+      {
+        type: 'text',
+        value: '!!! info "如果您想要被收录，请填写',
+      },
+      link,
+      { type: 'text', value: '"' },
+    ];
+    expect(extractTitle(nodes)).toEqual([
+      { type: 'text', value: '如果您想要被收录，请填写' },
+      link,
+    ]);
+  });
+
   it('does not mutate the source AST when trimming quotes', () => {
     const nodes: Mn[] = [{ type: 'text', value: '!!! note "你好世界"' }];
     extractTitle(nodes);

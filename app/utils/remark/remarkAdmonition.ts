@@ -70,11 +70,12 @@ export const extractTitle = (children?: Mn[]): Mn[] => {
     const start = charCount;
     const end = charCount + nodeText.length;
     // Text: overlap (quoteStart, quoteEnd). Zero-width nodes (icon/link/break)
-    // sit at `start` — include when inside the quotes, never after the closer.
+    // sit at `start`. A trailing link before the closer lands at `quoteEnd`
+    // (closer is the next text char) — include `start === quoteEnd`, never after.
     const inTitle =
       child.type === 'text'
         ? end > quoteStart && start < quoteEnd
-        : start >= quoteStart && start < quoteEnd;
+        : start >= quoteStart && start <= quoteEnd;
     // Clone so trimming quotes never mutates the source AST.
     if (inTitle) {
       titleNodes.push(child.type === 'text' ? { ...child } : child);

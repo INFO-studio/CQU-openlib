@@ -6,6 +6,7 @@ export const FORM_TYPE_META: Record<FormType, { label: string; tone: string }> =
     textbook: { label: '教材收集', tone: '#6ab59a' },
     upload: { label: '文件上传', tone: '#7a9fd0' },
     club: { label: '社团信息', tone: '#c4a06a' },
+    group: { label: '学生团体', tone: '#a08bc4' },
   };
 
 export const typeLabel = (type: string): string =>
@@ -51,6 +52,7 @@ const FIELD_LABELS: Record<string, string> = {
   formerName: '原社团名',
   recruitGroup: '纳新群号',
   intro: '简介',
+  qqGroup: 'QQ 群号',
   key: '对象键',
   size: '大小',
 };

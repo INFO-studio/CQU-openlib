@@ -18,11 +18,7 @@ export const FormQuestion = ({
   hint,
   children,
 }: Props) => (
-  <fieldset
-    className={
-      hint ? 'm-0 min-w-0 border-0 p-0 pb-3' : 'm-0 min-w-0 border-0 p-0'
-    }
-  >
+  <fieldset className="m-0 min-w-0 border-0 p-0">
     <legend className={formLabelClass}>
       <span className="mr-1.5 inline-block min-w-[1.6rem] font-mono text-xs tracking-wide text-muted">
         {index}
