@@ -9,12 +9,7 @@ export const FORM_SLUGS = [
 export type FormSlug = (typeof FORM_SLUGS)[number];
 
 /** API `type` field */
-export type FormApiType =
-  | 'feedback'
-  | 'textbook'
-  | 'upload'
-  | 'club'
-  | 'group';
+export type FormApiType = 'feedback' | 'textbook' | 'upload' | 'club' | 'group';
 
 export const isFormSlug = (value: string): value is FormSlug =>
   (FORM_SLUGS as readonly string[]).includes(value);

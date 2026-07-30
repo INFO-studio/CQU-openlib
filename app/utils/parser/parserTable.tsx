@@ -33,9 +33,7 @@ const parserTableRow = (
 };
 
 const parserTable = (mn: MnTable) => (
-  <Table>
-    {mn.children.map((row, i) => parserTableRow(row, i, mn.align))}
-  </Table>
+  <Table>{mn.children.map((row, i) => parserTableRow(row, i, mn.align))}</Table>
 );
 
 export default parserTable;

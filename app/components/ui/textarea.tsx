@@ -6,7 +6,12 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export const Textarea = ({ className, ...rest }: Props) => (
   <textarea
-    className={cn('cquol-textarea', fieldClass, 'min-h-[9rem] resize-y', className)}
+    className={cn(
+      'cquol-textarea',
+      fieldClass,
+      'min-h-[9rem] resize-y',
+      className,
+    )}
     {...rest}
   />
 );
