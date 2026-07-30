@@ -7,6 +7,7 @@ import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import BookmarkButton from '~/components/BookmarkButton';
 import DocsShell from '~/components/DocsShell';
+import HomeManualLink from '~/components/HomeManualLink';
 import { DocSkeleton } from '~/components/ui/skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
@@ -172,7 +173,8 @@ const DocPage = ({ splat }: DocPageProps) => {
     }
     if (!file) return <div className="text-muted">空文档</div>;
 
-    const showBookmark = pathname !== '/';
+    const isHome = pathname === '/';
+    const showBookmark = !isHome;
     const nodes = file.ast.children ?? [];
     const firstH1Index = hasH1
       ? nodes.findIndex((n) => n.type === 'heading' && n.depth === 1)
@@ -201,13 +203,16 @@ const DocPage = ({ splat }: DocPageProps) => {
             if (i === firstH1Index) {
               return (
                 <Fragment key={`title-${i}`}>
-                  {showBookmark ? (
+                  {isHome ? (
+                    <div className="docs-home-title-row">
+                      {parser(node)}
+                      <HomeManualLink />
+                    </div>
+                  ) : (
                     <div className="docs-title-row">
                       {parser(node)}
                       <BookmarkButton path={pathname} title={title} />
                     </div>
-                  ) : (
-                    parser(node)
                   )}
                   {updatedMeta}
                 </Fragment>

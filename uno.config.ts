@@ -68,6 +68,9 @@ export default defineConfig({
     'docs-prose': 'flex flex-col gap-[0.35rem]',
     'docs-title-row':
       'mb-2 flex items-center gap-2 [&>h1]:m-0 [&>h1]:min-w-0 [&>h1]:flex-1 [&>button]:shrink-0 [&>button]:self-center',
+    /* Homepage variant: same row as title, but the manual link sits on the right. */
+    'docs-home-title-row':
+      'mb-2 flex items-center gap-3 [&>h1]:m-0 [&>h1]:min-w-0 [&>h1]:flex-1',
     'docs-kbd':
       'inline-flex h-[1.125rem] min-w-[1.125rem] shrink-0 items-center justify-center rounded-[0.25rem] border border-line bg-panel px-1 font-mono text-[0.6875rem] font-medium leading-none text-muted select-none',
     'docs-figcaption':
