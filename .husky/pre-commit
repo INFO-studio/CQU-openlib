@@ -1,5 +1,12 @@
 set -e
 
+# Biome asks git for the staged list; git escapes non-ASCII paths by default,
+# and Biome then fails to open them. This repo is full of CJK filenames, so
+# force quotepath off for the subprocess rather than relying on local config.
+export GIT_CONFIG_COUNT=1
+export GIT_CONFIG_KEY_0=core.quotepath
+export GIT_CONFIG_VALUE_0=false
+
 # Biome rewrites staged files in place, so re-stage whatever it touched.
 # Unfixable lint errors exit non-zero and abort the commit.
 pnpm exec biome check --write --no-errors-on-unmatched --staged
