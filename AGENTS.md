@@ -30,14 +30,12 @@ updated: 2026-07-22
    - 为配合解析器改动而做的等价改写
 4. 日期必须是合法的 `YYYY-MM-DD` 字符串；不要写成时间戳或其它格式。
 5. **目录例外（通常不要加 / 不必更新 `updated`）：**
+   - `public/doc/index.md`（首页不展示「编辑于」，别给它加 `updated`）
    - `public/doc/contributor/**`（贡献者个人页）
    - `public/doc/sundry/更新日志/**`（日志本身以路径/标题表达日期）
 6. 用户明确要求不要动日期时，一律跳过。拿不准时**先问**，不要默认加日期。
 
-可选字段（按需，勿虚构）：
-
-- `description`：短描述
-- `hide`：字符串列表（页面展示相关）
+可选字段：`description`（短描述，用于 `<meta>`）。解析器只认 `updated` 和 `description` 两个键，写别的等于写注释。
 
 实现参考：`app/utils/docFrontmatter.ts`。
 
@@ -54,7 +52,7 @@ updated: 2026-07-22
 5. **写一次日志要同步改三处，漏掉任何一处站点上就会对不上：**
    1. `public/doc/sundry/更新日志/YYYY/YYYY-MM/YYYY-MM-DD.md` —— 当天的日志文件，不存在就按这个路径新建。
    2. `public/doc/sundry/更新日志/index.md` —— 两个地方：顶部「最新更新日志」的链接改成当天；在对应「年 / 季度 / 月」的 tab 下补一行条目。新建季度或月份的 tab 时注意既有顺序：年、季度升序，季度内月份降序，月内日期升序。
-   3. `public/doc/index.md` —— 首页「公告」里 `[更新日志](…) / [YYYY-MM-DD](…)` 那条的日期链接，同时把该文件 frontmatter 的 `updated` 改成同一天（首页不在目录例外里，照常规则走）。
+   3. `public/doc/index.md` —— 首页「公告」里 `[更新日志](…) / [YYYY-MM-DD](…)` 那条的日期链接。只改链接，首页没有也不要加 `updated`。
 
 ## 文档与代码习惯（简）
 
