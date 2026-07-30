@@ -1,5 +1,9 @@
-import { TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
 import type { Mn, MnParagraph, MnRoot, MnTabs, MnText } from '~/types/mdast';
+import {
+  TAB_ITEM,
+  TABS_END,
+  TABS_START,
+} from '~/utils/preprocess/placeholders';
 
 const isHtml = (n: Mn, value: string) => n.type === 'html' && n.value === value;
 

@@ -11,8 +11,21 @@ const titleKey = (title: MnTabs['items'][number]['title'], index: number) => {
 };
 const TabsView = ({ mn }: { mn: MnTabs }) => {
   const [active, setActive] = useState(0);
+  /** 0 until the reader switches, so panels do not animate on page load. */
+  const [direction, setDirection] = useState(0);
   const items = mn.items ?? [];
   if (!items.length) return null;
+
+  const select = (next: number) => {
+    setDirection(next === active ? 0 : next > active ? 1 : -1);
+    setActive(next);
+  };
+  const enterAnimation =
+    direction === 0
+      ? undefined
+      : direction > 0
+        ? 'animate-tab-in-right'
+        : 'animate-tab-in-left';
   return (
     <div className="my-[0.65rem]">
       <div
@@ -29,7 +42,7 @@ const TabsView = ({ mn }: { mn: MnTabs }) => {
               active === i && 'border-b-primary font-semibold text-ink',
             )}
             aria-selected={active === i}
-            onClick={() => setActive(i)}
+            onClick={() => select(i)}
           >
             {item.title.map(parser)}
           </button>
@@ -40,6 +53,10 @@ const TabsView = ({ mn }: { mn: MnTabs }) => {
           key={`panel-${titleKey(item.title, i)}`}
           role="tabpanel"
           hidden={active !== i}
+          className={cn(
+            'motion-reduce:animate-none',
+            active === i && enterAnimation,
+          )}
         >
           {item.children.map(parser)}
         </div>

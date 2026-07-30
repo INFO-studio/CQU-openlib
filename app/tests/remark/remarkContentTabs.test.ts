@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
 import type { Mn, MnRoot } from '~/types/mdast';
+import {
+  TAB_ITEM,
+  TABS_END,
+  TABS_START,
+} from '~/utils/preprocess/placeholders';
 import remarkContentTabs, {
   dropSerializedPrefix,
   serializedLen,

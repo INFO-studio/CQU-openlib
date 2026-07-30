@@ -44,12 +44,20 @@ export default defineConfig({
       keyframes: {
         'skeleton-shimmer':
           '{0%{background-position:100% 0}100%{background-position:-100% 0}}',
+        'tab-in-right':
+          '{from{opacity:0;transform:translate3d(0.6rem,0,0)}to{opacity:1;transform:none}}',
+        'tab-in-left':
+          '{from{opacity:0;transform:translate3d(-0.6rem,0,0)}to{opacity:1;transform:none}}',
       },
       durations: {
         'skeleton-shimmer': '1.35s',
+        'tab-in-right': '0.2s',
+        'tab-in-left': '0.2s',
       },
       timingFns: {
         'skeleton-shimmer': 'ease-in-out',
+        'tab-in-right': 'cubic-bezier(0.2, 0, 0, 1)',
+        'tab-in-left': 'cubic-bezier(0.2, 0, 0, 1)',
       },
       counts: {
         'skeleton-shimmer': 'infinite',

@@ -1,5 +1,10 @@
-import { TAB, TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
 import type { Preprocess } from '~/utils/preprocess/index';
+import {
+  TAB,
+  TAB_ITEM,
+  TABS_END,
+  TABS_START,
+} from '~/utils/preprocess/placeholders';
 
 /** Indent width of a content-tab head (`=== ...`), or null if not a head. */
 export const tabHead = (line: string): number | null => {

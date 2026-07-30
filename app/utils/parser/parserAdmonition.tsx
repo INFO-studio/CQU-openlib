@@ -10,6 +10,7 @@ const parserAdmonition = (mn: MnAdmonition) => {
     <Admonition
       type={mn.admonitionType}
       title={hasTitle ? mn.title?.map(parser) : undefined}
+      collapse={mn.collapse}
     >
       {hasContent ? mn.children?.map(parser) : undefined}
     </Admonition>

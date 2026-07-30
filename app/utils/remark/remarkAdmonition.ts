@@ -1,15 +1,22 @@
 import { match } from 'ts-pattern';
-import { ADMONITION_PATTERN } from '~/consts/admonition';
-import { ADMONITION_END, ADMONITION_START } from '~/consts/placeholders';
 import type { Mn, MnTabs } from '~/types/mdast';
-import {
-  isValidAdmonitionType,
-  type MnAdmonition,
-  type MnAdmonitionType,
+import type {
+  MnAdmonition,
+  MnAdmonitionType,
 } from '~/types/mdast/mnAdmonition';
 import type { MnParagraph } from '~/types/mdast/mnParagraph';
 import type { MnRoot } from '~/types/mdast/mnRoot';
 import type { MnText } from '~/types/mdast/mnText';
+import {
+  ADMONITION_PATTERN,
+  type AdmonitionCollapse,
+  collapseFromMarker,
+  isValidAdmonitionType,
+} from '~/utils/admonition';
+import {
+  ADMONITION_END,
+  ADMONITION_START,
+} from '~/utils/preprocess/placeholders';
 
 /**
  * A placeholder nested in a list item keeps whatever indent the list marker did
@@ -21,6 +28,8 @@ const isMarker = (n: Mn, marker: string) =>
 const isStart = (n: Mn) => isMarker(n, ADMONITION_START);
 
 const isEnd = (n: Mn) => isMarker(n, ADMONITION_END);
+
+const HEAD_OPEN_QUOTE = /^(?:!!!|\?\?\?\+?)\s+\S+\s+"/;
 
 const inlineToText = (curs: Mn[]): string =>
   curs
@@ -45,7 +54,7 @@ export const extractTitle = (children?: Mn[]): Mn[] => {
     | MnText
     | undefined;
   if (!firstText || !firstText.value) return [];
-  const match = firstText.value.match(/^!!!\s+\S+\s+"/);
+  const match = firstText.value.match(HEAD_OPEN_QUOTE);
   if (match) {
     quoteStart = match[0].length;
   } else {
@@ -89,7 +98,11 @@ export const extractTitle = (children?: Mn[]): Mn[] => {
 type RemarkAdmonitionState = {
   out: Mn[];
   buffer: Mn[] | null;
-  meta: { type: MnAdmonitionType; title: Mn[] } | null;
+  meta: {
+    type: MnAdmonitionType;
+    title: Mn[];
+    collapse?: AdmonitionCollapse;
+  } | null;
 };
 
 const flushBroken = (pre: RemarkAdmonitionState) => {
@@ -100,6 +113,7 @@ const flushBroken = (pre: RemarkAdmonitionState) => {
       admonitionType: pre.meta.type,
       title: extractTitle(pre.meta.title),
       children: pre.buffer ?? [],
+      ...(pre.meta.collapse ? { collapse: pre.meta.collapse } : {}),
     } satisfies MnAdmonition);
   } else if (pre.buffer?.length) {
     pre.out.push(...pre.buffer);
@@ -139,11 +153,14 @@ const convertAdmonitions = (nodes: Mn[]): Mn[] => {
               (cur as MnParagraph).children ?? [],
             ).match(ADMONITION_PATTERN);
 
-            const typeRaw = matchResult?.[1]?.toLowerCase() ?? '';
+            const marker = matchResult?.[1] ?? '';
+            const typeRaw = matchResult?.[2]?.toLowerCase() ?? '';
             if (matchResult && isValidAdmonitionType(typeRaw)) {
+              const collapse = collapseFromMarker(marker);
               pre.meta = {
                 type: typeRaw as MnAdmonitionType,
                 title: (cur as MnParagraph).children ?? [],
+                ...(collapse ? { collapse } : {}),
               };
               return pre;
             }

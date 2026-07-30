@@ -1,8 +1,10 @@
+import { Collapsible } from '@base-ui/react/collapsible';
 import {
   AlertTriangle,
   BookOpen,
   Bug,
   Check,
+  ChevronRight,
   FileText,
   FlaskConical,
   HelpCircle,
@@ -14,7 +16,7 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import type { CSSProperties, ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useState } from 'react';
 import { cn } from '~/lib/cn';
 import type { MnAdmonitionType } from '~/types/mdast/mnAdmonition';
 
@@ -49,6 +51,65 @@ const COLOR_VAR: Record<MnAdmonitionType, string> = {
   quote: 'var(--admonition-quote)',
 };
 
+type CollapsibleShellProps = {
+  shell: string;
+  titleRow: string;
+  style: CSSProperties;
+  icon: ReactNode;
+  title: ReactNode;
+  body: ReactNode;
+  titleAside?: ReactNode;
+  defaultOpen: boolean;
+};
+
+const CollapsibleShell = ({
+  shell,
+  titleRow,
+  style,
+  icon,
+  title,
+  body,
+  titleAside,
+  defaultOpen,
+}: CollapsibleShellProps) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <Collapsible.Root
+      className={shell}
+      style={style}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <div className="relative">
+        <Collapsible.Trigger
+          className={cn(
+            titleRow,
+            'w-full cursor-pointer select-none text-left',
+          )}
+        >
+          {icon}
+          <span className="min-w-0 flex-1">{title}</span>
+          <ChevronRight
+            size={16}
+            className={cn(
+              'mt-[0.15em] shrink-0 text-[var(--admonition-color)] transition-transform duration-150',
+              open && 'rotate-90',
+            )}
+            aria-hidden
+          />
+        </Collapsible.Trigger>
+        {titleAside}
+      </div>
+      <Collapsible.Panel
+        hiddenUntilFound
+        className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-[ending-style]:h-0 data-[starting-style]:h-0 motion-reduce:transition-none"
+      >
+        {body}
+      </Collapsible.Panel>
+    </Collapsible.Root>
+  );
+};
+
 type Props = {
   type: MnAdmonitionType;
   title?: ReactNode;
@@ -56,6 +117,8 @@ type Props = {
   className?: string;
   /** Extra nodes inside the title row (e.g. clear button). */
   titleAside?: ReactNode;
+  /** Material `???` / `???+`. */
+  collapse?: 'closed' | 'open';
 };
 
 const Admonition = ({
@@ -64,6 +127,7 @@ const Admonition = ({
   children,
   className,
   titleAside,
+  collapse,
 }: Props) => {
   const Icon = ICONS[type] ?? BookOpen;
   const hasTitle = title != null && title !== false;
@@ -85,6 +149,37 @@ const Admonition = ({
     />
   );
 
+  const shell = cn(
+    'my-3 overflow-hidden rounded-[0.35rem] border border-l-[3px] border-l-[var(--admonition-color)] bg-[var(--admonition-bg)] text-sm text-ink',
+    className,
+  );
+
+  const titleRow = cn(
+    'relative flex items-start gap-2 bg-[var(--admonition-title-bg)] px-[0.85rem] py-[0.55rem] text-sm font-semibold leading-[1.45]',
+    titleAside ? 'pr-[4.75rem]' : undefined,
+  );
+
+  const body = hasContent ? (
+    <div className="flex min-h-0 flex-1 flex-col px-[0.85rem] pb-3 pt-[0.65rem] [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+      {children}
+    </div>
+  ) : null;
+
+  if (collapse && hasTitle) {
+    return (
+      <CollapsibleShell
+        shell={shell}
+        titleRow={titleRow}
+        style={style}
+        icon={icon}
+        title={title}
+        body={body}
+        titleAside={titleAside}
+        defaultOpen={collapse === 'open'}
+      />
+    );
+  }
+
   if (!hasTitle && hasContent) {
     return (
       <div
@@ -103,30 +198,15 @@ const Admonition = ({
   }
 
   return (
-    <div
-      className={cn(
-        'my-3 overflow-hidden rounded-[0.35rem] border border-l-[3px] border-l-[var(--admonition-color)] bg-[var(--admonition-bg)] text-sm text-ink',
-        className,
-      )}
-      style={style}
-    >
+    <div className={shell} style={style}>
       {hasTitle ? (
-        <div
-          className={cn(
-            'relative flex items-start gap-2 bg-[var(--admonition-title-bg)] px-[0.85rem] py-[0.55rem] text-sm font-semibold leading-[1.45]',
-            titleAside ? 'pr-[4.75rem]' : undefined,
-          )}
-        >
+        <div className={titleRow}>
           {icon}
           <span className="min-w-0 flex-1">{title}</span>
           {titleAside}
         </div>
       ) : null}
-      {hasContent ? (
-        <div className="flex min-h-0 flex-1 flex-col px-[0.85rem] pb-3 pt-[0.65rem] [&>:first-child]:mt-0 [&>:last-child]:mb-0">
-          {children}
-        </div>
-      ) : null}
+      {body}
     </div>
   );
 };

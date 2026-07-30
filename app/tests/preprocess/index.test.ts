@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { ADMONITION_END, ADMONITION_START } from '~/consts/placeholders';
 import preprocess from '~/utils/preprocess';
+import {
+  ADMONITION_END,
+  ADMONITION_START,
+} from '~/utils/preprocess/placeholders';
 
 describe('preprocess', () => {
   it('normalizes CRLF and fences admonition bodies without TAB markers', () => {

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { ADMONITION_END, ADMONITION_START } from '~/consts/placeholders';
+import {
+  ADMONITION_END,
+  ADMONITION_START,
+} from '~/utils/preprocess/placeholders';
 import preprocessAdmonition from '~/utils/preprocess/preprocessAdmonition';
 
 describe('preprocessAdmonition', () => {
@@ -45,6 +48,23 @@ describe('preprocessAdmonition', () => {
       '',
       'still open',
       ADMONITION_END,
+    ]);
+  });
+
+  it('fences ??? collapsible heads the same way as !!!', () => {
+    expect(
+      preprocessAdmonition([
+        '??? example "化学反应焓变的测定"',
+        '    code',
+        'after',
+      ]),
+    ).toEqual([
+      ADMONITION_START,
+      '??? example "化学反应焓变的测定"',
+      '',
+      'code',
+      ADMONITION_END,
+      'after',
     ]);
   });
 

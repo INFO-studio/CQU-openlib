@@ -1,8 +1,11 @@
-import { ADMONITION_END, ADMONITION_START } from '~/consts/placeholders';
 import type { Preprocess } from '~/utils/preprocess/index';
+import {
+  ADMONITION_END,
+  ADMONITION_START,
+} from '~/utils/preprocess/placeholders';
 
 /** Spaces only: a tab-indented head has no well-defined body column. */
-const HEAD = /^( *)!!!\s+\S+(\s+".*")?\s*$/;
+const HEAD = /^( *)(?:!!!|\?\?\?\+?)\s+\S+(\s+".*")?\s*$/;
 
 const leadingSpaces = (line: string): number =>
   line.length - line.trimStart().length;
@@ -10,6 +13,7 @@ const leadingSpaces = (line: string): number =>
 /**
  * Fence admonition blocks and un-indent Material's 4-space body.
  *
+ * Heads may be `!!!` (always open) or `???` / `???+` (collapsible).
  * The head may itself be indented, because Material lets an admonition sit
  * inside a list item. Body lines are then 4 columns deeper than the head, and
  * the placeholders keep the head's indent so remark parses them as siblings

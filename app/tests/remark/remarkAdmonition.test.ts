@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { ADMONITION_END, ADMONITION_START } from '~/consts/placeholders';
 import type { Mn, MnRoot } from '~/types/mdast';
+import {
+  ADMONITION_END,
+  ADMONITION_START,
+} from '~/utils/preprocess/placeholders';
 import remarkAdmonition, {
   extractTitle,
 } from '~/utils/remark/remarkAdmonition';
@@ -10,6 +13,15 @@ describe('extractTitle', () => {
     expect(
       extractTitle([{ type: 'text', value: '!!! note "你好世界"' }]),
     ).toEqual([{ type: 'text', value: '你好世界' }]);
+  });
+
+  it('extracts titles from ??? / ???+ heads', () => {
+    expect(
+      extractTitle([{ type: 'text', value: '??? example "样例"' }]),
+    ).toEqual([{ type: 'text', value: '样例' }]);
+    expect(extractTitle([{ type: 'text', value: '???+ tip "展开"' }])).toEqual([
+      { type: 'text', value: '展开' },
+    ]);
   });
 
   it('returns empty when there is no quoted title', () => {
@@ -71,6 +83,60 @@ describe('remarkAdmonition', () => {
         ],
       },
     ]);
+  });
+
+  it('marks ??? as collapse closed and ???+ as open', () => {
+    const closed: MnRoot = {
+      type: 'root',
+      children: [
+        { type: 'html', value: ADMONITION_START },
+        {
+          type: 'paragraph',
+          children: [
+            { type: 'text', value: '??? example "化学反应焓变的测定"' },
+          ],
+        },
+        {
+          type: 'paragraph',
+          children: [{ type: 'text', value: 'code' }],
+        },
+        { type: 'html', value: ADMONITION_END },
+      ],
+    };
+    remarkAdmonition()(closed);
+    expect(closed.children).toEqual([
+      {
+        type: 'admonition',
+        admonitionType: 'example',
+        collapse: 'closed',
+        title: [{ type: 'text', value: '化学反应焓变的测定' }],
+        children: [
+          {
+            type: 'paragraph',
+            children: [{ type: 'text', value: 'code' }],
+          },
+        ],
+      },
+    ]);
+
+    const opened: MnRoot = {
+      type: 'root',
+      children: [
+        { type: 'html', value: ADMONITION_START },
+        {
+          type: 'paragraph',
+          children: [{ type: 'text', value: '???+ note "PTA"' }],
+        },
+        { type: 'html', value: ADMONITION_END },
+      ],
+    };
+    remarkAdmonition()(opened);
+    expect(opened.children?.[0]).toMatchObject({
+      type: 'admonition',
+      admonitionType: 'note',
+      collapse: 'open',
+      title: [{ type: 'text', value: 'PTA' }],
+    });
   });
 
   it('collapses one nested in a list item, indent and all', () => {

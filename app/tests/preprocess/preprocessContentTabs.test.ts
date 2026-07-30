@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { TAB, TAB_ITEM, TABS_END, TABS_START } from '~/consts/placeholders';
+import {
+  TAB,
+  TAB_ITEM,
+  TABS_END,
+  TABS_START,
+} from '~/utils/preprocess/placeholders';
 import preprocessContentTabs, {
   lineIndent,
   tabHead,
