@@ -10,6 +10,7 @@ import DocsShell from '~/components/DocsShell';
 import { DocSkeleton } from '~/components/ui/skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
+import { useHashScroll } from '~/hooks/useHashScroll';
 import { titleFromPath } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
 import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
@@ -122,6 +123,8 @@ const DocPage = ({ splat }: DocPageProps) => {
   useEffect(() => {
     if (!shouldRedirect) document.title = `${title} · CQU-openlib`;
   }, [title, shouldRedirect]);
+
+  useHashScroll(isSuccess && Boolean(file));
 
   const showDocSkeleton = useDeferredFlag(isPending);
 

@@ -16,6 +16,13 @@ body,
   min-height: 100%;
 }
 
+/* SiteHeader is sticky, so anchor targets would land underneath it. Applies to
+   native fragment navigation and scrollIntoView alike. */
+html {
+  scroll-padding-top: calc(var(--header-h) + 0.75rem);
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   background: var(--c-paper);
@@ -84,5 +91,10 @@ aside ul,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* Not covered by the durations above — scroll-behavior needs its own reset. */
+  html {
+    scroll-behavior: auto;
   }
 }
