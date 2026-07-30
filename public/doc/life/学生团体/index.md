@@ -13,3 +13,4 @@ updated: 2026-07-30
 - [喵呜社](喵呜社.md)（猫协）
 - [EF邦多利马群](EF邦多利马群.md)（少女乐队企划）
 - [Paradox同好会](Paradox同好会.md)
+- [CQUcraft](CQUcraft.md)（Minecraft）
