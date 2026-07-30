@@ -14,7 +14,8 @@
     "lint": "biome lint .",
     "format": "biome format .",
     "check": "biome check .",
-    "check:fix": "biome check . --write"
+    "check:fix": "biome check . --write",
+    "prepare": "husky"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -43,6 +44,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
+    "husky": "^9.1.7",
     "opentype.js": "^2.0.0",
     "pinyin-pro": "^3.28.1",
     "remark": "^15.0.1",

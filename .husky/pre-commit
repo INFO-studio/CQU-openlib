@@ -1,0 +1,6 @@
+set -e
+
+# Biome rewrites staged files in place, so re-stage whatever it touched.
+# Unfixable lint errors exit non-zero and abort the commit.
+pnpm exec biome check --write --no-errors-on-unmatched --staged
+git update-index --again
