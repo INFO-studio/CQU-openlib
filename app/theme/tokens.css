@@ -72,7 +72,12 @@
   --form-error-border: #e8a4a4;
 }
 
-html[data-theme="dark"] {
+/*
+  `.theme-dark` is the same palette as an opt-in island, for surfaces that are
+  always dark regardless of the reader's theme (the maintainer console).
+*/
+html[data-theme="dark"],
+.theme-dark {
   color-scheme: dark;
 
   --c-primary: rgba(120, 155, 230, 1);

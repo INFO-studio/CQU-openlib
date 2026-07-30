@@ -1,5 +1,7 @@
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { statusTone } from '~/admin/lib/status';
+import { cn } from '~/lib/cn';
 
 const COPIED_MS = 1600;
 
@@ -39,14 +41,31 @@ export const CopyJsonButton = ({ value }: Props) => {
     }
   };
 
+  const label = failed ? '复制失败' : copied ? '已复制 JSON' : '复制 JSON';
+
   return (
     <button
       type="button"
-      className={copied ? 'admin-card__copy is-done' : 'admin-card__copy'}
+      title={label}
+      aria-label={label}
       onClick={() => void onCopy()}
+      style={copied ? { color: statusTone('completed') } : undefined}
+      className={cn(
+        'relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded transition-colors',
+        failed
+          ? 'text-[var(--form-error-fg)]'
+          : copied
+            ? ''
+            : 'text-icon hover:bg-mist hover:text-ink',
+      )}
     >
-      {copied ? <Check size={13} /> : <Copy size={13} />}
-      {failed ? '复制失败' : copied ? '已复制' : '复制 JSON'}
+      {copied ? (
+        <Check size={14} />
+      ) : failed ? (
+        <X size={14} />
+      ) : (
+        <Copy size={14} />
+      )}
     </button>
   );
 };

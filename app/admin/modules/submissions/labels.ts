@@ -1,4 +1,5 @@
-import type { FormType } from '~/admin/lib/api';
+import type { FormType, SubmissionItem } from '~/admin/lib/api';
+import { statusLabel } from '~/admin/lib/status';
 
 export const FORM_TYPE_META: Record<FormType, { label: string; tone: string }> =
   {
@@ -72,6 +73,61 @@ export const formatBytes = (n: unknown): string => {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+};
+
+const text = (value: unknown): string =>
+  typeof value === 'string' ? value.trim() : '';
+
+/** Fields that read best as a one-line preview, in priority order per type. */
+const SUMMARY_KEYS: Record<string, readonly string[]> = {
+  feedback: ['content', 'page'],
+  textbook: ['course', 'courseCode'],
+  upload: ['courseCode', 'purpose', 'credit'],
+  club: ['name'],
+  group: ['name'],
+};
+
+const FALLBACK_KEYS = ['name', 'title', 'course', 'content', 'intro'] as const;
+
+/** One scannable line per row, so triage rarely needs an open. */
+export const submissionSummary = (item: SubmissionItem): string => {
+  const payload = (item.payload ?? {}) as Record<string, unknown>;
+  const keys = SUMMARY_KEYS[item.type] ?? FALLBACK_KEYS;
+  for (const key of keys) {
+    const value = text(payload[key]);
+    if (value) return value.replace(/\s+/g, ' ');
+  }
+  for (const value of Object.values(payload)) {
+    const found = text(value);
+    if (found) return found.replace(/\s+/g, ' ');
+  }
+  return '无可预览字段';
+};
+
+/** Lowercased haystack for the rail search box. */
+export const submissionSearchText = (item: SubmissionItem): string =>
+  [
+    item.id,
+    typeLabel(item.type),
+    statusLabel(item.status),
+    item.completionNote ?? '',
+    JSON.stringify(item.payload ?? {}),
+  ]
+    .join(' ')
+    .toLowerCase();
+
+/** Compact stamp for list rows — the full timestamp lives in the detail. */
+export const formatShanghaiShort = (iso: string): string => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(d);
 };
 
 export const formatShanghai = (iso: string): string => {

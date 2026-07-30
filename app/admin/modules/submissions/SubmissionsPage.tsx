@@ -1,43 +1,16 @@
-import { ChevronRight } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AdminError } from '~/admin/AdminShell';
 import {
   type FormType,
   fetchSubmissions,
   type SubmissionItem,
 } from '~/admin/lib/api';
-import {
-  STATUS_META,
-  SUBMISSION_STATUSES,
-  type SubmissionStatus,
-  statusLabel,
-  statusTone,
-} from '~/admin/lib/status';
-import { CopyJsonButton } from '~/admin/modules/submissions/CopyJsonButton';
-import {
-  FORM_TYPE_META,
-  formatShanghai,
-  typeLabel,
-  typeTone,
-} from '~/admin/modules/submissions/labels';
-import { renderPayload } from '~/admin/modules/submissions/renderPayload';
-import { StatusControls } from '~/admin/modules/submissions/StatusControls';
+import type { SubmissionStatus } from '~/admin/lib/status';
+import { FilterRail } from '~/admin/modules/submissions/FilterRail';
+import { submissionSearchText } from '~/admin/modules/submissions/labels';
+import { SubmissionRow } from '~/admin/modules/submissions/SubmissionRow';
 import { ActivitySpinner } from '~/components/ui/activity-spinner';
-
-const TYPE_FILTERS: { value: '' | FormType; label: string }[] = [
-  { value: '', label: '全部类型' },
-  ...Object.entries(FORM_TYPE_META).map(([value, meta]) => ({
-    value: value as FormType,
-    label: meta.label,
-  })),
-];
-
-const STATUS_FILTERS: { value: '' | SubmissionStatus; label: string }[] = [
-  { value: '', label: '全部状态' },
-  ...SUBMISSION_STATUSES.map((value) => ({
-    value,
-    label: STATUS_META[value].label,
-  })),
-];
 
 type Props = {
   /** Bumps when shell unlocks / reloads. */
@@ -45,221 +18,161 @@ type Props = {
   onUnauthorized: () => void;
 };
 
+const tally = <T extends string>(
+  items: SubmissionItem[],
+  pick: (item: SubmissionItem) => T,
+): Record<string, number> => {
+  const counts: Record<string, number> = {};
+  for (const item of items) {
+    const key = pick(item);
+    counts[key] = (counts[key] ?? 0) + 1;
+  }
+  return counts;
+};
+
+/**
+ * The whole set is fetched once and filtered in the browser: the collection is
+ * small, and it keeps the rail's counts honest — each facet tallies under the
+ * other facets rather than under itself.
+ */
 export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
+  const [items, setItems] = useState<SubmissionItem[]>([]);
   const [type, setType] = useState<'' | FormType>('');
   const [status, setStatus] = useState<'' | SubmissionStatus>('');
-  const [items, setItems] = useState<SubmissionItem[]>([]);
-  const [count, setCount] = useState(0);
+  const [query, setQuery] = useState('');
+  const [openId, setOpenId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [openId, setOpenId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const res = await fetchSubmissions({ type, status });
+    const res = await fetchSubmissions();
     if (!res.success) {
       if (res.message === 'unauthorized') onUnauthorized();
       else setError(res.message || '加载失败');
       setItems([]);
-      setCount(0);
       setLoading(false);
       return;
     }
     setItems(res.items ?? []);
-    setCount(res.count ?? res.items?.length ?? 0);
     setLoading(false);
-  }, [type, status, onUnauthorized]);
+  }, [onUnauthorized]);
 
   useEffect(() => {
     void load();
   }, [load, refreshToken]);
 
-  const summary = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const item of items) {
-      map.set(item.status, (map.get(item.status) ?? 0) + 1);
-    }
-    return [...map.entries()];
-  }, [items]);
+  const searched = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((item) => submissionSearchText(item).includes(q));
+  }, [items, query]);
+
+  const typeCounts = useMemo(
+    () =>
+      tally(
+        searched.filter((item) => !status || item.status === status),
+        (item) => item.type,
+      ),
+    [searched, status],
+  );
+
+  const statusCounts = useMemo(
+    () =>
+      tally(
+        searched.filter((item) => !type || item.type === type),
+        (item) => item.status,
+      ),
+    [searched, type],
+  );
+
+  const visible = useMemo(
+    () =>
+      searched.filter(
+        (item) =>
+          (!type || item.type === type) && (!status || item.status === status),
+      ),
+    [searched, type, status],
+  );
 
   const patchItem = useCallback((next: SubmissionItem) => {
     setItems((prev) => prev.map((it) => (it.id === next.id ? next : it)));
   }, []);
 
+  const onReset = useCallback(() => {
+    setQuery('');
+    setType('');
+    setStatus('');
+  }, []);
+
   return (
-    <section className="admin-submissions">
-      <header className="admin-submissions__head">
-        <div>
-          <h1 className="admin-submissions__title">表单收集</h1>
-          <p className="admin-submissions__lede">全量字段 · 共 {count} 条</p>
-        </div>
-        <button
-          type="button"
-          className="admin-submissions__refresh"
-          onClick={() => void load()}
-          disabled={loading}
-        >
-          刷新
-        </button>
-      </header>
-
-      <div className="admin-filters" role="tablist" aria-label="按类型筛选">
-        {TYPE_FILTERS.map((f) => (
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
+      <section className="min-w-0" aria-label="表单收集">
+        <header className="mb-4 flex items-baseline justify-between gap-4 border-b border-line pb-3.5">
+          <div>
+            <h1 className="m-0 font-display text-2xl font-semibold">
+              表单收集
+            </h1>
+            <p className="m-0 mt-1 font-mono text-[0.74rem] tabular-nums tracking-wide text-icon">
+              {visible.length === items.length
+                ? `${items.length} 条`
+                : `${visible.length} / ${items.length} 条`}
+            </p>
+          </div>
           <button
-            key={f.value || 'all-type'}
             type="button"
-            role="tab"
-            aria-selected={type === f.value}
-            className={
-              type === f.value
-                ? 'admin-filters__chip is-active'
-                : 'admin-filters__chip'
-            }
-            onClick={() => setType(f.value)}
+            onClick={() => void load()}
+            disabled={loading}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-line bg-panel px-3 py-2 text-[0.82rem] text-muted transition-colors hover:bg-mist hover:text-ink disabled:cursor-progress disabled:opacity-50"
           >
-            {f.label}
+            <RefreshCw size={13} aria-hidden />
+            刷新
           </button>
-        ))}
-      </div>
+        </header>
 
-      <div className="admin-filters" role="tablist" aria-label="按状态筛选">
-        {STATUS_FILTERS.map((f) => (
-          <button
-            key={f.value || 'all-status'}
-            type="button"
-            role="tab"
-            aria-selected={status === f.value}
-            className={
-              status === f.value
-                ? 'admin-filters__chip is-active'
-                : 'admin-filters__chip'
-            }
-            onClick={() => setStatus(f.value)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+        {error ? <AdminError>{error}</AdminError> : null}
 
-      {summary.length > 0 ? (
-        <p className="admin-submissions__summary">
-          {summary.map(([s, n]) => (
-            <span key={s}>
-              <i style={{ background: statusTone(s) }} />
-              {statusLabel(s)} {n}
-            </span>
-          ))}
-        </p>
-      ) : null}
+        {loading ? (
+          <div className="grid min-h-48 place-items-center text-icon" aria-busy>
+            <ActivitySpinner size={28} label="加载中" />
+          </div>
+        ) : visible.length === 0 ? (
+          <p className="m-0 rounded-xl border border-dashed border-line px-4 py-12 text-center text-[0.88rem] text-icon">
+            {items.length === 0
+              ? '还没有提交记录'
+              : '没有符合当前筛选的记录，换个条件试试'}
+          </p>
+        ) : (
+          <ul className="m-0 grid list-none gap-2 p-0">
+            {visible.map((item) => (
+              <SubmissionRow
+                key={item.id}
+                item={item}
+                open={openId === item.id}
+                onToggle={() =>
+                  setOpenId((prev) => (prev === item.id ? null : item.id))
+                }
+                onUpdated={patchItem}
+                onUnauthorized={onUnauthorized}
+              />
+            ))}
+          </ul>
+        )}
+      </section>
 
-      {loading ? (
-        <div className="admin-loading" aria-busy="true">
-          <span className="admin-loading__spin">
-            <ActivitySpinner size={32} />
-          </span>
-        </div>
-      ) : null}
-      {error ? <p className="admin-gate__error">{error}</p> : null}
-
-      {!loading && !error && items.length === 0 ? (
-        <p className="admin-empty">还没有提交记录</p>
-      ) : null}
-
-      {!loading ? (
-        <ul className="admin-list">
-          {items.map((item) => {
-            const open = openId === item.id;
-            return (
-              <li key={item.id} className="admin-card">
-                <button
-                  type="button"
-                  className="admin-card__head"
-                  onClick={() => setOpenId(open ? null : item.id)}
-                  aria-expanded={open}
-                >
-                  <span
-                    className="admin-card__badge"
-                    style={{
-                      color: typeTone(item.type),
-                      borderColor: typeTone(item.type),
-                    }}
-                  >
-                    {typeLabel(item.type)}
-                  </span>
-                  <span
-                    className="admin-card__badge"
-                    style={{
-                      color: statusTone(item.status),
-                      borderColor: statusTone(item.status),
-                    }}
-                  >
-                    {statusLabel(item.status)}
-                  </span>
-                  <span className="admin-card__time">
-                    {formatShanghai(
-                      typeof item.createdAt === 'string'
-                        ? item.createdAt
-                        : String(item.createdAt),
-                    )}
-                  </span>
-                  <span className="admin-card__id">{item.id.slice(-8)}</span>
-                  <ChevronRight
-                    size={16}
-                    aria-hidden="true"
-                    className={
-                      open ? 'admin-card__chev is-open' : 'admin-card__chev'
-                    }
-                  />
-                </button>
-
-                {open ? (
-                  <div className="admin-card__body">
-                    <div className="admin-card__tools">
-                      <CopyJsonButton value={item} />
-                    </div>
-                    <StatusControls
-                      item={item}
-                      onUpdated={(next) => {
-                        if (status && next.status !== status) {
-                          setItems((prev) =>
-                            prev.filter((it) => it.id !== next.id),
-                          );
-                          setCount((n) => Math.max(0, n - 1));
-                          return;
-                        }
-                        patchItem(next);
-                      }}
-                      onUnauthorized={onUnauthorized}
-                    />
-                    {renderPayload(
-                      (item.payload ?? {}) as Record<string, unknown>,
-                    )}
-                    <dl className="admin-meta">
-                      <div>
-                        <dt>id</dt>
-                        <dd>
-                          <code>{item.id}</code>
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>ipHash</dt>
-                        <dd>
-                          <code>{item.ipHash ?? '—'}</code>
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>ua</dt>
-                        <dd className="admin-meta__ua">{item.ua ?? '—'}</dd>
-                      </div>
-                    </dl>
-                  </div>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </section>
+      <FilterRail
+        query={query}
+        onQueryChange={setQuery}
+        type={type}
+        onTypeChange={setType}
+        typeCounts={typeCounts}
+        status={status}
+        onStatusChange={setStatus}
+        statusCounts={statusCounts}
+        total={searched.length}
+        onReset={onReset}
+      />
+    </div>
   );
 };
