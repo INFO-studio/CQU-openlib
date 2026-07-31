@@ -12,10 +12,16 @@
 
 # Local tooling caches and agent state
 **/.ruff_cache/
-/.agents/
+**/__pycache__/
 
 # Logo master renders (regenerate with pnpm logo:generate)
 /tools/logo/out/
+
+# Local PDF compress scratch (large binaries; keep scripts only)
+/tools/pdf_optimize/**/*.pdf
+/tools/pdf_optimize/out/
+/tools/pdf_optimize/.venv/
+/tools/pdf_optimize/tessdata/
 
 # IDE
 /.idea/
