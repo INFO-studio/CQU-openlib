@@ -42,7 +42,7 @@ describe('传感器技术 full DocPage pipeline', () => {
     );
     const html = htmlOf(parser(ast));
     console.log(html.slice(0, 600));
-    expect(html).not.toContain(':l-quote:');
+    expect(html).not.toContain(':l-book-open:');
     expect(html).toContain('<svg');
   });
 });

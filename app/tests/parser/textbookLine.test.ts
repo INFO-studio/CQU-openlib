@@ -16,7 +16,7 @@ import {
 
 const md = `## 资源
 
-    * [教材](http://x) - :l-quote:\`传感器原理与实验教程\` - :l-user:\`何光宏\` - :l-printer:\`机械工业出版社\`
+    * [教材](http://x) - :l-book-open:\`传感器原理与实验教程\` - :l-user:\`何光宏\` - :l-printer:\`机械工业出版社\` - :l-gallery-vertical-end:\`第2版\` - :l-scan-barcode:\`9787111000000\`
 `;
 const toAst = async (source: string): Promise<Mn> => {
   const processor = unified()
@@ -44,7 +44,9 @@ describe('textbook list line (4-space indent)', () => {
   });
   it('renders icons and inline code without visible backticks', async () => {
     const html = htmlOf(parser(await toAst(md)));
-    expect(html).not.toContain(':l-quote:');
+    expect(html).not.toContain(':l-book-open:');
+    expect(html).not.toContain(':l-gallery-vertical-end:');
+    expect(html).not.toContain(':l-scan-barcode:');
     expect(html).not.toContain('`传感器');
     expect(html).toContain('传感器原理与实验教程');
     expect(html).toContain('<svg');

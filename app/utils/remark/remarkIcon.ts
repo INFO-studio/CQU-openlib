@@ -3,7 +3,8 @@ import { mapTextNodes } from '~/utils/remark/mapTextNodes';
 
 const parseIcons = (value: string): Mn[] => {
   if (!value.length) return [];
-  const regex = /:([A-Za-z0-9_-]+):/;
+  // Only `l-` shortnames are icons, so prose like `8:00-8:30` stays prose.
+  const regex = /:(l-[a-z0-9-]+):/;
   const match = regex.exec(value);
 
   if (!match) return [{ type: 'text', value }];

@@ -37,7 +37,7 @@ describe('传感器技术.md pipeline', () => {
       (await processor.run(processor.parse(preprocess(raw)))) as Mn,
     );
     const html = htmlOf(parser(ast));
-    expect(html).not.toContain(':l-quote:');
+    expect(html).not.toContain(':l-book-open:');
     expect(html).not.toContain(':l-user:');
     expect(html).not.toContain(':l-printer:');
     expect(html).not.toContain('`传感器');

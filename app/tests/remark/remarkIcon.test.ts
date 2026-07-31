@@ -25,6 +25,24 @@ describe('remarkIcon', () => {
     });
   });
 
+  it('leaves colon-wrapped prose alone', () => {
+    const tree: MnRoot = {
+      type: 'root',
+      children: [
+        {
+          type: 'paragraph',
+          children: [{ type: 'text', value: '早上 8:00-8:30 退卡' }],
+        },
+      ],
+    };
+
+    remarkIcon()(tree);
+
+    expect(tree.children?.[0]).toMatchObject({
+      children: [{ type: 'text', value: '早上 8:00-8:30 退卡' }],
+    });
+  });
+
   it('parses multiple icons in one text node', () => {
     const tree: MnRoot = {
       type: 'root',

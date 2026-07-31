@@ -24,7 +24,7 @@
 
 ---
 
-## 资源
+## 资源  
 #### Python安装包
 === "3.13.2"
     * [Windows installer (64-bit)](https://api.cqu-openlib.cn/file?key=iN2yU2hqvvud)

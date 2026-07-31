@@ -1,23 +1,19 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { kebabToPascalCase, resolveLucideIconName } from '~/lib/icons';
+import { resolveLucideIconName } from '~/lib/icons';
 
 describe('resolveLucideIconName', () => {
-  it('resolves l- and lucide- prefixes', () => {
+  it('strips the l- prefix', () => {
     expect(resolveLucideIconName('l-book')).toBe('book');
-    expect(resolveLucideIconName('l-quote')).toBe('quote');
-    expect(resolveLucideIconName('l-user')).toBe('user');
-    expect(resolveLucideIconName('l-printer')).toBe('printer');
-    expect(resolveLucideIconName('lucide-arrow-right')).toBe('arrow-right');
-  });
-
-  it('maps legacy material icons', () => {
-    expect(resolveLucideIconName('material-book')).toBe('book');
-    expect(resolveLucideIconName('material-arrow-up-circle')).toBe(
-      'circle-arrow-up',
+    expect(resolveLucideIconName('l-book-open')).toBe('book-open');
+    expect(resolveLucideIconName('l-gallery-vertical-end')).toBe(
+      'gallery-vertical-end',
     );
   });
 
-  it('converts kebab to PascalCase', () => {
-    expect(kebabToPascalCase('circle-arrow-up')).toBe('CircleArrowUp');
+  it('rejects anything without the l- prefix', () => {
+    expect(resolveLucideIconName('printer')).toBeNull();
+    expect(resolveLucideIconName('material-book')).toBeNull();
+    expect(resolveLucideIconName('l-')).toBeNull();
+    expect(resolveLucideIconName('  ')).toBeNull();
   });
 });
