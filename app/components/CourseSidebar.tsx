@@ -255,7 +255,7 @@ const CourseSidebar = ({
                       ? 'bg-primary text-paper'
                       : enabled
                         ? 'text-muted hover:bg-panel hover:text-ink'
-                        : 'cursor-default text-muted/25',
+                        : 'cursor-not-allowed text-muted opacity-30',
                   )}
                   onClick={() => {
                     if (!enabled) return;

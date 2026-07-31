@@ -220,7 +220,7 @@ const DocPage = ({ splat }: DocPageProps) => {
             }
             return parser(node);
           })}
-          <footer className="mt-8 mb-16 border-t border-line pt-3 text-[0.8125rem] text-muted">
+          <footer className="@container mt-8 mb-16 border-t border-line pt-3 text-[0.8125rem] text-muted">
             <p className="m-0">
               内容来自社区贡献。如有问题请通过
               <Link
@@ -259,10 +259,12 @@ const DocPage = ({ splat }: DocPageProps) => {
                 。
               </p>
             ) : null}
-            <p className="mt-4 m-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-left leading-relaxed">
+            <p className="mt-4 m-0 flex flex-col items-start gap-y-0.5 leading-relaxed @[32rem]:flex-row @[32rem]:flex-wrap @[32rem]:items-baseline @[32rem]:gap-x-1.5">
               <span>Copyright © 2024 - 2026</span>
               <span>CQU-openlib Opensource Community</span>
-              <span aria-hidden="true">·</span>
+              <span className="hidden @[32rem]:inline" aria-hidden="true">
+                ·
+              </span>
               <a
                 href="https://www.gnu.org/licenses/gpl-3.0.html"
                 target="_blank"
