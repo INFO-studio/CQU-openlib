@@ -1,0 +1,4 @@
+pymupdf>=1.24
+pillow>=10.0
+numpy>=1.26
+pikepdf>=8.0
