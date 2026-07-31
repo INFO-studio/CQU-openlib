@@ -18,6 +18,7 @@ import {
   type SidebarNode,
   titleFromPath,
 } from '../app/lib/nav';
+import { compareTitles } from '../app/lib/titleOrder';
 import { letterOfTitle } from './courseLetter';
 import { listFolderPages } from './doc-markdown';
 
@@ -145,14 +146,10 @@ const buildTree = (docRoot: string, sectionDir: string): SidebarNode[] => {
       path: urlFromDocFile(docRoot, full),
     });
   }
-  return nodes.sort((a, b) =>
-    a.title.localeCompare(b.title, 'zh-CN', { sensitivity: 'base' }),
-  );
+  return nodes.sort((a, b) => compareTitles(a.title, b.title));
 };
 const sortEntries = (entries: SearchEntry[]) => {
-  return entries.sort((a, b) =>
-    a.title.localeCompare(b.title, 'zh-CN', { sensitivity: 'base' }),
-  );
+  return entries.sort((a, b) => compareTitles(a.title, b.title));
 };
 const writeChunk = (dir: string, chunk: SearchChunkFile): SearchChunkMeta => {
   const file = `${chunk.id}.json`;

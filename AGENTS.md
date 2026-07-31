@@ -25,6 +25,18 @@
 2. **写更新日志要同步改三处文件**：当天日志、`更新日志/index.md`（顶部链接 + 年/季度/月 tab）、首页 `index.md` 公告的日期链接。漏一处站点上就对不上。
 3. **`:l-xxx:` 图标必须先在 `app/utils/parser/parserIcon.tsx` 的 `STATIC_ICONS` 注册**，否则页面上渲染成灰色字面文本。加完跑 `pnpm test`，`iconCoverage` 用例会兜住漏注册。
 
+## 动 `tools/pdf_optimize/` 之前
+
+规范在 `.agents/skills/pdf-optimize/`，入口 `SKILL.md`：
+
+| 你要做的事 | 读这个 |
+| --- | --- |
+| 安装、probe/run/verify | `setup-and-usage.md` |
+| 压体积、调 `--dpi` / `--mode` | `compression.md` |
+| 去广告（必须在 run 之前） | `ad-removal.md` |
+| 要不要 `--ocr` | `ocr.md` |
+| 产物校验、勿提交大文件 | `integrity.md` |
+
 ## 文档与代码习惯
 
 - 优先改现有文件与既有写法；不要顺手大重构或扩写无关文档。抄先例，不要发明写法。

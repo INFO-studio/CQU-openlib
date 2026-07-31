@@ -9,6 +9,7 @@
     "preview": "vp preview",
     "typecheck": "tsc",
     "test": "vp test",
+    "codes:extract": "tsx tools/course-codes/extract.ts",
     "logo:generate": "tsx tools/logo/generate.ts",
     "image:optimize": "tsx tools/image/optimize.ts",
     "lint": "biome lint .",

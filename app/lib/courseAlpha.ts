@@ -1,4 +1,6 @@
 import type { SidebarNode } from '~/lib/nav';
+// Relative: this module is loaded by vite.config.ts, where `~` is not resolved.
+import { compareTitles } from './titleOrder';
 export const ALPHA_LETTERS = [
   ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
   '#',
@@ -27,9 +29,7 @@ export const groupCoursesByAlpha = (tree: SidebarNode[]): AlphaGroup[] => {
     buckets.set(letter, list);
   }
   for (const list of buckets.values()) {
-    list.sort((a, b) =>
-      a.title.localeCompare(b.title, 'zh-CN', { sensitivity: 'base' }),
-    );
+    list.sort((a, b) => compareTitles(a.title, b.title));
   }
   return ALPHA_LETTERS.filter((letter) => buckets.has(letter)).map(
     (letter) => ({
