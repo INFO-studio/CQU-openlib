@@ -101,6 +101,39 @@ export const sectionForPath = (pathname: string): NavSection | undefined => {
     (s) => clean === s.path || clean.startsWith(`${s.path}/`),
   );
 };
+
+const titleInTree = (
+  nodes: SidebarNode[],
+  path: string,
+): string | undefined => {
+  for (const node of nodes) {
+    if (node.path === path) return node.title;
+    if (node.children?.length) {
+      const found = titleInTree(node.children, path);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
+
+/** Sidebar / section label for a public URL, if present in nav-index. */
+export const titleFromNav = (
+  pathname: string,
+  nav: DocNavIndex | null | undefined,
+): string | undefined => {
+  const clean = pathname.replace(/\/+$/, '') || '/';
+  if (clean === '/') return '首页';
+  // Section roots are known without waiting for nav-index.json.
+  const sectionRoot = NAV_SECTIONS.find((s) => s.path === clean);
+  if (sectionRoot) return sectionRoot.label;
+  if (!nav) return undefined;
+  for (const section of nav.sections) {
+    const found = titleInTree(section.tree, clean);
+    if (found) return found;
+  }
+  return undefined;
+};
+
 export const titleFromPath = (filePath: string): string => {
   const base = filePath.split('/').pop() ?? filePath;
   const name = base.replace(/\.mdx?$/i, '');

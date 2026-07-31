@@ -12,9 +12,10 @@ import { DocSkeleton } from '~/components/ui/skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { useHashScroll } from '~/hooks/useHashScroll';
-import { titleFromPath } from '~/lib/nav';
+import { titleFromNav, titleFromPath } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
 import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
+import { useNavIndex } from '~/queries/nav';
 import type { MnRoot } from '~/types/mdast';
 import { frontmatterFromAst } from '~/utils/docFrontmatter';
 import parser from '~/utils/parser';
@@ -29,6 +30,16 @@ import {
   remarkKeys,
 } from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
+
+const SITE_TITLE_SUFFIX = ' · CQU-openlib';
+
+const applyDocumentTitle = (name: string) => {
+  const next =
+    name === 'CQU-openlib' || name === '首页'
+      ? 'CQU-openlib'
+      : `${name}${SITE_TITLE_SUFFIX}`;
+  if (document.title !== next) document.title = next;
+};
 
 const UpdatedMeta = ({ updated }: { updated: string }) => (
   <p className="m-0 -mt-0.5 mb-1 text-[0.8125rem] leading-relaxed text-muted">
@@ -110,20 +121,44 @@ const DocPage = ({ splat }: DocPageProps) => {
 
   const toc = useMemo(() => (file ? extractToc(file.ast) : []), [file]);
   const pathTitle = useMemo(() => decodePathname(titleFromPath(page)), [page]);
-  const hasH1 = useMemo(() => (file ? hasH1Heading(file.ast) : true), [file]);
+  const { data: nav } = useNavIndex();
+  const linkTitle = useMemo(
+    () => titleFromNav(pathname, nav) ?? pathTitle,
+    [pathname, nav, pathTitle],
+  );
+  const hasH1 = useMemo(() => (file ? hasH1Heading(file.ast) : false), [file]);
   const frontmatter = useMemo(
     () => (file ? frontmatterFromAst(file.ast) : {}),
     [file],
   );
+  /** Bookmark / UI label: prefer parsed H1, else the nav/link title. */
   const title = useMemo(() => {
-    if (!file) return pathTitle || 'CQU-openlib';
-    if (hasH1) return pageTitleFromAst(file.ast);
-    return pathTitle || 'CQU-openlib';
-  }, [file, hasH1, pathTitle]);
+    if (file && hasH1) {
+      const fromAst = pageTitleFromAst(file.ast);
+      if (fromAst && fromAst !== 'CQU-openlib') return fromAst;
+    }
+    return linkTitle || 'CQU-openlib';
+  }, [file, hasH1, linkTitle]);
 
+  // Tab title: swap once from the known link/nav title (no blanking).
+  // After AST is ready, refine to H1 only when it differs — never clear first.
   useEffect(() => {
-    if (!shouldRedirect) document.title = `${title} · CQU-openlib`;
-  }, [title, shouldRedirect]);
+    if (shouldRedirect) return;
+
+    if (!file) {
+      if (linkTitle) applyDocumentTitle(linkTitle);
+      return;
+    }
+
+    if (hasH1) {
+      const fromAst = pageTitleFromAst(file.ast);
+      if (fromAst && fromAst !== 'CQU-openlib') {
+        applyDocumentTitle(fromAst);
+        return;
+      }
+    }
+    if (linkTitle) applyDocumentTitle(linkTitle);
+  }, [file, hasH1, linkTitle, shouldRedirect]);
 
   useHashScroll(isSuccess && Boolean(file));
 
