@@ -60,8 +60,6 @@ const parser = (mn: Mn) =>
     .with({ type: 'text' }, parserText)
     .with({ type: 'thematicBreak' }, parserThematicBreak)
     .with({ type: 'yaml' }, parserYaml)
-    .otherwise(() => (
-      <div className="rounded bg-accent px-2 py-1 text-sm text-paper">{`unknown node: ${mn.type}`}</div>
-    ));
+    .otherwise(() => null);
 
 export default parser;

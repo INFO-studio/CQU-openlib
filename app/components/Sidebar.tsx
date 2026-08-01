@@ -62,7 +62,7 @@ const TreeNode = ({
   const linkClass = cn(
     'min-w-0 flex-1 truncate rounded px-1.5 py-0.5 text-[0.8125rem] no-underline transition-colors',
     tone === 'exact' && 'bg-primary-soft font-medium text-ink',
-    tone === 'ancestor' && 'bg-[var(--c-primary-faint)] text-ink',
+    tone === 'ancestor' && 'bg-primary-faint text-ink',
     tone === 'none' && 'text-muted hover:bg-mist hover:text-ink',
   );
 

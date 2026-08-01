@@ -17,7 +17,7 @@ const SiteHeader = ({ currentPath }: Props) => {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-panel/90 backdrop-blur-md">
-      <div className="mx-auto grid min-h-[var(--header-h)] w-full max-w-[96rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 min-[400px]:gap-3 min-[400px]:px-3 md:gap-[var(--shell-gap)] md:px-5 lg:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_auto] xl:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_var(--toc-w)]">
+      <div className="mx-auto grid min-h-header w-full max-w-[96rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 min-[400px]:gap-3 min-[400px]:px-3 md:gap-shell md:px-5 lg:grid-cols-docs-header xl:grid-cols-docs-toc">
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
           <Button
             variant="icon"

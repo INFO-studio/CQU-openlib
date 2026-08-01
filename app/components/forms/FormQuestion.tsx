@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
+import { cn } from '~/lib/cn';
 
-export const formLabelClass = 'block text-[0.95rem] font-medium text-ink';
-export const formHintClass = 'mt-2 text-sm leading-relaxed text-muted';
+const labelClass = 'block text-[0.95rem] font-medium text-ink';
+const hintClass = 'text-sm leading-relaxed text-muted';
 
 type Props = {
   index: string;
@@ -9,6 +10,10 @@ type Props = {
   required?: boolean;
   hint?: ReactNode;
   children: ReactNode;
+  /** Scroll target when this question fails validation. */
+  id?: string;
+  /** Shown under the control once the user has attempted to submit. */
+  error?: string;
 };
 
 export const FormQuestion = ({
@@ -17,9 +22,15 @@ export const FormQuestion = ({
   required,
   hint,
   children,
+  id,
+  error,
 }: Props) => (
-  <fieldset className="m-0 min-w-0 border-0 p-0">
-    <legend className={formLabelClass}>
+  <fieldset
+    id={id}
+    aria-invalid={error ? true : undefined}
+    className="m-0 min-w-0 border-0 p-0 scroll-mt-24"
+  >
+    <legend className={labelClass}>
       <span className="mr-1.5 inline-block min-w-[1.6rem] font-mono text-xs tracking-wide text-muted">
         {index}
       </span>
@@ -31,6 +42,11 @@ export const FormQuestion = ({
       ) : null}
     </legend>
     {children}
-    {hint ? <p className={formHintClass}>{hint}</p> : null}
+    {error ? (
+      <p className="mt-2 text-sm font-medium text-error">{error}</p>
+    ) : null}
+    {hint ? (
+      <p className={cn(error ? 'mt-1' : 'mt-2', hintClass)}>{hint}</p>
+    ) : null}
   </fieldset>
 );

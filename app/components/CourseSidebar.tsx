@@ -20,6 +20,7 @@ import {
 import type { SidebarNode } from '~/lib/nav';
 import { decodePathname } from '~/lib/paths';
 import { useSidebarStore } from '~/stores/sidebarStore';
+import { colors } from '~/theme/colors';
 
 type Props = {
   tree: SidebarNode[];
@@ -37,7 +38,7 @@ const ScrollMask = ({
   listClassName,
   centerPath,
   listRef: listRefProp,
-  fadeFrom = 'var(--c-paper)',
+  fadeFrom = colors.paper,
 }: {
   children: ReactNode;
   className?: string;
@@ -155,7 +156,7 @@ const CourseSidebar = ({
   tree,
   currentPath,
   onNavigate,
-  fadeFrom = 'var(--c-paper)',
+  fadeFrom = colors.paper,
 }: Props) => {
   const groups = useMemo(() => groupCoursesByAlpha(tree), [tree]);
   const { ensureAncestorsOpen, isExpanded, setOpen } = useSidebarStore();

@@ -1,6 +1,6 @@
 /** Shared contributor / contact draft fields used across community forms. */
 
-import { type ContactKind, validateContactFields } from '~/lib/formContact';
+import type { ContactKind } from '~/lib/formContact';
 
 export type IntroKind = 'text' | 'file';
 export type YesNo = 'yes' | 'no';
@@ -35,39 +35,6 @@ export type ContributorBlockOptions = {
   showAuthorCredit: boolean;
   /** Show intro (text / file) question. */
   showIntro: boolean;
-};
-
-export const padQuestionIndex = (n: number) => String(n).padStart(2, '0');
-
-/** How many question slots this block consumes (conditional contact not counted until visible). */
-export const contributorBaseQuestionCount = (
-  opts: ContributorBlockOptions,
-): number => {
-  let n = 1; // credit
-  if (opts.showAuthorCredit) n += 1;
-  if (opts.showIntro) n += 1;
-  n += 1; // canContact
-  return n;
-};
-
-export const validateContributor = (
-  values: ContributorDraft,
-  opts: ContributorBlockOptions,
-  introFile: File | null,
-): string | null => {
-  if (opts.showIntro) {
-    if (values.introKind === 'file' && !introFile) {
-      return '请选择介绍文件，或改选「纯文字」';
-    }
-  }
-
-  if (values.canContact !== 'yes' && values.canContact !== 'no') {
-    return '请选择是否可以联系您';
-  }
-  if (values.canContact === 'yes') {
-    return validateContactFields(values.contactKind, values.contact);
-  }
-  return null;
 };
 
 export type ContributorPayload = {

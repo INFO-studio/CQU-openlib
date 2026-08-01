@@ -20,7 +20,22 @@ type TokenResponse = {
   message?: string;
 };
 
-const MAX_BYTES = 50 * 1024 * 1024;
+/** Single source for the per-file cap: guard, error text and question hints. */
+export const MAX_UPLOAD_MB = 50;
+export const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+
+export const UPLOAD_HINT = `提交时才会开始上传；单文件不超过 ${MAX_UPLOAD_MB}MB。`;
+
+export const oversizeMessage = (file: File) =>
+  `「${file.name}」超过 ${MAX_UPLOAD_MB}MB 上限`;
+
+/** Validator for a required file question: presence, then the size cap. */
+export const requireFile =
+  (file: File | null, missing: string) => (): string | null => {
+    if (!file) return missing;
+    if (file.size > MAX_UPLOAD_BYTES) return oversizeMessage(file);
+    return null;
+  };
 
 export const IDLE_UPLOAD_PROGRESS: UploadProgress = {
   phase: 'idle',
@@ -66,8 +81,8 @@ export const uploadToQiniu = (
   onFileProgress?: (ratio: number) => void,
 ): Promise<StagingFileRef> =>
   new Promise((resolve, reject) => {
-    if (file.size > MAX_BYTES) {
-      reject(new Error(`「${file.name}」超过 50MB 上限`));
+    if (file.size > MAX_UPLOAD_BYTES) {
+      reject(new Error(oversizeMessage(file)));
       return;
     }
 

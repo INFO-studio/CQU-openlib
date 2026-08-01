@@ -19,7 +19,7 @@ body,
 /* SiteHeader is sticky, so anchor targets would land underneath it. Applies to
    native fragment navigation and scrollIntoView alike. */
 html {
-  scroll-padding-top: calc(var(--header-h) + 0.75rem);
+  scroll-padding-top: calc(var(--layout-header) + 0.75rem);
   scroll-behavior: smooth;
 }
 

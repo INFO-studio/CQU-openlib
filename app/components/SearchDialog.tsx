@@ -247,7 +247,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-[var(--c-backdrop)]" />
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-backdrop" />
         <Dialog.Popup
           className="fixed top-[10vh] left-1/2 z-51 w-[min(34rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-hidden rounded-[0.65rem] border border-line bg-elev shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
           aria-label="目录搜索"

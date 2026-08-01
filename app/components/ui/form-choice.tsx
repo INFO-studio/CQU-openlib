@@ -82,7 +82,7 @@ export const FormChoice = <T extends string>({
               className={cn(
                 'box-border h-4 w-4 shrink-0 rounded-full border-[1.5px]',
                 selected
-                  ? 'border-primary shadow-[inset_0_0_0_0.28rem_var(--c-primary)]'
+                  ? 'border-primary shadow-radio-dot'
                   : 'border-current opacity-55',
               )}
               aria-hidden="true"

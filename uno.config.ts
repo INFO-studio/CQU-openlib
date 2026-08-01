@@ -6,6 +6,8 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
+import { colors, paletteCss } from './app/theme/colors';
+import { height, layoutCss, minHeight, spacing } from './app/theme/layout';
 
 export default defineConfig({
   presets: [
@@ -19,21 +21,31 @@ export default defineConfig({
     presetIcons({ scale: 1.05 }),
   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
+  preflights: [{ getCSS: () => `${paletteCss}\n\n${layoutCss}` }],
   theme: {
     colors: {
-      ink: 'var(--c-ink)',
-      paper: 'var(--c-paper)',
-      mist: 'var(--c-mist)',
-      line: 'var(--c-line)',
-      muted: 'var(--c-muted)',
-      icon: 'var(--c-icon)',
-      primary: 'var(--c-primary)',
-      primarySoft: 'var(--c-primary-soft)',
-      accent: 'var(--c-accent)',
-      accentSoft: 'var(--c-accent-soft)',
-      panel: 'var(--c-panel)',
-      elev: 'var(--c-elev)',
-      codeBg: 'var(--c-code-bg)',
+      ...colors,
+      /* Filled per instance by Admonition's inline style. */
+      callout: 'var(--callout)',
+      'callout-bg': 'var(--callout-bg)',
+      'callout-title': 'var(--callout-title)',
+    },
+    spacing,
+    height,
+    minHeight,
+    boxShadow: {
+      'rail-active': 'inset 2px 0 0 var(--c-primary)',
+      'chip-outline': 'inset 0 0 0 1px var(--c-icon)',
+      'radio-dot': 'inset 0 0 0 0.28rem var(--c-primary)',
+      'drop-ring': '0 0 0 4px var(--c-primary-soft)',
+    },
+    /* Singular — uno reads theme[`gridTemplate${Column|Row}`]. */
+    gridTemplateColumn: {
+      /* The three shell layouts. Sidebar and toc collapse at their breakpoints,
+         and the header carries an extra auto column for its actions. */
+      docs: 'var(--layout-sidebar) minmax(0,1fr)',
+      'docs-toc': 'var(--layout-sidebar) minmax(0,1fr) var(--layout-toc)',
+      'docs-header': 'var(--layout-sidebar) minmax(0,1fr) auto',
     },
     fontFamily: {
       display: 'var(--font-display)',

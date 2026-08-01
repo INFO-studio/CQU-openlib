@@ -53,7 +53,7 @@ export const CopyJsonButton = ({ value }: Props) => {
       className={cn(
         'relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded transition-colors',
         failed
-          ? 'text-[var(--form-error-fg)]'
+          ? 'text-error'
           : copied
             ? ''
             : 'text-icon hover:bg-mist hover:text-ink',

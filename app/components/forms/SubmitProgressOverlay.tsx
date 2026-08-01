@@ -32,7 +32,7 @@ export const SubmitProgressOverlay = ({ open, progress }: Props) => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[color:var(--c-backdrop)] px-6 backdrop-blur-md"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-backdrop px-6 backdrop-blur-md"
       role="alertdialog"
       aria-busy="true"
       aria-live="polite"

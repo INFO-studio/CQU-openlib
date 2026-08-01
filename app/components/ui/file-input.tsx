@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import { cn } from '~/lib/cn';
+import { colors } from '~/theme/colors';
 
 type Props = {
   file: File | null;
@@ -87,7 +88,7 @@ export const FileInput = ({
           'cquol-file-input__drop relative flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border border-dashed px-4 py-8 text-center transition-[border-color,background-color,transform,box-shadow] duration-200 ease-out',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
           dragging
-            ? 'scale-[1.015] border-primary bg-primary-soft shadow-[0_0_0_4px_var(--c-primary-soft)]'
+            ? 'scale-[1.015] border-primary bg-primary-soft shadow-drop-ring'
             : file
               ? 'border-primary/45 bg-primary-faint hover:border-primary'
               : 'border-line bg-panel hover:border-primary/40 hover:bg-mist',
@@ -97,9 +98,12 @@ export const FileInput = ({
         <span
           aria-hidden="true"
           className={cn(
-            'pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--c-primary-soft),transparent_68%)] transition-opacity duration-300',
+            'pointer-events-none absolute inset-0 transition-opacity duration-300',
             dragging ? 'opacity-100' : 'opacity-0',
           )}
+          style={{
+            backgroundImage: `radial-gradient(circle at center, ${colors.primarySoft}, transparent 68%)`,
+          }}
         />
 
         <span

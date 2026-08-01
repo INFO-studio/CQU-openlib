@@ -42,7 +42,7 @@ const CodeBlock = ({ value, lang }: Props) => {
           '[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100',
           '[@media(hover:hover)_and_(pointer:fine)]:group-focus-within:opacity-100',
           copied &&
-            'text-[var(--admonition-success)] opacity-100! [@media(hover:hover)_and_(pointer:fine)]:opacity-100!',
+            'text-success opacity-100! [@media(hover:hover)_and_(pointer:fine)]:opacity-100!',
         )}
         aria-label={copied ? '已复制' : '复制代码'}
         onClick={onCopy}

@@ -1,27 +1,17 @@
 import { Link } from '@tanstack/react-router';
-import { type FormEvent, useState } from 'react';
-import { ContributorFields } from '~/components/forms/ContributorFields';
-import { FormDone } from '~/components/forms/FormDone';
-import { FormError } from '~/components/forms/FormError';
-import { FormQuestion } from '~/components/forms/FormQuestion';
-import { FormShell } from '~/components/forms/FormShell';
-import { FormStack } from '~/components/forms/FormStack';
-import { SubmitProgressOverlay } from '~/components/forms/SubmitProgressOverlay';
-import { Button } from '~/components/ui/button';
+import { type FormEvent, useCallback } from 'react';
+import { contributorItems } from '~/components/forms/contributorItems';
+import { FormPage } from '~/components/forms/FormPage';
 import { Input } from '~/components/ui/input';
 import { Textarea } from '~/components/ui/textarea';
 import { useFormDraft } from '~/hooks/useFormDraft';
+import { useFormSubmit } from '~/hooks/useFormSubmit';
 import {
   CONTRIBUTOR_DEFAULTS,
   type ContributorDraft,
   toContributorPayload,
-  validateContributor,
 } from '~/lib/formContributor';
-import {
-  IDLE_UPLOAD_PROGRESS,
-  submitFormWithFiles,
-  type UploadProgress,
-} from '~/lib/formSubmit';
+import { type FormItemInput, question, requireText } from '~/lib/formItems';
 
 type Props = {
   initialPage?: string;
@@ -38,160 +28,109 @@ const DEFAULTS: FeedbackDraft = {
   ...CONTRIBUTOR_DEFAULTS,
 };
 
-const TITLE = '页面反馈表单';
-const LEDE = '我们会认真聆听并对您的反馈作出适当的变化。';
-
-const FEEDBACK_CONTRIBUTOR_OPTS = {
+const CONTRIBUTOR_OPTS = {
   showAuthorCredit: false,
   showIntro: false,
 };
 
-const IDLE_PROGRESS = IDLE_UPLOAD_PROGRESS;
-
 export const FeedbackForm = ({ initialPage = '' }: Props) => {
-  const { values, setField, clear } = useFormDraft({
+  const { values, setField, setValues, clear } = useFormDraft({
     slug: 'feedback',
     defaults: DEFAULTS,
     seed: initialPage ? { page: initialPage } : undefined,
   });
-  const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [progress, setProgress] = useState<UploadProgress>(IDLE_PROGRESS);
+  const form = useFormSubmit('feedback');
 
-  const setContributorField = <K extends keyof ContributorDraft>(
-    key: K,
-    value: ContributorDraft[K],
-  ) => {
-    setField(
-      key as keyof FeedbackDraft,
-      value as FeedbackDraft[keyof FeedbackDraft],
-    );
-  };
+  const setContributor = useCallback(
+    (patch: Partial<ContributorDraft>) =>
+      setValues((prev) => ({ ...prev, ...patch })),
+    [setValues],
+  );
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (submitting) return;
-    setError(null);
+  const items: FormItemInput[] = [
+    question({
+      key: 'page',
+      label: '您认为有问题的页面是',
+      required: true,
+      validate: requireText(values.page, '请填写有问题的页面'),
+      children: (
+        <Input
+          name="page"
+          value={values.page}
+          onChange={(ev) => setField('page', ev.target.value)}
+          placeholder="/course/高等数学 或完整链接"
+          autoComplete="off"
+        />
+      ),
+    }),
 
-    if (!values.page.trim()) {
-      setError('请填写有问题的页面');
-      return;
-    }
-    if (!values.content.trim()) {
-      setError('请说明具体问题');
-      return;
-    }
+    question({
+      key: 'content',
+      label: '能否说明有什么问题',
+      required: true,
+      hint: (
+        <>
+          如遇教材等书籍改版或缺失等问题，请填写
+          <Link
+            to="/form/$type"
+            params={{ type: 'textbook' }}
+            className="mx-0.5 text-primary underline-offset-2 hover:underline"
+          >
+            教材收集表
+          </Link>
+          。
+        </>
+      ),
+      validate: requireText(values.content, '请说明具体问题'),
+      children: (
+        <Textarea
+          name="content"
+          value={values.content}
+          onChange={(ev) => setField('content', ev.target.value)}
+          placeholder="哪里错了、缺什么、链接失效……"
+        />
+      ),
+    }),
 
-    const contributorError = validateContributor(
+    ...contributorItems({
       values,
-      FEEDBACK_CONTRIBUTOR_OPTS,
-      null,
-    );
-    if (contributorError) {
-      setError(contributorError);
-      return;
-    }
+      onChange: setContributor,
+      introFile: null,
+      onIntroFileChange: () => {},
+      options: CONTRIBUTOR_OPTS,
+    }),
+  ];
 
-    setSubmitting(true);
-    setProgress(IDLE_UPLOAD_PROGRESS);
-
-    try {
-      const contributor = toContributorPayload(
-        values,
-        FEEDBACK_CONTRIBUTOR_OPTS,
-      );
-      await submitFormWithFiles({
-        type: 'feedback',
-        files: [],
-        onProgress: setProgress,
-        buildPayload: () => ({
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    void form.submit({
+      items,
+      buildPayload: () => {
+        const contributor = toContributorPayload(values, CONTRIBUTOR_OPTS);
+        return {
           content: values.content.trim(),
           page: values.page.trim(),
           credit: contributor.credit,
           canContact: contributor.canContact,
           contactKind: contributor.contactKind,
           contact: contributor.contact,
-        }),
-      });
-      clear();
-      setDone(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '提交失败，请稍后重试');
-    } finally {
-      setSubmitting(false);
-      setProgress(IDLE_PROGRESS);
-    }
+        };
+      },
+      onSuccess: clear,
+    });
   };
 
-  if (done) {
-    return (
-      <FormDone title={TITLE} lede={LEDE} onAgain={() => setDone(false)} />
-    );
-  }
-
   return (
-    <FormShell title={TITLE} lede={LEDE}>
-      <SubmitProgressOverlay open={submitting} progress={progress} />
-      <FormStack onSubmit={onSubmit}>
-        <FormQuestion index="01" label="您认为有问题的页面是" required>
-          <Input
-            name="page"
-            value={values.page}
-            onChange={(ev) => setField('page', ev.target.value)}
-            placeholder="/course/高等数学 或完整链接"
-            autoComplete="off"
-            required
-          />
-        </FormQuestion>
-
-        <FormQuestion
-          index="02"
-          label="能否说明有什么问题"
-          required
-          hint={
-            <>
-              如遇教材等书籍改版或缺失等问题，请填写
-              <Link
-                to="/form/$type"
-                params={{ type: 'textbook' }}
-                className="mx-0.5 text-primary underline-offset-2 hover:underline"
-              >
-                教材收集表
-              </Link>
-              。
-            </>
-          }
-        >
-          <Textarea
-            name="content"
-            value={values.content}
-            onChange={(ev) => setField('content', ev.target.value)}
-            placeholder="哪里错了、缺什么、链接失效……"
-            required
-          />
-        </FormQuestion>
-
-        <ContributorFields
-          startIndex={3}
-          values={values}
-          setField={setContributorField}
-          introFile={null}
-          onIntroFileChange={() => {}}
-          options={FEEDBACK_CONTRIBUTOR_OPTS}
-        />
-
-        {error ? <FormError>{error}</FormError> : null}
-
-        <div className="pt-2">
-          <Button type="submit" variant="primary" disabled={submitting}>
-            提交
-          </Button>
-          <p className="mt-2 text-xs text-muted">
-            未提交的内容会自动保存在本机，下次打开可继续填写。
-          </p>
-        </div>
-      </FormStack>
-    </FormShell>
+    <FormPage
+      slug="feedback"
+      items={items}
+      alert={form.alert}
+      showErrors={form.showErrors}
+      done={form.done}
+      submitting={form.submitting}
+      progress={form.progress}
+      onSubmit={onSubmit}
+      onAgain={form.writeAgain}
+    />
   );
 };

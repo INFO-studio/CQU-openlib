@@ -1,19 +1,25 @@
 import type { CSSProperties } from 'react';
 import { cn } from '~/lib/cn';
+import { colors } from '~/theme/colors';
 
 type BoneProps = {
   className?: string;
   style?: CSSProperties;
 };
 
+const shimmer = {
+  backgroundImage: `linear-gradient(90deg, ${colors.mist} 0%, ${colors.line} 45%, ${colors.mist} 100%)`,
+  backgroundSize: '200% 100%',
+};
+
 export const Bone = ({ className, style }: BoneProps) => {
   return (
     <span
       className={cn(
-        'cquol-bone block animate-skeleton-shimmer rounded bg-[linear-gradient(90deg,var(--c-mist)_0%,var(--c-line)_45%,var(--c-mist)_100%)] bg-[length:200%_100%] motion-reduce:animate-none motion-reduce:bg-mist',
+        'cquol-bone block animate-skeleton-shimmer rounded motion-reduce:animate-none motion-reduce:bg-mist',
         className,
       )}
-      style={style}
+      style={{ ...shimmer, ...style }}
     />
   );
 };

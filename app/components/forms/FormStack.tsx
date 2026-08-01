@@ -19,7 +19,7 @@ export const FormStack = ({ children, onSubmit, className }: Props) => (
   >
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute top-1.5 bottom-1.5 left-0 w-0.5 rounded-full bg-gradient-to-b from-primary to-[rgba(var(--brand-r),var(--brand-g),var(--brand-b),0.15)]"
+      className="pointer-events-none absolute top-1.5 bottom-1.5 left-0 w-0.5 rounded-full bg-gradient-to-b from-primary to-primary-fade"
     >
       <span className="absolute top-[-0.2rem] left-1/2 h-[0.45rem] w-[0.45rem] -translate-x-1/2 rotate-45 bg-primary" />
     </div>

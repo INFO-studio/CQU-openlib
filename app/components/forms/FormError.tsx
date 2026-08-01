@@ -10,7 +10,7 @@ type Props = {
  */
 export const FormError = ({ children }: Props) => (
   <p
-    className="rounded-md border border-[color:var(--form-error-border)] bg-[color:var(--form-error-bg)] px-3 py-2.5 text-sm font-medium text-[color:var(--form-error-fg)]"
+    className="rounded-md border border-error-line bg-error-soft px-3 py-2.5 text-sm font-medium text-error"
     role="alert"
   >
     {children}

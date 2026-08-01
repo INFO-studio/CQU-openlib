@@ -7,6 +7,7 @@ import {
   writeAdminKey,
 } from '~/admin/lib/session';
 import { cn } from '~/lib/cn';
+import { colors } from '~/theme/colors';
 
 /**
  * Maintainer console chrome — not DocsShell.
@@ -77,7 +78,7 @@ export const AdminShell = ({
                 className={cn(
                   'grid grid-cols-[1.1rem_minmax(0,1fr)] items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 no-underline transition-colors md:whitespace-normal',
                   active
-                    ? 'bg-primary-soft text-ink shadow-[inset_2px_0_0_var(--c-primary)]'
+                    ? 'bg-primary-soft text-ink shadow-rail-active'
                     : 'text-muted hover:bg-mist hover:text-ink',
                 )}
               >
@@ -135,7 +136,12 @@ export const AdminGate = ({ onUnlock }: GateProps) => {
   };
 
   return (
-    <div className="grid min-h-screen place-items-center bg-[radial-gradient(900px_480px_at_50%_-10%,var(--c-mist),transparent_60%)] px-4 py-8">
+    <div
+      className="grid min-h-screen place-items-center px-4 py-8"
+      style={{
+        backgroundImage: `radial-gradient(900px 480px at 50% -10%, ${colors.mist}, transparent 60%)`,
+      }}
+    >
       <form
         className="w-[min(25rem,100%)] rounded-2xl border border-line bg-panel p-6 shadow-[0_24px_60px_rgba(0,0,0,0.4)]"
         onSubmit={onSubmit}
@@ -180,7 +186,7 @@ export const AdminGate = ({ onUnlock }: GateProps) => {
 
 /** Failure states say what happened, in the console's voice. */
 export const AdminError = ({ children }: { children: ReactNode }) => (
-  <p className="m-0 mt-3 rounded-md bg-[var(--form-error-bg)] px-2.5 py-2 text-[0.84rem] text-[var(--form-error-fg)]">
+  <p className="m-0 mt-3 rounded-md bg-error-soft px-2.5 py-2 text-[0.84rem] text-error">
     {children}
   </p>
 );

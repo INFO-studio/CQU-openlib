@@ -13,6 +13,7 @@ import {
   NAV_SECTIONS_VISIBLE,
   sectionForPath,
 } from '~/lib/nav';
+import { colors } from '~/theme/colors';
 
 type Props = {
   open: boolean;
@@ -175,7 +176,7 @@ const MobileNavDrawer = ({
           open ? 'opacity-100' : 'opacity-0',
         )}
       >
-        <header className="flex h-[var(--header-h)] shrink-0 items-center justify-between gap-3 border-b border-line px-4">
+        <header className="flex h-header shrink-0 items-center justify-between gap-3 border-b border-line px-4">
           <h2 className="text-base font-semibold tracking-tight text-ink">
             目录
           </h2>
@@ -211,7 +212,7 @@ const MobileNavDrawer = ({
                 tree={browseData.tree}
                 currentPath={pathname}
                 onNavigate={onClose}
-                fadeFrom="var(--c-panel)"
+                fadeFrom={colors.panel}
               />
             ) : (
               <Sidebar

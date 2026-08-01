@@ -104,11 +104,11 @@ const DocsShell = ({ children, toc = [], leftRail }: Props) => {
         Fixed 3-column shell: sidebar | main | toc.
         column-gap keeps main ↔ nav / 本页 gutters equal.
       */}
-      <div className="mx-auto grid w-full max-w-[96rem] grid-cols-1 gap-x-[var(--shell-gap)] px-3 md:px-5 lg:grid-cols-[var(--sidebar-w)_minmax(0,1fr)] xl:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_var(--toc-w)]">
+      <div className="mx-auto grid w-full max-w-[96rem] grid-cols-1 gap-x-shell px-3 md:px-5 lg:grid-cols-docs xl:grid-cols-docs-toc">
         <aside
           className={cn(
             // Desktop: top pad matches main (2× the old py-2); mobile drawer untouched.
-            'hidden lg:sticky lg:top-[var(--header-h)] lg:block lg:h-[calc(100vh-var(--header-h))] lg:pt-4 lg:pb-2',
+            'hidden lg:sticky lg:top-header lg:block lg:h-under-header lg:pt-4 lg:pb-2',
             isCourse && hasSidebar && !loading && !errorMessage
               ? 'lg:flex lg:flex-col lg:overflow-hidden'
               : showLeftRail
@@ -124,7 +124,7 @@ const DocsShell = ({ children, toc = [], leftRail }: Props) => {
 
         <aside
           className={cn(
-            'sticky top-[calc(var(--header-h)+0.35rem)] hidden h-[calc(100vh-var(--header-h)-0.5rem)] overflow-y-auto pt-4 pb-2 xl:block',
+            'sticky top-header-toc hidden h-under-header-toc overflow-y-auto pt-4 pb-2 xl:block',
             hasToc ? undefined : 'xl:invisible xl:pointer-events-none',
           )}
         >

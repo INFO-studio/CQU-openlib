@@ -1,34 +1,11 @@
 /**
- * Brand primary from CMYK C:100 M:70 Y:0 K:5 → rgb(0, 73, 242).
- * Surfaces and accents expand the same hue via rgba alpha.
+ * What's left that isn't a design token: the font stacks (values CSS is the
+ * natural home for) and the color-scheme switch. Colors live in theme/colors.ts
+ * and dimensions in theme/layout.ts; both are emitted as custom properties by
+ * UnoCSS, alongside the utilities that expose them.
  */
 :root {
   color-scheme: light;
-
-  --brand-r: 0;
-  --brand-g: 73;
-  --brand-b: 242;
-
-  --c-primary: rgba(var(--brand-r), var(--brand-g), var(--brand-b), 1);
-  --c-primary-hover: rgba(var(--brand-r), var(--brand-g), var(--brand-b), 0.88);
-  --c-primary-soft: rgba(var(--brand-r), var(--brand-g), var(--brand-b), 0.1);
-  --c-primary-faint: rgba(var(--brand-r), var(--brand-g), var(--brand-b), 0.06);
-
-  --c-ink: rgba(15, 23, 42, 0.96);
-  --c-muted: rgba(15, 23, 42, 0.55);
-  /* Solid stand-in for former rgba(ink, 0.4) on paper — icons stay opaque */
-  --c-icon: #9fa2aa;
-  --c-paper: #f7f8fb;
-  --c-panel: #ffffff;
-  --c-mist: var(--c-primary-faint);
-  --c-line: rgba(15, 23, 42, 0.09);
-  --c-elev: #ffffff;
-  --c-code-bg: rgba(15, 23, 42, 0.05);
-  --c-backdrop: rgba(15, 23, 42, 0.4);
-
-  /* Compat aliases used across components */
-  --c-accent: var(--c-primary);
-  --c-accent-soft: var(--c-primary-soft);
 
   /*
     No webfonts are shipped. IBM Plex / Source Serif lead each stack so locally
@@ -45,76 +22,9 @@
   --font-mono:
     "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
     "Sarasa Mono SC", monospace;
-
-  --header-h: 3.25rem;
-  --sidebar-w: 15rem;
-  --toc-w: 11rem;
-  /* Equal gutter between sidebar ↔ main ↔ toc */
-  --shell-gap: 2rem;
-
-  /* Admonition accents — muted, readable on light paper */
-  --admonition-note: #3b6fd9;
-  --admonition-abstract: #2a8fbf;
-  --admonition-info: #2a9aad;
-  --admonition-tip: #2a9a7c;
-  --admonition-success: #2f8f4e;
-  --admonition-question: #6a9a2e;
-  --admonition-warning: #c4841a;
-  --admonition-failure: #c44a4a;
-  --admonition-danger: #c23a4a;
-  --admonition-bug: #b04a78;
-  --admonition-example: #6b5cb0;
-  --admonition-quote: #7a7f8a;
-
-  /* Form validation — solid pair so fg/bg never collapse */
-  --form-error-fg: #9b2c2c;
-  --form-error-bg: #fde8e8;
-  --form-error-border: #e8a4a4;
 }
 
-/*
-  `.theme-dark` is the same palette as an opt-in island, for surfaces that are
-  always dark regardless of the reader's theme (the maintainer console).
-*/
 html[data-theme="dark"],
 .theme-dark {
   color-scheme: dark;
-
-  --c-primary: rgba(120, 155, 230, 1);
-  --c-primary-hover: rgba(140, 170, 235, 1);
-  --c-primary-soft: rgba(120, 155, 230, 0.16);
-  --c-primary-faint: rgba(120, 155, 230, 0.09);
-
-  --c-ink: rgba(226, 232, 245, 0.92);
-  --c-muted: rgba(226, 232, 245, 0.52);
-  /* Solid stand-in for former rgba(ink, 0.4) on panel */
-  --c-icon: #656b79;
-  --c-paper: #0b0f16;
-  --c-panel: #121826;
-  --c-mist: rgba(120, 155, 230, 0.09);
-  --c-line: rgba(226, 232, 245, 0.11);
-  --c-elev: #1a2232;
-  --c-code-bg: rgba(226, 232, 245, 0.06);
-  --c-backdrop: rgba(0, 0, 0, 0.55);
-
-  --c-accent: var(--c-primary);
-  --c-accent-soft: var(--c-primary-soft);
-
-  /* Desaturated callout accents for dark surfaces */
-  --admonition-note: #7a9fd0;
-  --admonition-abstract: #6aa8c4;
-  --admonition-info: #6aadb8;
-  --admonition-tip: #6ab59a;
-  --admonition-success: #6aad7a;
-  --admonition-question: #9ab06a;
-  --admonition-warning: #c4a06a;
-  --admonition-failure: #c47a7a;
-  --admonition-danger: #c4707a;
-  --admonition-bug: #b47a98;
-  --admonition-example: #9588b8;
-  --admonition-quote: #8a909c;
-
-  --form-error-fg: #f0b4b4;
-  --form-error-bg: #3a1f24;
-  --form-error-border: #7a3a42;
 }

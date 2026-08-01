@@ -76,7 +76,7 @@ const FacetList = <T extends string>({
             aria-hidden
             className={cn(
               'h-[0.45rem] w-[0.45rem] rounded-full',
-              !facet.tone && 'shadow-[inset_0_0_0_1px_var(--c-icon)]',
+              !facet.tone && 'shadow-chip-outline',
             )}
             style={facet.tone ? { background: facet.tone } : undefined}
           />
