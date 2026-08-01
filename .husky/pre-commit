@@ -11,3 +11,4 @@ export GIT_CONFIG_VALUE_0=false
 # Unfixable lint errors exit non-zero and abort the commit.
 pnpm exec biome check --write --no-errors-on-unmatched --staged
 git update-index --again
+pnpm typecheck
