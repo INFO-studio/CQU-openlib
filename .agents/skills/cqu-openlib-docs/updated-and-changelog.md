@@ -73,6 +73,14 @@ res: 教材习题解答-离散数学-左孝凌-上海科学技术文献出版社
 res: 期中试卷-MATH10822-2023秋-A-试卷+答案
 ```
 
+资源是来兑现某条待办的，再补一行 `完成`，序号写法见 [entry-formats.md](entry-formats.md) 的「待办序号」：
+
+```markdown
+- 完成 [待办事项-教材需求](../../../待办事项/textbook.md) `legacy#134`
+```
+
+同时把 `sundry/待办事项/textbook.md` 里那条**删掉**（不是划掉、不是标注已完成），并把待办页的 `updated` 改成当天。
+
 **第二处** `public/doc/sundry/更新日志/index.md`
 
 要改两个地方：

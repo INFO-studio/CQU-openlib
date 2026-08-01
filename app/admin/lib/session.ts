@@ -7,14 +7,20 @@ export type AdminModule = {
   description: string;
 };
 
-export const ADMIN_MODULES: readonly AdminModule[] = [
+export const ADMIN_MODULES = [
   {
     id: 'submissions',
     label: '表单收集',
     path: '/admin',
     description: '社区表单的全量提交记录',
   },
-] as const;
+  {
+    id: 'emails',
+    label: '邮件往来',
+    path: '/admin/emails',
+    description: 'contact 信箱的收信与回复',
+  },
+] as const satisfies readonly AdminModule[];
 
 export const ADMIN_SESSION_KEY = 'cqu-openlib:admin-key';
 

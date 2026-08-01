@@ -51,10 +51,10 @@ describe('homepage index.md', () => {
     expect(failure).toBeTruthy();
     expect(JSON.stringify(failure!.title)).toContain('提醒');
     expect(JSON.stringify(failure!.title)).not.toContain(
-      'cqu-openlib@outlook.com',
+      'contact@cqu-openlib.cn',
     );
     expect(JSON.stringify(failure!.children)).toContain(
-      'cqu-openlib@outlook.com',
+      'contact@cqu-openlib.cn',
     );
   });
 });

@@ -1,4 +1,5 @@
-import { Inbox, Lock, type LucideIcon } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { Inbox, Lock, type LucideIcon, Mail } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import {
@@ -20,6 +21,7 @@ const SURFACE = 'theme-dark min-h-screen bg-paper font-sans text-ink';
 
 const MODULE_ICONS: Record<string, LucideIcon> = {
   submissions: Inbox,
+  emails: Mail,
 };
 
 type ShellProps = {
@@ -71,9 +73,9 @@ export const AdminShell = ({
             const Icon = MODULE_ICONS[mod.id] ?? Inbox;
             const active = mod.id === activeModuleId;
             return (
-              <a
+              <Link
                 key={mod.id}
-                href={mod.path}
+                to={mod.path}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'grid grid-cols-[1.1rem_minmax(0,1fr)] items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 no-underline transition-colors md:whitespace-normal',
@@ -91,7 +93,7 @@ export const AdminShell = ({
                     {mod.description}
                   </span>
                 </span>
-              </a>
+              </Link>
             );
           })}
         </nav>

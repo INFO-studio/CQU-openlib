@@ -9,7 +9,7 @@ import {
   statusLabel,
   statusTone,
 } from '~/admin/lib/status';
-import { formatShanghai } from '~/admin/modules/submissions/labels';
+import { formatShanghai } from '~/admin/lib/time';
 import { cn } from '~/lib/cn';
 
 const ACTION =

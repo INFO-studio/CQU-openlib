@@ -4,7 +4,7 @@
 
 站点域名：https://cqu-openlib.cn  
 仓库：https://github.com/INFO-studio/CQU-openlib  
-联系：cqu-openlib@outlook.com
+联系：contact@cqu-openlib.cn
 
 如何取纯文本：在正文路径后追加 `.md`。详见说明书「AI 友好」：https://cqu-openlib.cn/sundry/说明书.md
 

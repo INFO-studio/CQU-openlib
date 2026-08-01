@@ -37,6 +37,9 @@ description: Rules for editing the CQU-openlib documentation site (public/doc/**
 3. **写条目**：按 [entry-formats.md](entry-formats.md) 的模板写。目标页面如果是「暂无数据，欢迎贡献」占位页，整体替换成课程页骨架，不要在占位内容下面追加。
 4. **改 `updated`** 为当天日期。
 5. **写更新日志三处**。
+6. **兑现了待办条目**：删掉 `sundry/待办事项/textbook.md` 里那条、该页 `updated` 也改当天，日志补一行 `完成 … legacy#134`。
+
+**只知道书目、拿不到文件**时不要把页面留成空占位：按 [entry-formats.md](entry-formats.md) 的「已知教材但没拿到文件」写说明并引用待办序号，让读者看出「知道是哪本，只是没有」。
 
 ## 验证
 

@@ -1,10 +1,9 @@
 import { ChevronRight } from 'lucide-react';
 import type { SubmissionItem } from '~/admin/lib/api';
 import { statusLabel, statusTone } from '~/admin/lib/status';
+import { formatShanghai, formatShanghaiShort } from '~/admin/lib/time';
 import { CopyJsonButton } from '~/admin/modules/submissions/CopyJsonButton';
 import {
-  formatShanghai,
-  formatShanghaiShort,
   submissionSummary,
   typeLabel,
   typeTone,

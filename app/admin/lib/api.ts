@@ -1,10 +1,9 @@
-import { clearAdminKey, readAdminKey } from '~/admin/lib/session';
+import { adminFetch } from '~/admin/lib/adminFetch';
 import {
   DEFAULT_SUBMISSION_STATUS,
   normalizeStatus,
   type SubmissionStatus,
 } from '~/admin/lib/status';
-import { apiUrl } from '~/lib/apiBase';
 
 export type FormType = 'feedback' | 'textbook' | 'upload' | 'club' | 'group';
 
@@ -61,32 +60,17 @@ export const fetchSubmissions = async (opts?: {
   status?: SubmissionStatus | '';
   key?: string;
 }): Promise<SubmissionsResponse> => {
-  const key = (opts?.key ?? readAdminKey()).trim();
-  if (!key) {
-    return { success: false, message: 'unauthorized' };
-  }
-
   const params = new URLSearchParams();
   if (opts?.type) params.set('type', opts.type);
   if (opts?.status) params.set('status', opts.status);
   const qs = params.toString() ? `?${params.toString()}` : '';
 
-  const res = await fetch(apiUrl(`/admin/submissions${qs}`), {
-    headers: { Authorization: `Bearer ${key}` },
-  });
+  const data = await adminFetch<{
+    count?: number;
+    items?: SubmissionItem[];
+  }>(`/admin/submissions${qs}`, { key: opts?.key });
 
-  if (res.status === 401) {
-    clearAdminKey();
-    return { success: false, message: 'unauthorized' };
-  }
-
-  const data = (await res.json()) as SubmissionsResponse;
-  if (!res.ok) {
-    return {
-      success: false,
-      message: data.message?.trim() || `请求失败（${res.status}）`,
-    };
-  }
+  if (!data.success) return data;
   return {
     ...data,
     items: (data.items ?? []).map((item) => mapItem(item)),
@@ -99,11 +83,6 @@ export const transitionSubmissionStatus = async (opts: {
   completionNote?: string;
   key?: string;
 }): Promise<StatusTransitionResponse> => {
-  const key = (opts.key ?? readAdminKey()).trim();
-  if (!key) {
-    return { success: false, message: 'unauthorized' };
-  }
-
   const body: Record<string, string> = {
     id: opts.id,
     status: opts.status,
@@ -112,27 +91,17 @@ export const transitionSubmissionStatus = async (opts: {
     body.completionNote = opts.completionNote;
   }
 
-  const res = await fetch(apiUrl('/admin/submissions/status'), {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
+  const data = await adminFetch<{ item?: SubmissionItem }>(
+    '/admin/submissions/status',
+    {
+      method: 'POST',
+      key: opts.key,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  });
+  );
 
-  if (res.status === 401) {
-    clearAdminKey();
-    return { success: false, message: 'unauthorized' };
-  }
-
-  const data = (await res.json()) as StatusTransitionResponse;
-  if (!res.ok) {
-    return {
-      success: false,
-      message: data.message?.trim() || `请求失败（${res.status}）`,
-    };
-  }
+  if (!data.success) return data;
   return {
     success: true,
     item: data.item ? mapItem(data.item) : undefined,

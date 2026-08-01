@@ -1,5 +1,5 @@
 ---
-updated: 2026-07-31
+updated: 2026-08-02
 ---
 
 # 说明书
@@ -12,7 +12,7 @@ openlib 目前由 openlib 运行维护小组进行内容开发、内容更新与
 
 请注意，openlib 及 openlib 运行维护小组均为纯非盈利性质的组织，目前不会开通任何打赏、商业合作、推广服务等渠道。
 
-如您认为您的版权受到了侵犯，请联系 `cqu-openlib@outlook.com`，openlib 运行维护小组会定期检查邮件并给予反馈。
+如您认为您的版权受到了侵犯，请联系 `contact@cqu-openlib.cn`，openlib 运行维护小组会定期检查邮件并给予反馈。
 
 ## 开始使用
 
@@ -128,7 +128,7 @@ openlib 有若干板块：
 - [Discord 频道](https://discord.gg/sPk3W96mJV)
 - [Telegram 群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
 - [站长](../../contributor/茵符草.md) QQ：`2247977881`
-- 邮箱：`cqu-openlib@outlook.com`
+- 邮箱：`contact@cqu-openlib.cn`
 - GitHub：[INFO-studio/CQU-openlib](https://github.com/INFO-studio/CQU-openlib)（Issue / Pull Request）
 
 资料包括但不限于：笔记、教材 pdf、教师 PPT（请得到教师允许）、期中期末试卷。若希望在「贡献者」栏署名或撰写个人介绍，可在相应表单中填写。
