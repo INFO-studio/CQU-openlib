@@ -1,4 +1,5 @@
 import { Dialog } from '@base-ui/react/dialog';
+import { Link } from '@tanstack/react-router';
 import {
   Compass,
   ListFilter,
@@ -34,6 +35,7 @@ import {
   type CampusId,
 } from './data';
 import { navigationLinksFor } from './navigation';
+import { BAIDU_MAP_STYLES } from './styles';
 
 type MapRuntime = {
   api: BaiduApi;
@@ -60,6 +62,9 @@ const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] =
     label: `${campus.campusName}${campus.siteName}`,
   }));
 const DEFAULT_CAMPUS_ID: CampusId = 'd';
+const THEME_COVER_MS = 150;
+/** `tilesloaded` 不来时的兜底，宁可早一点揭开也不要一直卡在占位层 */
+const FIRST_PAINT_TIMEOUT_MS = 900;
 
 const isCampusId = (value: string | null): value is CampusId =>
   CAMPUSES.some((campus) => campus.id === value);
@@ -106,11 +111,16 @@ const MapSurface = ({
   const selectedRef = useRef(selected);
   const previousSelectedIdRef = useRef<string | null>(selected?.id ?? null);
   const { theme } = usePreferencesStore();
+  const campusRef = useRef(campus);
   const themeRef = useRef(theme);
+  const appliedThemeRef = useRef(theme);
+  const centeredCampusIdRef = useRef(campus.id);
   const [runtime, setRuntime] = useState<MapRuntime | null>(null);
   const [status, setStatus] = useState<MapStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [retryKey, setRetryKey] = useState(0);
+  const [themeShifting, setThemeShifting] = useState(false);
+  campusRef.current = campus;
   themeRef.current = theme;
   selectedRef.current = selected;
 
@@ -125,6 +135,7 @@ const MapSurface = ({
     }
 
     let activeMap: BaiduMap | null = null;
+    let firstPaintTimer: number | undefined;
     let trackpadDelta = 0;
     let safariStartZoom: number | null = null;
     let safariAppliedZoom: number | null = null;
@@ -167,22 +178,36 @@ const MapSurface = ({
     void loadBaiduMap(ak)
       .then((api) => {
         if (!active) return;
-        const initialCampus = CAMPUS_BY_ID[DEFAULT_CAMPUS_ID];
+        const initialCampus = campusRef.current;
         const center = parseCoord(initialCampus.center);
         const map = new api.Map(container, { enableMapClick: false });
         activeMap = map;
-        map.setMapStyle({
-          style: themeRef.current === 'dark' ? 'dark' : 'normal',
-        });
         map.centerAndZoom(
           new api.Point(center.lng, center.lat),
           initialCampus.defaultZoom,
         );
+        map.setMapStyleV2({
+          styleJson: BAIDU_MAP_STYLES[themeRef.current],
+        });
         map.enableDragging();
+        map.enableInertialDragging();
         map.enablePinchToZoom();
         map.enableScrollWheelZoom(true);
+        // 百度默认逐级跳变，开了才会在级别之间做动画过渡。
+        map.enableContinuousZoom();
+        appliedThemeRef.current = themeRef.current;
+        centeredCampusIdRef.current = initialCampus.id;
+
+        // 底图画完之前画布是空的，让占位层一直盖着，别把空画布露给用户。
+        const reveal = () => {
+          window.clearTimeout(firstPaintTimer);
+          map.removeEventListener('tilesloaded', reveal);
+          if (active) setStatus('ready');
+        };
+        map.addEventListener('tilesloaded', reveal);
+        firstPaintTimer = window.setTimeout(reveal, FIRST_PAINT_TIMEOUT_MS);
+
         setRuntime({ api, map });
-        setStatus('ready');
       })
       .catch((error: unknown) => {
         if (!active) return;
@@ -195,6 +220,7 @@ const MapSurface = ({
     return () => {
       active = false;
       activeMap = null;
+      window.clearTimeout(firstPaintTimer);
       container.removeEventListener('wheel', handleTrackpadPinch);
       container.removeEventListener('gesturestart', handleSafariPinchStart);
       container.removeEventListener('gesturechange', handleSafariPinchChange);
@@ -203,18 +229,33 @@ const MapSurface = ({
   }, [retryKey]);
 
   useEffect(() => {
-    runtime?.map.setMapStyle({
-      style: theme === 'dark' ? 'dark' : 'normal',
-    });
+    if (!runtime || appliedThemeRef.current === theme) return;
+    const applyStyle = () => {
+      runtime.map.setMapStyleV2({ styleJson: BAIDU_MAP_STYLES[theme] });
+      appliedThemeRef.current = theme;
+    };
+    // 底图是一次性重绘，直接换色会在页面其余部分还在过渡时先跳一帧。
+    // 先把地图盖成新主题的底色，重绘完再揭开。
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      applyStyle();
+      return;
+    }
+    setThemeShifting(true);
+    const timer = window.setTimeout(() => {
+      applyStyle();
+      setThemeShifting(false);
+    }, THEME_COVER_MS);
+    return () => window.clearTimeout(timer);
   }, [runtime, theme]);
 
   useEffect(() => {
-    if (!runtime) return;
+    if (!runtime || centeredCampusIdRef.current === campus.id) return;
     const center = parseCoord(campus.center);
     runtime.map.centerAndZoom(
       new runtime.api.Point(center.lng, center.lat),
       campus.defaultZoom,
     );
+    centeredCampusIdRef.current = campus.id;
   }, [campus, runtime]);
 
   useEffect(() => {
@@ -276,14 +317,23 @@ const MapSurface = ({
 
   return (
     <div className="relative h-full min-w-0 overflow-hidden bg-paper [&_.BMap_cpyCtrl]:z-5! [&_.anchorBL]:z-5!">
+      {/* `bg-paper!` 压掉百度写在容器上的米白内联底色，空画布期间不再是一片白 */}
       <div
         ref={containerRef}
-        className="absolute inset-0 touch-none overscroll-contain"
+        className="absolute inset-0 touch-none overscroll-contain bg-paper!"
         aria-label="校园地图"
       />
 
+      <div
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute inset-0 z-5 bg-paper transition-opacity ease-out',
+          themeShifting ? 'opacity-100 duration-150' : 'opacity-0 duration-300',
+        )}
+      />
+
       {status !== 'ready' ? (
-        <div className="absolute inset-0 z-10 flex items-center justify-center p-6">
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-paper p-6">
           <div className="max-w-sm border border-line bg-panel/95 px-6 py-5 text-center shadow-xl backdrop-blur">
             <Compass
               size={28}
@@ -574,19 +624,27 @@ const MapPage = () => {
                   >
                     CQUMAPS
                   </a>
+                  <span className="mx-1 text-muted">@</span>
+                  <DocLink
+                    path="/contributor/Tony"
+                    className="font-medium text-primary no-underline hover:underline"
+                  >
+                    Tony
+                  </DocLink>
                   ，经授权迁移点位数据并适配 openlib。
                 </p>
-                <dl className="mt-3 grid grid-cols-[4rem_1fr] gap-x-2 gap-y-1.5 text-xs">
-                  <dt className="text-muted">原作者</dt>
-                  <dd className="m-0">
-                    <DocLink
-                      path="/contributor/Tony"
-                      className="text-primary no-underline hover:underline"
-                    >
-                      Tony
-                    </DocLink>
-                  </dd>
-                </dl>
+                <p className="mt-2 m-0 text-[0.8125rem] leading-relaxed text-muted">
+                  地点有误或缺失请通过
+                  <Link
+                    to="/form/$type"
+                    params={{ type: 'feedback' }}
+                    search={{ page: '/map' }}
+                    className="mx-1 text-primary no-underline hover:underline"
+                  >
+                    问题反馈
+                  </Link>
+                  联系我们。
+                </p>
               </InfoPopover>
               <Dialog.Trigger
                 className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink md:hidden"

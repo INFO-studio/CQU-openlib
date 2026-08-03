@@ -7,17 +7,27 @@ export type BaiduPoint = {
   lat: number;
 };
 
+export type BaiduMapStyleRule = {
+  featureType: string;
+  elementType: string;
+  stylers: Record<string, string | number>;
+};
+
 export type BaiduMap = {
+  addEventListener: (event: 'tilesloaded', listener: () => void) => void;
+  removeEventListener: (event: 'tilesloaded', listener: () => void) => void;
   addOverlay: (overlay: unknown) => void;
   centerAndZoom: (point: BaiduPoint, zoom: number) => void;
   clearOverlays: () => void;
+  enableContinuousZoom: () => void;
   enableDragging: () => void;
+  enableInertialDragging: () => void;
   enablePinchToZoom: () => void;
   enableScrollWheelZoom: (enabled?: boolean) => void;
   getZoom: () => number;
   panTo: (point: BaiduPoint) => void;
   removeOverlay: (overlay: unknown) => void;
-  setMapStyle: (style: { style: 'normal' | 'dark' | 'light' }) => void;
+  setMapStyleV2: (style: { styleJson: BaiduMapStyleRule[] }) => void;
   setZoom: (zoom: number) => void;
 };
 
