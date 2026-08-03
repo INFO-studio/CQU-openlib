@@ -2,12 +2,18 @@ import { describe, expect, it } from 'vite-plus/test';
 import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
 
 describe('campus map data', () => {
+  it('uses the site-wide 校区 / 校园 terminology', () => {
+    expect(
+      CAMPUSES.map((campus) => `${campus.campusName}${campus.siteName}`),
+    ).toEqual(['科学城校区虎溪校园', '沙坪坝校区A校园']);
+  });
+
   it('keeps building ids unique and references valid', () => {
     const ids = BUILDINGS.map((building) => building.id);
     expect(new Set(ids).size).toBe(ids.length);
 
     for (const building of BUILDINGS) {
-      expect(CAMPUSES.some((campus) => campus.id === building.campus)).toBe(
+      expect(CAMPUSES.some((campus) => campus.id === building.campusId)).toBe(
         true,
       );
       expect(

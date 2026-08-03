@@ -24,7 +24,6 @@ import {
   type CampusId,
 } from './data';
 import { navigationLinksFor } from './navigation';
-import './map.css';
 
 type MapRuntime = {
   api: BaiduApi;
@@ -36,7 +35,7 @@ type CategoryFilter = BuildingCategory | 'all';
 type Coord = Building['coord'] | Campus['center'];
 
 const campusesWithPlaces = CAMPUSES.filter((campus) =>
-  BUILDINGS.some((building) => building.campus === campus.id),
+  BUILDINGS.some((building) => building.campusId === campus.id),
 );
 
 const parseCoord = (coord: Coord): { lng: number; lat: number } => {
@@ -83,12 +82,12 @@ const MapSurface = ({
     void loadBaiduMap(ak)
       .then((api) => {
         if (!active) return;
-        const initialCampus = CAMPUS_BY_ID.huxi;
+        const initialCampus = CAMPUS_BY_ID['science-city-huxi'];
         const center = parseCoord(initialCampus.center);
         const map = new api.Map(container, { enableMapClick: false });
         map.centerAndZoom(
           new api.Point(center.lng, center.lat),
-          initialCampus.zoom,
+          initialCampus.defaultZoom,
         );
         map.enableScrollWheelZoom(true);
         setRuntime({ api, map });
@@ -113,7 +112,7 @@ const MapSurface = ({
     const center = parseCoord(campus.center);
     runtime.map.centerAndZoom(
       new runtime.api.Point(center.lng, center.lat),
-      campus.zoom,
+      campus.defaultZoom,
     );
   }, [campus, runtime]);
 
@@ -156,7 +155,7 @@ const MapSurface = ({
   };
 
   return (
-    <div className="campus-map__canvas relative h-full min-w-0 overflow-hidden">
+    <div className="relative h-full min-w-0 overflow-hidden bg-primary-faint [&_.BMap_cpyCtrl]:z-5! [&_.anchorBL]:z-5!">
       <div
         ref={containerRef}
         className="absolute inset-0"
@@ -218,7 +217,7 @@ const BuildingList = ({
   selected: Building | null;
   onSelect: (building: Building) => void;
 }) => (
-  <div className="campus-map__list min-h-0 flex-1 overflow-y-auto">
+  <div className="min-h-0 flex-1 overflow-y-auto">
     {buildings.length ? (
       buildings.map((building) => {
         const active = selected?.id === building.id;
@@ -261,7 +260,7 @@ const BuildingList = ({
 );
 
 const MapPage = () => {
-  const [campusId, setCampusId] = useState<CampusId>('huxi');
+  const [campusId, setCampusId] = useState<CampusId>('science-city-huxi');
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Building | null>(null);
@@ -269,7 +268,7 @@ const MapPage = () => {
 
   const campus = CAMPUS_BY_ID[campusId];
   const campusBuildings = useMemo(
-    () => BUILDINGS.filter((building) => building.campus === campusId),
+    () => BUILDINGS.filter((building) => building.campusId === campusId),
     [campusId],
   );
   const filteredBuildings = useMemo(() => {
@@ -318,8 +317,8 @@ const MapPage = () => {
 
   return (
     <DocsShell fullBleed>
-      <section className="campus-map overflow-hidden bg-panel font-sans text-ink">
-        <header className="relative z-30 flex h-[var(--map-header)] items-center gap-3 border-b border-line bg-panel px-3 md:px-4">
+      <section className="h-[calc(100dvh-var(--layout-header))] min-h-[30rem] overflow-hidden bg-panel font-sans text-ink max-md:min-h-[28rem]">
+        <header className="relative z-30 flex h-[3.5rem] items-center gap-3 border-b border-line bg-panel px-3 max-md:h-[3.25rem] md:px-4">
           <h1 className="m-0 shrink-0 font-display text-lg font-semibold leading-tight">
             校园地图
           </h1>
@@ -337,7 +336,8 @@ const MapPage = () => {
                 )}
                 onClick={() => chooseCampus(item.id)}
               >
-                {item.shortName}
+                {item.campusName}
+                {item.siteName}
               </button>
             ))}
           </div>
@@ -354,7 +354,7 @@ const MapPage = () => {
           </div>
         </header>
 
-        <div className="campus-map__body relative flex">
+        <div className="relative flex h-[calc(100%-3.5rem)] min-h-[calc(30rem-3.5rem)] max-md:h-[calc(100%-3.25rem)] max-md:min-h-[calc(28rem-3.25rem)]">
           <aside
             className={cn(
               'absolute inset-y-0 left-0 z-20 flex w-[min(22rem,88vw)] flex-col border-r border-line bg-panel shadow-2xl transition-transform md:static md:z-auto md:w-[21rem] md:translate-x-0 md:shadow-none',
@@ -386,7 +386,7 @@ const MapPage = () => {
               <select
                 value={category}
                 aria-label="地点分类"
-                className="h-10 w-24 shrink-0 border border-line bg-paper px-2 text-xs text-ink focus:border-primary"
+                className="h-10 w-24 shrink-0 appearance-auto border border-line bg-paper px-2 text-xs text-ink focus:border-primary"
                 onChange={(event) =>
                   setCategory(event.target.value as CategoryFilter)
                 }
