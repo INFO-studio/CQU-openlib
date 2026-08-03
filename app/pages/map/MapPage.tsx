@@ -1,6 +1,6 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { Popover } from '@base-ui/react/popover';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { ListFilter, MapPin, Menu, Minus, Plus, Search, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DocLink from '~/components/DocLink';
@@ -14,6 +14,7 @@ import {
   type AmapApi,
   type AmapMap,
   type AmapMarker,
+  type AmapPolygon,
   type AmapStyle,
   loadAmap,
 } from './amap';
@@ -39,9 +40,6 @@ type MapRuntime = {
 type MapStatus = 'idle' | 'loading' | 'ready' | 'error';
 type CategoryFilter = BuildingCategory | 'all';
 
-const campusesWithPlaces = CAMPUSES.filter((campus) =>
-  BUILDINGS.some((building) => building.campusId === campus.id),
-);
 const CATEGORY_OPTIONS: readonly SelectOption<CategoryFilter>[] = [
   { value: 'all', label: '全部分类' },
   ...BUILDING_CATEGORIES.map((category) => ({
@@ -49,11 +47,12 @@ const CATEGORY_OPTIONS: readonly SelectOption<CategoryFilter>[] = [
     label: category.label,
   })),
 ];
-const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] =
-  campusesWithPlaces.map((campus) => ({
+const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] = CAMPUSES.map(
+  (campus) => ({
     value: campus.id,
     label: `${campus.campusName}${campus.siteName}`,
-  }));
+  }),
+);
 const DEFAULT_CAMPUS_ID: CampusId = 'd';
 /** `complete` 不来时的兜底，宁可早一点揭开也不要一直卡在占位层 */
 const FIRST_PAINT_TIMEOUT_MS = 2_500;
@@ -153,6 +152,10 @@ const MapSurface = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef(new Map<string, MarkerEntry>());
+  const polygonsRef = useRef<{
+    map: AmapMap;
+    polygons: AmapPolygon[];
+  } | null>(null);
   const hoverCloseTimerRef = useRef<number | null>(null);
   const selectedRef = useRef(selected);
   const previousSelectedIdRef = useRef<string | null>(selected?.id ?? null);
@@ -292,7 +295,11 @@ const MapSurface = ({
 
   useEffect(() => {
     if (!runtime || status !== 'ready') return;
-    const polygons = CAMPUS_BOUNDARIES[campus.id].map(
+    const previous = polygonsRef.current;
+    if (previous?.map === runtime.map) {
+      runtime.map.remove(previous.polygons);
+    }
+    const polygons = (CAMPUS_BOUNDARIES[campus.id] ?? []).map(
       (path) =>
         new runtime.api.Polygon({
           path,
@@ -306,7 +313,7 @@ const MapSurface = ({
         }),
     );
     runtime.map.add(polygons);
-    return () => runtime.map.remove(polygons);
+    polygonsRef.current = { map: runtime.map, polygons };
   }, [campus.id, runtime, status]);
 
   useEffect(() => {
@@ -587,20 +594,30 @@ const MapSidebarContent = ({
   </>
 );
 
-type MapPageProps = {
-  focusId?: string;
-  onFocusChange: (focusId: string | undefined) => void;
-};
-
-const MapPage = ({ focusId, onFocusChange }: MapPageProps) => {
+const MapPage = () => {
+  const { focus: focusId } = useSearch({ from: '/map' });
+  const navigate = useNavigate({ from: '/map' });
+  const onFocusChange = useCallback(
+    (nextFocus: string | undefined) => {
+      void navigate({
+        search: nextFocus ? { focus: nextFocus } : {},
+      });
+    },
+    [navigate],
+  );
   const isDesktop = useDesktopLayout();
   const { mapCampusId, setMapCampusId } = usePreferencesStore();
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState<Building | null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
 
-  const campusId = isCampusId(mapCampusId) ? mapCampusId : DEFAULT_CAMPUS_ID;
+  const selected = useMemo(
+    () => BUILDINGS.find((building) => building.id === focusId) ?? null,
+    [focusId],
+  );
+  const campusId =
+    selected?.campusId ??
+    (isCampusId(mapCampusId) ? mapCampusId : DEFAULT_CAMPUS_ID);
   const campus = CAMPUS_BY_ID[campusId];
   const campusBuildings = useMemo(
     () => BUILDINGS.filter((building) => building.campusId === campusId),
@@ -628,36 +645,19 @@ const MapPage = ({ focusId, onFocusChange }: MapPageProps) => {
   }, []);
 
   useEffect(() => {
-    if (mapCampusId !== campusId) setMapCampusId(campusId);
-  }, [campusId, mapCampusId, setMapCampusId]);
+    if (!selected && mapCampusId !== campusId) setMapCampusId(campusId);
+  }, [campusId, mapCampusId, selected, setMapCampusId]);
 
   useEffect(() => {
-    if (!focusId) {
-      setSelected(null);
-      return;
-    }
-    const building = BUILDINGS.find((item) => item.id === focusId);
-    if (!building) return;
-    setMapCampusId(building.campusId);
+    if (!selected) return;
+    setMapCampusId(selected.campusId);
     setCategory('all');
     setQuery('');
-    setSelected(building);
     setMobilePanelOpen(false);
-  }, [focusId, setMapCampusId]);
-
-  useEffect(() => {
-    if (
-      selected &&
-      !filteredBuildings.some((building) => building.id === selected.id)
-    ) {
-      setSelected(null);
-      onFocusChange(undefined);
-    }
-  }, [filteredBuildings, onFocusChange, selected]);
+  }, [selected, setMapCampusId]);
 
   const chooseCampus = (next: CampusId) => {
     setMapCampusId(next);
-    setSelected(null);
     onFocusChange(undefined);
     setCategory('all');
     setMobilePanelOpen(false);
@@ -665,7 +665,6 @@ const MapPage = ({ focusId, onFocusChange }: MapPageProps) => {
 
   const chooseBuilding = useCallback(
     (building: Building) => {
-      setSelected(building);
       onFocusChange(building.id);
       setMobilePanelOpen(false);
     },
@@ -673,8 +672,17 @@ const MapPage = ({ focusId, onFocusChange }: MapPageProps) => {
   );
 
   const clearSelection = () => {
-    setSelected(null);
     onFocusChange(undefined);
+  };
+
+  const changeQuery = (nextQuery: string) => {
+    setQuery(nextQuery);
+    if (focusId) onFocusChange(undefined);
+  };
+
+  const changeCategory = (nextCategory: CategoryFilter) => {
+    setCategory(nextCategory);
+    if (focusId) onFocusChange(undefined);
   };
 
   const navigationLinks = selected ? navigationLinksFor(selected) : [];
@@ -768,8 +776,8 @@ const MapPage = ({ focusId, onFocusChange }: MapPageProps) => {
                   query={query}
                   category={category}
                   mobile={false}
-                  onQueryChange={setQuery}
-                  onCategoryChange={setCategory}
+                  onQueryChange={changeQuery}
+                  onCategoryChange={changeCategory}
                   onSelect={chooseBuilding}
                 />
               </aside>
@@ -786,8 +794,8 @@ const MapPage = ({ focusId, onFocusChange }: MapPageProps) => {
                     query={query}
                     category={category}
                     mobile
-                    onQueryChange={setQuery}
-                    onCategoryChange={setCategory}
+                    onQueryChange={changeQuery}
+                    onCategoryChange={changeCategory}
                     onSelect={chooseBuilding}
                   />
                 </Dialog.Popup>
