@@ -2,7 +2,14 @@ import { Dialog } from '@base-ui/react/dialog';
 import { Popover } from '@base-ui/react/popover';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { ListFilter, MapPin, Menu, Minus, Plus, Search, X } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import DocLink from '~/components/DocLink';
 import DocsShell from '~/components/DocsShell';
 import { ActivitySpinner } from '~/components/ui/activity-spinner';
@@ -131,6 +138,11 @@ const markerOffset = (api: AmapApi) =>
 type MarkerEntry = {
   marker: AmapMarker;
   root: HTMLDivElement;
+  listeners: {
+    click: () => void;
+    mouseover: () => void;
+    mouseout: () => void;
+  };
 };
 
 type HoverTip = {
@@ -152,6 +164,7 @@ const MapSurface = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef(new Map<string, MarkerEntry>());
+  const activeMapRef = useRef<AmapMap | null>(null);
   const polygonsRef = useRef<{
     map: AmapMap;
     polygons: AmapPolygon[];
@@ -168,61 +181,85 @@ const MapSurface = ({
   const [status, setStatus] = useState<MapStatus>('idle');
   const [retryKey, setRetryKey] = useState(0);
   const [hoverTip, setHoverTip] = useState<HoverTip | null>(null);
+  const hoveredBuildingIdRef = useRef<string | null>(
+    hoverTip?.building.id ?? null,
+  );
   campusRef.current = campus;
   themeRef.current = theme;
   selectedRef.current = selected;
+  hoveredBuildingIdRef.current = hoverTip?.building.id ?? null;
+  const mapReady =
+    status === 'ready' &&
+    runtime !== null &&
+    activeMapRef.current === runtime.map;
 
-  const clearHoverCloseTimer = () => {
+  const clearHoverCloseTimer = useCallback(() => {
     if (hoverCloseTimerRef.current === null) return;
     window.clearTimeout(hoverCloseTimerRef.current);
     hoverCloseTimerRef.current = null;
-  };
+  }, []);
 
   const showHoverTip = useCallback(
     (building: Building, root: HTMLDivElement) => {
-      if (!runtime) return;
+      if (!runtime || activeMapRef.current !== runtime.map) return;
       clearHoverCloseTimer();
       applyMarkerPinHover(root, true);
       const { x, y } = runtime.map.lngLatToContainer(building.coord);
+      hoveredBuildingIdRef.current = building.id;
       setHoverTip({
         building,
         x,
         y: y - MARKER_PIN_SIZE * MARKER_SCALE.hover,
       });
     },
-    [runtime],
+    [clearHoverCloseTimer, runtime],
   );
 
-  const hideHoverTip = useCallback((root: HTMLDivElement) => {
-    applyMarkerPinHover(root, false);
-    clearHoverCloseTimer();
-    hoverCloseTimerRef.current = window.setTimeout(() => setHoverTip(null), 80);
-  }, []);
+  const hideHoverTip = useCallback(
+    (root: HTMLDivElement) => {
+      applyMarkerPinHover(root, false);
+      clearHoverCloseTimer();
+      hoverCloseTimerRef.current = window.setTimeout(() => {
+        hoveredBuildingIdRef.current = null;
+        setHoverTip(null);
+      }, 80);
+    },
+    [clearHoverCloseTimer],
+  );
 
-  useEffect(() => clearHoverCloseTimer, []);
+  useEffect(() => clearHoverCloseTimer, [clearHoverCloseTimer]);
 
   useEffect(() => {
     if (!runtime || !hoverTip) return;
     const map = runtime.map;
+    const building = hoverTip.building;
+    let frame: number | null = null;
     const sync = () => {
-      const { x, y } = map.lngLatToContainer(hoverTip.building.coord);
-      setHoverTip((prev) =>
-        prev
-          ? {
-              building: prev.building,
-              x,
-              y: y - MARKER_PIN_SIZE * MARKER_SCALE.hover,
-            }
-          : null,
-      );
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        if (activeMapRef.current !== map) return;
+        const { x, y } = map.lngLatToContainer(building.coord);
+        const nextY = y - MARKER_PIN_SIZE * MARKER_SCALE.hover;
+        setHoverTip((prev) => {
+          if (!prev || prev.building.id !== building.id) return prev;
+          if (Math.abs(prev.x - x) < 0.5 && Math.abs(prev.y - nextY) < 0.5) {
+            return prev;
+          }
+          return { building: prev.building, x, y: nextY };
+        });
+      });
     };
     map.on('mapmove', sync);
     map.on('zoomchange', sync);
     return () => {
-      map.off('mapmove', sync);
-      map.off('zoomchange', sync);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+      if (activeMapRef.current === map) {
+        map.off('mapmove', sync);
+        map.off('zoomchange', sync);
+      }
     };
-  }, [hoverTip, runtime]);
+  }, [hoverTip?.building.id, runtime]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -252,6 +289,7 @@ const MapSurface = ({
           scrollWheel: true,
         });
         activeMap = map;
+        activeMapRef.current = map;
         appliedThemeRef.current = themeRef.current;
         centeredCampusIdRef.current = initialCampus.id;
 
@@ -276,29 +314,47 @@ const MapSurface = ({
       active = false;
       window.clearTimeout(firstPaintTimer);
       // WebGL 上下文和事件都挂在实例上，直接清 DOM 会漏掉这些。
+      if (activeMapRef.current === activeMap) activeMapRef.current = null;
       activeMap?.destroy();
       activeMap = null;
+      markersRef.current.clear();
+      polygonsRef.current = null;
     };
   }, [retryKey]);
 
   useEffect(() => {
-    if (!runtime || appliedThemeRef.current === theme) return;
+    if (
+      !runtime ||
+      activeMapRef.current !== runtime.map ||
+      appliedThemeRef.current === theme
+    ) {
+      return;
+    }
     runtime.map.setMapStyle(MAP_STYLES[theme]);
     appliedThemeRef.current = theme;
   }, [runtime, theme]);
 
   useEffect(() => {
-    if (!runtime || centeredCampusIdRef.current === campus.id) return;
+    if (
+      !runtime ||
+      activeMapRef.current !== runtime.map ||
+      centeredCampusIdRef.current === campus.id
+    ) {
+      return;
+    }
     runtime.map.setZoomAndCenter(campus.defaultZoom, campus.center);
     centeredCampusIdRef.current = campus.id;
   }, [campus, runtime]);
 
   useEffect(() => {
-    if (!runtime || status !== 'ready') return;
-    const previous = polygonsRef.current;
-    if (previous?.map === runtime.map) {
-      runtime.map.remove(previous.polygons);
+    if (
+      !runtime ||
+      activeMapRef.current !== runtime.map ||
+      status !== 'ready'
+    ) {
+      return;
     }
+    const map = runtime.map;
     const polygons = (CAMPUS_BOUNDARIES[campus.id] ?? []).map(
       (path) =>
         new runtime.api.Polygon({
@@ -312,8 +368,14 @@ const MapSurface = ({
           zIndex: 2,
         }),
     );
-    runtime.map.add(polygons);
-    polygonsRef.current = { map: runtime.map, polygons };
+    map.add(polygons);
+    polygonsRef.current = { map, polygons };
+    return () => {
+      if (activeMapRef.current === map) map.remove(polygons);
+      if (polygonsRef.current?.polygons === polygons) {
+        polygonsRef.current = null;
+      }
+    };
   }, [campus.id, runtime, status]);
 
   useEffect(() => {
@@ -323,12 +385,19 @@ const MapSurface = ({
   }, [runtime]);
 
   useEffect(() => {
-    if (!runtime) return;
+    if (!runtime || activeMapRef.current !== runtime.map) return;
     const nextIds = new Set(buildings.map((building) => building.id));
     for (const [id, entry] of markersRef.current) {
       if (nextIds.has(id)) continue;
+      entry.marker.off('click', entry.listeners.click);
+      entry.marker.off('mouseover', entry.listeners.mouseover);
+      entry.marker.off('mouseout', entry.listeners.mouseout);
       runtime.map.remove(entry.marker);
       markersRef.current.delete(id);
+      if (hoveredBuildingIdRef.current === id) {
+        hoveredBuildingIdRef.current = null;
+        setHoverTip(null);
+      }
     }
 
     for (const building of buildings) {
@@ -341,16 +410,21 @@ const MapSurface = ({
         offset: markerOffset(runtime.api),
         zIndex: isSelected ? 120 : 10,
       });
-      marker.on('click', () => onSelect(building));
-      marker.on('mouseover', () => showHoverTip(building, root));
-      marker.on('mouseout', () => hideHoverTip(root));
+      const listeners = {
+        click: () => onSelect(building),
+        mouseover: () => showHoverTip(building, root),
+        mouseout: () => hideHoverTip(root),
+      };
+      marker.on('click', listeners.click);
+      marker.on('mouseover', listeners.mouseover);
+      marker.on('mouseout', listeners.mouseout);
       runtime.map.add(marker);
-      markersRef.current.set(building.id, { marker, root });
+      markersRef.current.set(building.id, { marker, root, listeners });
     }
   }, [buildings, hideHoverTip, onSelect, runtime, showHoverTip]);
 
   useEffect(() => {
-    if (!runtime) return;
+    if (!runtime || activeMapRef.current !== runtime.map) return;
     const nextSelectedId = selected?.id ?? null;
     const changedIds = new Set([previousSelectedIdRef.current, nextSelectedId]);
     for (const id of changedIds) {
@@ -365,6 +439,8 @@ const MapSurface = ({
     }
     previousSelectedIdRef.current = nextSelectedId;
     if (!selected) return;
+    hoveredBuildingIdRef.current = null;
+    setHoverTip(null);
     runtime.map.panTo(selected.coord);
   }, [runtime, selected]);
 
@@ -436,18 +512,28 @@ const MapSurface = ({
       <div className="absolute right-3 top-3 z-10 flex flex-col overflow-hidden rounded-md border border-line bg-panel/92 shadow-lg backdrop-blur md:right-5 md:top-5">
         <button
           type="button"
-          className="grid h-10 w-10 place-items-center text-ink hover:bg-mist"
+          className="grid h-10 w-10 place-items-center text-ink hover:bg-mist disabled:cursor-not-allowed disabled:opacity-45"
           aria-label="放大地图"
-          onClick={() => runtime?.map.zoomIn()}
+          disabled={!mapReady}
+          onClick={() => {
+            if (runtime && activeMapRef.current === runtime.map) {
+              runtime.map.zoomIn();
+            }
+          }}
         >
           <Plus size={17} />
         </button>
         <div className="h-px bg-line" />
         <button
           type="button"
-          className="grid h-10 w-10 place-items-center text-ink hover:bg-mist"
+          className="grid h-10 w-10 place-items-center text-ink hover:bg-mist disabled:cursor-not-allowed disabled:opacity-45"
           aria-label="缩小地图"
-          onClick={() => runtime?.map.zoomOut()}
+          disabled={!mapReady}
+          onClick={() => {
+            if (runtime && activeMapRef.current === runtime.map) {
+              runtime.map.zoomOut();
+            }
+          }}
         >
           <Minus size={17} />
         </button>
@@ -638,6 +724,7 @@ const MapPage = () => {
       return categoryMatches && keywordMatches;
     });
   }, [campusBuildings, category, query]);
+  const markerBuildings = useDeferredValue(filteredBuildings);
 
   useEffect(() => {
     document.title = '校园地图 · CQU-openlib';
@@ -806,7 +893,7 @@ const MapPage = () => {
 
             <div className="relative min-w-0 flex-1">
               <MapSurface
-                buildings={filteredBuildings}
+                buildings={markerBuildings}
                 campus={campus}
                 selected={selected}
                 onSelect={chooseBuilding}

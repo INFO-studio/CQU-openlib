@@ -12,6 +12,10 @@ export type AmapStyle = `amap://styles/${string}`;
 
 export type AmapMarker = {
   on: (event: 'click' | 'mouseover' | 'mouseout', listener: () => void) => void;
+  off: (
+    event: 'click' | 'mouseover' | 'mouseout',
+    listener: () => void,
+  ) => void;
   setContent: (content: string | HTMLElement) => void;
   setOffset: (offset: unknown) => void;
   setzIndex: (zIndex: number) => void;
