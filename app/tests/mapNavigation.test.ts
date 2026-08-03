@@ -32,6 +32,9 @@ describe('map navigation links', () => {
     );
     expect(links.amap.searchParams.get('lng')).toBe(String(building.coord[0]));
     expect(links.amap.searchParams.get('lat')).toBe(String(building.coord[1]));
+    expect(links.google.searchParams.get('query')).toBe(
+      `${building.coord[1]},${building.coord[0]}`,
+    );
     expect(links.baidu.searchParams.get('title')).toBe(building.name);
     expect(links.baidu.searchParams.get('content')).toBe(building.name);
     expect(links.baidu.searchParams.get('output')).toBe('html');

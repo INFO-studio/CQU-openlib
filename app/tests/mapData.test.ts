@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
+import {
+  BUILDING_CATEGORIES,
+  BUILDINGS,
+  type Building,
+  CAMPUSES,
+} from '~/pages/map/data';
 
 describe('campus map data', () => {
   it('matches the published location count', () => {
-    expect(BUILDINGS).toHaveLength(140);
+    expect(BUILDINGS).toHaveLength(132);
+    expect(
+      (BUILDINGS as readonly Building[]).some(
+        (building) => building.campusId === 'c',
+      ),
+    ).toBe(false);
   });
 
   it('uses the site-wide 校区 / 校园 terminology', () => {
@@ -32,14 +42,9 @@ describe('campus map data', () => {
         ),
       ).toBe(true);
     }
-    for (const campus of CAMPUSES) {
-      expect(
-        BUILDINGS.some((building) => building.campusId === campus.id),
-      ).toBe(true);
-    }
   });
 
-  it('contains finite BD09 longitude-latitude pairs', () => {
+  it('contains finite GCJ-02 longitude-latitude pairs', () => {
     for (const { coord } of BUILDINGS) {
       expect(coord).toHaveLength(2);
       expect(coord.every(Number.isFinite)).toBe(true);

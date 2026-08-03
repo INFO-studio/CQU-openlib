@@ -1,5 +1,6 @@
 import { Dialog } from '@base-ui/react/dialog';
-import { Link } from '@tanstack/react-router';
+import { Popover } from '@base-ui/react/popover';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { ListFilter, MapPin, Menu, Minus, Plus, Search, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DocLink from '~/components/DocLink';
@@ -13,9 +14,11 @@ import {
   type AmapApi,
   type AmapMap,
   type AmapMarker,
+  type AmapPolygon,
   type AmapStyle,
   loadAmap,
 } from './amap';
+import { CAMPUS_BOUNDARIES } from './boundaries';
 import {
   BUILDING_CATEGORIES,
   BUILDING_CATEGORY_BY_ID,
@@ -37,9 +40,6 @@ type MapRuntime = {
 type MapStatus = 'idle' | 'loading' | 'ready' | 'error';
 type CategoryFilter = BuildingCategory | 'all';
 
-const campusesWithPlaces = CAMPUSES.filter((campus) =>
-  BUILDINGS.some((building) => building.campusId === campus.id),
-);
 const CATEGORY_OPTIONS: readonly SelectOption<CategoryFilter>[] = [
   { value: 'all', label: '全部分类' },
   ...BUILDING_CATEGORIES.map((category) => ({
@@ -47,11 +47,12 @@ const CATEGORY_OPTIONS: readonly SelectOption<CategoryFilter>[] = [
     label: category.label,
   })),
 ];
-const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] =
-  campusesWithPlaces.map((campus) => ({
+const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] = CAMPUSES.map(
+  (campus) => ({
     value: campus.id,
     label: `${campus.campusName}${campus.siteName}`,
-  }));
+  }),
+);
 const DEFAULT_CAMPUS_ID: CampusId = 'd';
 /** `complete` 不来时的兜底，宁可早一点揭开也不要一直卡在占位层 */
 const FIRST_PAINT_TIMEOUT_MS = 2_500;
@@ -65,39 +66,77 @@ const isCampusId = (value: string | null): value is CampusId =>
   CAMPUSES.some((campus) => campus.id === value);
 
 /**
- * 图钉尺寸压到刚够点得中：一个校区上百个点会互相压盖，图标越大越糊成一片。
- * 只有选中态放大，让焦点自己浮出来。
+ * 图钉容器固定 28×28，缩放只动内部图形，锚点才不会跟着跳。
+ * hover / 选中用 transform 放大，比换整张 icon 图更顺。
  */
-const MARKER_SIZE = { normal: 28, selected: 38 } as const;
-/** 图形在 24×24 画布里从 y=2 画到尖端 y=22，锚点按这个比例回推。 */
-const MARKER_TIP_RATIO = 22 / 24;
+const MARKER_PIN_SIZE = 28;
+const MARKER_SCALE = { idle: 1, hover: 1.4, selected: 1.45 } as const;
 
-const markerSvg = (color: string, selected: boolean): string => {
-  const size = MARKER_SIZE[selected ? 'selected' : 'normal'];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24">
-    <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="${color}" stroke="#fff" stroke-opacity=".92" stroke-width="${selected ? 1.6 : 1.3}" stroke-linejoin="round"/>
+const markerPinSvg = (color: string) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="${color}" stroke="#fff" stroke-opacity=".92" stroke-width="1.3" stroke-linejoin="round"/>
     <circle cx="12" cy="9" r="2.7" fill="#fff" fill-opacity=".95"/>
   </svg>`;
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+
+const applyMarkerPinState = (root: HTMLDivElement, selected: boolean) => {
+  const body = root.querySelector<HTMLDivElement>('[data-map-pin-body]');
+  if (!body) return;
+  body.dataset.selected = selected ? 'true' : 'false';
+  body.style.transform = `scale(${
+    selected ? MARKER_SCALE.selected : MARKER_SCALE.idle
+  })`;
 };
 
-const markerIcon = (api: AmapApi, building: Building, selected: boolean) => {
-  const size = MARKER_SIZE[selected ? 'selected' : 'normal'];
-  const iconSize = new api.Size(size, size);
-  return new api.Icon({
-    image: markerSvg(
-      BUILDING_CATEGORY_BY_ID[building.category].color,
-      selected,
-    ),
-    size: iconSize,
-    imageSize: iconSize,
-  });
+const applyMarkerPinHover = (root: HTMLDivElement, hovered: boolean) => {
+  const body = root.querySelector<HTMLDivElement>('[data-map-pin-body]');
+  if (!body) return;
+  const selected = body.dataset.selected === 'true';
+  body.style.transform = `scale(${
+    selected
+      ? MARKER_SCALE.selected
+      : hovered
+        ? MARKER_SCALE.hover
+        : MARKER_SCALE.idle
+  })`;
 };
 
-/** 图钉尖对准坐标：高德的 offset 是图片左上角相对锚点的位移。 */
-const markerOffset = (api: AmapApi, selected: boolean) => {
-  const size = MARKER_SIZE[selected ? 'selected' : 'normal'];
-  return new api.Pixel(-size / 2, -size * MARKER_TIP_RATIO);
+const createMarkerPin = (
+  building: Building,
+  selected: boolean,
+): HTMLDivElement => {
+  const color = BUILDING_CATEGORY_BY_ID[building.category].color;
+  const root = document.createElement('div');
+  root.className =
+    'group flex h-7 w-7 cursor-pointer items-end justify-center outline-none';
+  root.dataset.buildingId = building.id;
+
+  const body = document.createElement('div');
+  body.dataset.mapPinBody = 'true';
+  body.dataset.selected = selected ? 'true' : 'false';
+  body.className =
+    'origin-bottom transition-transform duration-200 ease-out will-change-transform';
+  body.style.transform = `scale(${
+    selected ? MARKER_SCALE.selected : MARKER_SCALE.idle
+  })`;
+  body.innerHTML = markerPinSvg(color);
+
+  root.appendChild(body);
+  return root;
+};
+
+/** 图钉尖对准坐标：高德的 offset 是 content 左上角相对锚点的位移。 */
+const markerOffset = (api: AmapApi) =>
+  new api.Pixel(-MARKER_PIN_SIZE / 2, -MARKER_PIN_SIZE);
+
+type MarkerEntry = {
+  marker: AmapMarker;
+  root: HTMLDivElement;
+};
+
+type HoverTip = {
+  building: Building;
+  x: number;
+  y: number;
 };
 
 const MapSurface = ({
@@ -112,7 +151,12 @@ const MapSurface = ({
   onSelect: (building: Building) => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const markersRef = useRef(new Map<string, AmapMarker>());
+  const markersRef = useRef(new Map<string, MarkerEntry>());
+  const polygonsRef = useRef<{
+    map: AmapMap;
+    polygons: AmapPolygon[];
+  } | null>(null);
+  const hoverCloseTimerRef = useRef<number | null>(null);
   const selectedRef = useRef(selected);
   const previousSelectedIdRef = useRef<string | null>(selected?.id ?? null);
   const { theme } = usePreferencesStore();
@@ -123,9 +167,62 @@ const MapSurface = ({
   const [runtime, setRuntime] = useState<MapRuntime | null>(null);
   const [status, setStatus] = useState<MapStatus>('idle');
   const [retryKey, setRetryKey] = useState(0);
+  const [hoverTip, setHoverTip] = useState<HoverTip | null>(null);
   campusRef.current = campus;
   themeRef.current = theme;
   selectedRef.current = selected;
+
+  const clearHoverCloseTimer = () => {
+    if (hoverCloseTimerRef.current === null) return;
+    window.clearTimeout(hoverCloseTimerRef.current);
+    hoverCloseTimerRef.current = null;
+  };
+
+  const showHoverTip = useCallback(
+    (building: Building, root: HTMLDivElement) => {
+      if (!runtime) return;
+      clearHoverCloseTimer();
+      applyMarkerPinHover(root, true);
+      const { x, y } = runtime.map.lngLatToContainer(building.coord);
+      setHoverTip({
+        building,
+        x,
+        y: y - MARKER_PIN_SIZE * MARKER_SCALE.hover,
+      });
+    },
+    [runtime],
+  );
+
+  const hideHoverTip = useCallback((root: HTMLDivElement) => {
+    applyMarkerPinHover(root, false);
+    clearHoverCloseTimer();
+    hoverCloseTimerRef.current = window.setTimeout(() => setHoverTip(null), 80);
+  }, []);
+
+  useEffect(() => clearHoverCloseTimer, []);
+
+  useEffect(() => {
+    if (!runtime || !hoverTip) return;
+    const map = runtime.map;
+    const sync = () => {
+      const { x, y } = map.lngLatToContainer(hoverTip.building.coord);
+      setHoverTip((prev) =>
+        prev
+          ? {
+              building: prev.building,
+              x,
+              y: y - MARKER_PIN_SIZE * MARKER_SCALE.hover,
+            }
+          : null,
+      );
+    };
+    map.on('mapmove', sync);
+    map.on('zoomchange', sync);
+    return () => {
+      map.off('mapmove', sync);
+      map.off('zoomchange', sync);
+    };
+  }, [hoverTip, runtime]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -197,8 +294,30 @@ const MapSurface = ({
   }, [campus, runtime]);
 
   useEffect(() => {
+    if (!runtime || status !== 'ready') return;
+    const previous = polygonsRef.current;
+    if (previous?.map === runtime.map) {
+      runtime.map.remove(previous.polygons);
+    }
+    const polygons = (CAMPUS_BOUNDARIES[campus.id] ?? []).map(
+      (path) =>
+        new runtime.api.Polygon({
+          path,
+          fillColor: '#4069B2',
+          fillOpacity: 0.08,
+          strokeColor: '#4069B2',
+          strokeOpacity: 0.8,
+          strokeStyle: 'dashed',
+          strokeWeight: 2,
+          zIndex: 2,
+        }),
+    );
+    runtime.map.add(polygons);
+    polygonsRef.current = { map: runtime.map, polygons };
+  }, [campus.id, runtime, status]);
+
+  useEffect(() => {
     if (!runtime) return;
-    runtime.map.clearMap();
     markersRef.current.clear();
     previousSelectedIdRef.current = selectedRef.current?.id ?? null;
   }, [runtime]);
@@ -206,26 +325,29 @@ const MapSurface = ({
   useEffect(() => {
     if (!runtime) return;
     const nextIds = new Set(buildings.map((building) => building.id));
-    for (const [id, marker] of markersRef.current) {
+    for (const [id, entry] of markersRef.current) {
       if (nextIds.has(id)) continue;
-      runtime.map.remove(marker);
+      runtime.map.remove(entry.marker);
       markersRef.current.delete(id);
     }
 
     for (const building of buildings) {
       if (markersRef.current.has(building.id)) continue;
       const isSelected = building.id === selectedRef.current?.id;
+      const root = createMarkerPin(building, isSelected);
       const marker = new runtime.api.Marker({
         position: building.coord,
-        icon: markerIcon(runtime.api, building, isSelected),
-        offset: markerOffset(runtime.api, isSelected),
-        title: building.name,
+        content: root,
+        offset: markerOffset(runtime.api),
+        zIndex: isSelected ? 120 : 10,
       });
       marker.on('click', () => onSelect(building));
+      marker.on('mouseover', () => showHoverTip(building, root));
+      marker.on('mouseout', () => hideHoverTip(root));
       runtime.map.add(marker);
-      markersRef.current.set(building.id, marker);
+      markersRef.current.set(building.id, { marker, root });
     }
-  }, [buildings, onSelect, runtime]);
+  }, [buildings, hideHoverTip, onSelect, runtime, showHoverTip]);
 
   useEffect(() => {
     if (!runtime) return;
@@ -233,12 +355,12 @@ const MapSurface = ({
     const changedIds = new Set([previousSelectedIdRef.current, nextSelectedId]);
     for (const id of changedIds) {
       if (!id) continue;
-      const marker = markersRef.current.get(id);
+      const entry = markersRef.current.get(id);
       const building = BUILDINGS.find((item) => item.id === id);
-      if (marker && building) {
+      if (entry && building) {
         const isSelected = id === nextSelectedId;
-        marker.setIcon(markerIcon(runtime.api, building, isSelected));
-        marker.setOffset(markerOffset(runtime.api, isSelected));
+        applyMarkerPinState(entry.root, isSelected);
+        entry.marker.setzIndex(isSelected ? 120 : 10);
       }
     }
     previousSelectedIdRef.current = nextSelectedId;
@@ -254,6 +376,40 @@ const MapSurface = ({
         aria-label="校园地图"
       />
 
+      <Popover.Root open={hoverTip !== null}>
+        <Popover.Trigger
+          aria-hidden
+          tabIndex={-1}
+          className="pointer-events-none absolute z-20 h-px w-px"
+          style={
+            hoverTip
+              ? { left: hoverTip.x, top: hoverTip.y }
+              : { left: 0, top: 0 }
+          }
+        />
+        <Popover.Portal>
+          <Popover.Positioner
+            className="pointer-events-none z-[80] outline-none"
+            side="top"
+            sideOffset={8}
+            align="center"
+          >
+            <Popover.Popup className="pointer-events-none origin-[var(--transform-origin)] rounded-md border border-line bg-elev px-2.5 py-1.5 text-xs text-ink shadow-[0_8px_24px_rgba(15,23,42,0.14)] outline-none">
+              {hoverTip ? (
+                <div className="text-center">
+                  <p className="m-0 font-medium leading-snug">
+                    {hoverTip.building.name}
+                  </p>
+                  <p className="m-0 mt-0.5 text-[0.6875rem] text-muted">
+                    {BUILDING_CATEGORY_BY_ID[hoverTip.building.category].label}
+                  </p>
+                </div>
+              ) : null}
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+
       {status !== 'ready' ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-paper p-6">
           {status === 'error' ? (
@@ -261,7 +417,7 @@ const MapSurface = ({
               <p className="m-0 font-medium text-ink">地图暂时不可用</p>
               <button
                 type="button"
-                className="mt-3 h-8 rounded border border-line bg-panel px-3 text-xs font-medium text-ink hover:border-primary hover:text-primary"
+                className="mt-3 h-8 rounded-md border border-line bg-panel px-3 text-xs font-medium text-ink hover:border-primary hover:text-primary"
                 onClick={() => setRetryKey((key) => key + 1)}
               >
                 重新加载
@@ -277,7 +433,7 @@ const MapSurface = ({
         </div>
       ) : null}
 
-      <div className="absolute right-3 top-3 z-10 flex flex-col overflow-hidden border border-line bg-panel/92 shadow-lg backdrop-blur md:right-5 md:top-5">
+      <div className="absolute right-3 top-3 z-10 flex flex-col overflow-hidden rounded-md border border-line bg-panel/92 shadow-lg backdrop-blur md:right-5 md:top-5">
         <button
           type="button"
           className="grid h-10 w-10 place-items-center text-ink hover:bg-mist"
@@ -393,7 +549,7 @@ const MapSidebarContent = ({
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-line px-3">
         <span className="text-xs font-medium text-muted">校园地点</span>
         <Dialog.Close
-          className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink"
+          className="grid h-8 w-8 place-items-center rounded-md text-icon hover:bg-mist hover:text-ink"
           aria-label="关闭地点列表"
         >
           <X size={16} />
@@ -401,7 +557,7 @@ const MapSidebarContent = ({
       </div>
     ) : null}
     <div className="flex gap-2 border-b border-line p-3">
-      <label className="flex h-10 min-w-0 flex-1 items-center gap-2 border border-line bg-paper px-3 focus-within:border-primary">
+      <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-md border border-line bg-paper px-3 focus-within:border-primary">
         <Search size={15} className="shrink-0 text-icon" aria-hidden />
         <span className="sr-only">搜索地点</span>
         <input
@@ -413,7 +569,7 @@ const MapSidebarContent = ({
         {query ? (
           <button
             type="button"
-            className="grid h-6 w-6 place-items-center text-muted hover:text-ink"
+            className="grid h-6 w-6 place-items-center rounded-md text-muted hover:bg-mist hover:text-ink"
             aria-label="清空搜索"
             onClick={() => onQueryChange('')}
           >
@@ -439,14 +595,29 @@ const MapSidebarContent = ({
 );
 
 const MapPage = () => {
+  const { focus: focusId } = useSearch({ from: '/map' });
+  const navigate = useNavigate({ from: '/map' });
+  const onFocusChange = useCallback(
+    (nextFocus: string | undefined) => {
+      void navigate({
+        search: nextFocus ? { focus: nextFocus } : {},
+      });
+    },
+    [navigate],
+  );
   const isDesktop = useDesktopLayout();
   const { mapCampusId, setMapCampusId } = usePreferencesStore();
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState<Building | null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
 
-  const campusId = isCampusId(mapCampusId) ? mapCampusId : DEFAULT_CAMPUS_ID;
+  const selected = useMemo(
+    () => BUILDINGS.find((building) => building.id === focusId) ?? null,
+    [focusId],
+  );
+  const campusId =
+    selected?.campusId ??
+    (isCampusId(mapCampusId) ? mapCampusId : DEFAULT_CAMPUS_ID);
   const campus = CAMPUS_BY_ID[campusId];
   const campusBuildings = useMemo(
     () => BUILDINGS.filter((building) => building.campusId === campusId),
@@ -474,29 +645,45 @@ const MapPage = () => {
   }, []);
 
   useEffect(() => {
-    if (mapCampusId !== campusId) setMapCampusId(campusId);
-  }, [campusId, mapCampusId, setMapCampusId]);
+    if (!selected && mapCampusId !== campusId) setMapCampusId(campusId);
+  }, [campusId, mapCampusId, selected, setMapCampusId]);
 
   useEffect(() => {
-    if (
-      selected &&
-      !filteredBuildings.some((building) => building.id === selected.id)
-    ) {
-      setSelected(null);
-    }
-  }, [filteredBuildings, selected]);
+    if (!selected) return;
+    setMapCampusId(selected.campusId);
+    setCategory('all');
+    setQuery('');
+    setMobilePanelOpen(false);
+  }, [selected, setMapCampusId]);
 
   const chooseCampus = (next: CampusId) => {
     setMapCampusId(next);
-    setSelected(null);
+    onFocusChange(undefined);
     setCategory('all');
     setMobilePanelOpen(false);
   };
 
-  const chooseBuilding = useCallback((building: Building) => {
-    setSelected(building);
-    setMobilePanelOpen(false);
-  }, []);
+  const chooseBuilding = useCallback(
+    (building: Building) => {
+      onFocusChange(building.id);
+      setMobilePanelOpen(false);
+    },
+    [onFocusChange],
+  );
+
+  const clearSelection = () => {
+    onFocusChange(undefined);
+  };
+
+  const changeQuery = (nextQuery: string) => {
+    setQuery(nextQuery);
+    if (focusId) onFocusChange(undefined);
+  };
+
+  const changeCategory = (nextCategory: CategoryFilter) => {
+    setCategory(nextCategory);
+    if (focusId) onFocusChange(undefined);
+  };
 
   const navigationLinks = selected ? navigationLinksFor(selected) : [];
 
@@ -519,7 +706,7 @@ const MapPage = () => {
                 onValueChange={chooseCampus}
                 ariaLabel="选择校区"
                 variant="compact"
-                className="max-w-full"
+                className="max-w-full rounded-md"
               />
             </div>
 
@@ -544,6 +731,18 @@ const MapPage = () => {
                   </DocLink>
                 </p>
                 <p className="mt-2 m-0 text-[0.8125rem] leading-relaxed text-muted">
+                  校园边界数据 ©{' '}
+                  <a
+                    href="https://www.openstreetmap.org/copyright"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary no-underline hover:underline"
+                  >
+                    OpenStreetMap contributors
+                  </a>
+                  。
+                </p>
+                <p className="mt-2 m-0 text-[0.8125rem] leading-relaxed text-muted">
                   地点有误、需要修改或补充请通过
                   <Link
                     to="/form/$type"
@@ -557,7 +756,7 @@ const MapPage = () => {
                 </p>
               </InfoPopover>
               <Dialog.Trigger
-                className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink md:hidden"
+                className="grid h-8 w-8 place-items-center rounded-md text-icon hover:bg-mist hover:text-ink md:hidden"
                 aria-label="打开地点列表"
               >
                 <Menu size={18} />
@@ -577,8 +776,8 @@ const MapPage = () => {
                   query={query}
                   category={category}
                   mobile={false}
-                  onQueryChange={setQuery}
-                  onCategoryChange={setCategory}
+                  onQueryChange={changeQuery}
+                  onCategoryChange={changeCategory}
                   onSelect={chooseBuilding}
                 />
               </aside>
@@ -595,8 +794,8 @@ const MapPage = () => {
                     query={query}
                     category={category}
                     mobile
-                    onQueryChange={setQuery}
-                    onCategoryChange={setCategory}
+                    onQueryChange={changeQuery}
+                    onCategoryChange={changeCategory}
                     onSelect={chooseBuilding}
                   />
                 </Dialog.Popup>
@@ -612,14 +811,14 @@ const MapPage = () => {
               />
 
               {!mobilePanelOpen ? (
-                <Dialog.Trigger className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden">
+                <Dialog.Trigger className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 rounded-md border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden">
                   <ListFilter size={15} aria-hidden />
                   {filteredBuildings.length} 个地点
                 </Dialog.Trigger>
               ) : null}
 
               {selected ? (
-                <section className="absolute right-3 bottom-3 left-3 z-10 border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[28rem] md:p-4">
+                <section className="absolute right-3 bottom-3 left-3 z-10 rounded-md border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[28rem] md:p-4">
                   <div className="flex items-start gap-3">
                     <span
                       className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
@@ -642,7 +841,7 @@ const MapPage = () => {
                       type="button"
                       className="grid h-7 w-7 shrink-0 place-items-center text-muted hover:text-ink"
                       aria-label="关闭地点详情"
-                      onClick={() => setSelected(null)}
+                      onClick={clearSelection}
                     >
                       <X size={15} />
                     </button>
@@ -654,7 +853,7 @@ const MapPage = () => {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 items-center justify-center border border-line bg-paper px-1 text-xs font-medium text-ink no-underline hover:border-primary hover:text-primary"
+                        className="flex h-8 items-center justify-center rounded-md border border-line bg-paper px-1 text-xs font-medium text-ink no-underline hover:border-primary hover:text-primary"
                       >
                         {link.label}
                       </a>
