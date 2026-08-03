@@ -35,7 +35,6 @@ type MapRuntime = {
 };
 
 type MapStatus = 'idle' | 'loading' | 'ready' | 'error';
-type ThemePhase = 'idle' | 'covering' | 'revealing';
 type CategoryFilter = BuildingCategory | 'all';
 
 const campusesWithPlaces = CAMPUSES.filter((campus) =>
@@ -54,8 +53,6 @@ const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] =
     label: `${campus.campusName}${campus.siteName}`,
   }));
 const DEFAULT_CAMPUS_ID: CampusId = 'd';
-/** transitionend 在标签页不可见等情况下不来，兜底时长要比遮罩过渡略长。 */
-const THEME_COVER_MS = 2_000;
 /** `complete` 不来时的兜底，宁可早一点揭开也不要一直卡在占位层 */
 const FIRST_PAINT_TIMEOUT_MS = 2_500;
 /** 高德内置样式，省掉在控制台维护自定义样式这层。 */
@@ -126,8 +123,6 @@ const MapSurface = ({
   const [runtime, setRuntime] = useState<MapRuntime | null>(null);
   const [status, setStatus] = useState<MapStatus>('idle');
   const [retryKey, setRetryKey] = useState(0);
-  const [themePhase, setThemePhase] = useState<ThemePhase>('idle');
-  const coverDoneRef = useRef<(() => void) | null>(null);
   campusRef.current = campus;
   themeRef.current = theme;
   selectedRef.current = selected;
@@ -191,34 +186,8 @@ const MapSurface = ({
 
   useEffect(() => {
     if (!runtime || appliedThemeRef.current === theme) return;
-    const applyStyle = () => {
-      runtime.map.setMapStyle(MAP_STYLES[theme]);
-      appliedThemeRef.current = theme;
-    };
-    // 底图是一次性重绘，直接换色会在页面其余部分还在过渡时先跳一帧。
-    // 先把地图盖成新主题的底色，重绘完再揭开。
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      applyStyle();
-      return;
-    }
-    setThemePhase('covering');
-    // setMapStyle 没有完成回调，内置样式也不走网络，重绘就在下一帧。
-    // 所以遮罩盖满（transitionend）就换色，再等一帧确认新底图已上屏。
-    let frame = 0;
-    const timer = window.setTimeout(() => {
-      applyStyle();
-      frame = window.requestAnimationFrame(() => setThemePhase('revealing'));
-    }, THEME_COVER_MS);
-    coverDoneRef.current = () => {
-      window.clearTimeout(timer);
-      applyStyle();
-      frame = window.requestAnimationFrame(() => setThemePhase('revealing'));
-    };
-    return () => {
-      window.clearTimeout(timer);
-      window.cancelAnimationFrame(frame);
-      coverDoneRef.current = null;
-    };
+    runtime.map.setMapStyle(MAP_STYLES[theme]);
+    appliedThemeRef.current = theme;
   }, [runtime, theme]);
 
   useEffect(() => {
@@ -283,20 +252,6 @@ const MapSurface = ({
         ref={containerRef}
         className="absolute inset-0 overscroll-contain bg-paper!"
         aria-label="校园地图"
-      />
-
-      <div
-        aria-hidden
-        onTransitionEnd={() => {
-          if (themePhase === 'covering') coverDoneRef.current?.();
-          else if (themePhase === 'revealing') setThemePhase('idle');
-        }}
-        className={cn(
-          'pointer-events-none absolute inset-0 z-5 bg-paper transition-opacity ease-out',
-          themePhase === 'covering'
-            ? 'opacity-100 duration-2000'
-            : 'opacity-0 duration-2000',
-        )}
       />
 
       {status !== 'ready' ? (
