@@ -1,0 +1,61 @@
+.campus-map {
+  --map-header: 3.5rem;
+  height: 100dvh;
+  min-height: 34rem;
+  overflow: hidden;
+  background: var(--c-paper);
+}
+
+.campus-map__body {
+  height: calc(100dvh - var(--map-header));
+  min-height: calc(34rem - var(--map-header));
+}
+
+.campus-map__canvas {
+  background-color: var(--c-primary-faint);
+  background-image:
+    linear-gradient(var(--c-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--c-line) 1px, transparent 1px),
+    radial-gradient(circle at 70% 35%, var(--c-primary-soft), transparent 42%);
+  background-size:
+    2rem 2rem,
+    2rem 2rem,
+    100% 100%;
+}
+
+.campus-map__coordinate-spine {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 0.45rem,
+    var(--c-primary) 0.45rem,
+    var(--c-primary) 0.5rem,
+    transparent 0.5rem,
+    transparent 1rem
+  );
+}
+
+.campus-map__list {
+  scrollbar-color: var(--c-rule) transparent;
+  scrollbar-width: thin;
+}
+
+.campus-map__marker-label {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.18);
+}
+
+.campus-map .BMap_cpyCtrl,
+.campus-map .anchorBL {
+  z-index: 5 !important;
+}
+
+@media (max-width: 767px) {
+  .campus-map {
+    --map-header: 3.25rem;
+    min-height: 28rem;
+  }
+
+  .campus-map__body {
+    min-height: calc(28rem - var(--map-header));
+  }
+}

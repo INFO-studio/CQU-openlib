@@ -13,6 +13,9 @@ export type NavTarget =
       to: '/';
     }
   | {
+      to: '/map';
+    }
+  | {
       to: '/$';
       params: {
         _splat: string;
@@ -21,6 +24,7 @@ export type NavTarget =
 export const toNavTarget = (path: string): NavTarget => {
   const clean = cleanPath(path);
   if (clean === '/') return { to: '/' };
+  if (clean === '/map') return { to: '/map' };
   return {
     to: '/$',
     params: { _splat: clean.replace(/^\//, '') },

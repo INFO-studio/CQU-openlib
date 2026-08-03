@@ -1,4 +1,4 @@
-import { Github, Menu, Search } from 'lucide-react';
+import { Github, MapPinned, Menu, Search } from 'lucide-react';
 import DocLink from '~/components/DocLink';
 import ThemeToggle from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
@@ -99,6 +99,19 @@ const SiteHeader = ({ currentPath }: Props) => {
               /
             </kbd>
           </Button>
+          <DocLink
+            path="/map"
+            className={cn(
+              'inline-flex h-8 items-center justify-center gap-1.5 rounded px-2 text-[0.8125rem] no-underline transition-colors',
+              currentPath === '/map'
+                ? 'bg-primary-soft font-semibold text-primary'
+                : 'text-icon hover:bg-mist hover:text-ink',
+            )}
+          >
+            <MapPinned size={16} aria-hidden />
+            <span className="hidden sm:inline">地图</span>
+            <span className="sr-only sm:hidden">校园地图</span>
+          </DocLink>
           <a
             href={GITHUB_URL}
             target="_blank"

@@ -205,6 +205,8 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
     const target = toNavTarget(path);
     if (target.to === '/') {
       void navigate({ to: '/' });
+    } else if (target.to === '/map') {
+      void navigate({ to: '/map' });
     } else {
       void navigate({ to: '/$', params: target.params });
     }

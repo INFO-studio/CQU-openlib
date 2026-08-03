@@ -41,6 +41,8 @@ const DocLink = ({
     const target = toNavTarget(href);
     if (target.to === '/') {
       void navigate({ to: '/', replace });
+    } else if (target.to === '/map') {
+      void navigate({ to: '/map', replace });
     } else {
       void navigate({ to: '/$', params: target.params, replace });
     }

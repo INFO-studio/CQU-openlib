@@ -8,7 +8,7 @@ description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共�
 
 !!! info "公告"
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
-    * [更新日志](sundry/更新日志/index.md) / [2026-08-02](sundry/更新日志/2026/2026-08/2026-08-02.md)
+    * [更新日志](sundry/更新日志/index.md) / [2026-08-03](sundry/更新日志/2026/2026-08/2026-08-03.md)
     * 欢迎贡献[待办事项](sundry/待办事项/index.md)！成为[贡献者](contributor/index.md)
 
 <HomeBookmarks />
