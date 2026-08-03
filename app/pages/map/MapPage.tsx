@@ -124,6 +124,42 @@ const MapSurface = ({
       return;
     }
 
+    let activeMap: BaiduMap | null = null;
+    let trackpadDelta = 0;
+    let safariStartZoom: number | null = null;
+    let safariAppliedZoom: number | null = null;
+    const handleTrackpadPinch = (event: WheelEvent) => {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      trackpadDelta +=
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? event.deltaY * 16
+          : event.deltaY;
+      if (!(activeMap && Math.abs(trackpadDelta) >= 25)) return;
+      activeMap.setZoom(activeMap.getZoom() - Math.sign(trackpadDelta));
+      trackpadDelta = 0;
+    };
+    const handleSafariPinchStart = (event: Event) => {
+      event.preventDefault();
+      safariStartZoom = activeMap?.getZoom() ?? null;
+      safariAppliedZoom = safariStartZoom;
+    };
+    const handleSafariPinchChange = (event: Event) => {
+      event.preventDefault();
+      if (!(activeMap && safariStartZoom !== null)) return;
+      const scale = (event as Event & { scale?: number }).scale;
+      if (!(typeof scale === 'number' && scale > 0)) return;
+      const nextZoom = safariStartZoom + Math.round(Math.log2(scale) * 2);
+      if (nextZoom === safariAppliedZoom) return;
+      activeMap.setZoom(nextZoom);
+      safariAppliedZoom = nextZoom;
+    };
+    container.addEventListener('wheel', handleTrackpadPinch, {
+      passive: false,
+    });
+    container.addEventListener('gesturestart', handleSafariPinchStart);
+    container.addEventListener('gesturechange', handleSafariPinchChange);
+
     let active = true;
     setRuntime(null);
     setStatus('loading');
@@ -134,6 +170,7 @@ const MapSurface = ({
         const initialCampus = CAMPUS_BY_ID[DEFAULT_CAMPUS_ID];
         const center = parseCoord(initialCampus.center);
         const map = new api.Map(container, { enableMapClick: false });
+        activeMap = map;
         map.setMapStyle({
           style: themeRef.current === 'dark' ? 'dark' : 'normal',
         });
@@ -141,6 +178,8 @@ const MapSurface = ({
           new api.Point(center.lng, center.lat),
           initialCampus.defaultZoom,
         );
+        map.enableDragging();
+        map.enablePinchToZoom();
         map.enableScrollWheelZoom(true);
         setRuntime({ api, map });
         setStatus('ready');
@@ -155,6 +194,10 @@ const MapSurface = ({
 
     return () => {
       active = false;
+      activeMap = null;
+      container.removeEventListener('wheel', handleTrackpadPinch);
+      container.removeEventListener('gesturestart', handleSafariPinchStart);
+      container.removeEventListener('gesturechange', handleSafariPinchChange);
       container.replaceChildren();
     };
   }, [retryKey]);
@@ -235,7 +278,7 @@ const MapSurface = ({
     <div className="relative h-full min-w-0 overflow-hidden bg-paper [&_.BMap_cpyCtrl]:z-5! [&_.anchorBL]:z-5!">
       <div
         ref={containerRef}
-        className="absolute inset-0"
+        className="absolute inset-0 touch-none overscroll-contain"
         aria-label="校园地图"
       />
 
@@ -542,7 +585,6 @@ const MapPage = () => {
                     >
                       Tony
                     </DocLink>
-                    <span className="text-muted">（littlemana-bot）</span>
                   </dd>
                 </dl>
               </InfoPopover>
