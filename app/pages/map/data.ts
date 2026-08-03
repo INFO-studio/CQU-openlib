@@ -3,7 +3,8 @@
  * 经原作者授权整合。
  */
 
-export type CampusId = 'huxi' | 'a' | 'b';
+export type CampusId = 'huxi' | 'shapingba';
+export type CampusArea = 'A' | 'B' | 'C';
 
 export type BuildingCategory =
   | 'teaching'
@@ -25,8 +26,10 @@ export type BuildingCategory =
 export type Bd09Coordinate = readonly [longitude: number, latitude: number];
 
 export interface Campus {
+  readonly id: CampusId;
   readonly name: string;
-  readonly coord: Bd09Coordinate;
+  readonly shortName: string;
+  readonly center: Bd09Coordinate;
   readonly zoom: number;
 }
 
@@ -35,91 +38,114 @@ export interface Building {
   readonly name: string;
   readonly category: BuildingCategory;
   readonly campus: CampusId;
+  readonly area?: CampusArea;
   readonly coord: Bd09Coordinate;
   readonly desc: string;
 }
 
-interface CategoryConfig {
+export interface BuildingCategoryDefinition {
+  readonly id: BuildingCategory;
   readonly label: string;
   readonly color: `#${string}`;
 }
 
-export const CATEGORY_CONFIG = {
-  teaching: {
+export const BUILDING_CATEGORIES = [
+  {
+    id: 'teaching',
     label: '教学楼',
     color: '#003375',
   },
-  dormitory: {
+  {
+    id: 'dormitory',
     label: '学生宿舍',
     color: '#4069B2',
   },
-  canteen: {
+  {
+    id: 'canteen',
     label: '食堂',
     color: '#6296D8',
   },
-  library: {
+  {
+    id: 'library',
     label: '图书馆',
     color: '#00285C',
   },
-  sports: {
+  {
+    id: 'sports',
     label: '运动场馆',
     color: '#8CB4E8',
   },
-  admin: {
+  {
+    id: 'admin',
     label: '行政楼',
     color: '#003375',
   },
-  gate: {
+  {
+    id: 'gate',
     label: '校门',
     color: '#4069B2',
   },
-  hospital: {
+  {
+    id: 'hospital',
     label: '校医院',
     color: '#6296D8',
   },
-  theater: {
+  {
+    id: 'theater',
     label: '剧场',
     color: '#2F5599',
   },
-  busstation: {
+  {
+    id: 'busstation',
     label: '校车站',
     color: '#5A82B8',
   },
-  landmark: {
+  {
+    id: 'landmark',
     label: '地标建筑',
     color: '#003375',
   },
-  college: {
+  {
+    id: 'college',
     label: '学院楼',
     color: '#1A4A8A',
   },
-  food: {
+  {
+    id: 'food',
     label: '附近美食',
     color: '#7BA8E0',
   },
-  express: {
+  {
+    id: 'express',
     label: '快递点',
     color: '#4A7CC0',
   },
-} as const satisfies Readonly<Record<BuildingCategory, CategoryConfig>>;
+] as const satisfies readonly BuildingCategoryDefinition[];
 
-export const CAMPUS_CONFIG = {
-  huxi: {
+export const CAMPUSES = [
+  {
+    id: 'huxi',
     name: '虎溪校区',
-    coord: [106.305322, 29.602937],
+    shortName: '虎溪',
+    center: [106.305322, 29.602937],
     zoom: 16,
   },
-  a: {
-    name: 'A区',
-    coord: [106.475693, 29.570419],
+  {
+    id: 'shapingba',
+    name: '沙坪坝校区',
+    shortName: '沙坪坝',
+    center: [106.475693, 29.570419],
     zoom: 16,
   },
-  b: {
-    name: 'B区',
-    coord: [106.4585, 29.5604],
-    zoom: 16,
-  },
-} as const satisfies Readonly<Record<CampusId, Campus>>;
+] as const satisfies readonly Campus[];
+
+export const CAMPUS_BY_ID = Object.fromEntries(
+  CAMPUSES.map((campus) => [campus.id, campus]),
+) as Readonly<Record<CampusId, Campus>>;
+
+export const BUILDING_CATEGORY_BY_ID = Object.fromEntries(
+  BUILDING_CATEGORIES.map((category) => [category.id, category]),
+) as unknown as Readonly<Record<BuildingCategory, BuildingCategoryDefinition>>;
 
 export const BUILDINGS = [
   {
@@ -654,7 +680,8 @@ export const BUILDINGS = [
     id: 'a_teaching_01',
     name: '主教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.477151, 29.571786],
     desc: '主教学楼，用于行政办公和上课。',
   },
@@ -662,7 +689,8 @@ export const BUILDINGS = [
     id: 'a_teaching_02',
     name: '第一教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475113, 29.574064],
     desc: '第一教学楼。',
   },
@@ -670,7 +698,8 @@ export const BUILDINGS = [
     id: 'a_teaching_03',
     name: '第二教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474202, 29.575302],
     desc: '第二教学楼。',
   },
@@ -678,7 +707,8 @@ export const BUILDINGS = [
     id: 'a_teaching_04',
     name: '第三教学楼/资源与安全学院',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474202, 29.575302],
     desc: '第三教学楼，现为资安学院楼。',
   },
@@ -686,7 +716,8 @@ export const BUILDINGS = [
     id: 'a_teaching_05',
     name: '第四教学楼/离退休工作处',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.47198, 29.574652],
     desc: '第四教学楼，现为离退休工作处。',
   },
@@ -694,7 +725,8 @@ export const BUILDINGS = [
     id: 'a_teaching_06',
     name: '第五教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473436, 29.572357],
     desc: '第五教学楼，为主要教学楼之一。',
   },
@@ -702,7 +734,8 @@ export const BUILDINGS = [
     id: 'a_teaching_07',
     name: '第六教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.472744, 29.570673],
     desc: '第六教学楼。',
   },
@@ -710,7 +743,8 @@ export const BUILDINGS = [
     id: 'a_teaching_08',
     name: '第七教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474617, 29.574543],
     desc: '第七教学楼，原机械与运载工程学院楼，现已搬迁至科学中心。',
   },
@@ -718,7 +752,8 @@ export const BUILDINGS = [
     id: 'a_teaching_09',
     name: '第八教学楼',
     category: 'teaching',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.471975, 29.572471],
     desc: '第八教学楼，为主要教学楼之一。',
   },
@@ -726,7 +761,8 @@ export const BUILDINGS = [
     id: 'a_dorm_01',
     name: '学生一宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473649, 29.570071],
     desc: '学生一宿舍，在装修中。',
   },
@@ -734,7 +770,8 @@ export const BUILDINGS = [
     id: 'a_dorm_02',
     name: '学生二宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474297, 29.569561],
     desc: '学生二宿舍，在装修中。',
   },
@@ -742,7 +779,8 @@ export const BUILDINGS = [
     id: 'a_dorm_03',
     name: '学生三宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475043, 29.569073],
     desc: '学生三宿舍。',
   },
@@ -750,7 +788,8 @@ export const BUILDINGS = [
     id: 'a_dorm_04',
     name: '学生四宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475677, 29.568641],
     desc: '学生四宿舍。',
   },
@@ -758,7 +797,8 @@ export const BUILDINGS = [
     id: 'a_dorm_05',
     name: '学生五宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475663, 29.566899],
     desc: '学生五宿舍。',
   },
@@ -766,7 +806,8 @@ export const BUILDINGS = [
     id: 'a_dorm_06',
     name: '学生六宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475672, 29.567708],
     desc: '学生六宿舍。',
   },
@@ -774,7 +815,8 @@ export const BUILDINGS = [
     id: 'a_dorm_07',
     name: '学生七宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473221, 29.568604],
     desc: '学生七宿舍。',
   },
@@ -782,7 +824,8 @@ export const BUILDINGS = [
     id: 'a_dorm_08',
     name: '学生八宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473853, 29.569068],
     desc: '学生八宿舍。',
   },
@@ -790,7 +833,8 @@ export const BUILDINGS = [
     id: 'a_dorm_09',
     name: '学生九宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475663, 29.566899],
     desc: '学生九宿舍。',
   },
@@ -798,7 +842,8 @@ export const BUILDINGS = [
     id: 'a_dorm_10',
     name: '学生十宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473399, 29.56782],
     desc: '学生十宿舍。',
   },
@@ -806,7 +851,8 @@ export const BUILDINGS = [
     id: 'a_dorm_11',
     name: '学生十一宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.47421, 29.568362],
     desc: '学生十一宿舍。',
   },
@@ -814,7 +860,8 @@ export const BUILDINGS = [
     id: 'a_dorm_12',
     name: '学生十二宿舍',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474734, 29.568027],
     desc: '学生十二宿舍。',
   },
@@ -822,7 +869,8 @@ export const BUILDINGS = [
     id: 'a_dorm_13',
     name: '学生宿舍ACD楼',
     category: 'dormitory',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474028, 29.567815],
     desc: '学生宿舍ACD楼。',
   },
@@ -830,7 +878,8 @@ export const BUILDINGS = [
     id: 'a_canteen_01',
     name: '学生一食堂',
     category: 'canteen',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473377, 29.569368],
     desc: '学生一食堂，一楼有麦当劳。',
   },
@@ -838,7 +887,8 @@ export const BUILDINGS = [
     id: 'a_canteen_02',
     name: '民主湖食堂（学生四食堂）',
     category: 'canteen',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475189, 29.568461],
     desc: '民主湖食堂。',
   },
@@ -846,7 +896,8 @@ export const BUILDINGS = [
     id: 'a_canteen_03',
     name: '柏树林食堂（学生三食堂）',
     category: 'canteen',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.476409, 29.566921],
     desc: '柏树林食堂。',
   },
@@ -854,7 +905,8 @@ export const BUILDINGS = [
     id: 'a_canteen_04',
     name: '东林教工食堂',
     category: 'canteen',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.47109, 29.571873],
     desc: '东林食堂。',
   },
@@ -862,7 +914,8 @@ export const BUILDINGS = [
     id: 'a_canteen_05',
     name: '新华园食堂',
     category: 'canteen',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473872, 29.575956],
     desc: '新华园食堂。',
   },
@@ -870,7 +923,8 @@ export const BUILDINGS = [
     id: 'a_library_01',
     name: 'A区图书馆',
     category: 'library',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474846, 29.571433],
     desc: 'A区图书馆，设有多层自习区与研讨室。',
   },
@@ -878,7 +932,8 @@ export const BUILDINGS = [
     id: 'a_sports_01',
     name: '思群广场',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474828, 29.57036],
     desc: '室外操场，足球场。',
   },
@@ -886,7 +941,8 @@ export const BUILDINGS = [
     id: 'a_sports_02',
     name: '团结广场',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475678, 29.572301],
     desc: '室外操场，足球场。',
   },
@@ -894,7 +950,8 @@ export const BUILDINGS = [
     id: 'a_sports_03',
     name: '篮球场（靠近钟塔）',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.474631, 29.573157],
     desc: '靠近钟塔的篮球场。',
   },
@@ -902,7 +959,8 @@ export const BUILDINGS = [
     id: 'a_sports_04',
     name: '风雨操场',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.478504, 29.570462],
     desc: '靠近体育馆。',
   },
@@ -910,7 +968,8 @@ export const BUILDINGS = [
     id: 'a_sports_05',
     name: '体育馆',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.478751, 29.570245],
     desc: '可在重大后勤-场馆预约中预约羽毛球，乒乓球场地。',
   },
@@ -918,7 +977,8 @@ export const BUILDINGS = [
     id: 'a_sports_06',
     name: '篮球场/羽毛球场/网球场（靠近图书馆）',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473414, 29.571735],
     desc: '靠近图书馆的篮球场，羽毛球场和网球场',
   },
@@ -926,7 +986,8 @@ export const BUILDINGS = [
     id: 'a_sports_07',
     name: '乒乓球场',
     category: 'sports',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475926, 29.571084],
     desc: '这里附近有个室外乒乓球场，百度地图上没有标点但大概是在附近，可以找一下。',
   },
@@ -934,7 +995,8 @@ export const BUILDINGS = [
     id: 'a_admin_01',
     name: '办公楼',
     category: 'admin',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475255, 29.571588],
     desc: 'A区办公楼，也为行政处',
   },
@@ -942,7 +1004,8 @@ export const BUILDINGS = [
     id: 'a_admin_02',
     name: '办公楼',
     category: 'admin',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.475524, 29.571417],
     desc: 'A区财务处，投递报销单的地方',
   },
@@ -950,7 +1013,8 @@ export const BUILDINGS = [
     id: 'a_gate_01',
     name: 'A区中门',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.473514, 29.567765],
     desc: '面向沙中路的出入口，靠近十舍，也是最常用的外卖配送点，有门禁，晚上12点后关门。',
   },
@@ -958,7 +1022,8 @@ export const BUILDINGS = [
     id: 'a_gate_02',
     name: 'A区南一门',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.47663, 29.565992],
     desc: '面向沙中路的出入口，这个门没有门禁，也可出入车辆。',
   },
@@ -966,7 +1031,8 @@ export const BUILDINGS = [
     id: 'a_gate_03',
     name: 'A区东一门（柏树林门）',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.478657, 29.567505],
     desc: '面向松林路的出入口。',
   },
@@ -974,7 +1040,8 @@ export const BUILDINGS = [
     id: 'a_gate_04',
     name: 'A区东门（校医院门）',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.478954, 29.568852],
     desc: '校医院旁边的门，进出校医院可走这里。',
   },
@@ -982,7 +1049,8 @@ export const BUILDINGS = [
     id: 'a_gate_05',
     name: 'A区东南门（体育学院门）',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.4792, 29.569626],
     desc: '靠近体育学院。',
   },
@@ -990,7 +1058,8 @@ export const BUILDINGS = [
     id: 'a_gate_06',
     name: '江边电梯',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.478471, 29.571332],
     desc: '可从这里进出校园，下电梯直达江边。',
   },
@@ -998,7 +1067,8 @@ export const BUILDINGS = [
     id: 'a_gate_07',
     name: 'A区西北门',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.471501, 29.576207],
     desc: '西北门。',
   },
@@ -1006,7 +1076,8 @@ export const BUILDINGS = [
     id: 'a_gate_08',
     name: 'A区正大门（正门）',
     category: 'gate',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.470666, 29.573517],
     desc: '最常用的校门。',
   },
@@ -1014,7 +1085,8 @@ export const BUILDINGS = [
     id: 'a_food_01',
     name: '中渡芋圆',
     category: 'food',
-    campus: 'a',
+    campus: 'shapingba',
+    area: 'A',
     coord: [106.479402, 29.570742],
     desc: '一家真的非常非常好吃的芋圆店。',
   },

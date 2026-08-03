@@ -47,6 +47,24 @@ export const NAV_SECTIONS: NavSection[] = [
 ];
 /** Sections shown in header / mobile directory tabs. */
 export const NAV_SECTIONS_VISIBLE = NAV_SECTIONS.filter((s) => !s.hiddenInNav);
+export type SiteNavItem =
+  | NavSection
+  | {
+      id: 'map';
+      label: '地图';
+      path: '/map';
+      kind: 'app';
+    };
+const MAP_NAV_ITEM: SiteNavItem = {
+  id: 'map',
+  label: '地图',
+  path: '/map',
+  kind: 'app',
+};
+/** Primary navigation, including app pages that do not belong to doc-index. */
+export const SITE_NAV_ITEMS: SiteNavItem[] = NAV_SECTIONS_VISIBLE.flatMap(
+  (section) => (section.id === 'life' ? [section, MAP_NAV_ITEM] : [section]),
+);
 export type SearchEntry = {
   title: string;
   path: string;

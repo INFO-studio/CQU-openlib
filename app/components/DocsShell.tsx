@@ -20,9 +20,16 @@ type Props = {
   toc?: TocItem[];
   /** Desktop left column slot (e.g. form back). Hidden on mobile. */
   leftRail?: ReactNode;
+  /** Keep site chrome while allowing an app-like page to own the full body. */
+  fullBleed?: boolean;
 };
 
-const DocsShell = ({ children, toc = [], leftRail }: Props) => {
+const DocsShell = ({
+  children,
+  toc = [],
+  leftRail,
+  fullBleed = false,
+}: Props) => {
   const pathname = useRouterState({
     select: (s) => cleanPath(decodePathname(s.location.pathname)),
   });
@@ -104,32 +111,47 @@ const DocsShell = ({ children, toc = [], leftRail }: Props) => {
         Fixed 3-column shell: sidebar | main | toc.
         column-gap keeps main ↔ nav / 本页 gutters equal.
       */}
-      <div className="mx-auto grid w-full max-w-[96rem] grid-cols-1 gap-x-shell px-3 md:px-5 lg:grid-cols-docs xl:grid-cols-docs-toc">
-        <aside
-          className={cn(
-            // Desktop: top pad matches main (2× the old py-2); mobile drawer untouched.
-            'hidden lg:sticky lg:top-header lg:block lg:h-under-header lg:pt-4 lg:pb-2',
-            isCourse && hasSidebar && !loading && !errorMessage
-              ? 'lg:flex lg:flex-col lg:overflow-hidden'
-              : showLeftRail
-                ? 'lg:flex lg:items-start lg:justify-end lg:overflow-visible'
-                : 'lg:overflow-y-auto',
-            showLeftColumn ? undefined : 'lg:invisible lg:pointer-events-none',
-          )}
-        >
-          {showLeftRail ? leftRail : sidebarBody}
-        </aside>
+      <div
+        className={cn(
+          'mx-auto grid w-full grid-cols-1',
+          fullBleed
+            ? 'max-w-none'
+            : 'max-w-[96rem] gap-x-shell px-3 md:px-5 lg:grid-cols-docs xl:grid-cols-docs-toc',
+        )}
+      >
+        {fullBleed ? null : (
+          <aside
+            className={cn(
+              // Desktop: top pad matches main (2× the old py-2); mobile drawer untouched.
+              'hidden lg:sticky lg:top-header lg:block lg:h-under-header lg:pt-4 lg:pb-2',
+              isCourse && hasSidebar && !loading && !errorMessage
+                ? 'lg:flex lg:flex-col lg:overflow-hidden'
+                : showLeftRail
+                  ? 'lg:flex lg:items-start lg:justify-end lg:overflow-visible'
+                  : 'lg:overflow-y-auto',
+              showLeftColumn
+                ? undefined
+                : 'lg:invisible lg:pointer-events-none',
+            )}
+          >
+            {showLeftRail ? leftRail : sidebarBody}
+          </aside>
+        )}
 
-        <main className="min-w-0 py-3 lg:pt-4">{children}</main>
+        <main className={cn('min-w-0', fullBleed ? 'p-0' : 'py-3 lg:pt-4')}>
+          {children}
+        </main>
 
-        <aside
-          className={cn(
-            'sticky top-header-toc hidden h-under-header-toc overflow-y-auto pt-4 pb-2 xl:block',
-            hasToc ? undefined : 'xl:invisible xl:pointer-events-none',
-          )}
-        >
-          {hasToc ? <Toc items={toc} /> : null}
-        </aside>
+        {fullBleed ? null : (
+          <aside
+            className={cn(
+              'sticky top-header-toc hidden h-under-header-toc overflow-y-auto pt-4 pb-2 xl:block',
+              hasToc ? undefined : 'xl:invisible xl:pointer-events-none',
+            )}
+          >
+            {hasToc ? <Toc items={toc} /> : null}
+          </aside>
+        )}
       </div>
 
       <MobileNavDrawer

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { BUILDINGS, CAMPUS_CONFIG, CATEGORY_CONFIG } from '~/features/map/data';
+import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
 
 describe('campus map data', () => {
   it('keeps building ids unique and references valid', () => {
@@ -7,8 +7,14 @@ describe('campus map data', () => {
     expect(new Set(ids).size).toBe(ids.length);
 
     for (const building of BUILDINGS) {
-      expect(CAMPUS_CONFIG[building.campus]).toBeTruthy();
-      expect(CATEGORY_CONFIG[building.category]).toBeTruthy();
+      expect(CAMPUSES.some((campus) => campus.id === building.campus)).toBe(
+        true,
+      );
+      expect(
+        BUILDING_CATEGORIES.some(
+          (category) => category.id === building.category,
+        ),
+      ).toBe(true);
     }
   });
 

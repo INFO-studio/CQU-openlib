@@ -11,6 +11,7 @@ import {
   type DocNavIndex,
   NAV_SECTIONS,
   NAV_SECTIONS_VISIBLE,
+  SITE_NAV_ITEMS,
   sectionForPath,
 } from '~/lib/nav';
 import { colors } from '~/theme/colors';
@@ -28,9 +29,11 @@ type Props = {
 const HScrollTabs = ({
   value,
   onChange,
+  onNavigate,
 }: {
   value: string;
   onChange: (id: string) => void;
+  onNavigate: () => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
@@ -75,8 +78,32 @@ const HScrollTabs = ({
         aria-label="站点大类"
         className="flex gap-0 overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {NAV_SECTIONS_VISIBLE.map((section) => {
+        {SITE_NAV_ITEMS.map((section) => {
           const active = section.id === value;
+          const className = cn(
+            'relative shrink-0 px-3 py-2.5 text-[0.8125rem] no-underline transition-colors',
+            active ? 'font-medium text-ink' : 'text-muted hover:text-ink',
+          );
+          if (section.kind === 'app') {
+            return (
+              <DocLink
+                key={section.id}
+                path={section.path}
+                onNavigate={onNavigate}
+                data-active={active ? 'true' : undefined}
+                className={className}
+              >
+                {section.label}
+                <span
+                  aria-hidden
+                  className={cn(
+                    'pointer-events-none absolute inset-x-2 bottom-0 h-[2px] rounded-full',
+                    active ? 'bg-primary' : 'bg-transparent',
+                  )}
+                />
+              </DocLink>
+            );
+          }
           return (
             <button
               key={section.id}
@@ -85,10 +112,7 @@ const HScrollTabs = ({
               aria-selected={active}
               data-active={active || undefined}
               onClick={() => onChange(section.id)}
-              className={cn(
-                'relative shrink-0 px-3 py-2.5 text-[0.8125rem] transition-colors',
-                active ? 'font-medium text-ink' : 'text-muted hover:text-ink',
-              )}
+              className={className}
             >
               {section.label}
               <span
@@ -191,7 +215,11 @@ const MobileNavDrawer = ({
         </header>
 
         <div className="shrink-0">
-          <HScrollTabs value={browseId} onChange={setBrowseId} />
+          <HScrollTabs
+            value={pathname === '/map' ? 'map' : browseId}
+            onChange={setBrowseId}
+            onNavigate={onClose}
+          />
         </div>
 
         <div
