@@ -1,14 +1,14 @@
 .campus-map {
   --map-header: 3.5rem;
-  height: 100dvh;
-  min-height: 34rem;
+  height: calc(100dvh - var(--layout-header) - 1.75rem);
+  min-height: 32rem;
   overflow: hidden;
   background: var(--c-paper);
 }
 
 .campus-map__body {
-  height: calc(100dvh - var(--map-header));
-  min-height: calc(34rem - var(--map-header));
+  height: calc(100% - var(--map-header));
+  min-height: calc(32rem - var(--map-header));
 }
 
 .campus-map__canvas {
@@ -52,10 +52,11 @@
 @media (max-width: 767px) {
   .campus-map {
     --map-header: 3.25rem;
-    min-height: 28rem;
+    height: calc(100dvh - var(--layout-header) - 1.5rem);
+    min-height: 30rem;
   }
 
   .campus-map__body {
-    min-height: calc(28rem - var(--map-header));
+    min-height: calc(30rem - var(--map-header));
   }
 }

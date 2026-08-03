@@ -1,7 +1,5 @@
-import { Link } from '@tanstack/react-router';
 import type { LucideIcon } from 'lucide-react';
 import {
-  ArrowLeft,
   Building2,
   Compass,
   ListFilter,
@@ -21,7 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import ThemeToggle from '~/components/ThemeToggle';
+import DocsShell from '~/components/DocsShell';
 import { cn } from '~/lib/cn';
 import { type BaiduApi, type BaiduMap, loadBaiduMap } from './baidu';
 import {
@@ -353,229 +351,224 @@ const MapPage = () => {
     : '';
 
   return (
-    <div className="campus-map font-sans text-ink">
-      <header className="relative z-30 flex h-[var(--map-header)] items-center border-b border-line bg-panel px-2.5 md:px-4">
-        <Link
-          to="/"
-          className="group flex min-w-0 items-center gap-2 text-ink no-underline"
-        >
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-white transition-transform group-hover:-translate-x-0.5">
-            <ArrowLeft size={16} aria-hidden />
-          </span>
-          <span className="hidden leading-tight sm:block">
-            <span className="block text-[0.68rem] font-medium tracking-[0.13em] text-muted">
-              CQU-OPENLIB
-            </span>
-            <span className="block font-display text-[0.95rem] font-semibold">
-              校园坐标
-            </span>
-          </span>
-        </Link>
-
-        <div className="ml-3 flex min-w-0 flex-1 items-center justify-center gap-1 md:ml-8 md:justify-start">
-          {campusesWithPlaces.map(([key, item]) => (
-            <button
-              type="button"
-              key={key}
-              className={cn(
-                'relative h-8 px-2.5 text-xs transition-colors sm:px-3',
-                campusId === key
-                  ? 'font-semibold text-primary'
-                  : 'text-muted hover:text-ink',
-              )}
-              onClick={() => chooseCampus(key)}
-            >
-              {item.name}
-              {campusId === key ? (
-                <span className="absolute inset-x-2 -bottom-[0.76rem] h-0.5 bg-primary" />
-              ) : null}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex shrink-0 items-center gap-1">
-          <span className="hidden font-mono text-[0.65rem] tracking-wide text-muted lg:block">
-            BD-09 · 106°E / 29°N
-          </span>
-          <ThemeToggle />
-          <button
-            type="button"
-            className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink md:hidden"
-            aria-label={mobilePanelOpen ? '关闭地点列表' : '打开地点列表'}
-            onClick={() => setMobilePanelOpen((open) => !open)}
-          >
-            {mobilePanelOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        </div>
-      </header>
-
-      <div className="campus-map__body relative flex">
-        <aside
-          className={cn(
-            'absolute inset-y-0 left-0 z-20 flex w-[min(22rem,88vw)] flex-col border-r border-line bg-panel shadow-2xl transition-transform md:static md:z-auto md:w-[21rem] md:translate-x-0 md:shadow-none',
-            mobilePanelOpen ? 'translate-x-0' : '-translate-x-full',
-          )}
-          aria-label="校园地点"
-        >
-          <div className="relative border-b border-line px-4 pt-4 pb-3">
-            <div
-              className="campus-map__coordinate-spine absolute top-0 bottom-0 left-0 w-1 opacity-50"
-              aria-hidden
-            />
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="m-0 font-mono text-[0.65rem] tracking-[0.16em] text-primary">
-                  {campusId.toUpperCase()} / WAYFINDING
-                </p>
-                <h1 className="mt-1 mb-0 font-display text-[1.45rem] font-semibold leading-tight">
-                  去哪里？
-                </h1>
-              </div>
-              <p className="m-0 font-mono text-[0.68rem] text-muted">
-                {campusBuildings.length} PLACES
-              </p>
-            </div>
-
-            <label className="mt-3 flex h-10 items-center gap-2 border border-line bg-paper px-3 focus-within:border-primary">
-              <Search size={15} className="shrink-0 text-icon" aria-hidden />
-              <span className="sr-only">搜索地点</span>
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="建筑、食堂、快递点"
-                className="min-w-0 flex-1 text-sm placeholder:text-muted"
-              />
-              {query ? (
-                <button
-                  type="button"
-                  className="grid h-6 w-6 place-items-center text-muted hover:text-ink"
-                  aria-label="清空搜索"
-                  onClick={() => setQuery('')}
-                >
-                  <X size={13} />
-                </button>
-              ) : null}
-            </label>
+    <DocsShell>
+      <section className="campus-map overflow-hidden border border-line bg-panel font-sans text-ink">
+        <header className="relative z-30 flex h-[var(--map-header)] items-center gap-3 border-b border-line bg-panel px-3 md:px-4">
+          <div className="min-w-0 shrink-0">
+            <p className="m-0 hidden font-mono text-[0.6rem] tracking-[0.14em] text-primary sm:block">
+              CAMPUS WAYFINDING
+            </p>
+            <h1 className="m-0 truncate font-display text-lg font-semibold leading-tight sm:mt-0.5">
+              校园地图
+            </h1>
           </div>
 
-          <div className="campus-map__list flex shrink-0 gap-1 overflow-x-auto border-b border-line px-3 py-2">
-            <button
-              type="button"
-              className={cn(
-                'shrink-0 rounded-full px-3 py-1.5 text-xs transition-colors',
-                category === 'all'
-                  ? 'bg-primary text-white'
-                  : 'bg-mist text-muted hover:text-ink',
-              )}
-              onClick={() => setCategory('all')}
-            >
-              全部
-            </button>
-            {categoryEntries.map(([key, item]) => (
+          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+            {campusesWithPlaces.map(([key, item]) => (
               <button
                 type="button"
                 key={key}
                 className={cn(
-                  'shrink-0 rounded-full px-3 py-1.5 text-xs transition-colors',
-                  category === key
-                    ? 'bg-primary text-white'
-                    : 'bg-mist text-muted hover:text-ink',
+                  'relative h-8 px-2.5 text-xs transition-colors sm:px-3',
+                  campusId === key
+                    ? 'font-semibold text-primary'
+                    : 'text-muted hover:text-ink',
                 )}
-                onClick={() => setCategory(key)}
+                onClick={() => chooseCampus(key)}
               >
-                {item.label}
+                {item.name}
+                {campusId === key ? (
+                  <span className="absolute inset-x-2 -bottom-[1.02rem] h-0.5 bg-primary" />
+                ) : null}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center justify-between border-b border-line px-4 py-2 text-[0.68rem]">
-            <span className="font-mono tracking-wide text-muted">地点索引</span>
-            <span className="text-muted">
-              {filteredBuildings.length} 个结果
+          <div className="flex shrink-0 items-center gap-1">
+            <span className="hidden font-mono text-[0.62rem] tracking-wide text-muted md:block">
+              {campusBuildings.length} PLACES · BD-09
             </span>
-          </div>
-
-          <BuildingList
-            buildings={filteredBuildings}
-            selected={selected}
-            onSelect={chooseBuilding}
-          />
-        </aside>
-
-        {mobilePanelOpen ? (
-          <button
-            type="button"
-            className="absolute inset-0 z-10 bg-backdrop md:hidden"
-            aria-label="关闭地点列表"
-            onClick={() => setMobilePanelOpen(false)}
-          />
-        ) : null}
-
-        <main className="relative min-w-0 flex-1">
-          <MapSurface
-            buildings={filteredBuildings}
-            campus={campus}
-            selected={selected}
-            onSelect={chooseBuilding}
-          />
-
-          {!mobilePanelOpen ? (
             <button
               type="button"
-              className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden"
-              onClick={() => setMobilePanelOpen(true)}
+              className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink md:hidden"
+              aria-label={mobilePanelOpen ? '关闭地点列表' : '打开地点列表'}
+              onClick={() => setMobilePanelOpen((open) => !open)}
             >
-              <ListFilter size={15} aria-hidden />
-              {filteredBuildings.length} 个地点
+              {mobilePanelOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
-          ) : null}
+          </div>
+        </header>
 
-          {selected && selectedCoord ? (
-            <section className="absolute right-3 bottom-3 left-3 z-10 border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[22rem] md:p-4">
-              <div className="flex items-start gap-3">
-                <span
-                  className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
-                  style={{
-                    background: CATEGORY_CONFIG[selected.category].color,
-                  }}
-                >
-                  <MapPin size={17} aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="m-0 font-mono text-[0.62rem] tracking-[0.12em] text-muted">
-                    {selectedCoord.lng.toFixed(6)} E ·{' '}
-                    {selectedCoord.lat.toFixed(6)} N
+        <div className="campus-map__body relative flex">
+          <aside
+            className={cn(
+              'absolute inset-y-0 left-0 z-20 flex w-[min(22rem,88vw)] flex-col border-r border-line bg-panel shadow-2xl transition-transform md:static md:z-auto md:w-[21rem] md:translate-x-0 md:shadow-none',
+              mobilePanelOpen ? 'translate-x-0' : '-translate-x-full',
+            )}
+            aria-label="校园地点"
+          >
+            <div className="relative border-b border-line px-4 pt-4 pb-3">
+              <div
+                className="campus-map__coordinate-spine absolute top-0 bottom-0 left-0 w-1 opacity-50"
+                aria-hidden
+              />
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="m-0 font-mono text-[0.65rem] tracking-[0.16em] text-primary">
+                    {campusId.toUpperCase()} / WAYFINDING
                   </p>
-                  <h2 className="mt-1 mb-0 font-display text-lg font-semibold leading-tight">
-                    {selected.name}
-                  </h2>
-                  <p className="mt-1 mb-0 line-clamp-2 text-xs leading-relaxed text-muted">
-                    {selected.desc}
-                  </p>
+                  <h1 className="mt-1 mb-0 font-display text-[1.45rem] font-semibold leading-tight">
+                    去哪里？
+                  </h1>
                 </div>
+                <p className="m-0 font-mono text-[0.68rem] text-muted">
+                  {campusBuildings.length} PLACES
+                </p>
+              </div>
+
+              <label className="mt-3 flex h-10 items-center gap-2 border border-line bg-paper px-3 focus-within:border-primary">
+                <Search size={15} className="shrink-0 text-icon" aria-hidden />
+                <span className="sr-only">搜索地点</span>
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="建筑、食堂、快递点"
+                  className="min-w-0 flex-1 text-sm placeholder:text-muted"
+                />
+                {query ? (
+                  <button
+                    type="button"
+                    className="grid h-6 w-6 place-items-center text-muted hover:text-ink"
+                    aria-label="清空搜索"
+                    onClick={() => setQuery('')}
+                  >
+                    <X size={13} />
+                  </button>
+                ) : null}
+              </label>
+            </div>
+
+            <div className="campus-map__list flex shrink-0 gap-1 overflow-x-auto border-b border-line px-3 py-2">
+              <button
+                type="button"
+                className={cn(
+                  'shrink-0 rounded-full px-3 py-1.5 text-xs transition-colors',
+                  category === 'all'
+                    ? 'bg-primary text-white'
+                    : 'bg-mist text-muted hover:text-ink',
+                )}
+                onClick={() => setCategory('all')}
+              >
+                全部
+              </button>
+              {categoryEntries.map(([key, item]) => (
                 <button
                   type="button"
-                  className="grid h-7 w-7 shrink-0 place-items-center text-muted hover:text-ink"
-                  aria-label="关闭地点详情"
-                  onClick={() => setSelected(null)}
+                  key={key}
+                  className={cn(
+                    'shrink-0 rounded-full px-3 py-1.5 text-xs transition-colors',
+                    category === key
+                      ? 'bg-primary text-white'
+                      : 'bg-mist text-muted hover:text-ink',
+                  )}
+                  onClick={() => setCategory(key)}
                 >
-                  <X size={15} />
+                  {item.label}
                 </button>
-              </div>
-              <a
-                href={navigationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 flex h-9 items-center justify-center gap-2 bg-primary px-4 text-sm font-medium text-white no-underline hover:bg-primary-hover"
-              >
-                <Navigation size={15} aria-hidden />
-                使用百度地图导航
-              </a>
-            </section>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between border-b border-line px-4 py-2 text-[0.68rem]">
+              <span className="font-mono tracking-wide text-muted">
+                地点索引
+              </span>
+              <span className="text-muted">
+                {filteredBuildings.length} 个结果
+              </span>
+            </div>
+
+            <BuildingList
+              buildings={filteredBuildings}
+              selected={selected}
+              onSelect={chooseBuilding}
+            />
+          </aside>
+
+          {mobilePanelOpen ? (
+            <button
+              type="button"
+              className="absolute inset-0 z-10 bg-backdrop md:hidden"
+              aria-label="关闭地点列表"
+              onClick={() => setMobilePanelOpen(false)}
+            />
           ) : null}
-        </main>
-      </div>
-    </div>
+
+          <div className="relative min-w-0 flex-1">
+            <MapSurface
+              buildings={filteredBuildings}
+              campus={campus}
+              selected={selected}
+              onSelect={chooseBuilding}
+            />
+
+            {!mobilePanelOpen ? (
+              <button
+                type="button"
+                className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden"
+                onClick={() => setMobilePanelOpen(true)}
+              >
+                <ListFilter size={15} aria-hidden />
+                {filteredBuildings.length} 个地点
+              </button>
+            ) : null}
+
+            {selected && selectedCoord ? (
+              <section className="absolute right-3 bottom-3 left-3 z-10 border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[22rem] md:p-4">
+                <div className="flex items-start gap-3">
+                  <span
+                    className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
+                    style={{
+                      background: CATEGORY_CONFIG[selected.category].color,
+                    }}
+                  >
+                    <MapPin size={17} aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="m-0 font-mono text-[0.62rem] tracking-[0.12em] text-muted">
+                      {selectedCoord.lng.toFixed(6)} E ·{' '}
+                      {selectedCoord.lat.toFixed(6)} N
+                    </p>
+                    <h2 className="mt-1 mb-0 font-display text-lg font-semibold leading-tight">
+                      {selected.name}
+                    </h2>
+                    <p className="mt-1 mb-0 line-clamp-2 text-xs leading-relaxed text-muted">
+                      {selected.desc}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="grid h-7 w-7 shrink-0 place-items-center text-muted hover:text-ink"
+                    aria-label="关闭地点详情"
+                    onClick={() => setSelected(null)}
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+                <a
+                  href={navigationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 flex h-9 items-center justify-center gap-2 bg-primary px-4 text-sm font-medium text-white no-underline hover:bg-primary-hover"
+                >
+                  <Navigation size={15} aria-hidden />
+                  使用百度地图导航
+                </a>
+              </section>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    </DocsShell>
   );
 };
 
