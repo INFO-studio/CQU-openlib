@@ -631,10 +631,9 @@ const MapPage = () => {
                   >
                     Tony
                   </DocLink>
-                  ，经授权迁移点位数据并适配 openlib。
                 </p>
                 <p className="mt-2 m-0 text-[0.8125rem] leading-relaxed text-muted">
-                  地点有误或缺失请通过
+                  地点有误、需要修改或补充请通过
                   <Link
                     to="/form/$type"
                     params={{ type: 'feedback' }}
