@@ -36,7 +36,6 @@
 - [IUPAC](IUPAC.md)
 - [NitroFire](NitroFire.md)
 - [skirt_wind](skirt_wind.md)
-- [Tony](Tony.md)
 - [ok](ok.md)
 - [tazy_wrld](tazy_wrld.md)
 - [重庆大学吧务组](重庆大学吧务组.md)
@@ -44,6 +43,7 @@
 - [Leo Moore](LeoMoore.md)
 - [仮屋和奏](仮屋和奏.md)
 - [Rium](Rium.md)
+- [Tony](Tony.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444

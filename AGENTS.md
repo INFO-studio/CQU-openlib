@@ -43,6 +43,12 @@
 - 改解析器（`app/utils/remark/**`、`app/utils/preprocess/**`）时补边界测试。
 - 用户未要求时不要自动 commit / push；要求提交时用普通 git，不要附加无关署名流程。
 
+## 前端组件
+
+- 项目使用 **Base UI + 类 shadcn 的本地组件管理方式**。页面优先复用 `app/components/ui/` 中的组件，不要在业务页面重复拼装同类交互与样式。
+- Select、Dialog、Popover、Collapsible 等复合交互优先使用 Base UI primitive；缺少通用封装时，先在 `app/components/ui/` 增加可复用组件，再由页面调用。不要用原生 `<select>` 等控件临时替代。
+- 组件样式使用 UnoCSS 和现有语义化 token；避免散落的自定义 CSS、重复样式和脱离主题的硬编码颜色。
+
 ## 验证
 
 改解析 / 工具函数后跑相关测试：`pnpm test`。涉及类型时再跑 `pnpm typecheck`。

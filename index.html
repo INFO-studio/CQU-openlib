@@ -19,8 +19,14 @@
     <script>
       (() => {
         try {
-          const key = 'cqu-openlib-theme';
-          const stored = localStorage.getItem(key);
+          let preferences = null;
+          try {
+            preferences = JSON.parse(
+              localStorage.getItem('cqu-openlib-preferences') || 'null',
+            );
+          } catch {}
+          const stored =
+            preferences?.theme || localStorage.getItem('cqu-openlib-theme');
           const theme =
             stored === 'light' || stored === 'dark'
               ? stored

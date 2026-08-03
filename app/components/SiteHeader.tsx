@@ -3,7 +3,7 @@ import DocLink from '~/components/DocLink';
 import ThemeToggle from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/cn';
-import { NAV_SECTIONS_VISIBLE } from '~/lib/nav';
+import { SITE_NAV_ITEMS } from '~/lib/nav';
 import { useUiStore } from '~/stores/uiStore';
 
 const GITHUB_URL = 'https://github.com/INFO-studio/CQU-openlib';
@@ -64,7 +64,7 @@ const SiteHeader = ({ currentPath }: Props) => {
           aria-label="主导航"
           className="hidden min-w-0 items-center gap-5 overflow-x-auto lg:flex xl:gap-6"
         >
-          {NAV_SECTIONS_VISIBLE.map((section) => {
+          {SITE_NAV_ITEMS.map((section) => {
             const active =
               currentPath === section.path ||
               currentPath.startsWith(`${section.path}/`);

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as MapRouteImport } from './routes/map'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as FormTypeRouteImport } from './routes/form.$type'
@@ -29,6 +30,11 @@ const SplatRoute = SplatRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
+  '/map': typeof MapRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/form/$type': typeof FormTypeRoute
   '/admin/': typeof AdminIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/map': typeof MapRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/form/$type': typeof FormTypeRoute
   '/admin': typeof AdminIndexRoute
@@ -67,20 +75,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
+  '/map': typeof MapRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/form/$type': typeof FormTypeRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$' | '/admin' | '/admin/emails' | '/form/$type' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/$'
+    | '/admin'
+    | '/map'
+    | '/admin/emails'
+    | '/form/$type'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/admin/emails' | '/form/$type' | '/admin'
+  to: '/' | '/$' | '/map' | '/admin/emails' | '/form/$type' | '/admin'
   id:
     | '__root__'
     | '/'
     | '/$'
     | '/admin'
+    | '/map'
     | '/admin/emails'
     | '/form/$type'
     | '/admin/'
@@ -90,6 +107,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
+  MapRoute: typeof MapRoute
   FormTypeRoute: typeof FormTypeRoute
 }
 
@@ -114,6 +132,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -156,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
+  MapRoute: MapRoute,
   FormTypeRoute: FormTypeRoute,
 }
 export const routeTree = rootRouteImport

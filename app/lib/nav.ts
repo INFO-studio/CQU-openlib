@@ -10,6 +10,12 @@ export type NavSection = {
   kind: 'dir' | 'file';
   /** Hide from header / mobile tabs (route + search can still exist). */
   hiddenInNav?: boolean;
+  /**
+   * Order the sidebar by the link order of the folder's index.md instead of by
+   * title. For lists the index page curates by hand (贡献者 is ordered by join
+   * time), an alphabetical sidebar contradicts the page readers just saw.
+   */
+  indexOrder?: boolean;
 };
 /** Top-level information architecture (mirrors the MkDocs site). */
 export const NAV_SECTIONS: NavSection[] = [
@@ -36,6 +42,7 @@ export const NAV_SECTIONS: NavSection[] = [
     path: '/contributor',
     source: 'contributor',
     kind: 'dir',
+    indexOrder: true,
   },
   {
     id: 'sundry',
@@ -47,6 +54,24 @@ export const NAV_SECTIONS: NavSection[] = [
 ];
 /** Sections shown in header / mobile directory tabs. */
 export const NAV_SECTIONS_VISIBLE = NAV_SECTIONS.filter((s) => !s.hiddenInNav);
+export type SiteNavItem =
+  | NavSection
+  | {
+      id: 'map';
+      label: '地图';
+      path: '/map';
+      kind: 'app';
+    };
+const MAP_NAV_ITEM: SiteNavItem = {
+  id: 'map',
+  label: '地图',
+  path: '/map',
+  kind: 'app',
+};
+/** Primary navigation, including app pages that do not belong to doc-index. */
+export const SITE_NAV_ITEMS: SiteNavItem[] = NAV_SECTIONS_VISIBLE.flatMap(
+  (section) => (section.id === 'life' ? [section, MAP_NAV_ITEM] : [section]),
+);
 export type SearchEntry = {
   title: string;
   path: string;
