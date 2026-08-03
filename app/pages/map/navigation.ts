@@ -149,9 +149,11 @@ export const navigationLinksFor = (
     {
       id: 'google',
       label: 'Google',
+      // Google 中国的道路图同样使用 GCJ-02；转成 WGS-84 反而会偏数百米。
+      // 卫星图仍是 WGS-84，这是 Google 自身两层数据不重合，外链无法兼顾。
       href: urlWithParams('https://www.google.com/maps/search/', {
         api: '1',
-        query: `${wgsLatitude},${wgsLongitude}`,
+        query: `${gcjLatitude},${gcjLongitude}`,
       }),
     },
     {

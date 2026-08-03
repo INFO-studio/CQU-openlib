@@ -11,19 +11,28 @@ export type AmapPosition = readonly [longitude: number, latitude: number];
 export type AmapStyle = `amap://styles/${string}`;
 
 export type AmapMarker = {
-  on: (event: 'click', listener: () => void) => void;
-  setIcon: (icon: unknown) => void;
+  on: (event: 'click' | 'mouseover' | 'mouseout', listener: () => void) => void;
+  setContent: (content: string | HTMLElement) => void;
   setOffset: (offset: unknown) => void;
+  setzIndex: (zIndex: number) => void;
 };
 
+export type AmapPolygon = object;
+
 export type AmapMap = {
-  on: (event: 'complete', listener: () => void) => void;
-  off: (event: 'complete', listener: () => void) => void;
+  on: (
+    event: 'complete' | 'mapmove' | 'zoomchange',
+    listener: () => void,
+  ) => void;
+  off: (
+    event: 'complete' | 'mapmove' | 'zoomchange',
+    listener: () => void,
+  ) => void;
   add: (overlay: unknown) => void;
   remove: (overlay: unknown) => void;
-  clearMap: () => void;
   destroy: () => void;
   getZoom: () => number;
+  lngLatToContainer: (position: AmapPosition) => { x: number; y: number };
   panTo: (position: AmapPosition) => void;
   setMapStyle: (style: AmapStyle) => void;
   setZoomAndCenter: (zoom: number, center: AmapPosition) => void;
@@ -45,11 +54,22 @@ export type AmapApi = {
   ) => AmapMap;
   Marker: new (options: {
     position: AmapPosition;
+    content?: string | HTMLElement;
     icon?: unknown;
     offset?: unknown;
     title?: string;
     zIndex?: number;
   }) => AmapMarker;
+  Polygon: new (options: {
+    path: readonly AmapPosition[];
+    fillColor?: string;
+    fillOpacity?: number;
+    strokeColor?: string;
+    strokeOpacity?: number;
+    strokeStyle?: 'solid' | 'dashed';
+    strokeWeight?: number;
+    zIndex?: number;
+  }) => AmapPolygon;
   Icon: new (options: {
     image: string;
     size: unknown;
