@@ -8,7 +8,7 @@ import {
 
 describe('campus map data', () => {
   it('matches the published location count', () => {
-    expect(BUILDINGS).toHaveLength(132);
+    expect(BUILDINGS).toHaveLength(138);
     expect(
       (BUILDINGS as readonly Building[]).some(
         (building) => building.campusId === 'c',

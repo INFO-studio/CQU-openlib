@@ -490,9 +490,11 @@ const BuildingList = ({
               <span className="block font-medium leading-snug text-ink">
                 {building.name}
               </span>
-              <span className="mt-0.5 line-clamp-1 block text-xs text-muted">
-                {building.desc}
-              </span>
+              {building.desc ? (
+                <span className="mt-0.5 line-clamp-1 block text-xs text-muted">
+                  {building.desc}
+                </span>
+              ) : null}
             </span>
           </button>
         );
@@ -833,9 +835,11 @@ const MapPage = () => {
                       <h2 className="m-0 font-display text-lg font-semibold leading-tight">
                         {selected.name}
                       </h2>
-                      <p className="mt-1 mb-0 line-clamp-2 text-xs leading-relaxed text-muted">
-                        {selected.desc}
-                      </p>
+                      {selected.desc ? (
+                        <p className="mt-1 mb-0 line-clamp-2 text-xs leading-relaxed text-muted">
+                          {selected.desc}
+                        </p>
+                      ) : null}
                     </div>
                     <button
                       type="button"
