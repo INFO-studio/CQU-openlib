@@ -120,8 +120,9 @@ export const navigationLinksFor = (
       href: urlWithParams('https://api.map.baidu.com/marker', {
         location: `${bdLatitude},${bdLongitude}`,
         title: building.name,
+        content: building.name,
         output: 'html',
-        src: 'CQU-openlib',
+        src: 'webapp.INFO-studio.CQU-openlib',
       }),
     },
     {
@@ -139,7 +140,7 @@ export const navigationLinksFor = (
       id: 'tencent',
       label: '腾讯',
       href: urlWithParams('https://apis.map.qq.com/uri/v1/marker', {
-        marker: `coord:${gcjLatitude},${gcjLongitude};title:${building.name}`,
+        marker: `coord:${gcjLatitude},${gcjLongitude};title:${building.name};addr:${building.name}`,
         referer: 'CQU-openlib',
       }),
     },

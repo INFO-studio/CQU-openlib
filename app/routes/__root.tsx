@@ -3,11 +3,11 @@ import 'virtual:uno.css';
 import '~/assets/css/base.css';
 import { useNavIndex } from '~/queries/nav';
 import { useBookmarkStore } from '~/stores/bookmarkStore';
-import { useThemeStore } from '~/stores/themeStore';
+import { usePreferencesStore } from '~/stores/preferencesStore';
 
 const RootComponent = () => {
   // Warm global caches / mount UI stores once at the app root.
-  useThemeStore();
+  usePreferencesStore();
   useBookmarkStore();
   useNavIndex();
   return <Outlet />;

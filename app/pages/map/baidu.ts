@@ -1,5 +1,6 @@
 const BAIDU_SCRIPT_ID = 'cqu-openlib-baidu-map-sdk';
 const BAIDU_CALLBACK = '__cquOpenlibBaiduMapReady';
+const BAIDU_LOAD_TIMEOUT_MS = 15_000;
 
 export type BaiduPoint = {
   lng: number;
@@ -13,11 +14,14 @@ export type BaiduMap = {
   enableScrollWheelZoom: (enabled?: boolean) => void;
   getZoom: () => number;
   panTo: (point: BaiduPoint) => void;
+  removeOverlay: (overlay: unknown) => void;
+  setMapStyle: (style: { style: 'normal' | 'dark' | 'light' }) => void;
   setZoom: (zoom: number) => void;
 };
 
 export type BaiduMarker = {
   addEventListener: (event: 'click', listener: () => void) => void;
+  setIcon: (icon: unknown) => void;
 };
 
 export type BaiduApi = {
@@ -55,14 +59,31 @@ export const loadBaiduMap = (ak: string): Promise<BaiduApi> => {
   if (sdkPromise) return sdkPromise;
 
   sdkPromise = new Promise<BaiduApi>((resolve, reject) => {
-    const finish = () => {
-      const sdk = resolveLoadedSdk();
+    let settled = false;
+    const timeout = window.setTimeout(() => {
+      fail('百度地图 SDK 加载超时');
+    }, BAIDU_LOAD_TIMEOUT_MS);
+    const clearPending = () => {
+      window.clearTimeout(timeout);
       delete window.__cquOpenlibBaiduMapReady;
+    };
+    const fail = (message: string) => {
+      if (settled) return;
+      settled = true;
+      clearPending();
+      document.getElementById(BAIDU_SCRIPT_ID)?.remove();
+      sdkPromise = null;
+      reject(new Error(message));
+    };
+    const finish = () => {
+      if (settled) return;
+      const sdk = resolveLoadedSdk();
       if (sdk) {
+        settled = true;
+        clearPending();
         resolve(sdk);
       } else {
-        sdkPromise = null;
-        reject(new Error('百度地图 SDK 已响应，但没有提供地图对象'));
+        fail('百度地图 SDK 已响应，但没有提供地图对象');
       }
     };
 
@@ -72,9 +93,8 @@ export const loadBaiduMap = (ak: string): Promise<BaiduApi> => {
       BAIDU_SCRIPT_ID,
     ) as HTMLScriptElement | null;
     if (existing) {
-      existing.addEventListener('error', () => {
-        sdkPromise = null;
-        reject(new Error('百度地图 SDK 加载失败'));
+      existing.addEventListener('error', () => fail('百度地图 SDK 加载失败'), {
+        once: true,
       });
       return;
     }
@@ -83,12 +103,7 @@ export const loadBaiduMap = (ak: string): Promise<BaiduApi> => {
     script.id = BAIDU_SCRIPT_ID;
     script.async = true;
     script.src = `https://api.map.baidu.com/api?v=3.0&ak=${encodeURIComponent(ak)}&callback=${BAIDU_CALLBACK}`;
-    script.onerror = () => {
-      delete window.__cquOpenlibBaiduMapReady;
-      sdkPromise = null;
-      script.remove();
-      reject(new Error('百度地图 SDK 加载失败'));
-    };
+    script.onerror = () => fail('百度地图 SDK 加载失败');
     document.head.appendChild(script);
   });
 

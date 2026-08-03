@@ -1,3 +1,4 @@
+import { Dialog } from '@base-ui/react/dialog';
 import {
   Compass,
   ListFilter,
@@ -9,9 +10,18 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import DocLink from '~/components/DocLink';
 import DocsShell from '~/components/DocsShell';
+import { InfoPopover } from '~/components/ui/info-popover';
+import { SelectField, type SelectOption } from '~/components/ui/select';
 import { cn } from '~/lib/cn';
-import { type BaiduApi, type BaiduMap, loadBaiduMap } from './baidu';
+import { usePreferencesStore } from '~/stores/preferencesStore';
+import {
+  type BaiduApi,
+  type BaiduMap,
+  type BaiduMarker,
+  loadBaiduMap,
+} from './baidu';
 import {
   BUILDING_CATEGORIES,
   BUILDING_CATEGORY_BY_ID,
@@ -37,6 +47,22 @@ type Coord = Building['coord'] | Campus['center'];
 const campusesWithPlaces = CAMPUSES.filter((campus) =>
   BUILDINGS.some((building) => building.campusId === campus.id),
 );
+const CATEGORY_OPTIONS: readonly SelectOption<CategoryFilter>[] = [
+  { value: 'all', label: '全部分类' },
+  ...BUILDING_CATEGORIES.map((category) => ({
+    value: category.id,
+    label: category.label,
+  })),
+];
+const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] =
+  campusesWithPlaces.map((campus) => ({
+    value: campus.id,
+    label: `${campus.campusName}${campus.siteName}`,
+  }));
+const DEFAULT_CAMPUS_ID: CampusId = 'd';
+
+const isCampusId = (value: string | null): value is CampusId =>
+  CAMPUSES.some((campus) => campus.id === value);
 
 const parseCoord = (coord: Coord): { lng: number; lat: number } => {
   return { lng: coord[0], lat: coord[1] };
@@ -51,6 +77,19 @@ const markerSvg = (color: string, selected: boolean): string => {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 };
 
+const markerIcon = (api: BaiduApi, building: Building, selected: boolean) => {
+  const size = selected ? 44 : 36;
+  const iconSize = new api.Size(size, size);
+  return new api.Icon(
+    markerSvg(BUILDING_CATEGORY_BY_ID[building.category].color, selected),
+    iconSize,
+    {
+      anchor: new api.Size(size / 2, size),
+      imageSize: iconSize,
+    },
+  );
+};
+
 const MapSurface = ({
   buildings,
   campus,
@@ -63,9 +102,17 @@ const MapSurface = ({
   onSelect: (building: Building) => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const markersRef = useRef(new Map<string, BaiduMarker>());
+  const selectedRef = useRef(selected);
+  const previousSelectedIdRef = useRef<string | null>(selected?.id ?? null);
+  const { theme } = usePreferencesStore();
+  const themeRef = useRef(theme);
   const [runtime, setRuntime] = useState<MapRuntime | null>(null);
   const [status, setStatus] = useState<MapStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [retryKey, setRetryKey] = useState(0);
+  themeRef.current = theme;
+  selectedRef.current = selected;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -78,13 +125,18 @@ const MapSurface = ({
     }
 
     let active = true;
+    setRuntime(null);
     setStatus('loading');
+    setErrorMessage('');
     void loadBaiduMap(ak)
       .then((api) => {
         if (!active) return;
-        const initialCampus = CAMPUS_BY_ID['science-city-huxi'];
+        const initialCampus = CAMPUS_BY_ID[DEFAULT_CAMPUS_ID];
         const center = parseCoord(initialCampus.center);
         const map = new api.Map(container, { enableMapClick: false });
+        map.setMapStyle({
+          style: themeRef.current === 'dark' ? 'dark' : 'normal',
+        });
         map.centerAndZoom(
           new api.Point(center.lng, center.lat),
           initialCampus.defaultZoom,
@@ -105,7 +157,13 @@ const MapSurface = ({
       active = false;
       container.replaceChildren();
     };
-  }, []);
+  }, [retryKey]);
+
+  useEffect(() => {
+    runtime?.map.setMapStyle({
+      style: theme === 'dark' ? 'dark' : 'normal',
+    });
+  }, [runtime, theme]);
 
   useEffect(() => {
     if (!runtime) return;
@@ -119,32 +177,50 @@ const MapSurface = ({
   useEffect(() => {
     if (!runtime) return;
     runtime.map.clearOverlays();
+    markersRef.current.clear();
+    previousSelectedIdRef.current = selectedRef.current?.id ?? null;
+  }, [runtime]);
 
-    buildings.forEach((building) => {
+  useEffect(() => {
+    if (!runtime) return;
+    const nextIds = new Set(buildings.map((building) => building.id));
+    for (const [id, marker] of markersRef.current) {
+      if (nextIds.has(id)) continue;
+      runtime.map.removeOverlay(marker);
+      markersRef.current.delete(id);
+    }
+
+    for (const building of buildings) {
+      if (markersRef.current.has(building.id)) continue;
       const coord = parseCoord(building.coord);
       const point = new runtime.api.Point(coord.lng, coord.lat);
-      const isSelected = building.id === selected?.id;
-      const size = isSelected ? 44 : 36;
-      const iconSize = new runtime.api.Size(size, size);
-      const icon = new runtime.api.Icon(
-        markerSvg(BUILDING_CATEGORY_BY_ID[building.category].color, isSelected),
-        iconSize,
-        {
-          anchor: new runtime.api.Size(size / 2, size),
-          imageSize: iconSize,
-        },
-      );
+      const isSelected = building.id === selectedRef.current?.id;
       const marker = new runtime.api.Marker(point, {
-        icon,
+        icon: markerIcon(runtime.api, building, isSelected),
         title: building.name,
       });
       marker.addEventListener('click', () => onSelect(building));
       runtime.map.addOverlay(marker);
-    });
-  }, [buildings, onSelect, runtime, selected?.id]);
+      markersRef.current.set(building.id, marker);
+    }
+  }, [buildings, onSelect, runtime]);
 
   useEffect(() => {
-    if (!(runtime && selected)) return;
+    if (!runtime) return;
+    const nextSelectedId = selected?.id ?? null;
+    const changedIds = new Set([previousSelectedIdRef.current, nextSelectedId]);
+    for (const id of changedIds) {
+      if (!id) continue;
+      const marker = markersRef.current.get(id);
+      const building = BUILDINGS.find((item) => item.id === id);
+      if (marker && building) {
+        marker.setIcon(
+          markerIcon(runtime.api, building, id === nextSelectedId),
+        );
+      }
+    }
+    previousSelectedIdRef.current = nextSelectedId;
+    if (!selected) return;
     const coord = parseCoord(selected.coord);
     runtime.map.panTo(new runtime.api.Point(coord.lng, coord.lat));
   }, [runtime, selected]);
@@ -153,9 +229,10 @@ const MapSurface = ({
     if (!runtime) return;
     runtime.map.setZoom(runtime.map.getZoom() + delta);
   };
+  const missingAk = errorMessage === '尚未配置百度地图 AK';
 
   return (
-    <div className="relative h-full min-w-0 overflow-hidden bg-primary-faint [&_.BMap_cpyCtrl]:z-5! [&_.anchorBL]:z-5!">
+    <div className="relative h-full min-w-0 overflow-hidden bg-paper [&_.BMap_cpyCtrl]:z-5! [&_.anchorBL]:z-5!">
       <div
         ref={containerRef}
         className="absolute inset-0"
@@ -178,9 +255,20 @@ const MapSurface = ({
             </p>
             <p className="mt-1.5 mb-0 text-sm text-muted">
               {status === 'error'
-                ? `${errorMessage}。请设置 VITE_BAIDU_MAP_AK 后重试。`
+                ? missingAk
+                  ? `${errorMessage}。请设置 VITE_BAIDU_MAP_AK 后重试。`
+                  : errorMessage
                 : '仅在打开本页时加载百度地图资源。'}
             </p>
+            {status === 'error' && !missingAk ? (
+              <button
+                type="button"
+                className="mt-4 h-8 rounded border border-line bg-paper px-3 text-xs font-medium text-ink hover:border-primary hover:text-primary"
+                onClick={() => setRetryKey((key) => key + 1)}
+              >
+                重新加载
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -259,13 +347,102 @@ const BuildingList = ({
   </div>
 );
 
+const useDesktopLayout = () => {
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window === 'undefined'
+      ? false
+      : window.matchMedia('(min-width: 768px)').matches,
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px)');
+    const update = () => setIsDesktop(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  return isDesktop;
+};
+
+const MapSidebarContent = ({
+  buildings,
+  selected,
+  query,
+  category,
+  mobile,
+  onQueryChange,
+  onCategoryChange,
+  onSelect,
+}: {
+  buildings: Building[];
+  selected: Building | null;
+  query: string;
+  category: CategoryFilter;
+  mobile: boolean;
+  onQueryChange: (query: string) => void;
+  onCategoryChange: (category: CategoryFilter) => void;
+  onSelect: (building: Building) => void;
+}) => (
+  <>
+    {mobile ? (
+      <div className="flex h-10 shrink-0 items-center justify-between border-b border-line px-3">
+        <span className="text-xs font-medium text-muted">校园地点</span>
+        <Dialog.Close
+          className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink"
+          aria-label="关闭地点列表"
+        >
+          <X size={16} />
+        </Dialog.Close>
+      </div>
+    ) : null}
+    <div className="flex gap-2 border-b border-line p-3">
+      <label className="flex h-10 min-w-0 flex-1 items-center gap-2 border border-line bg-paper px-3 focus-within:border-primary">
+        <Search size={15} className="shrink-0 text-icon" aria-hidden />
+        <span className="sr-only">搜索地点</span>
+        <input
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder="搜索"
+          className="min-w-0 flex-1 text-sm placeholder:text-muted"
+        />
+        {query ? (
+          <button
+            type="button"
+            className="grid h-6 w-6 place-items-center text-muted hover:text-ink"
+            aria-label="清空搜索"
+            onClick={() => onQueryChange('')}
+          >
+            <X size={13} />
+          </button>
+        ) : null}
+      </label>
+      <SelectField
+        value={category}
+        options={CATEGORY_OPTIONS}
+        onValueChange={onCategoryChange}
+        ariaLabel="地点分类"
+        className="w-28 bg-paper text-xs"
+      />
+    </div>
+
+    <BuildingList
+      buildings={buildings}
+      selected={selected}
+      onSelect={onSelect}
+    />
+  </>
+);
+
 const MapPage = () => {
-  const [campusId, setCampusId] = useState<CampusId>('science-city-huxi');
+  const isDesktop = useDesktopLayout();
+  const { mapCampusId, setMapCampusId } = usePreferencesStore();
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Building | null>(null);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
 
+  const campusId = isCampusId(mapCampusId) ? mapCampusId : DEFAULT_CAMPUS_ID;
   const campus = CAMPUS_BY_ID[campusId];
   const campusBuildings = useMemo(
     () => BUILDINGS.filter((building) => building.campusId === campusId),
@@ -293,6 +470,10 @@ const MapPage = () => {
   }, []);
 
   useEffect(() => {
+    if (mapCampusId !== campusId) setMapCampusId(campusId);
+  }, [campusId, mapCampusId, setMapCampusId]);
+
+  useEffect(() => {
     if (
       selected &&
       !filteredBuildings.some((building) => building.id === selected.id)
@@ -302,7 +483,7 @@ const MapPage = () => {
   }, [filteredBuildings, selected]);
 
   const chooseCampus = (next: CampusId) => {
-    setCampusId(next);
+    setMapCampusId(next);
     setSelected(null);
     setCategory('all');
     setMobilePanelOpen(false);
@@ -317,171 +498,164 @@ const MapPage = () => {
 
   return (
     <DocsShell fullBleed>
-      <section className="h-[calc(100dvh-var(--layout-header))] min-h-[30rem] overflow-hidden bg-panel font-sans text-ink max-md:min-h-[28rem]">
-        <header className="relative z-30 flex h-[3.5rem] items-center gap-3 border-b border-line bg-panel px-3 max-md:h-[3.25rem] md:px-4">
-          <h1 className="m-0 shrink-0 font-display text-lg font-semibold leading-tight">
-            校园地图
-          </h1>
+      <Dialog.Root
+        open={!isDesktop && mobilePanelOpen}
+        onOpenChange={setMobilePanelOpen}
+      >
+        <section className="h-[calc(100dvh-var(--layout-header))] min-h-[30rem] overflow-hidden bg-panel font-sans text-ink max-md:min-h-[28rem]">
+          <header className="relative z-30 flex h-[3.5rem] items-center gap-3 border-b border-line bg-panel px-3 max-md:h-[3.25rem] md:px-4">
+            <h1 className="m-0 shrink-0 font-display text-lg font-semibold leading-tight">
+              校园地图
+            </h1>
 
-          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
-            {campusesWithPlaces.map((item) => (
-              <button
-                type="button"
-                key={item.id}
-                className={cn(
-                  'h-8 shrink-0 rounded px-2.5 text-xs transition-colors sm:px-3',
-                  campusId === item.id
-                    ? 'bg-primary-soft font-semibold text-primary'
-                    : 'text-muted hover:text-ink',
-                )}
-                onClick={() => chooseCampus(item.id)}
-              >
-                {item.campusName}
-                {item.siteName}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1">
-            <button
-              type="button"
-              className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink md:hidden"
-              aria-label={mobilePanelOpen ? '关闭地点列表' : '打开地点列表'}
-              onClick={() => setMobilePanelOpen((open) => !open)}
-            >
-              {mobilePanelOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
-        </header>
-
-        <div className="relative flex h-[calc(100%-3.5rem)] min-h-[calc(30rem-3.5rem)] max-md:h-[calc(100%-3.25rem)] max-md:min-h-[calc(28rem-3.25rem)]">
-          <aside
-            className={cn(
-              'absolute inset-y-0 left-0 z-20 flex w-[min(22rem,88vw)] flex-col border-r border-line bg-panel shadow-2xl transition-transform md:static md:z-auto md:w-[21rem] md:translate-x-0 md:shadow-none',
-              mobilePanelOpen ? 'translate-x-0' : '-translate-x-full',
-            )}
-            aria-label="校园地点"
-          >
-            <div className="flex gap-2 border-b border-line p-3">
-              <label className="flex h-10 min-w-0 flex-1 items-center gap-2 border border-line bg-paper px-3 focus-within:border-primary">
-                <Search size={15} className="shrink-0 text-icon" aria-hidden />
-                <span className="sr-only">搜索地点</span>
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="建筑、食堂、快递点"
-                  className="min-w-0 flex-1 text-sm placeholder:text-muted"
-                />
-                {query ? (
-                  <button
-                    type="button"
-                    className="grid h-6 w-6 place-items-center text-muted hover:text-ink"
-                    aria-label="清空搜索"
-                    onClick={() => setQuery('')}
-                  >
-                    <X size={13} />
-                  </button>
-                ) : null}
-              </label>
-              <select
-                value={category}
-                aria-label="地点分类"
-                className="h-10 w-24 shrink-0 appearance-auto border border-line bg-paper px-2 text-xs text-ink focus:border-primary"
-                onChange={(event) =>
-                  setCategory(event.target.value as CategoryFilter)
-                }
-              >
-                <option value="all">全部分类</option>
-                {BUILDING_CATEGORIES.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
+            <div className="min-w-0 flex-1">
+              <SelectField
+                value={campusId}
+                options={CAMPUS_OPTIONS}
+                onValueChange={chooseCampus}
+                ariaLabel="选择校区"
+                variant="compact"
+                className="max-w-full"
+              />
             </div>
 
-            <BuildingList
-              buildings={filteredBuildings}
-              selected={selected}
-              onSelect={chooseBuilding}
-            />
-          </aside>
-
-          {mobilePanelOpen ? (
-            <button
-              type="button"
-              className="absolute inset-0 z-10 bg-backdrop md:hidden"
-              aria-label="关闭地点列表"
-              onClick={() => setMobilePanelOpen(false)}
-            />
-          ) : null}
-
-          <div className="relative min-w-0 flex-1">
-            <MapSurface
-              buildings={filteredBuildings}
-              campus={campus}
-              selected={selected}
-              onSelect={chooseBuilding}
-            />
-
-            {!mobilePanelOpen ? (
-              <button
-                type="button"
-                className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden"
-                onClick={() => setMobilePanelOpen(true)}
-              >
-                <ListFilter size={15} aria-hidden />
-                {filteredBuildings.length} 个地点
-              </button>
-            ) : null}
-
-            {selected ? (
-              <section className="absolute right-3 bottom-3 left-3 z-10 border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[28rem] md:p-4">
-                <div className="flex items-start gap-3">
-                  <span
-                    className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
-                    style={{
-                      background:
-                        BUILDING_CATEGORY_BY_ID[selected.category].color,
-                    }}
+            <div className="flex shrink-0 items-center gap-1">
+              <InfoPopover ariaLabel="查看地图来源信息">
+                <p className="m-0 leading-relaxed text-muted">
+                  本页孵化自{' '}
+                  <a
+                    href="https://github.com/littlemana-bot/CQUMAPS"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-primary no-underline hover:underline"
                   >
-                    <MapPin size={17} aria-hidden />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="m-0 font-display text-lg font-semibold leading-tight">
-                      {selected.name}
-                    </h2>
-                    <p className="mt-1 mb-0 line-clamp-2 text-xs leading-relaxed text-muted">
-                      {selected.desc}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    className="grid h-7 w-7 shrink-0 place-items-center text-muted hover:text-ink"
-                    aria-label="关闭地点详情"
-                    onClick={() => setSelected(null)}
-                  >
-                    <X size={15} />
-                  </button>
-                </div>
-                <div className="mt-3 grid grid-cols-5 gap-1.5">
-                  {navigationLinks.map((link) => (
-                    <a
-                      key={link.id}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex h-8 items-center justify-center border border-line bg-paper px-1 text-xs font-medium text-ink no-underline hover:border-primary hover:text-primary"
+                    CQUMAPS
+                  </a>
+                  ，经授权迁移点位数据并适配 openlib。
+                </p>
+                <dl className="mt-3 grid grid-cols-[4rem_1fr] gap-x-2 gap-y-1.5 text-xs">
+                  <dt className="text-muted">原作者</dt>
+                  <dd className="m-0">
+                    <DocLink
+                      path="/contributor/Tony"
+                      className="text-primary no-underline hover:underline"
                     >
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
-              </section>
-            ) : null}
+                      Tony
+                    </DocLink>
+                    <span className="text-muted">（littlemana-bot）</span>
+                  </dd>
+                </dl>
+              </InfoPopover>
+              <Dialog.Trigger
+                className="grid h-8 w-8 place-items-center rounded text-icon hover:bg-mist hover:text-ink md:hidden"
+                aria-label="打开地点列表"
+              >
+                <Menu size={18} />
+              </Dialog.Trigger>
+            </div>
+          </header>
+
+          <div className="relative flex h-[calc(100%-3.5rem)] min-h-[calc(30rem-3.5rem)] max-md:h-[calc(100%-3.25rem)] max-md:min-h-[calc(28rem-3.25rem)]">
+            {isDesktop ? (
+              <aside
+                className="flex w-[21rem] shrink-0 flex-col border-r border-line bg-panel"
+                aria-label="校园地点"
+              >
+                <MapSidebarContent
+                  buildings={filteredBuildings}
+                  selected={selected}
+                  query={query}
+                  category={category}
+                  mobile={false}
+                  onQueryChange={setQuery}
+                  onCategoryChange={setCategory}
+                  onSelect={chooseBuilding}
+                />
+              </aside>
+            ) : (
+              <Dialog.Portal>
+                <Dialog.Backdrop className="fixed right-0 bottom-0 left-0 top-[calc(var(--layout-header)+3.25rem)] z-50 bg-backdrop" />
+                <Dialog.Popup
+                  className="fixed bottom-0 left-0 top-[calc(var(--layout-header)+3.25rem)] z-51 flex w-[min(22rem,88vw)] flex-col border-r border-line bg-panel shadow-2xl outline-none"
+                  aria-label="校园地点"
+                >
+                  <MapSidebarContent
+                    buildings={filteredBuildings}
+                    selected={selected}
+                    query={query}
+                    category={category}
+                    mobile
+                    onQueryChange={setQuery}
+                    onCategoryChange={setCategory}
+                    onSelect={chooseBuilding}
+                  />
+                </Dialog.Popup>
+              </Dialog.Portal>
+            )}
+
+            <div className="relative min-w-0 flex-1">
+              <MapSurface
+                buildings={filteredBuildings}
+                campus={campus}
+                selected={selected}
+                onSelect={chooseBuilding}
+              />
+
+              {!mobilePanelOpen ? (
+                <Dialog.Trigger className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden">
+                  <ListFilter size={15} aria-hidden />
+                  {filteredBuildings.length} 个地点
+                </Dialog.Trigger>
+              ) : null}
+
+              {selected ? (
+                <section className="absolute right-3 bottom-3 left-3 z-10 border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[28rem] md:p-4">
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
+                      style={{
+                        background:
+                          BUILDING_CATEGORY_BY_ID[selected.category].color,
+                      }}
+                    >
+                      <MapPin size={17} aria-hidden />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <h2 className="m-0 font-display text-lg font-semibold leading-tight">
+                        {selected.name}
+                      </h2>
+                      <p className="mt-1 mb-0 line-clamp-2 text-xs leading-relaxed text-muted">
+                        {selected.desc}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="grid h-7 w-7 shrink-0 place-items-center text-muted hover:text-ink"
+                      aria-label="关闭地点详情"
+                      onClick={() => setSelected(null)}
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                  <div className="mt-3 grid grid-cols-5 gap-1.5">
+                    {navigationLinks.map((link) => (
+                      <a
+                        key={link.id}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-8 items-center justify-center border border-line bg-paper px-1 text-xs font-medium text-ink no-underline hover:border-primary hover:text-primary"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </Dialog.Root>
     </DocsShell>
   );
 };

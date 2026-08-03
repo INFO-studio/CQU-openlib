@@ -11,6 +11,7 @@ type Props = {
   replace?: boolean;
   /** Marks the current page for scroll-into-view helpers. */
   'data-active'?: 'true';
+  'aria-current'?: 'page';
 };
 
 /** Soft navigation: client route change + content reload (no full page refresh). */
@@ -21,6 +22,7 @@ const DocLink = ({
   onNavigate,
   replace = false,
   'data-active': dataActive,
+  'aria-current': ariaCurrent,
 }: Props) => {
   const navigate = useNavigate();
   const href = cleanPath(path);
@@ -54,6 +56,7 @@ const DocLink = ({
       className={className}
       onClick={onClick}
       data-active={dataActive}
+      aria-current={ariaCurrent}
     >
       {children}
     </a>

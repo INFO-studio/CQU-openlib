@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vite-plus/test';
 import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
 
 describe('campus map data', () => {
+  it('matches the published location count', () => {
+    expect(BUILDINGS).toHaveLength(112);
+  });
+
   it('uses the site-wide 校区 / 校园 terminology', () => {
     expect(
       CAMPUSES.map((campus) => `${campus.campusName}${campus.siteName}`),

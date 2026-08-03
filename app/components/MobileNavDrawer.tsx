@@ -72,9 +72,8 @@ const HScrollTabs = ({
           canLeft ? 'opacity-100' : 'opacity-0',
         )}
       />
-      <div
+      <nav
         ref={ref}
-        role="tablist"
         aria-label="站点大类"
         className="flex gap-0 overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
@@ -90,6 +89,7 @@ const HScrollTabs = ({
                 key={section.id}
                 path={section.path}
                 onNavigate={onNavigate}
+                aria-current={active ? 'page' : undefined}
                 data-active={active ? 'true' : undefined}
                 className={className}
               >
@@ -108,8 +108,7 @@ const HScrollTabs = ({
             <button
               key={section.id}
               type="button"
-              role="tab"
-              aria-selected={active}
+              aria-pressed={active}
               data-active={active || undefined}
               onClick={() => onChange(section.id)}
               className={className}
@@ -125,7 +124,7 @@ const HScrollTabs = ({
             </button>
           );
         })}
-      </div>
+      </nav>
       <div
         aria-hidden
         className={cn(
@@ -153,15 +152,23 @@ const MobileNavDrawer = ({
       ? routeSection.id
       : defaultBrowseId,
   );
+  const [activeNavId, setActiveNavId] = useState(() =>
+    pathname === '/map'
+      ? 'map'
+      : routeSection && !routeSection.hiddenInNav
+        ? routeSection.id
+        : defaultBrowseId,
+  );
 
   useEffect(() => {
     if (!open) return;
-    setBrowseId(
+    const nextBrowseId =
       routeSection && !routeSection.hiddenInNav
         ? routeSection.id
-        : defaultBrowseId,
-    );
-  }, [open, routeSection, defaultBrowseId]);
+        : defaultBrowseId;
+    setBrowseId(nextBrowseId);
+    setActiveNavId(pathname === '/map' ? 'map' : nextBrowseId);
+  }, [open, pathname, routeSection, defaultBrowseId]);
 
   useEffect(() => {
     if (!open) return;
@@ -216,8 +223,11 @@ const MobileNavDrawer = ({
 
         <div className="shrink-0">
           <HScrollTabs
-            value={pathname === '/map' ? 'map' : browseId}
-            onChange={setBrowseId}
+            value={activeNavId}
+            onChange={(id) => {
+              setBrowseId(id);
+              setActiveNavId(id);
+            }}
             onNavigate={onClose}
           />
         </div>
@@ -228,7 +238,14 @@ const MobileNavDrawer = ({
             isCourse ? 'flex flex-col overflow-hidden' : 'overflow-y-auto',
           )}
         >
-          {navLoading ? (
+          {activeNavId === 'map' ? (
+            <div className="py-8 text-center">
+              <p className="m-0 text-sm font-medium text-ink">校园地图</p>
+              <p className="mt-1 mb-0 text-xs text-muted">
+                当前页面；可从上方切换到其他站点分类
+              </p>
+            </div>
+          ) : navLoading ? (
             showNavSkeleton ? (
               <NavSkeleton course={isCourse} />
             ) : null
