@@ -3,13 +3,19 @@ import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
 
 describe('campus map data', () => {
   it('matches the published location count', () => {
-    expect(BUILDINGS).toHaveLength(112);
+    expect(BUILDINGS).toHaveLength(140);
   });
 
   it('uses the site-wide 校区 / 校园 terminology', () => {
     expect(
       CAMPUSES.map((campus) => `${campus.campusName}${campus.siteName}`),
-    ).toEqual(['科学城校区虎溪校园', '沙坪坝校区A校园']);
+    ).toEqual([
+      '科学城校区虎溪校园',
+      '沙坪坝校区A校园',
+      '沙坪坝校区B校园',
+      '沙坪坝校区C校园',
+      '两江校区卓越工程师学院',
+    ]);
   });
 
   it('keeps building ids unique and references valid', () => {
@@ -24,6 +30,11 @@ describe('campus map data', () => {
         BUILDING_CATEGORIES.some(
           (category) => category.id === building.category,
         ),
+      ).toBe(true);
+    }
+    for (const campus of CAMPUSES) {
+      expect(
+        BUILDINGS.some((building) => building.campusId === campus.id),
       ).toBe(true);
     }
   });

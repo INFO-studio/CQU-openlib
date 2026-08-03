@@ -1,9 +1,8 @@
 /**
- * 数据来源：https://github.com/littlemana-bot/CQUMAPS/blob/main/js/data.js
- * 经原作者授权整合。
+ * a-d：沙坪坝 A、B、C 校园与科学城虎溪校园；e：两江校区。
+ * A、虎溪点位经 CQUMAPS 原作者授权整合；其余点位据重庆大学官方校园图与公开地图数据整理。
  */
-
-export type CampusId = 'd' | 'a';
+export type CampusId = 'a' | 'b' | 'c' | 'd' | 'e';
 
 export type BuildingCategory =
   | 'teaching'
@@ -16,6 +15,7 @@ export type BuildingCategory =
   | 'hospital'
   | 'theater'
   | 'busstation'
+  | 'transit'
   | 'landmark'
   | 'college'
   | 'food'
@@ -100,6 +100,11 @@ export const BUILDING_CATEGORIES = [
     color: '#5A82B8',
   },
   {
+    id: 'transit',
+    label: '公共交通',
+    color: '#4A7CC0',
+  },
+  {
     id: 'landmark',
     label: '地标建筑',
     color: '#003375',
@@ -135,6 +140,27 @@ export const CAMPUSES = [
     siteName: 'A校园',
     center: [106.475693, 29.570419],
     defaultZoom: 16,
+  },
+  {
+    id: 'b',
+    campusName: '沙坪坝校区',
+    siteName: 'B校园',
+    center: [106.465364, 29.573597],
+    defaultZoom: 16,
+  },
+  {
+    id: 'c',
+    campusName: '沙坪坝校区',
+    siteName: 'C校园',
+    center: [106.460071, 29.566519],
+    defaultZoom: 16,
+  },
+  {
+    id: 'e',
+    campusName: '两江校区',
+    siteName: '卓越工程师学院',
+    center: [106.815609, 29.74551],
+    defaultZoom: 17,
   },
 ] as const satisfies readonly Campus[];
 
@@ -953,7 +979,7 @@ export const BUILDINGS = [
     category: 'sports',
     campusId: 'a',
     coord: [106.475926, 29.571084],
-    desc: '这里附近有个室外乒乓球场，百度地图上没有标点但大概是在附近，可以找一下。',
+    desc: '室外乒乓球场，点位为近似位置',
   },
   {
     id: 'a_admin_01',
@@ -977,7 +1003,7 @@ export const BUILDINGS = [
     category: 'gate',
     campusId: 'a',
     coord: [106.473514, 29.567765],
-    desc: '面向沙中路的出入口，靠近十舍，也是最常用的外卖配送点，有门禁，晚上12点后关门。',
+    desc: '靠近十舍；设门禁，午夜后关闭',
   },
   {
     id: 'a_gate_02',
@@ -1033,7 +1059,7 @@ export const BUILDINGS = [
     category: 'gate',
     campusId: 'a',
     coord: [106.470666, 29.573517],
-    desc: '最常用的校门。',
+    desc: 'A校园正门',
   },
   {
     id: 'a_food_01',
@@ -1041,6 +1067,230 @@ export const BUILDINGS = [
     category: 'food',
     campusId: 'a',
     coord: [106.479402, 29.570742],
-    desc: '一家真的非常非常好吃的芋圆店。',
+    desc: 'A校园附近甜品店',
+  },
+  {
+    id: 'b_teaching_01',
+    name: '第二综合楼',
+    category: 'teaching',
+    campusId: 'b',
+    coord: [106.467958, 29.572903],
+    desc: 'B校园主要公共教学楼',
+  },
+  {
+    id: 'b_teaching_02',
+    name: '第一综合楼',
+    category: 'teaching',
+    campusId: 'b',
+    coord: [106.466218, 29.572284],
+    desc: '教学与办公楼',
+  },
+  {
+    id: 'b_teaching_03',
+    name: '建工馆',
+    category: 'teaching',
+    campusId: 'b',
+    coord: [106.467483, 29.573613],
+    desc: 'B校园标志性教学建筑',
+  },
+  {
+    id: 'b_library_01',
+    name: 'B区图书馆',
+    category: 'library',
+    campusId: 'b',
+    coord: [106.467001, 29.572707],
+    desc: 'B校园图书馆',
+  },
+  {
+    id: 'b_college_01',
+    name: '建筑城规学院',
+    category: 'college',
+    campusId: 'b',
+    coord: [106.468095, 29.574304],
+    desc: '建筑城规学院院楼',
+  },
+  {
+    id: 'b_college_02',
+    name: '管理科学与房地产学院',
+    category: 'college',
+    campusId: 'b',
+    coord: [106.467033, 29.57189],
+    desc: '管理科学与房地产学院院楼',
+  },
+  {
+    id: 'b_college_03',
+    name: '材料楼',
+    category: 'college',
+    campusId: 'b',
+    coord: [106.468962, 29.573493],
+    desc: '材料相关教学科研楼',
+  },
+  {
+    id: 'b_hospital_01',
+    name: 'B区校医院',
+    category: 'hospital',
+    campusId: 'b',
+    coord: [106.469022, 29.574047],
+    desc: 'B校园医疗服务点',
+  },
+  {
+    id: 'b_sports_01',
+    name: 'B区足球场',
+    category: 'sports',
+    campusId: 'b',
+    coord: [106.466389, 29.574076],
+    desc: '田径与足球场',
+  },
+  {
+    id: 'b_canteen_01',
+    name: '学生二食堂',
+    category: 'canteen',
+    campusId: 'b',
+    coord: [106.465294, 29.570756],
+    desc: 'B校园主要食堂',
+  },
+  {
+    id: 'b_dorm_01',
+    name: '学生三舍',
+    category: 'dormitory',
+    campusId: 'b',
+    coord: [106.464118, 29.57085],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'b_dorm_02',
+    name: '学生四舍',
+    category: 'dormitory',
+    campusId: 'b',
+    coord: [106.463424, 29.571134],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'c_teaching_01',
+    name: '第一教学楼',
+    category: 'teaching',
+    campusId: 'c',
+    coord: [106.46149, 29.5662],
+    desc: 'C校园公共教学楼',
+  },
+  {
+    id: 'c_college_01',
+    name: '重庆大学医学院',
+    category: 'college',
+    campusId: 'c',
+    coord: [106.460599, 29.566041],
+    desc: '医学院教学办公区',
+  },
+  {
+    id: 'c_dorm_01',
+    name: 'C区一舍',
+    category: 'dormitory',
+    campusId: 'c',
+    coord: [106.462001, 29.56566],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'c_dorm_02',
+    name: 'C区四舍',
+    category: 'dormitory',
+    campusId: 'c',
+    coord: [106.462061, 29.566839],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'c_dorm_03',
+    name: 'C区五舍',
+    category: 'dormitory',
+    campusId: 'c',
+    coord: [106.461912, 29.565386],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'c_canteen_01',
+    name: '南苑餐厅',
+    category: 'canteen',
+    campusId: 'c',
+    coord: [106.46149, 29.565919],
+    desc: 'C校园食堂',
+  },
+  {
+    id: 'c_sports_01',
+    name: 'C区运动场',
+    category: 'sports',
+    campusId: 'c',
+    coord: [106.458723, 29.56601],
+    desc: '田径与足球场',
+  },
+  {
+    id: 'c_gate_01',
+    name: 'C区大门',
+    category: 'gate',
+    campusId: 'c',
+    coord: [106.460766, 29.564201],
+    desc: 'C校园主要出入口',
+  },
+  {
+    id: 'e_teaching_01',
+    name: '教学楼A栋',
+    category: 'teaching',
+    campusId: 'e',
+    coord: [106.81746, 29.746202],
+    desc: '卓越工程师学院教学楼',
+  },
+  {
+    id: 'e_teaching_02',
+    name: '教学楼B栋',
+    category: 'teaching',
+    campusId: 'e',
+    coord: [106.816966, 29.745684],
+    desc: '卓越工程师学院教学楼',
+  },
+  {
+    id: 'e_teaching_03',
+    name: '教学楼C栋',
+    category: 'teaching',
+    campusId: 'e',
+    coord: [106.816683, 29.746103],
+    desc: '卓越工程师学院教学楼',
+  },
+  {
+    id: 'e_dorm_01',
+    name: '学生宿舍1栋',
+    category: 'dormitory',
+    campusId: 'e',
+    coord: [106.813827, 29.745393],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'e_dorm_02',
+    name: '学生宿舍2栋',
+    category: 'dormitory',
+    campusId: 'e',
+    coord: [106.814058, 29.745032],
+    desc: '学生宿舍',
+  },
+  {
+    id: 'e_canteen_01',
+    name: '两江校区食堂',
+    category: 'canteen',
+    campusId: 'e',
+    coord: [106.814944, 29.746885],
+    desc: '校园食堂',
+  },
+  {
+    id: 'e_sports_01',
+    name: '两江校区运动场',
+    category: 'sports',
+    campusId: 'e',
+    coord: [106.8158, 29.7446],
+    desc: '田径与足球场',
+  },
+  {
+    id: 'e_busstation_01',
+    name: '桐梓林轨道站',
+    category: 'transit',
+    campusId: 'e',
+    coord: [106.821687, 29.748144],
+    desc: '轨道交通4号线站点',
   },
 ] as const satisfies readonly Building[];
