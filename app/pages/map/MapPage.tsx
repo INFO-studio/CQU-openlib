@@ -115,6 +115,8 @@ const createMarkerPin = (
   const root = document.createElement('div');
   root.className =
     'group flex h-7 w-7 cursor-pointer items-end justify-center outline-none';
+  root.style.setProperty('-webkit-tap-highlight-color', 'transparent');
+  root.style.userSelect = 'none';
   root.dataset.buildingId = building.id;
 
   const body = document.createElement('div');
