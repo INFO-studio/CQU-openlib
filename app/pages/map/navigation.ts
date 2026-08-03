@@ -1,4 +1,4 @@
-import type { Bd09Coordinate, Building } from './data';
+import type { Building, Gcj02Coordinate } from './data';
 
 type Coordinate = readonly [longitude: number, latitude: number];
 
@@ -16,18 +16,21 @@ export type NavigationLink = {
 };
 
 const PI = Math.PI;
+/** BD09 的螺旋加密用的是这个常量，不是 π。 */
+const X_PI = (PI * 3000) / 180;
 const AXIS = 6378245;
 const ECCENTRICITY = 0.006693421622965943;
 
-export const bd09ToGcj02 = ([
+export const gcj02ToBd09 = ([
   longitude,
   latitude,
-]: Bd09Coordinate): Coordinate => {
-  const x = longitude - 0.0065;
-  const y = latitude - 0.006;
-  const z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * PI);
-  const theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * PI);
-  return [z * Math.cos(theta), z * Math.sin(theta)];
+]: Gcj02Coordinate): Coordinate => {
+  const z =
+    Math.sqrt(longitude * longitude + latitude * latitude) +
+    0.00002 * Math.sin(latitude * X_PI);
+  const theta =
+    Math.atan2(latitude, longitude) + 0.000003 * Math.cos(longitude * X_PI);
+  return [z * Math.cos(theta) + 0.0065, z * Math.sin(theta) + 0.006];
 };
 
 const transformLatitude = (longitude: number, latitude: number) => {
@@ -109,11 +112,21 @@ const urlWithParams = (
 export const navigationLinksFor = (
   building: Pick<Building, 'coord' | 'name'>,
 ): NavigationLink[] => {
-  const [bdLongitude, bdLatitude] = building.coord;
-  const [gcjLongitude, gcjLatitude] = bd09ToGcj02(building.coord);
-  const [wgsLongitude, wgsLatitude] = gcj02ToWgs84([gcjLongitude, gcjLatitude]);
+  const [gcjLongitude, gcjLatitude] = building.coord;
+  const [bdLongitude, bdLatitude] = gcj02ToBd09(building.coord);
+  const [wgsLongitude, wgsLatitude] = gcj02ToWgs84(building.coord);
 
   return [
+    {
+      id: 'amap',
+      label: '高德',
+      // uri.amap.com/marker 和 /ssr/regeo 都只是 302 到这里，直接给终点少一跳。
+      href: urlWithParams('https://ditu.amap.com/regeo', {
+        lng: String(gcjLongitude),
+        lat: String(gcjLatitude),
+        name: building.name,
+      }),
+    },
     {
       id: 'baidu',
       label: '百度',
@@ -123,17 +136,6 @@ export const navigationLinksFor = (
         content: building.name,
         output: 'html',
         src: 'webapp.INFO-studio.CQU-openlib',
-      }),
-    },
-    {
-      id: 'amap',
-      label: '高德',
-      href: urlWithParams('https://uri.amap.com/marker', {
-        position: `${gcjLongitude},${gcjLatitude}`,
-        name: building.name,
-        src: 'CQU-openlib',
-        coordinate: 'gaode',
-        callnative: '1',
       }),
     },
     {

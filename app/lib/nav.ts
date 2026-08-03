@@ -10,6 +10,12 @@ export type NavSection = {
   kind: 'dir' | 'file';
   /** Hide from header / mobile tabs (route + search can still exist). */
   hiddenInNav?: boolean;
+  /**
+   * Order the sidebar by the link order of the folder's index.md instead of by
+   * title. For lists the index page curates by hand (贡献者 is ordered by join
+   * time), an alphabetical sidebar contradicts the page readers just saw.
+   */
+  indexOrder?: boolean;
 };
 /** Top-level information architecture (mirrors the MkDocs site). */
 export const NAV_SECTIONS: NavSection[] = [
@@ -36,6 +42,7 @@ export const NAV_SECTIONS: NavSection[] = [
     path: '/contributor',
     source: 'contributor',
     kind: 'dir',
+    indexOrder: true,
   },
   {
     id: 'sundry',

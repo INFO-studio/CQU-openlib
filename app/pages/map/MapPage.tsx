@@ -1,28 +1,21 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { Link } from '@tanstack/react-router';
-import {
-  Compass,
-  ListFilter,
-  MapPin,
-  Menu,
-  Minus,
-  Plus,
-  Search,
-  X,
-} from 'lucide-react';
+import { ListFilter, MapPin, Menu, Minus, Plus, Search, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DocLink from '~/components/DocLink';
 import DocsShell from '~/components/DocsShell';
+import { ActivitySpinner } from '~/components/ui/activity-spinner';
 import { InfoPopover } from '~/components/ui/info-popover';
 import { SelectField, type SelectOption } from '~/components/ui/select';
 import { cn } from '~/lib/cn';
 import { usePreferencesStore } from '~/stores/preferencesStore';
 import {
-  type BaiduApi,
-  type BaiduMap,
-  type BaiduMarker,
-  loadBaiduMap,
-} from './baidu';
+  type AmapApi,
+  type AmapMap,
+  type AmapMarker,
+  type AmapStyle,
+  loadAmap,
+} from './amap';
 import {
   BUILDING_CATEGORIES,
   BUILDING_CATEGORY_BY_ID,
@@ -35,16 +28,15 @@ import {
   type CampusId,
 } from './data';
 import { navigationLinksFor } from './navigation';
-import { BAIDU_MAP_STYLES } from './styles';
 
 type MapRuntime = {
-  api: BaiduApi;
-  map: BaiduMap;
+  api: AmapApi;
+  map: AmapMap;
 };
 
 type MapStatus = 'idle' | 'loading' | 'ready' | 'error';
+type ThemePhase = 'idle' | 'covering' | 'revealing';
 type CategoryFilter = BuildingCategory | 'all';
-type Coord = Building['coord'] | Campus['center'];
 
 const campusesWithPlaces = CAMPUSES.filter((campus) =>
   BUILDINGS.some((building) => building.campusId === campus.id),
@@ -62,37 +54,53 @@ const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] =
     label: `${campus.campusName}${campus.siteName}`,
   }));
 const DEFAULT_CAMPUS_ID: CampusId = 'd';
-const THEME_COVER_MS = 150;
-/** `tilesloaded` 不来时的兜底，宁可早一点揭开也不要一直卡在占位层 */
-const FIRST_PAINT_TIMEOUT_MS = 900;
+/** transitionend 在标签页不可见等情况下不来，兜底时长要比遮罩过渡略长。 */
+const THEME_COVER_MS = 2_000;
+/** `complete` 不来时的兜底，宁可早一点揭开也不要一直卡在占位层 */
+const FIRST_PAINT_TIMEOUT_MS = 2_500;
+/** 高德内置样式，省掉在控制台维护自定义样式这层。 */
+const MAP_STYLES = {
+  light: 'amap://styles/normal',
+  dark: 'amap://styles/grey',
+} as const satisfies Record<'light' | 'dark', AmapStyle>;
 
 const isCampusId = (value: string | null): value is CampusId =>
   CAMPUSES.some((campus) => campus.id === value);
 
-const parseCoord = (coord: Coord): { lng: number; lat: number } => {
-  return { lng: coord[0], lat: coord[1] };
-};
+/**
+ * 图钉尺寸压到刚够点得中：一个校区上百个点会互相压盖，图标越大越糊成一片。
+ * 只有选中态放大，让焦点自己浮出来。
+ */
+const MARKER_SIZE = { normal: 28, selected: 38 } as const;
+/** 图形在 24×24 画布里从 y=2 画到尖端 y=22，锚点按这个比例回推。 */
+const MARKER_TIP_RATIO = 22 / 24;
 
 const markerSvg = (color: string, selected: boolean): string => {
-  const size = selected ? 44 : 36;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 44 44">
-    <path d="M22 2.5c-8 0-14.5 6.4-14.5 14.3C7.5 27.4 22 41.5 22 41.5s14.5-14.1 14.5-24.7C36.5 8.9 30 2.5 22 2.5Z" fill="${color}" stroke="white" stroke-width="${selected ? 3 : 2}"/>
-    <circle cx="22" cy="17" r="5.4" fill="white"/>
+  const size = MARKER_SIZE[selected ? 'selected' : 'normal'];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24">
+    <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="${color}" stroke="#fff" stroke-opacity=".92" stroke-width="${selected ? 1.6 : 1.3}" stroke-linejoin="round"/>
+    <circle cx="12" cy="9" r="2.7" fill="#fff" fill-opacity=".95"/>
   </svg>`;
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 };
 
-const markerIcon = (api: BaiduApi, building: Building, selected: boolean) => {
-  const size = selected ? 44 : 36;
+const markerIcon = (api: AmapApi, building: Building, selected: boolean) => {
+  const size = MARKER_SIZE[selected ? 'selected' : 'normal'];
   const iconSize = new api.Size(size, size);
-  return new api.Icon(
-    markerSvg(BUILDING_CATEGORY_BY_ID[building.category].color, selected),
-    iconSize,
-    {
-      anchor: new api.Size(size / 2, size),
-      imageSize: iconSize,
-    },
-  );
+  return new api.Icon({
+    image: markerSvg(
+      BUILDING_CATEGORY_BY_ID[building.category].color,
+      selected,
+    ),
+    size: iconSize,
+    imageSize: iconSize,
+  });
+};
+
+/** 图钉尖对准坐标：高德的 offset 是图片左上角相对锚点的位移。 */
+const markerOffset = (api: AmapApi, selected: boolean) => {
+  const size = MARKER_SIZE[selected ? 'selected' : 'normal'];
+  return new api.Pixel(-size / 2, -size * MARKER_TIP_RATIO);
 };
 
 const MapSurface = ({
@@ -107,7 +115,7 @@ const MapSurface = ({
   onSelect: (building: Building) => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const markersRef = useRef(new Map<string, BaiduMarker>());
+  const markersRef = useRef(new Map<string, AmapMarker>());
   const selectedRef = useRef(selected);
   const previousSelectedIdRef = useRef<string | null>(selected?.id ?? null);
   const { theme } = usePreferencesStore();
@@ -117,121 +125,74 @@ const MapSurface = ({
   const centeredCampusIdRef = useRef(campus.id);
   const [runtime, setRuntime] = useState<MapRuntime | null>(null);
   const [status, setStatus] = useState<MapStatus>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
   const [retryKey, setRetryKey] = useState(0);
-  const [themeShifting, setThemeShifting] = useState(false);
+  const [themePhase, setThemePhase] = useState<ThemePhase>('idle');
+  const coverDoneRef = useRef<(() => void) | null>(null);
   campusRef.current = campus;
   themeRef.current = theme;
   selectedRef.current = selected;
 
   useEffect(() => {
     const container = containerRef.current;
-    const ak = import.meta.env.VITE_BAIDU_MAP_AK?.trim();
+    const key = import.meta.env.VITE_AMAP_KEY?.trim();
     if (!container) return;
-    if (!ak) {
+    if (!key) {
+      console.error('缺少 VITE_AMAP_KEY，校园地图无法初始化');
       setStatus('error');
-      setErrorMessage('尚未配置百度地图 AK');
       return;
     }
 
-    let activeMap: BaiduMap | null = null;
+    let activeMap: AmapMap | null = null;
     let firstPaintTimer: number | undefined;
-    let trackpadDelta = 0;
-    let safariStartZoom: number | null = null;
-    let safariAppliedZoom: number | null = null;
-    const handleTrackpadPinch = (event: WheelEvent) => {
-      if (!event.ctrlKey) return;
-      event.preventDefault();
-      trackpadDelta +=
-        event.deltaMode === WheelEvent.DOM_DELTA_LINE
-          ? event.deltaY * 16
-          : event.deltaY;
-      if (!(activeMap && Math.abs(trackpadDelta) >= 25)) return;
-      activeMap.setZoom(activeMap.getZoom() - Math.sign(trackpadDelta));
-      trackpadDelta = 0;
-    };
-    const handleSafariPinchStart = (event: Event) => {
-      event.preventDefault();
-      safariStartZoom = activeMap?.getZoom() ?? null;
-      safariAppliedZoom = safariStartZoom;
-    };
-    const handleSafariPinchChange = (event: Event) => {
-      event.preventDefault();
-      if (!(activeMap && safariStartZoom !== null)) return;
-      const scale = (event as Event & { scale?: number }).scale;
-      if (!(typeof scale === 'number' && scale > 0)) return;
-      const nextZoom = safariStartZoom + Math.round(Math.log2(scale) * 2);
-      if (nextZoom === safariAppliedZoom) return;
-      activeMap.setZoom(nextZoom);
-      safariAppliedZoom = nextZoom;
-    };
-    container.addEventListener('wheel', handleTrackpadPinch, {
-      passive: false,
-    });
-    container.addEventListener('gesturestart', handleSafariPinchStart);
-    container.addEventListener('gesturechange', handleSafariPinchChange);
 
     let active = true;
     setRuntime(null);
     setStatus('loading');
-    setErrorMessage('');
-    void loadBaiduMap(ak)
+    void loadAmap(key)
       .then((api) => {
         if (!active) return;
         const initialCampus = campusRef.current;
-        const center = parseCoord(initialCampus.center);
-        const map = new api.Map(container, { enableMapClick: false });
-        activeMap = map;
-        map.centerAndZoom(
-          new api.Point(center.lng, center.lat),
-          initialCampus.defaultZoom,
-        );
-        map.setMapStyleV2({
-          styleJson: BAIDU_MAP_STYLES[themeRef.current],
+        const map = new api.Map(container, {
+          center: initialCampus.center,
+          zoom: initialCampus.defaultZoom,
+          mapStyle: MAP_STYLES[themeRef.current],
+          viewMode: '2D',
+          scrollWheel: true,
         });
-        map.enableDragging();
-        map.enableInertialDragging();
-        map.enablePinchToZoom();
-        map.enableScrollWheelZoom(true);
-        // 百度默认逐级跳变，开了才会在级别之间做动画过渡。
-        map.enableContinuousZoom();
+        activeMap = map;
         appliedThemeRef.current = themeRef.current;
         centeredCampusIdRef.current = initialCampus.id;
 
         // 底图画完之前画布是空的，让占位层一直盖着，别把空画布露给用户。
         const reveal = () => {
           window.clearTimeout(firstPaintTimer);
-          map.removeEventListener('tilesloaded', reveal);
+          map.off('complete', reveal);
           if (active) setStatus('ready');
         };
-        map.addEventListener('tilesloaded', reveal);
+        map.on('complete', reveal);
         firstPaintTimer = window.setTimeout(reveal, FIRST_PAINT_TIMEOUT_MS);
 
         setRuntime({ api, map });
       })
       .catch((error: unknown) => {
         if (!active) return;
+        console.error(error);
         setStatus('error');
-        setErrorMessage(
-          error instanceof Error ? error.message : '百度地图加载失败',
-        );
       });
 
     return () => {
       active = false;
-      activeMap = null;
       window.clearTimeout(firstPaintTimer);
-      container.removeEventListener('wheel', handleTrackpadPinch);
-      container.removeEventListener('gesturestart', handleSafariPinchStart);
-      container.removeEventListener('gesturechange', handleSafariPinchChange);
-      container.replaceChildren();
+      // WebGL 上下文和事件都挂在实例上，直接清 DOM 会漏掉这些。
+      activeMap?.destroy();
+      activeMap = null;
     };
   }, [retryKey]);
 
   useEffect(() => {
     if (!runtime || appliedThemeRef.current === theme) return;
     const applyStyle = () => {
-      runtime.map.setMapStyleV2({ styleJson: BAIDU_MAP_STYLES[theme] });
+      runtime.map.setMapStyle(MAP_STYLES[theme]);
       appliedThemeRef.current = theme;
     };
     // 底图是一次性重绘，直接换色会在页面其余部分还在过渡时先跳一帧。
@@ -240,27 +201,35 @@ const MapSurface = ({
       applyStyle();
       return;
     }
-    setThemeShifting(true);
+    setThemePhase('covering');
+    // setMapStyle 没有完成回调，内置样式也不走网络，重绘就在下一帧。
+    // 所以遮罩盖满（transitionend）就换色，再等一帧确认新底图已上屏。
+    let frame = 0;
     const timer = window.setTimeout(() => {
       applyStyle();
-      setThemeShifting(false);
+      frame = window.requestAnimationFrame(() => setThemePhase('revealing'));
     }, THEME_COVER_MS);
-    return () => window.clearTimeout(timer);
+    coverDoneRef.current = () => {
+      window.clearTimeout(timer);
+      applyStyle();
+      frame = window.requestAnimationFrame(() => setThemePhase('revealing'));
+    };
+    return () => {
+      window.clearTimeout(timer);
+      window.cancelAnimationFrame(frame);
+      coverDoneRef.current = null;
+    };
   }, [runtime, theme]);
 
   useEffect(() => {
     if (!runtime || centeredCampusIdRef.current === campus.id) return;
-    const center = parseCoord(campus.center);
-    runtime.map.centerAndZoom(
-      new runtime.api.Point(center.lng, center.lat),
-      campus.defaultZoom,
-    );
+    runtime.map.setZoomAndCenter(campus.defaultZoom, campus.center);
     centeredCampusIdRef.current = campus.id;
   }, [campus, runtime]);
 
   useEffect(() => {
     if (!runtime) return;
-    runtime.map.clearOverlays();
+    runtime.map.clearMap();
     markersRef.current.clear();
     previousSelectedIdRef.current = selectedRef.current?.id ?? null;
   }, [runtime]);
@@ -270,21 +239,21 @@ const MapSurface = ({
     const nextIds = new Set(buildings.map((building) => building.id));
     for (const [id, marker] of markersRef.current) {
       if (nextIds.has(id)) continue;
-      runtime.map.removeOverlay(marker);
+      runtime.map.remove(marker);
       markersRef.current.delete(id);
     }
 
     for (const building of buildings) {
       if (markersRef.current.has(building.id)) continue;
-      const coord = parseCoord(building.coord);
-      const point = new runtime.api.Point(coord.lng, coord.lat);
       const isSelected = building.id === selectedRef.current?.id;
-      const marker = new runtime.api.Marker(point, {
+      const marker = new runtime.api.Marker({
+        position: building.coord,
         icon: markerIcon(runtime.api, building, isSelected),
+        offset: markerOffset(runtime.api, isSelected),
         title: building.name,
       });
-      marker.addEventListener('click', () => onSelect(building));
-      runtime.map.addOverlay(marker);
+      marker.on('click', () => onSelect(building));
+      runtime.map.add(marker);
       markersRef.current.set(building.id, marker);
     }
   }, [buildings, onSelect, runtime]);
@@ -298,71 +267,58 @@ const MapSurface = ({
       const marker = markersRef.current.get(id);
       const building = BUILDINGS.find((item) => item.id === id);
       if (marker && building) {
-        marker.setIcon(
-          markerIcon(runtime.api, building, id === nextSelectedId),
-        );
+        const isSelected = id === nextSelectedId;
+        marker.setIcon(markerIcon(runtime.api, building, isSelected));
+        marker.setOffset(markerOffset(runtime.api, isSelected));
       }
     }
     previousSelectedIdRef.current = nextSelectedId;
     if (!selected) return;
-    const coord = parseCoord(selected.coord);
-    runtime.map.panTo(new runtime.api.Point(coord.lng, coord.lat));
+    runtime.map.panTo(selected.coord);
   }, [runtime, selected]);
 
-  const zoom = (delta: number) => {
-    if (!runtime) return;
-    runtime.map.setZoom(runtime.map.getZoom() + delta);
-  };
-  const missingAk = errorMessage === '尚未配置百度地图 AK';
-
   return (
-    <div className="relative h-full min-w-0 overflow-hidden bg-paper [&_.BMap_cpyCtrl]:z-5! [&_.anchorBL]:z-5!">
-      {/* `bg-paper!` 压掉百度写在容器上的米白内联底色，空画布期间不再是一片白 */}
+    <div className="relative h-full min-w-0 overflow-hidden bg-paper [&_.amap-copyright]:z-5! [&_.amap-logo]:z-5!">
       <div
         ref={containerRef}
-        className="absolute inset-0 touch-none overscroll-contain bg-paper!"
+        className="absolute inset-0 overscroll-contain bg-paper!"
         aria-label="校园地图"
       />
 
       <div
         aria-hidden
+        onTransitionEnd={() => {
+          if (themePhase === 'covering') coverDoneRef.current?.();
+          else if (themePhase === 'revealing') setThemePhase('idle');
+        }}
         className={cn(
           'pointer-events-none absolute inset-0 z-5 bg-paper transition-opacity ease-out',
-          themeShifting ? 'opacity-100 duration-150' : 'opacity-0 duration-300',
+          themePhase === 'covering'
+            ? 'opacity-100 duration-2000'
+            : 'opacity-0 duration-2000',
         )}
       />
 
       {status !== 'ready' ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-paper p-6">
-          <div className="max-w-sm border border-line bg-panel/95 px-6 py-5 text-center shadow-xl backdrop-blur">
-            <Compass
-              size={28}
-              className={cn(
-                'mx-auto mb-3 text-primary',
-                status === 'loading' && 'animate-spin',
-              )}
-              aria-hidden
-            />
-            <p className="m-0 font-display text-lg font-semibold text-ink">
-              {status === 'error' ? '地图暂时不可用' : '正在展开校园坐标'}
-            </p>
-            <p className="mt-1.5 mb-0 text-sm text-muted">
-              {status === 'error'
-                ? missingAk
-                  ? `${errorMessage}。请设置 VITE_BAIDU_MAP_AK 后重试。`
-                  : errorMessage
-                : '仅在打开本页时加载百度地图资源。'}
-            </p>
-            {status === 'error' && !missingAk ? (
+          {status === 'error' ? (
+            <div className="text-center">
+              <p className="m-0 font-medium text-ink">地图暂时不可用</p>
               <button
                 type="button"
-                className="mt-4 h-8 rounded border border-line bg-paper px-3 text-xs font-medium text-ink hover:border-primary hover:text-primary"
+                className="mt-3 h-8 rounded border border-line bg-panel px-3 text-xs font-medium text-ink hover:border-primary hover:text-primary"
                 onClick={() => setRetryKey((key) => key + 1)}
               >
                 重新加载
               </button>
-            ) : null}
-          </div>
+            </div>
+          ) : (
+            <ActivitySpinner
+              size={28}
+              className="text-muted"
+              label="地图加载中"
+            />
+          )}
         </div>
       ) : null}
 
@@ -371,7 +327,7 @@ const MapSurface = ({
           type="button"
           className="grid h-10 w-10 place-items-center text-ink hover:bg-mist"
           aria-label="放大地图"
-          onClick={() => zoom(1)}
+          onClick={() => runtime?.map.zoomIn()}
         >
           <Plus size={17} />
         </button>
@@ -380,7 +336,7 @@ const MapSurface = ({
           type="button"
           className="grid h-10 w-10 place-items-center text-ink hover:bg-mist"
           aria-label="缩小地图"
-          onClick={() => zoom(-1)}
+          onClick={() => runtime?.map.zoomOut()}
         >
           <Minus size={17} />
         </button>

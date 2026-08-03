@@ -21,15 +21,18 @@ export type BuildingCategory =
   | 'food'
   | 'express';
 
-/** 百度地图 BD09 坐标，依次为经度、纬度。 */
-export type Bd09Coordinate = readonly [longitude: number, latitude: number];
+/**
+ * 高德 GCJ-02 坐标，依次为经度、纬度。底图用的就是这套，其他地图厂商在
+ * `navigation.ts` 里现算——转换只发生在外链上，落点不受累积误差影响。
+ */
+export type Gcj02Coordinate = readonly [longitude: number, latitude: number];
 
 export interface Campus {
   readonly id: CampusId;
   readonly campusName: string;
   readonly siteName: string;
-  readonly center: Bd09Coordinate;
-  /** 百度地图初始缩放级别；数值越大，视野越近。 */
+  readonly center: Gcj02Coordinate;
+  /** 初始缩放级别；数值越大，视野越近。 */
   readonly defaultZoom: number;
 }
 
@@ -38,7 +41,7 @@ export interface Building {
   readonly name: string;
   readonly category: BuildingCategory;
   readonly campusId: CampusId;
-  readonly coord: Bd09Coordinate;
+  readonly coord: Gcj02Coordinate;
   readonly desc: string;
 }
 
@@ -131,35 +134,35 @@ export const CAMPUSES = [
     id: 'd',
     campusName: '科学城校区',
     siteName: '虎溪校园',
-    center: [106.305322, 29.602937],
+    center: [106.298877, 29.596799],
     defaultZoom: 16,
   },
   {
     id: 'a',
     campusName: '沙坪坝校区',
     siteName: 'A校园',
-    center: [106.475693, 29.570419],
+    center: [106.469183, 29.564402],
     defaultZoom: 16,
   },
   {
     id: 'b',
     campusName: '沙坪坝校区',
     siteName: 'B校园',
-    center: [106.465364, 29.573597],
+    center: [106.458901, 29.567418],
     defaultZoom: 16,
   },
   {
     id: 'c',
     campusName: '沙坪坝校区',
     siteName: 'C校园',
-    center: [106.460071, 29.566519],
+    center: [106.453622, 29.560272],
     defaultZoom: 16,
   },
   {
     id: 'e',
     campusName: '两江校区',
     siteName: '卓越工程师学院',
-    center: [106.815609, 29.74551],
+    center: [106.809205, 29.73923],
     defaultZoom: 17,
   },
 ] as const satisfies readonly Campus[];
@@ -178,7 +181,7 @@ export const BUILDINGS = [
     name: '第一教学楼（D1/一教）',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.308183, 29.601383],
+    coord: [106.301748, 29.595204],
     desc: '虎溪校区主教学楼，承担大部分本科生公共课程教学。',
   },
   {
@@ -186,7 +189,7 @@ export const BUILDINGS = [
     name: '综合楼 （DZ）',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.305953, 29.602203],
+    coord: [106.29951, 29.596056],
     desc: '本科教学与考研自习常用楼栋。',
   },
   {
@@ -194,7 +197,7 @@ export const BUILDINGS = [
     name: '艺术楼（DY）',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.31041, 29.599627],
+    coord: [106.303982, 29.593418],
     desc: '艺术楼，上思政课较多',
   },
   {
@@ -202,7 +205,7 @@ export const BUILDINGS = [
     name: '理科大楼',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.303677, 29.596944],
+    coord: [106.29722, 29.59083],
     desc: '理工科基础课程主要授课场所。',
   },
   {
@@ -210,7 +213,7 @@ export const BUILDINGS = [
     name: '信息大楼',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.312201, 29.602713],
+    coord: [106.305781, 29.596483],
     desc: '新建教学楼，配备现代化智慧教室。',
   },
   {
@@ -218,7 +221,7 @@ export const BUILDINGS = [
     name: '第一实验楼',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.310889, 29.601289],
+    coord: [106.304464, 29.595075],
     desc: '物理、化学、生物等基础理科实验教学中心。',
   },
   {
@@ -226,7 +229,7 @@ export const BUILDINGS = [
     name: '第二实验楼',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.306831, 29.597946],
+    coord: [106.300388, 29.591785],
     desc: '物理、化学、生物等基础理科实验教学中心。',
   },
   {
@@ -234,7 +237,7 @@ export const BUILDINGS = [
     name: '学生交叉创新中心',
     category: 'teaching',
     campusId: 'd',
-    coord: [106.299663, 29.599696],
+    coord: [106.29319, 29.593647],
     desc: '金工实习课程教室与竞赛实验室',
   },
   {
@@ -242,7 +245,7 @@ export const BUILDINGS = [
     name: '虎溪图书馆',
     category: 'library',
     campusId: 'd',
-    coord: [106.308386, 29.59842],
+    coord: [106.301949, 29.592237],
     desc: '虎溪校区中心图书馆，馆藏丰富，设有多层自习区与研讨室。',
   },
   {
@@ -250,7 +253,7 @@ export const BUILDINGS = [
     name: '重庆大学科学中心',
     category: 'admin',
     campusId: 'd',
-    coord: [106.295543, 29.603066],
+    coord: [106.289054, 29.597086],
     desc: '虎溪校区机械学院行政办公中心，研究生办公处。',
   },
   {
@@ -258,7 +261,7 @@ export const BUILDINGS = [
     name: '梅园一栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306951, 29.602611],
+    coord: [106.300512, 29.596449],
     desc: '又称梅一，梅园宿舍区，毗邻梅园食堂。',
   },
   {
@@ -266,7 +269,7 @@ export const BUILDINGS = [
     name: '梅园二栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306925, 29.603065],
+    coord: [106.300486, 29.596904],
     desc: '梅园宿舍区，本科生公寓。',
   },
   {
@@ -274,7 +277,7 @@ export const BUILDINGS = [
     name: '梅园三栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306623, 29.603605],
+    coord: [106.300183, 29.597448],
     desc: '梅园宿舍区，本科生公寓。',
   },
   {
@@ -282,7 +285,7 @@ export const BUILDINGS = [
     name: '梅园四栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306933, 29.604076],
+    coord: [106.300495, 29.597915],
     desc: '梅园宿舍区，本科生公寓。',
   },
   {
@@ -290,7 +293,7 @@ export const BUILDINGS = [
     name: '梅园五栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.30621, 29.603979],
+    coord: [106.299769, 29.597828],
     desc: '梅园宿舍区，本科生公寓。',
   },
   {
@@ -298,7 +301,7 @@ export const BUILDINGS = [
     name: '梅园六栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.30593, 29.60354],
+    coord: [106.299487, 29.597393],
     desc: '梅园宿舍区，本科生公寓。',
   },
   {
@@ -306,7 +309,7 @@ export const BUILDINGS = [
     name: '梅园七栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306005, 29.603131],
+    coord: [106.299562, 29.596983],
     desc: '梅园宿舍区，本科生公寓。',
   },
   {
@@ -314,7 +317,7 @@ export const BUILDINGS = [
     name: '兰园一栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306569, 29.595865],
+    coord: [106.300123, 29.589707],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -322,7 +325,7 @@ export const BUILDINGS = [
     name: '兰园二栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306897, 29.595575],
+    coord: [106.300452, 29.589412],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -330,7 +333,7 @@ export const BUILDINGS = [
     name: '兰园三栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.305421, 29.595715],
+    coord: [106.29897, 29.589574],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -338,7 +341,7 @@ export const BUILDINGS = [
     name: '兰园四栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306019, 29.59542],
+    coord: [106.299571, 29.58927],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -346,7 +349,7 @@ export const BUILDINGS = [
     name: '兰园五栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.306464, 29.594962],
+    coord: [106.300017, 29.588805],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -354,7 +357,7 @@ export const BUILDINGS = [
     name: '兰园六栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.304718, 29.595112],
+    coord: [106.298264, 29.588981],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -362,7 +365,7 @@ export const BUILDINGS = [
     name: '兰园七栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.305274, 29.594625],
+    coord: [106.298822, 29.588486],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -370,7 +373,7 @@ export const BUILDINGS = [
     name: '兰园八栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.305715, 29.594382],
+    coord: [106.299264, 29.588236],
     desc: '兰园宿舍区，邻近运动场。',
   },
   {
@@ -378,7 +381,7 @@ export const BUILDINGS = [
     name: '竹园一栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.302523, 29.602896],
+    coord: [106.296065, 29.596801],
     desc: '竹园宿舍区，东侧生活组团。',
   },
   {
@@ -386,7 +389,7 @@ export const BUILDINGS = [
     name: '竹园二栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.303392, 29.603374],
+    coord: [106.296939, 29.597266],
     desc: '竹园宿舍区，靠近体育场。',
   },
   {
@@ -394,7 +397,7 @@ export const BUILDINGS = [
     name: '竹园三栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.303333, 29.603787],
+    coord: [106.29688, 29.59768],
     desc: '竹园宿舍区，靠近体育场。',
   },
   {
@@ -402,7 +405,7 @@ export const BUILDINGS = [
     name: '竹园四栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.302846, 29.604217],
+    coord: [106.296391, 29.598117],
     desc: '竹园宿舍区，靠近体育场。',
   },
   {
@@ -410,7 +413,7 @@ export const BUILDINGS = [
     name: '竹园五栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.30201, 29.604233],
+    coord: [106.295551, 29.598147],
     desc: '竹园宿舍区，靠近体育场。',
   },
   {
@@ -418,7 +421,7 @@ export const BUILDINGS = [
     name: '竹园六栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.302678, 29.603587],
+    coord: [106.296222, 29.59749],
     desc: '竹园宿舍区，靠近体育场。',
   },
   {
@@ -426,7 +429,7 @@ export const BUILDINGS = [
     name: '菊园博士生公寓',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.304167, 29.593651],
+    coord: [106.297709, 29.587528],
     desc: '菊园宿舍区，博士生宿舍。',
   },
   {
@@ -434,7 +437,7 @@ export const BUILDINGS = [
     name: '松园一栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.299995, 29.602379],
+    coord: [106.293526, 29.596325],
     desc: '松园宿舍区。',
   },
   {
@@ -442,7 +445,7 @@ export const BUILDINGS = [
     name: '松园二栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.300217, 29.60296],
+    coord: [106.293749, 29.596902],
     desc: '竹园宿舍区，靠近体育场。',
   },
   {
@@ -450,7 +453,7 @@ export const BUILDINGS = [
     name: '松园三栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.300283, 29.603407],
+    coord: [106.293816, 29.597348],
     desc: '松园宿舍区。',
   },
   {
@@ -458,7 +461,7 @@ export const BUILDINGS = [
     name: '松园四栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.300928, 29.603888],
+    coord: [106.294464, 29.597819],
     desc: '松园宿舍区，西南侧生活组团。',
   },
   {
@@ -466,7 +469,7 @@ export const BUILDINGS = [
     name: '松园五栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.301404, 29.60303],
+    coord: [106.294942, 29.596953],
     desc: '松园宿舍区，西南侧生活组团。',
   },
   {
@@ -474,7 +477,7 @@ export const BUILDINGS = [
     name: '松园六栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.301689, 29.602663],
+    coord: [106.295228, 29.596582],
     desc: '松园宿舍区，西南侧生活组团。',
   },
   {
@@ -482,7 +485,7 @@ export const BUILDINGS = [
     name: '松园七栋',
     category: 'dormitory',
     campusId: 'd',
-    coord: [106.299794, 29.601364],
+    coord: [106.293323, 29.595313],
     desc: '松园宿舍区，西南侧生活组团。',
   },
   {
@@ -490,7 +493,7 @@ export const BUILDINGS = [
     name: '虎溪一食堂',
     category: 'canteen',
     campusId: 'd',
-    coord: [106.304634, 29.603403],
+    coord: [106.298186, 29.597275],
     desc: '梅园/竹园生活区食堂，提供川渝风味与简餐。',
   },
   {
@@ -498,7 +501,7 @@ export const BUILDINGS = [
     name: '虎溪二食堂',
     category: 'canteen',
     campusId: 'd',
-    coord: [106.301471, 29.602181],
+    coord: [106.295008, 29.596103],
     desc: '松园生活区食堂',
   },
   {
@@ -506,7 +509,7 @@ export const BUILDINGS = [
     name: '虎溪三食堂',
     category: 'canteen',
     campusId: 'd',
-    coord: [106.306056, 29.596334],
+    coord: [106.299609, 29.590184],
     desc: '贴近学生活动中心与兰园食堂。',
   },
   {
@@ -514,7 +517,7 @@ export const BUILDINGS = [
     name: '虎溪四食堂',
     category: 'canteen',
     campusId: 'd',
-    coord: [106.304827, 29.60433],
+    coord: [106.29838, 29.5982],
     desc: '清真食堂。',
   },
   {
@@ -522,7 +525,7 @@ export const BUILDINGS = [
     name: '虎溪校区体育中心（大体育馆）',
     category: 'sports',
     campusId: 'd',
-    coord: [106.312216, 29.603706],
+    coord: [106.305797, 29.597476],
     desc: '室内综合体育馆，篮球、羽毛球、体操等多功能场地。',
   },
   {
@@ -530,7 +533,7 @@ export const BUILDINGS = [
     name: '虎溪校区足球场与田径场',
     category: 'sports',
     campusId: 'd',
-    coord: [106.310054, 29.603261],
+    coord: [106.303627, 29.597057],
     desc: '标准400米田径场，含人造草坪足球场。',
   },
   {
@@ -538,7 +541,7 @@ export const BUILDINGS = [
     name: '梅园室外篮球场与网球场',
     category: 'sports',
     campusId: 'd',
-    coord: [106.308331, 29.603765],
+    coord: [106.301898, 29.597584],
     desc: '露天篮球场群与网球场，靠近梅园。',
   },
   {
@@ -546,7 +549,7 @@ export const BUILDINGS = [
     name: '梅园小足球场与乒乓球场',
     category: 'sports',
     campusId: 'd',
-    coord: [106.30831, 29.602765],
+    coord: [106.301876, 29.596584],
     desc: '露天小足球场与乒乓球场，靠近梅园。',
   },
   {
@@ -554,7 +557,7 @@ export const BUILDINGS = [
     name: '兰园运动场',
     category: 'sports',
     campusId: 'd',
-    coord: [106.303652, 29.594156],
+    coord: [106.297192, 29.588042],
     desc: '露天篮球场，羽毛球场与乒乓球场，靠近兰园。',
   },
   {
@@ -562,7 +565,7 @@ export const BUILDINGS = [
     name: '游泳池',
     category: 'sports',
     campusId: 'd',
-    coord: [106.299412, 29.600372],
+    coord: [106.292939, 29.594327],
     desc: '游泳考试时使用',
   },
   {
@@ -570,7 +573,7 @@ export const BUILDINGS = [
     name: '松园运动场',
     category: 'sports',
     campusId: 'd',
-    coord: [106.300991, 29.600967],
+    coord: [106.294525, 29.594896],
     desc: '露天篮球场，羽毛球场与乒乓球场，靠近松园',
   },
   {
@@ -578,7 +581,7 @@ export const BUILDINGS = [
     name: '虎溪校医院',
     category: 'hospital',
     campusId: 'd',
-    coord: [106.306738, 29.604426],
+    coord: [106.300299, 29.598268],
     desc: '校内社区医院，提供基础诊疗与急救服务。',
   },
   {
@@ -586,7 +589,7 @@ export const BUILDINGS = [
     name: '虎溪东门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.31291, 29.600404],
+    coord: [106.30649, 29.594166],
     desc: '面向大学城中路的主出入口。',
   },
   {
@@ -594,7 +597,7 @@ export const BUILDINGS = [
     name: '虎溪西一门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.299209, 29.601759],
+    coord: [106.292736, 29.595718],
     desc: '西侧主出入口，邻近松园，有很多好吃的。',
   },
   {
@@ -602,7 +605,7 @@ export const BUILDINGS = [
     name: '虎溪西二门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.298254, 29.598292],
+    coord: [106.291774, 29.592266],
     desc: '西侧次出入口，车辆可从这里进入。',
   },
   {
@@ -610,7 +613,7 @@ export const BUILDINGS = [
     name: '虎溪西三门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.298477, 29.594489],
+    coord: [106.291994, 29.588458],
     desc: '不常用到的门，而且也经常不开',
   },
   {
@@ -618,7 +621,7 @@ export const BUILDINGS = [
     name: '虎溪大北门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.307504, 29.604541],
+    coord: [106.301068, 29.598372],
     desc: '面向大学城南路的主出入口，去往熙街。',
   },
   {
@@ -626,7 +629,7 @@ export const BUILDINGS = [
     name: '虎溪小北门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.305388, 29.604452],
+    coord: [106.298944, 29.598313],
     desc: '拿外卖点',
   },
   {
@@ -634,7 +637,7 @@ export const BUILDINGS = [
     name: '虎溪北二门',
     category: 'gate',
     campusId: 'd',
-    coord: [106.310562, 29.60462],
+    coord: [106.304138, 29.59841],
     desc: '这个门基本上不开',
   },
   {
@@ -642,7 +645,7 @@ export const BUILDINGS = [
     name: '虎溪校车站',
     category: 'busstation',
     campusId: 'd',
-    coord: [106.309894, 29.602019],
+    coord: [106.303466, 29.595817],
     desc: '校车站，可从这里坐车',
   },
   {
@@ -650,7 +653,7 @@ export const BUILDINGS = [
     name: '理科楼乘车点',
     category: 'busstation',
     campusId: 'd',
-    coord: [106.304602, 29.595274],
+    coord: [106.298148, 29.589145],
     desc: '可从这里坐车',
   },
   {
@@ -658,7 +661,7 @@ export const BUILDINGS = [
     name: '虎溪花园南乘车点',
     category: 'busstation',
     campusId: 'd',
-    coord: [106.297267, 29.600322],
+    coord: [106.290784, 29.594313],
     desc: '可从这里坐车',
   },
   {
@@ -666,7 +669,7 @@ export const BUILDINGS = [
     name: '云湖',
     category: 'landmark',
     campusId: 'd',
-    coord: [106.309052, 29.599935],
+    coord: [106.302619, 29.593744],
     desc: '靠近图书馆，有天鹅出没',
   },
   {
@@ -674,7 +677,7 @@ export const BUILDINGS = [
     name: '缙湖',
     category: 'landmark',
     campusId: 'd',
-    coord: [106.305699, 29.599289],
+    coord: [106.299252, 29.593145],
     desc: '靠近图书馆，有天鹅出没',
   },
   {
@@ -682,7 +685,7 @@ export const BUILDINGS = [
     name: '虎溪小剧场/学生活动中心',
     category: 'theater',
     campusId: 'd',
-    coord: [106.305697, 29.596945],
+    coord: [106.299249, 29.5908],
     desc: '虎溪小剧场，也是学生活动中心所在地',
   },
   {
@@ -690,7 +693,7 @@ export const BUILDINGS = [
     name: '虎溪大剧场',
     category: 'theater',
     campusId: 'd',
-    coord: [106.304823, 29.596231],
+    coord: [106.29837, 29.590099],
     desc: '虎溪大剧场，学生活动与演出的地方',
   },
   {
@@ -698,7 +701,7 @@ export const BUILDINGS = [
     name: '电气学院楼',
     category: 'college',
     campusId: 'd',
-    coord: [106.302236, 29.594894],
+    coord: [106.295771, 29.588802],
     desc: '电气学院楼',
   },
   {
@@ -706,7 +709,7 @@ export const BUILDINGS = [
     name: '主教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.477151, 29.571786],
+    coord: [106.470635, 29.565793],
     desc: '主教学楼，用于行政办公和上课。',
   },
   {
@@ -714,7 +717,7 @@ export const BUILDINGS = [
     name: '第一教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.475113, 29.574064],
+    coord: [106.468608, 29.568038],
     desc: '第一教学楼。',
   },
   {
@@ -722,7 +725,7 @@ export const BUILDINGS = [
     name: '第二教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.474202, 29.575302],
+    coord: [106.467702, 29.569261],
     desc: '第二教学楼。',
   },
   {
@@ -730,7 +733,7 @@ export const BUILDINGS = [
     name: '第三教学楼/资源与安全学院',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.474202, 29.575302],
+    coord: [106.467702, 29.569261],
     desc: '第三教学楼，现为资安学院楼。',
   },
   {
@@ -738,7 +741,7 @@ export const BUILDINGS = [
     name: '第四教学楼/离退休工作处',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.47198, 29.574652],
+    coord: [106.46549, 29.568574],
     desc: '第四教学楼，现为离退休工作处。',
   },
   {
@@ -746,7 +749,7 @@ export const BUILDINGS = [
     name: '第五教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.473436, 29.572357],
+    coord: [106.466938, 29.566302],
     desc: '第五教学楼，为主要教学楼之一。',
   },
   {
@@ -754,7 +757,7 @@ export const BUILDINGS = [
     name: '第六教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.472744, 29.570673],
+    coord: [106.466247, 29.564607],
     desc: '第六教学楼。',
   },
   {
@@ -762,7 +765,7 @@ export const BUILDINGS = [
     name: '第七教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.474617, 29.574543],
+    coord: [106.468115, 29.568509],
     desc: '第七教学楼，原机械与运载工程学院楼，现已搬迁至科学中心。',
   },
   {
@@ -770,7 +773,7 @@ export const BUILDINGS = [
     name: '第八教学楼',
     category: 'teaching',
     campusId: 'a',
-    coord: [106.471975, 29.572471],
+    coord: [106.465483, 29.566393],
     desc: '第八教学楼，为主要教学楼之一。',
   },
   {
@@ -778,7 +781,7 @@ export const BUILDINGS = [
     name: '学生一宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.473649, 29.570071],
+    coord: [106.467148, 29.56402],
     desc: '学生一宿舍，在装修中。',
   },
   {
@@ -786,7 +789,7 @@ export const BUILDINGS = [
     name: '学生二宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.474297, 29.569561],
+    coord: [106.467793, 29.56352],
     desc: '学生二宿舍，在装修中。',
   },
   {
@@ -794,7 +797,7 @@ export const BUILDINGS = [
     name: '学生三宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.475043, 29.569073],
+    coord: [106.468535, 29.563045],
     desc: '学生三宿舍。',
   },
   {
@@ -802,7 +805,7 @@ export const BUILDINGS = [
     name: '学生四宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.475677, 29.568641],
+    coord: [106.469166, 29.562623],
     desc: '学生四宿舍。',
   },
   {
@@ -810,7 +813,7 @@ export const BUILDINGS = [
     name: '学生五宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.475663, 29.566899],
+    coord: [106.469151, 29.560881],
     desc: '学生五宿舍。',
   },
   {
@@ -818,7 +821,7 @@ export const BUILDINGS = [
     name: '学生六宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.475672, 29.567708],
+    coord: [106.46916, 29.56169],
     desc: '学生六宿舍。',
   },
   {
@@ -826,7 +829,7 @@ export const BUILDINGS = [
     name: '学生七宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.473221, 29.568604],
+    coord: [106.466721, 29.562545],
     desc: '学生七宿舍。',
   },
   {
@@ -834,7 +837,7 @@ export const BUILDINGS = [
     name: '学生八宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.473853, 29.569068],
+    coord: [106.46735, 29.56302],
     desc: '学生八宿舍。',
   },
   {
@@ -842,7 +845,7 @@ export const BUILDINGS = [
     name: '学生九宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.475663, 29.566899],
+    coord: [106.469151, 29.560881],
     desc: '学生九宿舍。',
   },
   {
@@ -850,7 +853,7 @@ export const BUILDINGS = [
     name: '学生十宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.473399, 29.56782],
+    coord: [106.466898, 29.561764],
     desc: '学生十宿舍。',
   },
   {
@@ -858,7 +861,7 @@ export const BUILDINGS = [
     name: '学生十一宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.47421, 29.568362],
+    coord: [106.467705, 29.56232],
     desc: '学生十一宿舍。',
   },
   {
@@ -866,7 +869,7 @@ export const BUILDINGS = [
     name: '学生十二宿舍',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.474734, 29.568027],
+    coord: [106.468227, 29.561993],
     desc: '学生十二宿舍。',
   },
   {
@@ -874,7 +877,7 @@ export const BUILDINGS = [
     name: '学生宿舍ACD楼',
     category: 'dormitory',
     campusId: 'a',
-    coord: [106.474028, 29.567815],
+    coord: [106.467524, 29.561769],
     desc: '学生宿舍ACD楼。',
   },
   {
@@ -882,7 +885,7 @@ export const BUILDINGS = [
     name: '学生一食堂',
     category: 'canteen',
     campusId: 'a',
-    coord: [106.473377, 29.569368],
+    coord: [106.466877, 29.563312],
     desc: '学生一食堂，一楼有麦当劳。',
   },
   {
@@ -890,7 +893,7 @@ export const BUILDINGS = [
     name: '民主湖食堂（学生四食堂）',
     category: 'canteen',
     campusId: 'a',
-    coord: [106.475189, 29.568461],
+    coord: [106.46868, 29.562435],
     desc: '民主湖食堂。',
   },
   {
@@ -898,7 +901,7 @@ export const BUILDINGS = [
     name: '柏树林食堂（学生三食堂）',
     category: 'canteen',
     campusId: 'a',
-    coord: [106.476409, 29.566921],
+    coord: [106.469893, 29.560915],
     desc: '柏树林食堂。',
   },
   {
@@ -906,7 +909,7 @@ export const BUILDINGS = [
     name: '东林教工食堂',
     category: 'canteen',
     campusId: 'a',
-    coord: [106.47109, 29.571873],
+    coord: [106.464602, 29.56578],
     desc: '东林食堂。',
   },
   {
@@ -914,7 +917,7 @@ export const BUILDINGS = [
     name: '新华园食堂',
     category: 'canteen',
     campusId: 'a',
-    coord: [106.473872, 29.575956],
+    coord: [106.467374, 29.56991],
     desc: '新华园食堂。',
   },
   {
@@ -922,7 +925,7 @@ export const BUILDINGS = [
     name: 'A区图书馆',
     category: 'library',
     campusId: 'a',
-    coord: [106.474846, 29.571433],
+    coord: [106.46834, 29.565402],
     desc: 'A区图书馆，设有多层自习区与研讨室。',
   },
   {
@@ -930,7 +933,7 @@ export const BUILDINGS = [
     name: '思群广场',
     category: 'sports',
     campusId: 'a',
-    coord: [106.474828, 29.57036],
+    coord: [106.468322, 29.564328],
     desc: '室外操场，足球场。',
   },
   {
@@ -938,7 +941,7 @@ export const BUILDINGS = [
     name: '团结广场',
     category: 'sports',
     campusId: 'a',
-    coord: [106.475678, 29.572301],
+    coord: [106.469169, 29.566284],
     desc: '室外操场，足球场。',
   },
   {
@@ -946,7 +949,7 @@ export const BUILDINGS = [
     name: '篮球场（靠近钟塔）',
     category: 'sports',
     campusId: 'a',
-    coord: [106.474631, 29.573157],
+    coord: [106.468128, 29.567122],
     desc: '靠近钟塔的篮球场。',
   },
   {
@@ -954,7 +957,7 @@ export const BUILDINGS = [
     name: '风雨操场',
     category: 'sports',
     campusId: 'a',
-    coord: [106.478504, 29.570462],
+    coord: [106.471981, 29.564492],
     desc: '靠近体育馆。',
   },
   {
@@ -962,7 +965,7 @@ export const BUILDINGS = [
     name: '体育馆',
     category: 'sports',
     campusId: 'a',
-    coord: [106.478751, 29.570245],
+    coord: [106.472226, 29.564279],
     desc: '可在重大后勤-场馆预约中预约羽毛球，乒乓球场地。',
   },
   {
@@ -970,7 +973,7 @@ export const BUILDINGS = [
     name: '篮球场/羽毛球场/网球场（靠近图书馆）',
     category: 'sports',
     campusId: 'a',
-    coord: [106.473414, 29.571735],
+    coord: [106.466915, 29.56568],
     desc: '靠近图书馆的篮球场，羽毛球场和网球场',
   },
   {
@@ -978,7 +981,7 @@ export const BUILDINGS = [
     name: '乒乓球场',
     category: 'sports',
     campusId: 'a',
-    coord: [106.475926, 29.571084],
+    coord: [106.469415, 29.565071],
     desc: '室外乒乓球场，点位为近似位置',
   },
   {
@@ -986,7 +989,7 @@ export const BUILDINGS = [
     name: '办公楼',
     category: 'admin',
     campusId: 'a',
-    coord: [106.475255, 29.571588],
+    coord: [106.468748, 29.565564],
     desc: 'A区办公楼，也为行政处',
   },
   {
@@ -994,7 +997,7 @@ export const BUILDINGS = [
     name: '办公楼',
     category: 'admin',
     campusId: 'a',
-    coord: [106.475524, 29.571417],
+    coord: [106.469015, 29.565397],
     desc: 'A区财务处，投递报销单的地方',
   },
   {
@@ -1002,7 +1005,7 @@ export const BUILDINGS = [
     name: 'A区中门',
     category: 'gate',
     campusId: 'a',
-    coord: [106.473514, 29.567765],
+    coord: [106.467012, 29.561711],
     desc: '靠近十舍；设门禁，午夜后关闭',
   },
   {
@@ -1010,7 +1013,7 @@ export const BUILDINGS = [
     name: 'A区南一门',
     category: 'gate',
     campusId: 'a',
-    coord: [106.47663, 29.565992],
+    coord: [106.470113, 29.55999],
     desc: '面向沙中路的出入口，这个门没有门禁，也可出入车辆。',
   },
   {
@@ -1018,7 +1021,7 @@ export const BUILDINGS = [
     name: 'A区东一门（柏树林门）',
     category: 'gate',
     campusId: 'a',
-    coord: [106.478657, 29.567505],
+    coord: [106.472131, 29.561537],
     desc: '面向松林路的出入口。',
   },
   {
@@ -1026,7 +1029,7 @@ export const BUILDINGS = [
     name: 'A区东门（校医院门）',
     category: 'gate',
     campusId: 'a',
-    coord: [106.478954, 29.568852],
+    coord: [106.472428, 29.562889],
     desc: '校医院旁边的门，进出校医院可走这里。',
   },
   {
@@ -1034,7 +1037,7 @@ export const BUILDINGS = [
     name: 'A区东南门（体育学院门）',
     category: 'gate',
     campusId: 'a',
-    coord: [106.4792, 29.569626],
+    coord: [106.472673, 29.563667],
     desc: '靠近体育学院。',
   },
   {
@@ -1042,7 +1045,7 @@ export const BUILDINGS = [
     name: '江边电梯',
     category: 'gate',
     campusId: 'a',
-    coord: [106.478471, 29.571332],
+    coord: [106.471948, 29.565361],
     desc: '可从这里进出校园，下电梯直达江边。',
   },
   {
@@ -1050,7 +1053,7 @@ export const BUILDINGS = [
     name: 'A区西北门',
     category: 'gate',
     campusId: 'a',
-    coord: [106.471501, 29.576207],
+    coord: [106.465015, 29.570122],
     desc: '西北门。',
   },
   {
@@ -1058,7 +1061,7 @@ export const BUILDINGS = [
     name: 'A区正大门（正门）',
     category: 'gate',
     campusId: 'a',
-    coord: [106.470666, 29.573517],
+    coord: [106.464181, 29.567418],
     desc: 'A校园正门',
   },
   {
@@ -1066,7 +1069,7 @@ export const BUILDINGS = [
     name: '中渡芋圆',
     category: 'food',
     campusId: 'a',
-    coord: [106.479402, 29.570742],
+    coord: [106.472875, 29.564787],
     desc: 'A校园附近甜品店',
   },
   {
@@ -1074,7 +1077,7 @@ export const BUILDINGS = [
     name: '第二综合楼',
     category: 'teaching',
     campusId: 'b',
-    coord: [106.467958, 29.572903],
+    coord: [106.461484, 29.566761],
     desc: 'B校园主要公共教学楼',
   },
   {
@@ -1082,7 +1085,7 @@ export const BUILDINGS = [
     name: '第一综合楼',
     category: 'teaching',
     campusId: 'b',
-    coord: [106.466218, 29.572284],
+    coord: [106.459751, 29.566117],
     desc: '教学与办公楼',
   },
   {
@@ -1090,7 +1093,7 @@ export const BUILDINGS = [
     name: '建工馆',
     category: 'teaching',
     campusId: 'b',
-    coord: [106.467483, 29.573613],
+    coord: [106.461012, 29.567465],
     desc: 'B校园标志性教学建筑',
   },
   {
@@ -1098,7 +1101,7 @@ export const BUILDINGS = [
     name: 'B区图书馆',
     category: 'library',
     campusId: 'b',
-    coord: [106.467001, 29.572707],
+    coord: [106.460531, 29.566551],
     desc: 'B校园图书馆',
   },
   {
@@ -1106,7 +1109,7 @@ export const BUILDINGS = [
     name: '建筑城规学院',
     category: 'college',
     campusId: 'b',
-    coord: [106.468095, 29.574304],
+    coord: [106.461622, 29.568165],
     desc: '建筑城规学院院楼',
   },
   {
@@ -1114,7 +1117,7 @@ export const BUILDINGS = [
     name: '管理科学与房地产学院',
     category: 'college',
     campusId: 'b',
-    coord: [106.467033, 29.57189],
+    coord: [106.460562, 29.565734],
     desc: '管理科学与房地产学院院楼',
   },
   {
@@ -1122,7 +1125,7 @@ export const BUILDINGS = [
     name: '材料楼',
     category: 'college',
     campusId: 'b',
-    coord: [106.468962, 29.573493],
+    coord: [106.462484, 29.567367],
     desc: '材料相关教学科研楼',
   },
   {
@@ -1130,7 +1133,7 @@ export const BUILDINGS = [
     name: 'B区校医院',
     category: 'hospital',
     campusId: 'b',
-    coord: [106.469022, 29.574047],
+    coord: [106.462545, 29.567922],
     desc: 'B校园医疗服务点',
   },
   {
@@ -1138,7 +1141,7 @@ export const BUILDINGS = [
     name: 'B区足球场',
     category: 'sports',
     campusId: 'b',
-    coord: [106.466389, 29.574076],
+    coord: [106.459923, 29.567912],
     desc: '田径与足球场',
   },
   {
@@ -1146,7 +1149,7 @@ export const BUILDINGS = [
     name: '学生二食堂',
     category: 'canteen',
     campusId: 'b',
-    coord: [106.465294, 29.570756],
+    coord: [106.458829, 29.564575],
     desc: 'B校园主要食堂',
   },
   {
@@ -1154,7 +1157,7 @@ export const BUILDINGS = [
     name: '学生三舍',
     category: 'dormitory',
     campusId: 'b',
-    coord: [106.464118, 29.57085],
+    coord: [106.457658, 29.564653],
     desc: '学生宿舍',
   },
   {
@@ -1162,7 +1165,7 @@ export const BUILDINGS = [
     name: '学生四舍',
     category: 'dormitory',
     campusId: 'b',
-    coord: [106.463424, 29.571134],
+    coord: [106.456967, 29.564928],
     desc: '学生宿舍',
   },
   {
@@ -1170,7 +1173,7 @@ export const BUILDINGS = [
     name: '第一教学楼',
     category: 'teaching',
     campusId: 'c',
-    coord: [106.46149, 29.5662],
+    coord: [106.455036, 29.559969],
     desc: 'C校园公共教学楼',
   },
   {
@@ -1178,7 +1181,7 @@ export const BUILDINGS = [
     name: '重庆大学医学院',
     category: 'college',
     campusId: 'c',
-    coord: [106.460599, 29.566041],
+    coord: [106.454148, 29.5598],
     desc: '医学院教学办公区',
   },
   {
@@ -1186,7 +1189,7 @@ export const BUILDINGS = [
     name: 'C区一舍',
     category: 'dormitory',
     campusId: 'c',
-    coord: [106.462001, 29.56566],
+    coord: [106.455545, 29.559435],
     desc: '学生宿舍',
   },
   {
@@ -1194,7 +1197,7 @@ export const BUILDINGS = [
     name: 'C区四舍',
     category: 'dormitory',
     campusId: 'c',
-    coord: [106.462061, 29.566839],
+    coord: [106.455606, 29.560615],
     desc: '学生宿舍',
   },
   {
@@ -1202,7 +1205,7 @@ export const BUILDINGS = [
     name: 'C区五舍',
     category: 'dormitory',
     campusId: 'c',
-    coord: [106.461912, 29.565386],
+    coord: [106.455456, 29.55916],
     desc: '学生宿舍',
   },
   {
@@ -1210,7 +1213,7 @@ export const BUILDINGS = [
     name: '南苑餐厅',
     category: 'canteen',
     campusId: 'c',
-    coord: [106.46149, 29.565919],
+    coord: [106.455036, 29.559688],
     desc: 'C校园食堂',
   },
   {
@@ -1218,7 +1221,7 @@ export const BUILDINGS = [
     name: 'C区运动场',
     category: 'sports',
     campusId: 'c',
-    coord: [106.458723, 29.56601],
+    coord: [106.452277, 29.559749],
     desc: '田径与足球场',
   },
   {
@@ -1226,7 +1229,7 @@ export const BUILDINGS = [
     name: 'C区大门',
     category: 'gate',
     campusId: 'c',
-    coord: [106.460766, 29.564201],
+    coord: [106.454314, 29.557962],
     desc: 'C校园主要出入口',
   },
   {
@@ -1234,7 +1237,7 @@ export const BUILDINGS = [
     name: '教学楼A栋',
     category: 'teaching',
     campusId: 'e',
-    coord: [106.81746, 29.746202],
+    coord: [106.811052, 29.739938],
     desc: '卓越工程师学院教学楼',
   },
   {
@@ -1242,7 +1245,7 @@ export const BUILDINGS = [
     name: '教学楼B栋',
     category: 'teaching',
     campusId: 'e',
-    coord: [106.816966, 29.745684],
+    coord: [106.810559, 29.739415],
     desc: '卓越工程师学院教学楼',
   },
   {
@@ -1250,7 +1253,7 @@ export const BUILDINGS = [
     name: '教学楼C栋',
     category: 'teaching',
     campusId: 'e',
-    coord: [106.816683, 29.746103],
+    coord: [106.810276, 29.739832],
     desc: '卓越工程师学院教学楼',
   },
   {
@@ -1258,7 +1261,7 @@ export const BUILDINGS = [
     name: '学生宿舍1栋',
     category: 'dormitory',
     campusId: 'e',
-    coord: [106.813827, 29.745393],
+    coord: [106.807427, 29.739101],
     desc: '学生宿舍',
   },
   {
@@ -1266,7 +1269,7 @@ export const BUILDINGS = [
     name: '学生宿舍2栋',
     category: 'dormitory',
     campusId: 'e',
-    coord: [106.814058, 29.745032],
+    coord: [106.807657, 29.738741],
     desc: '学生宿舍',
   },
   {
@@ -1274,7 +1277,7 @@ export const BUILDINGS = [
     name: '两江校区食堂',
     category: 'canteen',
     campusId: 'e',
-    coord: [106.814944, 29.746885],
+    coord: [106.808541, 29.7406],
     desc: '校园食堂',
   },
   {
@@ -1282,7 +1285,7 @@ export const BUILDINGS = [
     name: '两江校区运动场',
     category: 'sports',
     campusId: 'e',
-    coord: [106.8158, 29.7446],
+    coord: [106.809396, 29.738322],
     desc: '田径与足球场',
   },
   {
@@ -1290,7 +1293,7 @@ export const BUILDINGS = [
     name: '桐梓林轨道站',
     category: 'transit',
     campusId: 'e',
-    coord: [106.821687, 29.748144],
+    coord: [106.815265, 29.741924],
     desc: '轨道交通4号线站点',
   },
 ] as const satisfies readonly Building[];

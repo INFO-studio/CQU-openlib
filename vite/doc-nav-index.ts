@@ -148,6 +148,29 @@ const buildTree = (docRoot: string, sectionDir: string): SidebarNode[] => {
   }
   return nodes.sort((a, b) => compareTitles(a.title, b.title));
 };
+/** Doc URLs of the sibling pages an index.md links to, in reading order. */
+const indexLinkOrder = (docRoot: string, dir: string): string[] => {
+  const indexFile = join(dir, 'index.md');
+  if (!existsSync(indexFile)) return [];
+  const order: string[] = [];
+  for (const [, target] of readFileSync(indexFile, 'utf8').matchAll(
+    /]\(([^)\s]+\.mdx?)\)/gi,
+  )) {
+    if (/^(?:[a-z]+:)?\//i.test(target)) continue;
+    const path = urlFromDocFile(docRoot, join(dir, decodeURI(target)));
+    if (!order.includes(path)) order.push(path);
+  }
+  return order;
+};
+/** Listed pages keep the index order; anything unlisted falls in behind it. */
+const orderByIndex = (nodes: SidebarNode[], order: string[]): SidebarNode[] => {
+  const rank = new Map(order.map((path, i) => [path, i]));
+  return [...nodes].sort((a, b) => {
+    const rankA = rank.get(a.path) ?? order.length;
+    const rankB = rank.get(b.path) ?? order.length;
+    return rankA - rankB || compareTitles(a.title, b.title);
+  });
+};
 const sortEntries = (entries: SearchEntry[]) => {
   return entries.sort((a, b) => compareTitles(a.title, b.title));
 };
@@ -207,7 +230,10 @@ export const buildDocNavIndex = (
     }
     const sectionDir = join(docRoot, section.source);
     const withCodes = attachCodes(buildTree(docRoot, sectionDir), codesByPath);
-    const tree = section.id === 'course' ? attachLetters(withCodes) : withCodes;
+    const curated = section.indexOrder
+      ? orderByIndex(withCodes, indexLinkOrder(docRoot, sectionDir))
+      : withCodes;
+    const tree = section.id === 'course' ? attachLetters(curated) : curated;
     const files = listMarkdownFiles(sectionDir);
     const sectionEntries: SearchEntry[] = [];
     for (const file of files) {
