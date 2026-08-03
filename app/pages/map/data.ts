@@ -1070,7 +1070,7 @@ export const BUILDINGS = [
     name: '校医院',
     category: 'hospital',
     campus: 'a',
-    coord: '106.472216,29.563117',
+    coord: [106.472216,29.563117],
     desc: '校医院。'
   },
 
@@ -1080,7 +1080,7 @@ export const BUILDINGS = [
     name: '后门校车站',
     category: 'busstation',
     campus: 'a',
-    coord: '106.471154,29.562414',
+    coord: [106.471154,29.562414],
     desc: '后门校车站。'
   },
   {
@@ -1088,7 +1088,7 @@ export const BUILDINGS = [
     name: '钟塔校车站',
     category: 'busstation',
     campus: 'a',
-    coord: '106.467243,29.567197',
+    coord: [106.467243,29.567197],
     desc: '钟塔校车站。'
   },
   // 地标建筑
@@ -1097,7 +1097,7 @@ export const BUILDINGS = [
     name: '钟塔',
     category: 'landmark',
     campus: 'a',
-    coord: '106.467473,29.567312',
+    coord: [106.467473,29.567312],
     desc: '钟塔。'
   },
   {
@@ -1105,7 +1105,7 @@ export const BUILDINGS = [
     name: '防空洞爱国教育基地',
     category: 'landmark',
     campus: 'a',
-    coord: '106.467310,29.567920',
+    coord: [106.467310,29.567920],
     desc: '防空洞爱国教育基地。'
   },
   {
@@ -1121,7 +1121,7 @@ export const BUILDINGS = [
     name: '曾一刀私房牛肉面',
     category: 'food',
     campus: 'a',
-    coord: '106.462373,29.558773',
+    coord: [106.462373,29.558773],
     desc: '这是重庆一三八高中生下课吃面的常驻地，笔者最推荐其原汤牛肉牛筋混合韭叶面加蛋，其中“原汤”并不指浅白色的牛骨汤，而是指浮于汤面上的那层微辣牛油，这是整碗面的精髓；单吃牛肉太柴，单吃牛筋太腻，牛肉牛筋混合这一搭配折中两者优缺，让吃面也不再单调；韭叶面由其形状酷似韭菜叶子得名，源于四川达州大竹县，其优点是在吃面时可裹上更多红油，牛油香味更浓；在吃面时煎蛋埋于碗底，面吃到一半时，煎蛋已吸饱汤汁，此时再吃味更美(๑´ڡ`๑)。（from 巧克力大王）'
   },
   {
