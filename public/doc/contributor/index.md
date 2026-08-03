@@ -42,6 +42,7 @@
 - [qzq](qzq.md)
 - [Leo Moore](LeoMoore.md)
 - [仮屋和奏](仮屋和奏.md)
+- [阳启万象](阳启万象.md)
 - [Rium](Rium.md)
 - [Tony](Tony.md)
 - georgeghl  
@@ -91,6 +92,5 @@
 - 给我唱泪桥
 - 冷水鱼
 - puppyfish
-- 阳启万象
 - 龙吟
 - 北冥若汐

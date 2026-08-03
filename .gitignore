@@ -31,3 +31,6 @@
 /tools/logo/reference-*.png
 /tools/logo/ref-*.png
 
+
+# Local Netlify folder
+.netlify
