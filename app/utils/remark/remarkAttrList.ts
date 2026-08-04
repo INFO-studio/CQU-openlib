@@ -1,11 +1,4 @@
-import type {
-  Mn,
-  MnImage,
-  MnLink,
-  MnRoot,
-  MnTabs,
-  MnText,
-} from '~/types/mdast';
+import type { Mn, MnImage, MnLink, MnRoot, MnText } from '~/types/mdast';
 
 type AttrTarget = MnLink | MnImage;
 
@@ -91,9 +84,8 @@ const consumeAttrLists = (children: Mn[]): Mn[] => {
 
 const walk = (nodes?: Mn[]): Mn[] =>
   (nodes ?? []).map((node) => {
-    if (node.type === 'tabs') {
-      const tabs = node as MnTabs;
-      for (const item of tabs.items) {
+    if (node.type === 'tabs' || node.type === 'collapseGroup') {
+      for (const item of node.items) {
         item.title = consumeAttrLists(walk(item.title));
         item.children = consumeAttrLists(walk(item.children));
       }

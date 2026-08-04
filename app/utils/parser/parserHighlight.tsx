@@ -3,7 +3,7 @@ import type { MnHighlight } from '~/types/mdast';
 import parser from '~/utils/parser/index';
 
 const parserHighlight = (mn: MnHighlight) => (
-  <Mark>{mn.children?.map(parser)}</Mark>
+  <Mark tone={mn.tone}>{mn.children?.map(parser)}</Mark>
 );
 
 export default parserHighlight;

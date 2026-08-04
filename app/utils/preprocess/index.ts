@@ -8,7 +8,7 @@ export type Preprocess = (lines: string[]) => string[];
 const preprocess = (text: string): string => {
   const lines = text.replace(/\r\n/g, '\n').split('\n');
   // Order matters:
-  // 1) content-tabs before other transforms (nested `===` needs indent)
+  // 1) tab/collapse groups before other transforms (nesting needs raw indent)
   // 2) isolate HTML so it cannot swallow markers
   // 3) admonition fencing (strips 4-space body only inside !!! blocks)
   // NOTE: no global preprocessTab — it flattened nested markdown lists.

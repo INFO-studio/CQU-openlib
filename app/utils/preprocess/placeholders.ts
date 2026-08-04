@@ -5,3 +5,6 @@ export const ADMONITION_END = '<!-- ADMONITION_END -->';
 export const TABS_START = '<!-- TABS_START -->';
 export const TABS_END = '<!-- TABS_END -->';
 export const TAB_ITEM = '<!-- TAB_ITEM -->';
+export const COLLAPSE_GROUP_START = '<!-- COLLAPSE_GROUP_START -->';
+export const COLLAPSE_GROUP_END = '<!-- COLLAPSE_GROUP_END -->';
+export const COLLAPSE_ITEM = '<!-- COLLAPSE_ITEM -->';

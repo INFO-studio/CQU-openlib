@@ -70,6 +70,21 @@ textarea:focus-visible {
   color: var(--c-ink);
 }
 
+.home-fraud-alert {
+  padding: 0.1rem 0.5rem;
+  color: var(--c-error);
+  background: var(--c-error-soft);
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.home-fraud-alert:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 :focus-visible {
   outline: 2px solid var(--c-primary);
   outline-offset: 2px;

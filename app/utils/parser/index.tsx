@@ -5,6 +5,7 @@ import parserAdmonition from '~/utils/parser/parserAdmonition';
 import parserBlockquote from '~/utils/parser/parserBlockquote';
 import parserBreak from '~/utils/parser/parserBreak';
 import parserCode from '~/utils/parser/parserCode';
+import parserCollapseGroup from '~/utils/parser/parserCollapseGroup';
 import parserDelete from '~/utils/parser/parserDelete';
 import parserEmphasis from '~/utils/parser/parserEmphasis';
 import {
@@ -37,6 +38,7 @@ const parser = (mn: Mn) =>
     .with({ type: 'blockquote' }, parserBlockquote)
     .with({ type: 'break' }, parserBreak)
     .with({ type: 'code' }, parserCode)
+    .with({ type: 'collapseGroup' }, parserCollapseGroup)
     .with({ type: 'delete' }, parserDelete)
     .with({ type: 'emphasis' }, parserEmphasis)
     .with({ type: 'footnoteDefinition' }, parserFootnoteDefinition)

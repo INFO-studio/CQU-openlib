@@ -110,7 +110,11 @@ const urlFromDocFile = (docRoot: string, file: string): string => {
   if (rel.endsWith('/index.md')) return `/${rel.slice(0, -'/index.md'.length)}`;
   return `/${rel.replace(/\.mdx?$/i, '')}`;
 };
-const buildTree = (docRoot: string, sectionDir: string): SidebarNode[] => {
+const buildTree = (
+  docRoot: string,
+  sectionDir: string,
+  useIndexOrder = false,
+): SidebarNode[] => {
   if (!existsSync(sectionDir)) return [];
   const nodes: SidebarNode[] = [];
   for (const entry of readdirSync(sectionDir, { withFileTypes: true })) {
@@ -118,7 +122,7 @@ const buildTree = (docRoot: string, sectionDir: string): SidebarNode[] => {
     const full = join(sectionDir, entry.name);
     if (entry.isDirectory()) {
       const indexFile = join(full, 'index.md');
-      const children = buildTree(docRoot, full);
+      const children = buildTree(docRoot, full, useIndexOrder);
       const dirRel = relative(docRoot, full).replace(/\\/g, '/');
       const dirPath = `/${dirRel}`;
       if (existsSync(indexFile)) {
@@ -146,7 +150,10 @@ const buildTree = (docRoot: string, sectionDir: string): SidebarNode[] => {
       path: urlFromDocFile(docRoot, full),
     });
   }
-  return nodes.sort((a, b) => compareTitles(a.title, b.title));
+  const sorted = nodes.sort((a, b) => compareTitles(a.title, b.title));
+  return useIndexOrder
+    ? orderByIndex(sorted, indexLinkOrder(docRoot, sectionDir))
+    : sorted;
 };
 /** Doc URLs of the sibling pages an index.md links to, in reading order. */
 const indexLinkOrder = (docRoot: string, dir: string): string[] => {
@@ -229,11 +236,11 @@ export const buildDocNavIndex = (
       return { ...section, tree: [] as SidebarNode[] };
     }
     const sectionDir = join(docRoot, section.source);
-    const withCodes = attachCodes(buildTree(docRoot, sectionDir), codesByPath);
-    const curated = section.indexOrder
-      ? orderByIndex(withCodes, indexLinkOrder(docRoot, sectionDir))
-      : withCodes;
-    const tree = section.id === 'course' ? attachLetters(curated) : curated;
+    const withCodes = attachCodes(
+      buildTree(docRoot, sectionDir, section.indexOrder),
+      codesByPath,
+    );
+    const tree = section.id === 'course' ? attachLetters(withCodes) : withCodes;
     const files = listMarkdownFiles(sectionDir);
     const sectionEntries: SearchEntry[] = [];
     for (const file of files) {

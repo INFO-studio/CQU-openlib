@@ -2,6 +2,7 @@ import type { MnAdmonition } from '~/types/mdast/mnAdmonition';
 import type { MnBlockquote } from '~/types/mdast/mnBlockquote';
 import type { MnBreak } from '~/types/mdast/mnBreak';
 import type { MnCode } from '~/types/mdast/mnCode';
+import type { MnCollapseGroup } from '~/types/mdast/mnCollapseGroup';
 import type { MnDelete } from '~/types/mdast/mnDelete';
 import type { MnEmphasis } from '~/types/mdast/mnEmphasis';
 import type {
@@ -33,6 +34,7 @@ export type Mn =
   | MnBlockquote
   | MnBreak
   | MnCode
+  | MnCollapseGroup
   | MnDelete
   | MnEmphasis
   | MnFootnoteDefinition
@@ -63,6 +65,10 @@ export type { MnAdmonition } from '~/types/mdast/mnAdmonition';
 export type { MnBlockquote } from '~/types/mdast/mnBlockquote';
 export type { MnBreak } from '~/types/mdast/mnBreak';
 export type { MnCode } from '~/types/mdast/mnCode';
+export type {
+  MnCollapseGroup,
+  MnCollapseItem,
+} from '~/types/mdast/mnCollapseGroup';
 export type { MnDelete } from '~/types/mdast/mnDelete';
 export type { MnEmphasis } from '~/types/mdast/mnEmphasis';
 export type {

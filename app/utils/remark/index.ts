@@ -1,5 +1,6 @@
 export { default as remarkAdmonition } from './remarkAdmonition';
 export { default as remarkAttrList } from './remarkAttrList';
+export { default as remarkCollapseGroup } from './remarkCollapseGroup';
 export { default as remarkContentTabs } from './remarkContentTabs';
 export { default as remarkDisableIndentedCode } from './remarkDisableIndentedCode';
 export { default as remarkFormatting } from './remarkFormatting';
