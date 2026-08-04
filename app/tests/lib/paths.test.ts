@@ -5,6 +5,15 @@ describe('toNavTarget', () => {
   it('keeps app routes out of the markdown catch-all', () => {
     expect(toNavTarget('/map')).toEqual({ to: '/map' });
     expect(toNavTarget('/map/')).toEqual({ to: '/map' });
+    expect(toNavTarget('/map?campus=d')).toEqual({
+      to: '/map',
+      search: { campus: 'd', focus: undefined },
+    });
+    expect(toNavTarget('/map?campus=a&focus=a-library')).toEqual({
+      to: '/map',
+      search: { campus: 'a', focus: 'a-library' },
+    });
+    expect(toNavTarget('/map?campus=invalid')).toEqual({ to: '/map' });
   });
 
   it('continues routing document paths through the splat route', () => {

@@ -685,16 +685,8 @@ const MapSidebarContent = ({
 );
 
 const MapPage = () => {
-  const { focus: focusId } = useSearch({ from: '/map' });
+  const { campus: campusSearch, focus: focusId } = useSearch({ from: '/map' });
   const navigate = useNavigate({ from: '/map' });
-  const onFocusChange = useCallback(
-    (nextFocus: string | undefined) => {
-      void navigate({
-        search: nextFocus ? { focus: nextFocus } : {},
-      });
-    },
-    [navigate],
-  );
   const isDesktop = useDesktopLayout();
   const { mapCampusId, setMapCampusId } = usePreferencesStore();
   const [category, setCategory] = useState<CategoryFilter>('all');
@@ -707,6 +699,7 @@ const MapPage = () => {
   );
   const campusId =
     selected?.campusId ??
+    campusSearch ??
     (isCampusId(mapCampusId) ? mapCampusId : DEFAULT_CAMPUS_ID);
   const campus = CAMPUS_BY_ID[campusId];
   const campusBuildings = useMemo(
@@ -749,31 +742,33 @@ const MapPage = () => {
 
   const chooseCampus = (next: CampusId) => {
     setMapCampusId(next);
-    onFocusChange(undefined);
+    void navigate({ search: { campus: next } });
     setCategory('all');
     setMobilePanelOpen(false);
   };
 
   const chooseBuilding = useCallback(
     (building: Building) => {
-      onFocusChange(building.id);
+      void navigate({
+        search: { campus: building.campusId, focus: building.id },
+      });
       setMobilePanelOpen(false);
     },
-    [onFocusChange],
+    [navigate],
   );
 
   const clearSelection = () => {
-    onFocusChange(undefined);
+    void navigate({ search: { campus: campusId } });
   };
 
   const changeQuery = (nextQuery: string) => {
     setQuery(nextQuery);
-    if (focusId) onFocusChange(undefined);
+    if (focusId) void navigate({ search: { campus: campusId } });
   };
 
   const changeCategory = (nextCategory: CategoryFilter) => {
     setCategory(nextCategory);
-    if (focusId) onFocusChange(undefined);
+    if (focusId) void navigate({ search: { campus: campusId } });
   };
 
   const navigationLinks = selected ? navigationLinksFor(selected) : [];
