@@ -48,84 +48,68 @@ export interface Building {
 export interface BuildingCategoryDefinition {
   readonly id: BuildingCategory;
   readonly label: string;
-  readonly color: `#${string}`;
 }
 
 export const BUILDING_CATEGORIES = [
   {
     id: 'teaching',
     label: '教学楼',
-    color: '#003375',
   },
   {
     id: 'dormitory',
     label: '学生宿舍',
-    color: '#4069B2',
   },
   {
     id: 'canteen',
     label: '食堂',
-    color: '#6296D8',
   },
   {
     id: 'library',
     label: '图书馆',
-    color: '#00285C',
   },
   {
     id: 'sports',
     label: '运动场馆',
-    color: '#8CB4E8',
   },
   {
     id: 'admin',
     label: '行政楼',
-    color: '#003375',
   },
   {
     id: 'gate',
     label: '校门',
-    color: '#4069B2',
   },
   {
     id: 'hospital',
     label: '校医院',
-    color: '#6296D8',
   },
   {
     id: 'theater',
     label: '剧场',
-    color: '#2F5599',
   },
   {
     id: 'busstation',
     label: '校车站',
-    color: '#5A82B8',
   },
   {
     id: 'transit',
     label: '公共交通',
-    color: '#4A7CC0',
   },
   {
     id: 'landmark',
     label: '地标建筑',
-    color: '#003375',
   },
   {
     id: 'college',
     label: '学院楼',
-    color: '#1A4A8A',
   },
   {
     id: 'food',
     label: '附近美食',
-    color: '#7BA8E0',
   },
   {
     id: 'express',
     label: '快递点',
-    color: '#4A7CC0',
   },
 ] as const satisfies readonly BuildingCategoryDefinition[];
 
@@ -134,7 +118,7 @@ export const CAMPUSES = [
     id: 'd',
     campusName: '科学城校区',
     siteName: '虎溪校园',
-    center: [106.298877, 29.596799],
+    center: [106.2982, 29.593145],
     defaultZoom: 16,
   },
   {
@@ -705,6 +689,22 @@ export const BUILDINGS = [
     desc: '电气学院楼',
   },
   {
+    id: 'huxi_transit_01',
+    name: '大学城轨道交通站',
+    category: 'transit',
+    campusId: 'd',
+    coord: [106.308908, 29.60735],
+    desc: '轨道交通1号线站点',
+  },
+  {
+    id: 'huxi_transit_02',
+    name: '尖顶坡轨道交通站',
+    category: 'transit',
+    campusId: 'd',
+    coord: [106.292967, 29.607324],
+    desc: '轨道交通1号线站点',
+  },
+  {
     id: 'a_teaching_01',
     name: '主教学楼',
     category: 'teaching',
@@ -1065,12 +1065,52 @@ export const BUILDINGS = [
     desc: 'A校园正门',
   },
   {
+    id: 'a_gate_09',
+    name: 'A区后门（松林坡门）',
+    category: 'gate',
+    campusId: 'a',
+    coord: [106.472394,29.563486],
+    desc: 'A校园松林坡门，往这里走下去有很多好吃的。',
+  },
+  {
     id: 'a_food_01',
     name: '中渡芋圆',
     category: 'food',
     campusId: 'a',
     coord: [106.472875, 29.564787],
     desc: 'A校园附近甜品店',
+  },
+ {
+    id: 'a_food_03',
+    name: '吹得神豌杂面(小龙坎新街店)',
+    category: 'food',
+    campusId: 'a',
+    coord: [106.464133,29.558334],
+    desc: '这家店以干馏豌杂见长，笔者推荐干馏豌杂加蛋，是否加辣取决于个人，加不加辣都好吃。这家店的干馏豌杂面面条较粗，豌杂酱汁收得咸香浓稠，调料沉在碗底，因此吃前需要把面与调料拌匀（用重庆话说就是“霍转”），不然吃到最后会过咸，煎蛋需事先埋于碗底，这样最后吃到煎蛋时，煎蛋早已吸饱酱汁，吃起来更有味。（from 巧克力大王）'
+  },
+  {
+    id: 'a_food_04',
+    name: '毛烧烤(工人村店)',
+    category: 'food',
+    campusId: 'a',
+    coord: [106.468068,29.557186],
+    desc: '这是一家极具特色的烧烤店，点单方式类似麻辣烫，自行选菜然后让后厨加工。笔者推荐小芋头和蜜汁烤翅，这家店选用的芋头是重庆老芋仔，其历史最早可追溯至清朝晚期，个头小，口感顺滑，带有一丝奶香。烤制过后外层轻微失水，质地似镜面蛋糕的淋面，用嘴抿开表面，绵密微烫的芋头便裹挟着干辣椒与香葱化开在舌尖，这样的烤芋头在别处很难吃到。蜜汁烤翅也是一绝，后厨在烤制时会反复刷酱，鸡翅吃起来又香又甜又嫩，一个人至少要吃两串（四个鸡翅）才能吃得尽兴。吃这家烧烤时推荐配店里的大窑或街对面的蜜雪冰城。（from 巧克力大王）'
+  },
+  {
+    id: 'a_food_05',
+    name: 'Clean_Cup自烘焙咖啡店',
+    category: 'food',
+    campusId: 'a',
+    coord: [106.463645,29.563953],
+    desc: '位于欣阳广场旁小巷的深处，是一家自主烘焙咖啡豆的门店，店内装修风格温暖，有可爱的小猫。笔者推荐这家店的美式咖啡，这家店豆单一直在更新，豆子可凭自己喜好选择，在这家店喝咖啡，你能清晰地感受到精品咖啡的魅力，不同温度下咖啡的风味是清晰且不同的。（from 巧克力大王）'
+  },
+  {
+    id: 'a_transit_01',
+    name: '重庆大学轨道交通站',
+    category: 'transit',
+    campusId: 'a',
+    coord: [106.463616, 29.568332],
+    desc: '轨道交通环线站点',
   },
   {
     id: 'b_teaching_01',
@@ -1167,6 +1207,30 @@ export const BUILDINGS = [
     campusId: 'b',
     coord: [106.456967, 29.564928],
     desc: '学生宿舍',
+  },
+  {
+    id: 'b_transit_01',
+    name: '重庆大学轨道交通站',
+    category: 'transit',
+    campusId: 'b',
+    coord: [106.463616, 29.568332],
+    desc: '轨道交通环线站点',
+  },
+  {
+    id: 'c_transit_01',
+    name: '重庆大学轨道交通站',
+    category: 'transit',
+    campusId: 'c',
+    coord: [106.463616, 29.568332],
+    desc: '轨道交通环线站点',
+  },
+  {
+    id: 'b_food_01',
+    name: '黑娃餐馆(重大B区店)',
+    category: 'food',
+    campusId: 'b',
+    coord: [106.459129,29.563863],
+    desc: '好吃，味道足'
   },
   {
     id: 'c_teaching_01',
@@ -1290,7 +1354,7 @@ export const BUILDINGS = [
   },
   {
     id: 'e_busstation_01',
-    name: '桐梓林轨道站',
+    name: '桐梓林轨道交通站',
     category: 'transit',
     campusId: 'e',
     coord: [106.815265, 29.741924],
