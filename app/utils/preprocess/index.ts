@@ -1,6 +1,7 @@
 import preprocessAdmonition from '~/utils/preprocess/preprocessAdmonition';
 import preprocessContentTabs from '~/utils/preprocess/preprocessContentTabs';
 import preprocessHtmlBlocks from '~/utils/preprocess/preprocessHtmlBlocks';
+import preprocessImageGallery from '~/utils/preprocess/preprocessImageGallery';
 import stripHtmlComments from '~/utils/preprocess/stripHtmlComments';
 
 export type Preprocess = (lines: string[]) => string[];
@@ -15,6 +16,7 @@ const preprocess = (text: string): string => {
   const preprocesses: Preprocess[] = [
     stripHtmlComments,
     preprocessContentTabs,
+    preprocessImageGallery,
     preprocessHtmlBlocks,
     preprocessAdmonition,
   ];

@@ -118,9 +118,14 @@ pymdownx.keys 风格，token 用 `+` 分隔，别名表在 `app/lib/kbdKeys.ts`�
 
 ```markdown
 * [下载-svg](/doc/resources/学业_重庆大学视觉形象/校徽/校徽_蓝色.svg){:download="校徽_蓝色.svg"}
+<ImageGallery>
+![第一张证据的图注](/doc/resources/生活_谨防诈骗_2026-08_劣质床品诈骗_001.webp){:preview}
+
+![第二张证据的图注](/doc/resources/生活_谨防诈骗_2026-08_劣质床品诈骗_002.webp){:preview}
+</ImageGallery>
 ```
 
-`{:download="文件名"}` 让链接变成强制下载（视觉形象页的校徽等素材靠它，全库 72 处）。`{.class}`、`{#id}`、`{:class="a b"}` 也支持。实现 `app/utils/remark/remarkAttrList.ts`。
+`{:download="文件名"}` 让链接变成强制下载（视觉形象页的校徽等素材靠它，全库 72 处）。`{:preview}` 让图片可点击进入全屏预览，预览支持缩放、旋转、恢复和下载；点击图片与工具栏之外的背景可关闭。用 `<ImageGallery>` 与 `</ImageGallery>` 包住一组 preview 图片，会生成响应式 figure 画廊，图片 alt 文本就是图注；边界外的图片不会被隐式合并。`{.class}`、`{#id}`、`{:class="a b"}` 也支持。实现 `app/utils/remark/remarkAttrList.ts`。
 
 两个硬性约束：属性块必须**紧挨**在链接或图片之后，中间隔了任何节点就失效；`download` **只对链接生效**，写在图片后没有作用。
 

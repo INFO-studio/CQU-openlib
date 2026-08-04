@@ -28,6 +28,7 @@ import {
   remarkDisableIndentedCode,
   remarkFormatting,
   remarkIcon,
+  remarkImageGallery,
   remarkKeys,
 } from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
@@ -71,6 +72,7 @@ const useDocAst = (page: string, enabled: boolean) => {
         .use(remarkCollapseGroup)
         .use(remarkAdmonition)
         .use(remarkAttrList)
+        .use(remarkImageGallery)
         .use(remarkFormatting)
         .use(remarkKeys)
         .use(remarkIcon),

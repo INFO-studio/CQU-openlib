@@ -8,3 +8,5 @@ export const TAB_ITEM = '<!-- TAB_ITEM -->';
 export const COLLAPSE_GROUP_START = '<!-- COLLAPSE_GROUP_START -->';
 export const COLLAPSE_GROUP_END = '<!-- COLLAPSE_GROUP_END -->';
 export const COLLAPSE_ITEM = '<!-- COLLAPSE_ITEM -->';
+export const IMAGE_GALLERY_START = '<!-- IMAGE_GALLERY_START -->';
+export const IMAGE_GALLERY_END = '<!-- IMAGE_GALLERY_END -->';

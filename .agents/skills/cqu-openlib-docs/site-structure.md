@@ -86,9 +86,12 @@ key 是 URL 形式的 `/course/页面名`。一门课有多个课程号时（如
 
 命名规则是「板块_路径_页面_序号」，段之间下划线，板块名用中文：`academic` → 学业、`club` → 社团、`life` → 生活、`skill` → 技巧、`contributor` → 贡献者。
 
+同一页面会持续追加的月度事件、案例或记录，在页面名后补 `YYYY-MM`，再写事件名和序号，避免不同月份使用同一组文件名。
+
 ```
 学业_专业总览_数统_数统教材_001.webp
 社团_文联_说唱社_002.webp
+生活_谨防诈骗_2026-08_劣质床品诈骗_001.webp
 42_index_001.webp
 contributor/贡献者名/贡献者_贡献者名_001.webp
 ```
@@ -102,6 +105,8 @@ contributor/贡献者名/贡献者_贡献者名_001.webp
 ```markdown
 <center><img src="/doc/resources/学业_专业总览_数统_数统教材_001.webp" alt="pic001"></center>
 ```
+
+需要查看原图时，在 Markdown 图片后紧跟 `{:preview}`。多张图片需要分栏时，再用 `<ImageGallery>` 与 `</ImageGallery>` 明确包住整组；画廊以 alt 文本作为图注，不要额外重复图片说明。边界外的图片不会自动成组。
 
 **加完图必须跑一次：**
 
