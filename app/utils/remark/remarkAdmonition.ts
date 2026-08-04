@@ -1,5 +1,5 @@
 import { match } from 'ts-pattern';
-import type { Mn, MnTabs } from '~/types/mdast';
+import type { Mn } from '~/types/mdast';
 import type {
   MnAdmonition,
   MnAdmonitionType,
@@ -198,8 +198,8 @@ const convertAdmonitions = (nodes: Mn[]): Mn[] => {
  */
 const descend = (nodes: Mn[]): Mn[] =>
   convertAdmonitions(nodes).map((node) => {
-    if (node.type === 'tabs') {
-      for (const item of (node as MnTabs).items) {
+    if (node.type === 'tabs' || node.type === 'collapseGroup') {
+      for (const item of node.items) {
         item.children = descend(item.children);
       }
       return node;

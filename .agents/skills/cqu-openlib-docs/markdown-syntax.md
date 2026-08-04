@@ -27,6 +27,27 @@
 
 实现 `app/utils/remark/remarkContentTabs.ts` + `app/utils/preprocess/preprocessContentTabs.ts`，测试 `app/tests/remark/`。
 
+## 折叠组
+
+```markdown
+^^^ 第一个标题
+    第一项正文。
+
+^^^ 第二个标题
+    第二项正文，可以继续写列表：
+
+    - A
+    - B
+```
+
+- 标记行是 `^^^ 标题`，标题不能为空，`^^^` 后必须有空格。裸 `^^^`、`^^^^ 标题` 都是普通文本。
+- 正文缩进 4 个空格；连续、同级的 `^^^` 会自动组成一个折叠组，各项可以分别展开。
+- 标题支持普通行内 Markdown。正文支持段落、列表等块级语法。
+- 折叠组和内容 tab 可以按缩进互相嵌套。
+- 所有项默认收起，暂不提供默认展开标记。需要带提示色或默认展开的单个块时，使用下方的可折叠 Admonition，不要用折叠组模拟。
+
+实现 `app/utils/remark/remarkCollapseGroup.ts` + `app/utils/preprocess/preprocessContentTabs.ts`，渲染 `app/components/ui/collapse-group.tsx`。
+
 ## Admonition
 
 ```markdown
@@ -83,18 +104,28 @@ pymdownx.keys 风格，token 用 `+` 分隔，别名表在 `app/lib/kbdKeys.ts`�
 
 ```markdown
 {==这段会高亮==}
+{!!这段是警示高亮!!}
 {--这段是删除线--}
 ```
 
-**只有这两种**。`{++插入++}`、`{~~替换~~}` 没有实现，写了会原样显示。实现 `app/utils/remark/remarkFormatting.ts`。
+- `{==…==}`：普通强调，使用主色浅背景。
+- `{!!…!!}`：警示强调，使用 `errorSoft` 背景和 `error` 字色。
+- `{--…--}`：删除线。
+
+`{++插入++}`、`{~~替换~~}` 没有实现，写了会原样显示。实现 `app/utils/remark/remarkFormatting.ts`。
 
 ## 属性列表
 
 ```markdown
 * [下载-svg](/doc/resources/学业_重庆大学视觉形象/校徽/校徽_蓝色.svg){:download="校徽_蓝色.svg"}
+<ImageGallery>
+![第一张证据的图注](/doc/resources/生活_谨防诈骗_2026-08_劣质床品诈骗_001.webp){:preview}
+
+![第二张证据的图注](/doc/resources/生活_谨防诈骗_2026-08_劣质床品诈骗_002.webp){:preview}
+</ImageGallery>
 ```
 
-`{:download="文件名"}` 让链接变成强制下载（视觉形象页的校徽等素材靠它，全库 72 处）。`{.class}`、`{#id}`、`{:class="a b"}` 也支持。实现 `app/utils/remark/remarkAttrList.ts`。
+`{:download="文件名"}` 让链接变成强制下载（视觉形象页的校徽等素材靠它，全库 72 处）。`{:preview}` 让图片可点击进入全屏预览，预览支持缩放、旋转、恢复和下载；点击图片与工具栏之外的背景可关闭。用 `<ImageGallery>` 与 `</ImageGallery>` 包住一组 preview 图片，会生成响应式 figure 画廊，图片 alt 文本就是图注；边界外的图片不会被隐式合并。`{.class}`、`{#id}`、`{:class="a b"}` 也支持。实现 `app/utils/remark/remarkAttrList.ts`。
 
 两个硬性约束：属性块必须**紧挨**在链接或图片之后，中间隔了任何节点就失效；`download` **只对链接生效**，写在图片后没有作用。
 

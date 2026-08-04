@@ -2,6 +2,7 @@ import type { MnAdmonition } from '~/types/mdast/mnAdmonition';
 import type { MnBlockquote } from '~/types/mdast/mnBlockquote';
 import type { MnBreak } from '~/types/mdast/mnBreak';
 import type { MnCode } from '~/types/mdast/mnCode';
+import type { MnCollapseGroup } from '~/types/mdast/mnCollapseGroup';
 import type { MnDelete } from '~/types/mdast/mnDelete';
 import type { MnEmphasis } from '~/types/mdast/mnEmphasis';
 import type {
@@ -13,6 +14,7 @@ import type { MnHighlight } from '~/types/mdast/mnHighlight';
 import type { MnHtml } from '~/types/mdast/mnHtml';
 import type { MnIcon } from '~/types/mdast/mnIcon';
 import type { MnImage } from '~/types/mdast/mnImage';
+import type { MnImageGallery } from '~/types/mdast/mnImageGallery';
 import type { MnInlineCode } from '~/types/mdast/mnInlineCode';
 import type { MnKbd } from '~/types/mdast/mnKbd';
 import type { MnLink } from '~/types/mdast/mnLink';
@@ -33,6 +35,7 @@ export type Mn =
   | MnBlockquote
   | MnBreak
   | MnCode
+  | MnCollapseGroup
   | MnDelete
   | MnEmphasis
   | MnFootnoteDefinition
@@ -42,6 +45,7 @@ export type Mn =
   | MnHtml
   | MnIcon
   | MnImage
+  | MnImageGallery
   | MnInlineCode
   | MnKbd
   | MnLink
@@ -63,6 +67,10 @@ export type { MnAdmonition } from '~/types/mdast/mnAdmonition';
 export type { MnBlockquote } from '~/types/mdast/mnBlockquote';
 export type { MnBreak } from '~/types/mdast/mnBreak';
 export type { MnCode } from '~/types/mdast/mnCode';
+export type {
+  MnCollapseGroup,
+  MnCollapseItem,
+} from '~/types/mdast/mnCollapseGroup';
 export type { MnDelete } from '~/types/mdast/mnDelete';
 export type { MnEmphasis } from '~/types/mdast/mnEmphasis';
 export type {
@@ -74,6 +82,7 @@ export type { MnHighlight } from '~/types/mdast/mnHighlight';
 export type { MnHtml } from '~/types/mdast/mnHtml';
 export type { MnIcon } from '~/types/mdast/mnIcon';
 export type { MnImage } from '~/types/mdast/mnImage';
+export type { MnImageGallery } from '~/types/mdast/mnImageGallery';
 export type { MnInlineCode } from '~/types/mdast/mnInlineCode';
 export type { MnKbd, MnKbdKey } from '~/types/mdast/mnKbd';
 export type { MnLink } from '~/types/mdast/mnLink';

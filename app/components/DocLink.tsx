@@ -42,11 +42,21 @@ const DocLink = ({
     onNavigate?.();
     const target = toNavTarget(href);
     if (target.to === '/') {
-      void navigate({ to: '/', replace });
+      void navigate({ to: '/', hash: target.hash, replace });
     } else if (target.to === '/map') {
-      void navigate({ to: '/map', search: target.search, replace });
+      void navigate({
+        to: '/map',
+        search: target.search,
+        hash: target.hash,
+        replace,
+      });
     } else {
-      void navigate({ to: '/$', params: target.params, replace });
+      void navigate({
+        to: '/$',
+        params: target.params,
+        hash: target.hash,
+        replace,
+      });
     }
   };
 

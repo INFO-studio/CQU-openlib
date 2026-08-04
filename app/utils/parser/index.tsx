@@ -5,6 +5,7 @@ import parserAdmonition from '~/utils/parser/parserAdmonition';
 import parserBlockquote from '~/utils/parser/parserBlockquote';
 import parserBreak from '~/utils/parser/parserBreak';
 import parserCode from '~/utils/parser/parserCode';
+import parserCollapseGroup from '~/utils/parser/parserCollapseGroup';
 import parserDelete from '~/utils/parser/parserDelete';
 import parserEmphasis from '~/utils/parser/parserEmphasis';
 import {
@@ -16,6 +17,7 @@ import parserHighlight from '~/utils/parser/parserHighlight';
 import parserHtml from '~/utils/parser/parserHtml';
 import parserIcon from '~/utils/parser/parserIcon';
 import parserImage from '~/utils/parser/parserImage';
+import parserImageGallery from '~/utils/parser/parserImageGallery';
 import parserInlineCode from '~/utils/parser/parserInlineCode';
 import parserKbd from '~/utils/parser/parserKbd';
 import parserLink from '~/utils/parser/parserLink';
@@ -37,6 +39,7 @@ const parser = (mn: Mn) =>
     .with({ type: 'blockquote' }, parserBlockquote)
     .with({ type: 'break' }, parserBreak)
     .with({ type: 'code' }, parserCode)
+    .with({ type: 'collapseGroup' }, parserCollapseGroup)
     .with({ type: 'delete' }, parserDelete)
     .with({ type: 'emphasis' }, parserEmphasis)
     .with({ type: 'footnoteDefinition' }, parserFootnoteDefinition)
@@ -46,6 +49,7 @@ const parser = (mn: Mn) =>
     .with({ type: 'html' }, parserHtml)
     .with({ type: 'icon' }, parserIcon)
     .with({ type: 'image' }, parserImage)
+    .with({ type: 'imageGallery' }, parserImageGallery)
     .with({ type: 'inlineCode' }, parserInlineCode)
     .with({ type: 'kbd' }, parserKbd)
     .with({ type: 'link' }, parserLink)

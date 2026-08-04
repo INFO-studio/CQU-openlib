@@ -13,9 +13,11 @@ export const decodePathname = (pathname: string): string => {
 export type NavTarget =
   | {
       to: '/';
+      hash?: string;
     }
   | {
       to: '/map';
+      hash?: string;
       search?: {
         campus?: CampusId;
         focus?: string;
@@ -26,13 +28,19 @@ export type NavTarget =
       params: {
         _splat: string;
       };
+      hash?: string;
     };
 export const toNavTarget = (path: string): NavTarget => {
-  const [pathWithHash, query = ''] = path.split('?', 2);
-  const clean = cleanPath(pathWithHash.split('#', 1)[0]);
-  if (clean === '/') return { to: '/' };
+  const hashIndex = path.indexOf('#');
+  const hash =
+    hashIndex >= 0 ? path.slice(hashIndex + 1) || undefined : undefined;
+  const hashTarget = hash ? { hash } : {};
+  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const [pathname, query = ''] = pathWithoutHash.split('?', 2);
+  const clean = cleanPath(pathname);
+  if (clean === '/') return { to: '/', ...hashTarget };
   if (clean === '/map') {
-    const params = new URLSearchParams(query.split('#', 1)[0]);
+    const params = new URLSearchParams(query);
     const campus = params.get('campus');
     const focus = params.get('focus');
     const search: { campus?: CampusId; focus?: string } = {
@@ -47,11 +55,12 @@ export const toNavTarget = (path: string): NavTarget => {
       focus: focus || undefined,
     };
     return search.campus || search.focus
-      ? { to: '/map', search }
-      : { to: '/map' };
+      ? { to: '/map', search, ...hashTarget }
+      : { to: '/map', ...hashTarget };
   }
   return {
     to: '/$',
     params: { _splat: clean.replace(/^\//, '') },
+    ...hashTarget,
   };
 };

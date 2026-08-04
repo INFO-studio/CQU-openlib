@@ -66,4 +66,29 @@ describe('remarkAttrList', () => {
       children: [{ type: 'image' }],
     });
   });
+
+  it('marks an image as previewable with {:preview}', () => {
+    const image: MnImage = {
+      type: 'image',
+      url: '/doc/resources/evidence.webp',
+      alt: '证据',
+    };
+    const tree: MnRoot = {
+      type: 'root',
+      children: [
+        {
+          type: 'paragraph',
+          children: [image, { type: 'text', value: '{:preview}' }],
+        },
+      ],
+    };
+
+    remarkAttrList()(tree);
+
+    expect(image.preview).toBe(true);
+    expect(tree.children?.[0]).toMatchObject({
+      type: 'paragraph',
+      children: [{ type: 'image', preview: true }],
+    });
+  });
 });

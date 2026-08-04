@@ -3,13 +3,15 @@ import type { MnRoot } from '~/types/mdast';
 import remarkFormatting from '~/utils/remark/remarkFormatting';
 
 describe('remarkFormatting', () => {
-  it('parses highlight and strikethrough markers in text', () => {
+  it('parses highlight, danger highlight, and strikethrough markers', () => {
     const tree: MnRoot = {
       type: 'root',
       children: [
         {
           type: 'paragraph',
-          children: [{ type: 'text', value: 'a{==hi==}b{--bye--}c' }],
+          children: [
+            { type: 'text', value: 'a{==hi==}b{!!danger!!}c{--bye--}d' },
+          ],
         },
       ],
     };
@@ -26,10 +28,16 @@ describe('remarkFormatting', () => {
         },
         { type: 'text', value: 'b' },
         {
+          type: 'highlight',
+          tone: 'danger',
+          children: [{ type: 'text', value: 'danger' }],
+        },
+        { type: 'text', value: 'c' },
+        {
           type: 'strikethrough',
           children: [{ type: 'text', value: 'bye' }],
         },
-        { type: 'text', value: 'c' },
+        { type: 'text', value: 'd' },
       ],
     });
   });

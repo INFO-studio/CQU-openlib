@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vite-plus/test';
 import {
+  COLLAPSE_GROUP_END,
+  COLLAPSE_GROUP_START,
+  COLLAPSE_ITEM,
   TAB,
   TAB_ITEM,
   TABS_END,
   TABS_START,
 } from '~/utils/preprocess/placeholders';
 import preprocessContentTabs, {
+  collapseHead,
   lineIndent,
   tabHead,
 } from '~/utils/preprocess/preprocessContentTabs';
@@ -42,7 +46,59 @@ describe('lineIndent', () => {
   });
 });
 
+describe('collapseHead', () => {
+  it('accepts a titled marker and rejects ambiguous bare markers', () => {
+    expect(collapseHead('^^^ 学生卡必须提前办')).toBe(0);
+    expect(collapseHead('    ^^^ 教材统一买')).toBe(4);
+    expect(collapseHead('^^^')).toBeNull();
+    expect(collapseHead('^^^^ 标题')).toBeNull();
+    expect(collapseHead('正文 ^^^ 标题')).toBeNull();
+  });
+});
+
 describe('preprocessContentTabs', () => {
+  it('groups consecutive collapse items', () => {
+    expect(
+      preprocessContentTabs([
+        '^^^ 第一项',
+        '    first',
+        '^^^ 第二项',
+        '    second',
+      ]),
+    ).toEqual([
+      COLLAPSE_GROUP_START,
+      COLLAPSE_ITEM,
+      '^^^ 第一项',
+      '    first',
+      COLLAPSE_ITEM,
+      '^^^ 第二项',
+      '    second',
+      COLLAPSE_GROUP_END,
+    ]);
+  });
+
+  it('preserves nesting between tabs and collapse groups', () => {
+    expect(
+      preprocessContentTabs([
+        '=== "Tab"',
+        '    ^^^ 详情',
+        '        body',
+        'after',
+      ]),
+    ).toEqual([
+      TABS_START,
+      TAB_ITEM,
+      '=== "Tab"',
+      COLLAPSE_GROUP_START,
+      COLLAPSE_ITEM,
+      '    ^^^ 详情',
+      '        body',
+      COLLAPSE_GROUP_END,
+      TABS_END,
+      'after',
+    ]);
+  });
+
   it('wraps a flat sibling tab group', () => {
     expect(
       preprocessContentTabs(['=== "A"', '    a', '=== "B"', '    b']),

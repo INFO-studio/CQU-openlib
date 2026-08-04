@@ -23,10 +23,12 @@ import { mapDocNodes } from '~/utils/parser/mapDocNodes';
 import {
   remarkAdmonition,
   remarkAttrList,
+  remarkCollapseGroup,
   remarkContentTabs,
   remarkDisableIndentedCode,
   remarkFormatting,
   remarkIcon,
+  remarkImageGallery,
   remarkKeys,
 } from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
@@ -67,8 +69,10 @@ const useDocAst = (page: string, enabled: boolean) => {
         .use(remarkFrontmatter)
         .use(remarkGfm, { singleTilde: false })
         .use(remarkContentTabs)
+        .use(remarkCollapseGroup)
         .use(remarkAdmonition)
         .use(remarkAttrList)
+        .use(remarkImageGallery)
         .use(remarkFormatting)
         .use(remarkKeys)
         .use(remarkIcon),

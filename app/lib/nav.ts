@@ -11,9 +11,8 @@ export type NavSection = {
   /** Hide from header / mobile tabs (route + search can still exist). */
   hiddenInNav?: boolean;
   /**
-   * Order the sidebar by the link order of the folder's index.md instead of by
-   * title. For lists the index page curates by hand (贡献者 is ordered by join
-   * time), an alphabetical sidebar contradicts the page readers just saw.
+   * Recursively order each folder by its index.md link order instead of title.
+   * For lists curated by hand, an alphabetical sidebar contradicts the page.
    */
   indexOrder?: boolean;
 };
@@ -35,7 +34,14 @@ export const NAV_SECTIONS: NavSection[] = [
   },
   { id: 'club', label: '社团', path: '/club', source: 'club', kind: 'dir' },
   { id: 'skill', label: '技巧', path: '/skill', source: 'skill', kind: 'dir' },
-  { id: 'life', label: '生活', path: '/life', source: 'life', kind: 'dir' },
+  {
+    id: 'life',
+    label: '生活',
+    path: '/life',
+    source: 'life',
+    kind: 'dir',
+    indexOrder: true,
+  },
   {
     id: 'contributor',
     label: '贡献者',

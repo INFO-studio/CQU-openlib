@@ -5,4 +5,6 @@ export type MnImage = {
   alt?: string | null;
   /** MkDocs `{.class}` attribute list. */
   className?: string;
+  /** Opt in to the fullscreen image viewer. */
+  preview?: boolean;
 };

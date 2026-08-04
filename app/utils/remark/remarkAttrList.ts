@@ -1,21 +1,15 @@
-import type {
-  Mn,
-  MnImage,
-  MnLink,
-  MnRoot,
-  MnTabs,
-  MnText,
-} from '~/types/mdast';
+import type { Mn, MnImage, MnLink, MnRoot, MnText } from '~/types/mdast';
 
 type AttrTarget = MnLink | MnImage;
 
-/** MkDocs / Python-Markdown attribute list: `{.class}`, `{:download="a.png"}`. */
+/** MkDocs / Python-Markdown attribute list. */
 const ATTR_LIST_RE = /^\{([.:#][^}]*)\}/;
 
 type ParsedAttrs = {
   className?: string;
   id?: string;
   download?: string | true;
+  preview?: boolean;
 };
 
 const parseAttrBody = (raw: string): ParsedAttrs => {
@@ -37,12 +31,14 @@ const parseAttrBody = (raw: string): ParsedAttrs => {
     if (key) {
       const value = dq ?? sq ?? bare ?? '';
       if (key === 'download') out.download = value === '' ? true : value;
+      else if (key === 'preview') out.preview = value !== 'false';
       else if (key === 'class')
         classes.push(...value.split(/\s+/).filter(Boolean));
       else if (key === 'id') out.id = value;
       continue;
     }
     if (flag === 'download') out.download = true;
+    else if (flag === 'preview') out.preview = true;
   }
 
   if (classes.length) out.className = classes.join(' ');
@@ -58,6 +54,7 @@ const applyAttrs = (target: AttrTarget, attrs: ParsedAttrs) => {
   if (attrs.download !== undefined && target.type === 'link') {
     target.download = attrs.download;
   }
+  if (attrs.preview && target.type === 'image') target.preview = true;
 };
 
 const isText = (n: Mn): n is MnText => n.type === 'text';
@@ -91,9 +88,8 @@ const consumeAttrLists = (children: Mn[]): Mn[] => {
 
 const walk = (nodes?: Mn[]): Mn[] =>
   (nodes ?? []).map((node) => {
-    if (node.type === 'tabs') {
-      const tabs = node as MnTabs;
-      for (const item of tabs.items) {
+    if (node.type === 'tabs' || node.type === 'collapseGroup') {
+      for (const item of node.items) {
         item.title = consumeAttrLists(walk(item.title));
         item.children = consumeAttrLists(walk(item.children));
       }

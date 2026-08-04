@@ -13,6 +13,11 @@ describe('toNavTarget', () => {
       to: '/map',
       search: { campus: 'a', focus: 'a-library' },
     });
+    expect(toNavTarget('/map?campus=d#交通')).toEqual({
+      to: '/map',
+      search: { campus: 'd', focus: undefined },
+      hash: '交通',
+    });
     expect(toNavTarget('/map?campus=invalid')).toEqual({ to: '/map' });
   });
 
@@ -20,6 +25,11 @@ describe('toNavTarget', () => {
     expect(toNavTarget('/course/高等数学')).toEqual({
       to: '/$',
       params: { _splat: 'course/高等数学' },
+    });
+    expect(toNavTarget('/academic/入学必看/常见问题#校园卡是什么')).toEqual({
+      to: '/$',
+      params: { _splat: 'academic/入学必看/常见问题' },
+      hash: '校园卡是什么',
     });
   });
 });
