@@ -1,11 +1,12 @@
 import { Select as BaseSelect } from '@base-ui/react/select';
 import { Check, ChevronDown } from 'lucide-react';
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { cn } from '~/lib/cn';
 
 export type SelectOption<T extends string> = {
   value: T;
   label: string;
+  icon?: ReactNode;
 };
 
 type Props<T extends string> = {
@@ -36,6 +37,7 @@ export const SelectField = <T extends string>({
   variant = 'field',
   className,
 }: Props<T>) => {
+  const selectedIcon = options.find((option) => option.value === value)?.icon;
   const items = useMemo(
     () =>
       Object.fromEntries(options.map((option) => [option.value, option.label])),
@@ -58,11 +60,16 @@ export const SelectField = <T extends string>({
           className,
         )}
       >
+        {selectedIcon ? (
+          <span className="flex shrink-0 text-icon" aria-hidden>
+            {selectedIcon}
+          </span>
+        ) : null}
         <BaseSelect.Value
           placeholder={placeholder}
-          className="min-w-0 truncate data-[placeholder]:text-muted"
+          className="min-w-0 flex-1 truncate data-[placeholder]:text-muted"
         />
-        <BaseSelect.Icon className="flex shrink-0 text-muted">
+        <BaseSelect.Icon className="flex shrink-0 text-icon">
           <ChevronDown size={14} strokeWidth={2} aria-hidden />
         </BaseSelect.Icon>
       </BaseSelect.Trigger>
@@ -88,6 +95,11 @@ export const SelectField = <T extends string>({
                   >
                     <Check size={10} strokeWidth={2.5} />
                   </span>
+                  {option.icon ? (
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center text-icon">
+                      {option.icon}
+                    </span>
+                  ) : null}
                   <BaseSelect.ItemText>{option.label}</BaseSelect.ItemText>
                 </BaseSelect.Item>
               ))}

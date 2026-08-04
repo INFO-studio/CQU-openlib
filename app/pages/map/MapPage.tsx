@@ -1,7 +1,7 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { Popover } from '@base-ui/react/popover';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
-import { ListFilter, MapPin, Menu, Minus, Plus, Search, X } from 'lucide-react';
+import { ListFilter, Menu, Minus, Plus, Search, X } from 'lucide-react';
 import {
   useCallback,
   useDeferredValue,
@@ -37,6 +37,7 @@ import {
   type Campus,
   type CampusId,
 } from './data';
+import { MapCategoryIcon, markerCategoryIconMarkup } from './markerIcons';
 import { navigationLinksFor } from './navigation';
 
 type MapRuntime = {
@@ -48,10 +49,23 @@ type MapStatus = 'idle' | 'loading' | 'ready' | 'error';
 type CategoryFilter = BuildingCategory | 'all';
 
 const CATEGORY_OPTIONS: readonly SelectOption<CategoryFilter>[] = [
-  { value: 'all', label: '全部分类' },
+  {
+    value: 'all',
+    label: '全部分类',
+    icon: (
+      <ListFilter size={14} strokeWidth={1.8} className="text-icon-strong" />
+    ),
+  },
   ...BUILDING_CATEGORIES.map((category) => ({
     value: category.id,
     label: category.label,
+    icon: (
+      <MapCategoryIcon
+        category={category.id}
+        size={14}
+        className="text-icon-strong"
+      />
+    ),
   })),
 ];
 const CAMPUS_OPTIONS: readonly SelectOption<CampusId>[] = CAMPUSES.map(
@@ -73,22 +87,26 @@ const isCampusId = (value: string | null): value is CampusId =>
   CAMPUSES.some((campus) => campus.id === value);
 
 /**
- * 图钉容器固定 28×28，缩放只动内部图形，锚点才不会跟着跳。
+ * 图钉容器固定 36×36，缩放只动内部图形，锚点才不会跟着跳。
  * hover / 选中用 transform 放大，比换整张 icon 图更顺。
  */
-const MARKER_PIN_SIZE = 28;
+const MARKER_PIN_SIZE = 36;
 const MARKER_SCALE = { idle: 1, hover: 1.4, selected: 1.45 } as const;
 
-const markerPinSvg = (color: string) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="${color}" stroke="#fff" stroke-opacity=".92" stroke-width="1.3" stroke-linejoin="round"/>
-    <circle cx="12" cy="9" r="2.7" fill="#fff" fill-opacity=".95"/>
-  </svg>`;
+const markerPinMarkup = (category: BuildingCategory) => {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" aria-hidden="true" style="display:block;filter:drop-shadow(0 1px 2px rgb(15 23 42 / .2))">
+    <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="var(--c-panel)" stroke="var(--map-pin-outline,var(--c-icon))" stroke-width="1" stroke-linejoin="round" style="transition:stroke 160ms ease"/>
+  </svg>${markerCategoryIconMarkup(category)}`;
+};
 
 const applyMarkerPinState = (root: HTMLDivElement, selected: boolean) => {
   const body = root.querySelector<HTMLDivElement>('[data-map-pin-body]');
   if (!body) return;
   body.dataset.selected = selected ? 'true' : 'false';
+  body.style.setProperty(
+    '--map-pin-outline',
+    selected ? 'var(--c-primary)' : 'var(--c-icon)',
+  );
   body.style.transform = `scale(${
     selected ? MARKER_SCALE.selected : MARKER_SCALE.idle
   })`;
@@ -111,10 +129,9 @@ const createMarkerPin = (
   building: Building,
   selected: boolean,
 ): HTMLDivElement => {
-  const color = BUILDING_CATEGORY_BY_ID[building.category].color;
   const root = document.createElement('div');
   root.className =
-    'group flex h-7 w-7 cursor-pointer items-end justify-center outline-none';
+    'group flex h-9 w-9 cursor-pointer items-end justify-center outline-none';
   root.style.setProperty('-webkit-tap-highlight-color', 'transparent');
   root.style.userSelect = 'none';
   root.dataset.buildingId = building.id;
@@ -122,12 +139,16 @@ const createMarkerPin = (
   const body = document.createElement('div');
   body.dataset.mapPinBody = 'true';
   body.dataset.selected = selected ? 'true' : 'false';
+  body.style.setProperty(
+    '--map-pin-outline',
+    selected ? 'var(--c-primary)' : 'var(--c-icon)',
+  );
   body.className =
-    'origin-bottom transition-transform duration-200 ease-out will-change-transform';
+    'relative h-9 w-9 origin-bottom transition-transform duration-200 ease-out will-change-transform';
   body.style.transform = `scale(${
     selected ? MARKER_SCALE.selected : MARKER_SCALE.idle
   })`;
-  body.innerHTML = markerPinSvg(color);
+  body.innerHTML = markerPinMarkup(building.category);
 
   root.appendChild(body);
   return root;
@@ -504,7 +525,7 @@ const MapSurface = ({
           ) : (
             <ActivitySpinner
               size={28}
-              className="text-muted"
+              className="text-icon"
               label="地图加载中"
             />
           )}
@@ -514,7 +535,7 @@ const MapSurface = ({
       <div className="absolute right-3 top-3 z-10 flex flex-col overflow-hidden rounded-md border border-line bg-panel/92 shadow-lg backdrop-blur md:right-5 md:top-5">
         <button
           type="button"
-          className="grid h-10 w-10 place-items-center text-ink hover:bg-mist disabled:cursor-not-allowed disabled:opacity-45"
+          className="grid h-10 w-10 place-items-center text-icon-strong hover:bg-mist disabled:cursor-not-allowed disabled:text-icon disabled:hover:bg-transparent"
           aria-label="放大地图"
           disabled={!mapReady}
           onClick={() => {
@@ -528,7 +549,7 @@ const MapSurface = ({
         <div className="h-px bg-line" />
         <button
           type="button"
-          className="grid h-10 w-10 place-items-center text-ink hover:bg-mist disabled:cursor-not-allowed disabled:opacity-45"
+          className="grid h-10 w-10 place-items-center text-icon-strong hover:bg-mist disabled:cursor-not-allowed disabled:text-icon disabled:hover:bg-transparent"
           aria-label="缩小地图"
           disabled={!mapReady}
           onClick={() => {
@@ -567,12 +588,10 @@ const BuildingList = ({
             )}
             onClick={() => onSelect(building)}
           >
-            <span
-              className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-              style={{
-                background: BUILDING_CATEGORY_BY_ID[building.category].color,
-              }}
-              aria-hidden
+            <MapCategoryIcon
+              category={building.category}
+              size={17}
+              className="mt-0.5 shrink-0 text-icon-strong"
             />
             <span className="min-w-0 flex-1">
               <span className="block font-medium leading-snug text-ink">
@@ -589,7 +608,11 @@ const BuildingList = ({
       })
     ) : (
       <div className="px-6 py-10 text-center">
-        <ListFilter size={22} className="mx-auto text-icon" aria-hidden />
+        <ListFilter
+          size={22}
+          className="mx-auto text-icon-strong"
+          aria-hidden
+        />
         <p className="mt-3 mb-0 font-medium text-ink">没有匹配的地点</p>
         <p className="mt-1 mb-0 text-xs text-muted">换个关键词或分类试试</p>
       </div>
@@ -639,7 +662,7 @@ const MapSidebarContent = ({
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-line px-3">
         <span className="text-xs font-medium text-muted">校园地点</span>
         <Dialog.Close
-          className="grid h-8 w-8 place-items-center rounded-md text-icon hover:bg-mist hover:text-ink"
+          className="grid h-8 w-8 place-items-center rounded-md text-icon-strong hover:bg-mist"
           aria-label="关闭地点列表"
         >
           <X size={16} />
@@ -648,7 +671,7 @@ const MapSidebarContent = ({
     ) : null}
     <div className="flex gap-2 border-b border-line p-3">
       <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-md border border-line bg-paper px-3 focus-within:border-primary">
-        <Search size={15} className="shrink-0 text-icon" aria-hidden />
+        <Search size={15} className="shrink-0 text-icon-strong" aria-hidden />
         <span className="sr-only">搜索地点</span>
         <input
           value={query}
@@ -659,7 +682,7 @@ const MapSidebarContent = ({
         {query ? (
           <button
             type="button"
-            className="grid h-6 w-6 place-items-center rounded-md text-muted hover:bg-mist hover:text-ink"
+            className="grid h-6 w-6 place-items-center rounded-md text-icon-strong hover:bg-mist"
             aria-label="清空搜索"
             onClick={() => onQueryChange('')}
           >
@@ -672,7 +695,7 @@ const MapSidebarContent = ({
         options={CATEGORY_OPTIONS}
         onValueChange={onCategoryChange}
         ariaLabel="地点分类"
-        className="w-28 bg-paper text-xs"
+        className="w-32 bg-paper text-xs md:w-36"
       />
     </div>
 
@@ -720,6 +743,15 @@ const MapPage = () => {
     });
   }, [campusBuildings, category, query]);
   const markerBuildings = useDeferredValue(filteredBuildings);
+  const visibleMarkerBuildings = useMemo(() => {
+    if (
+      !selected ||
+      markerBuildings.some((building) => building.id === selected.id)
+    ) {
+      return markerBuildings;
+    }
+    return [...markerBuildings, selected];
+  }, [markerBuildings, selected]);
 
   useEffect(() => {
     document.title = '校园地图 · CQU-openlib';
@@ -735,8 +767,6 @@ const MapPage = () => {
   useEffect(() => {
     if (!selected) return;
     setMapCampusId(selected.campusId);
-    setCategory('all');
-    setQuery('');
     setMobilePanelOpen(false);
   }, [selected, setMapCampusId]);
 
@@ -842,7 +872,7 @@ const MapPage = () => {
                 </p>
               </InfoPopover>
               <Dialog.Trigger
-                className="grid h-8 w-8 place-items-center rounded-md text-icon hover:bg-mist hover:text-ink md:hidden"
+                className="grid h-8 w-8 place-items-center rounded-md text-icon-strong hover:bg-mist md:hidden"
                 aria-label="打开地点列表"
               >
                 <Menu size={18} />
@@ -890,14 +920,14 @@ const MapPage = () => {
 
             <div className="relative min-w-0 flex-1">
               <MapSurface
-                buildings={markerBuildings}
+                buildings={visibleMarkerBuildings}
                 campus={campus}
                 selected={selected}
                 onSelect={chooseBuilding}
               />
 
               {!mobilePanelOpen ? (
-                <Dialog.Trigger className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 rounded-md border border-line bg-panel/92 px-3 text-sm font-medium shadow-lg backdrop-blur md:hidden">
+                <Dialog.Trigger className="absolute top-3 left-3 z-10 inline-flex h-10 items-center gap-2 rounded-md border border-line bg-panel/92 px-3 text-sm font-medium text-icon-strong shadow-lg backdrop-blur md:hidden">
                   <ListFilter size={15} aria-hidden />
                   {filteredBuildings.length} 个地点
                 </Dialog.Trigger>
@@ -906,14 +936,8 @@ const MapPage = () => {
               {selected ? (
                 <section className="absolute right-3 bottom-3 left-3 z-10 rounded-md border border-line bg-panel/95 p-3 shadow-2xl backdrop-blur md:right-auto md:bottom-5 md:left-5 md:w-[28rem] md:p-4">
                   <div className="flex items-start gap-3">
-                    <span
-                      className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
-                      style={{
-                        background:
-                          BUILDING_CATEGORY_BY_ID[selected.category].color,
-                      }}
-                    >
-                      <MapPin size={17} aria-hidden />
+                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md border border-primary bg-panel text-icon-strong">
+                      <MapCategoryIcon category={selected.category} size={18} />
                     </span>
                     <div className="min-w-0 flex-1">
                       <h2 className="m-0 font-display text-lg font-semibold leading-tight">
@@ -927,7 +951,7 @@ const MapPage = () => {
                     </div>
                     <button
                       type="button"
-                      className="grid h-7 w-7 shrink-0 place-items-center text-muted hover:text-ink"
+                      className="grid h-7 w-7 shrink-0 place-items-center text-icon-strong"
                       aria-label="关闭地点详情"
                       onClick={clearSelection}
                     >

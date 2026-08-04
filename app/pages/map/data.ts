@@ -48,84 +48,68 @@ export interface Building {
 export interface BuildingCategoryDefinition {
   readonly id: BuildingCategory;
   readonly label: string;
-  readonly color: `#${string}`;
 }
 
 export const BUILDING_CATEGORIES = [
   {
     id: 'teaching',
     label: '教学楼',
-    color: '#003375',
   },
   {
     id: 'dormitory',
     label: '学生宿舍',
-    color: '#4069B2',
   },
   {
     id: 'canteen',
     label: '食堂',
-    color: '#6296D8',
   },
   {
     id: 'library',
     label: '图书馆',
-    color: '#00285C',
   },
   {
     id: 'sports',
     label: '运动场馆',
-    color: '#8CB4E8',
   },
   {
     id: 'admin',
     label: '行政楼',
-    color: '#003375',
   },
   {
     id: 'gate',
     label: '校门',
-    color: '#4069B2',
   },
   {
     id: 'hospital',
     label: '校医院',
-    color: '#6296D8',
   },
   {
     id: 'theater',
     label: '剧场',
-    color: '#2F5599',
   },
   {
     id: 'busstation',
     label: '校车站',
-    color: '#5A82B8',
   },
   {
     id: 'transit',
     label: '公共交通',
-    color: '#4A7CC0',
   },
   {
     id: 'landmark',
     label: '地标建筑',
-    color: '#003375',
   },
   {
     id: 'college',
     label: '学院楼',
-    color: '#1A4A8A',
   },
   {
     id: 'food',
     label: '附近美食',
-    color: '#7BA8E0',
   },
   {
     id: 'express',
     label: '快递点',
-    color: '#4A7CC0',
   },
 ] as const satisfies readonly BuildingCategoryDefinition[];
 
@@ -134,7 +118,7 @@ export const CAMPUSES = [
     id: 'd',
     campusName: '科学城校区',
     siteName: '虎溪校园',
-    center: [106.298877, 29.596799],
+    center: [106.2982, 29.593145],
     defaultZoom: 16,
   },
   {
@@ -705,6 +689,22 @@ export const BUILDINGS = [
     desc: '电气学院楼',
   },
   {
+    id: 'huxi_transit_01',
+    name: '大学城轨道交通站',
+    category: 'transit',
+    campusId: 'd',
+    coord: [106.308908, 29.60735],
+    desc: '轨道交通1号线站点',
+  },
+  {
+    id: 'huxi_transit_02',
+    name: '尖顶坡轨道交通站',
+    category: 'transit',
+    campusId: 'd',
+    coord: [106.292967, 29.607324],
+    desc: '轨道交通1号线站点',
+  },
+  {
     id: 'a_teaching_01',
     name: '主教学楼',
     category: 'teaching',
@@ -1121,6 +1121,14 @@ export const BUILDINGS = [
     desc: '这是重庆一三八高中生下课吃面的常驻地，笔者最推荐其原汤牛肉牛筋混合韭叶面加蛋，其中“原汤”并不指浅白色的牛骨汤，而是指浮于汤面上的那层微辣牛油，这是整碗面的精髓；单吃牛肉太柴，单吃牛筋太腻，牛肉牛筋混合这一搭配折中两者优缺，让吃面也不再单调；韭叶面由其形状酷似韭菜叶子得名，源于四川达州大竹县，其优点是在吃面时可裹上更多红油，牛油香味更浓；在吃面时煎蛋埋于碗底，面吃到一半时，煎蛋已吸饱汤汁，此时再吃味更美(๑´ڡ`๑)（from 巧克力大王）',
   },
   {
+    id: 'a_transit_01',
+    name: '重庆大学轨道交通站',
+    category: 'transit',
+    campusId: 'a',
+    coord: [106.463616, 29.568332],
+    desc: '轨道交通环线站点',
+  },
+  {
     id: 'b_teaching_01',
     name: '第二综合楼',
     category: 'teaching',
@@ -1217,6 +1225,22 @@ export const BUILDINGS = [
     desc: '学生宿舍',
   },
   {
+    id: 'b_transit_01',
+    name: '重庆大学轨道交通站',
+    category: 'transit',
+    campusId: 'b',
+    coord: [106.463616, 29.568332],
+    desc: '轨道交通环线站点',
+  },
+  {
+    id: 'c_transit_01',
+    name: '重庆大学轨道交通站',
+    category: 'transit',
+    campusId: 'c',
+    coord: [106.463616, 29.568332],
+    desc: '轨道交通环线站点',
+  },
+  {
     id: 'e_teaching_01',
     name: '教学楼A栋',
     category: 'teaching',
@@ -1274,7 +1298,7 @@ export const BUILDINGS = [
   },
   {
     id: 'e_busstation_01',
-    name: '桐梓林轨道站',
+    name: '桐梓林轨道交通站',
     category: 'transit',
     campusId: 'e',
     coord: [106.815265, 29.741924],

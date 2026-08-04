@@ -84,7 +84,11 @@ export const AdminShell = ({
                     : 'text-muted hover:bg-mist hover:text-ink',
                 )}
               >
-                <Icon size={15} aria-hidden />
+                <Icon
+                  size={15}
+                  className={active ? 'text-icon-strong' : 'text-icon'}
+                  aria-hidden
+                />
                 <span>
                   <span className="text-[0.88rem] font-medium">
                     {mod.label}
@@ -103,7 +107,7 @@ export const AdminShell = ({
           onClick={onLock}
           className="ml-auto inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-[0.83rem] text-muted transition-colors hover:bg-mist hover:text-ink md:ml-0 md:mt-auto md:w-full"
         >
-          <Lock size={13} aria-hidden />
+          <Lock size={13} className="text-icon" aria-hidden />
           锁定会话
         </button>
       </aside>

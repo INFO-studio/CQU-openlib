@@ -214,7 +214,7 @@ const MobileNavDrawer = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-icon hover:bg-mist hover:text-ink"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-icon hover:bg-mist hover:text-icon-strong"
             aria-label="关闭"
           >
             <X size={18} />

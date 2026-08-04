@@ -298,7 +298,7 @@ const CourseSidebar = ({
                   )}
                 >
                   <Collapsible.Trigger
-                    className="inline-flex h-5 w-5 items-center justify-center rounded text-icon hover:bg-mist hover:text-ink"
+                    className="inline-flex h-5 w-5 items-center justify-center rounded text-icon hover:bg-mist hover:text-icon-strong"
                     aria-label={open ? '折叠' : '展开'}
                   >
                     <ChevronRight

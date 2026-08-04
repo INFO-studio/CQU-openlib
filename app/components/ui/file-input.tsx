@@ -112,7 +112,7 @@ export const FileInput = ({
             'relative grid size-11 place-items-center rounded-full border transition-transform duration-300',
             dragging
               ? 'scale-110 border-primary bg-panel text-primary'
-              : 'border-line bg-panel text-muted',
+              : 'border-line bg-panel text-icon',
           )}
         >
           <svg

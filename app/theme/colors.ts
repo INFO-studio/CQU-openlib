@@ -65,6 +65,11 @@ const color = {
     light: 'oklch(0.7123 0.0121 269.5)',
     dark: 'oklch(0.5276 0.0232 267.11)',
   },
+  /** Opaque counterpart of ink as perceived on the standard panel surface. */
+  iconStrong: {
+    light: 'oklch(0.2386 0.0382 265.75)',
+    dark: 'oklch(0.8727 0.018 265.8)',
+  },
   paper: {
     light: 'oklch(0.9792 0.0041 271.37)',
     dark: 'oklch(0.1677 0.0161 261.49)',

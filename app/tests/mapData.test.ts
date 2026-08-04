@@ -1,19 +1,9 @@
 import { describe, expect, it } from 'vite-plus/test';
-import {
-  BUILDING_CATEGORIES,
-  BUILDINGS,
-  type Building,
-  CAMPUSES,
-} from '~/pages/map/data';
+import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
 
 describe('campus map data', () => {
   it('matches the published location count', () => {
-    expect(BUILDINGS).toHaveLength(138);
-    expect(
-      (BUILDINGS as readonly Building[]).some(
-        (building) => building.campusId === 'c',
-      ),
-    ).toBe(false);
+    expect(BUILDINGS).toHaveLength(143);
   });
 
   it('uses the site-wide 校区 / 校园 terminology', () => {

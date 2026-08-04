@@ -123,7 +123,7 @@ export const EmailsPage = ({ refreshToken, onUnauthorized }: Props) => {
               }}
               className={ACTION}
             >
-              <PenLine size={13} aria-hidden />
+              <PenLine size={13} className="text-icon" aria-hidden />
               写新邮件
             </button>
             <button
@@ -132,7 +132,7 @@ export const EmailsPage = ({ refreshToken, onUnauthorized }: Props) => {
               disabled={loading}
               className={ACTION}
             >
-              <RefreshCw size={13} aria-hidden />
+              <RefreshCw size={13} className="text-icon" aria-hidden />
               刷新
             </button>
           </div>
