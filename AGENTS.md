@@ -48,6 +48,7 @@
 - 项目使用 **Base UI + 类 shadcn 的本地组件管理方式**。页面优先复用 `app/components/ui/` 中的组件，不要在业务页面重复拼装同类交互与样式。
 - Select、Dialog、Popover、Collapsible 等复合交互优先使用 Base UI primitive；缺少通用封装时，先在 `app/components/ui/` 增加可复用组件，再由页面调用。不要用原生 `<select>` 等控件临时替代。
 - 组件样式使用 UnoCSS 和现有语义化 token；避免散落的自定义 CSS、重复样式和脱离主题的硬编码颜色。
+- **所有图标必须使用不透明前景色。** Lucide 由多个 stroke/path 组成，带 alpha 的 `currentColor` 会在路径重叠处重复混色；弱图标使用 `text-icon`，需要接近正文或用于 hover 的强图标使用 `text-icon-strong`，品牌强调使用 `text-primary`，状态图标使用 `text-success` / `text-error` 等不透明语义色。禁止让图标继承 `text-muted`、`text-ink`、`颜色/透明度` 或带 alpha 的硬编码色。整枚 SVG/外层容器用于显隐、禁用、动画的 `opacity-*` 是组后合成，不会造成路径叠色，可以保留；Lucide 的 `fill="none"` 属于图形结构，不是透明前景色。
 
 ## 验证
 

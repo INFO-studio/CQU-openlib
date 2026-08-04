@@ -42,7 +42,7 @@ export const InfoPopover = ({ ariaLabel, children, className }: Props) => {
       <Popover.Trigger
         aria-label={ariaLabel}
         className={cn(
-          'grid h-8 w-8 place-items-center rounded text-icon outline-none transition-colors hover:bg-mist hover:text-ink focus-visible:bg-mist focus-visible:text-ink data-[popup-open]:bg-mist data-[popup-open]:text-ink',
+          'grid h-8 w-8 place-items-center rounded text-icon outline-none transition-colors hover:bg-mist hover:text-icon-strong focus-visible:bg-mist focus-visible:text-icon-strong data-[popup-open]:bg-mist data-[popup-open]:text-icon-strong',
           className,
         )}
         onPointerEnter={openOnHover}

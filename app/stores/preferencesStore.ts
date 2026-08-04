@@ -1,5 +1,5 @@
 import { createGlobalStore } from 'hox';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type Theme = 'light' | 'dark';
 
@@ -79,15 +79,30 @@ export const [usePreferencesStore, getPreferencesStore] = createGlobalStore(
       }
     }, [preferences]);
 
-    const setTheme = (theme: Theme) =>
-      setPreferences((current) => ({ ...current, theme }));
-    const toggleTheme = () =>
-      setPreferences((current) => ({
-        ...current,
-        theme: current.theme === 'light' ? 'dark' : 'light',
-      }));
-    const setMapCampusId = (mapCampusId: string) =>
-      setPreferences((current) => ({ ...current, mapCampusId }));
+    const setTheme = useCallback(
+      (theme: Theme) =>
+        setPreferences((current) =>
+          current.theme === theme ? current : { ...current, theme },
+        ),
+      [],
+    );
+    const toggleTheme = useCallback(
+      () =>
+        setPreferences((current) => ({
+          ...current,
+          theme: current.theme === 'light' ? 'dark' : 'light',
+        })),
+      [],
+    );
+    const setMapCampusId = useCallback(
+      (mapCampusId: string) =>
+        setPreferences((current) =>
+          current.mapCampusId === mapCampusId
+            ? current
+            : { ...current, mapCampusId },
+        ),
+      [],
+    );
 
     return {
       ...preferences,

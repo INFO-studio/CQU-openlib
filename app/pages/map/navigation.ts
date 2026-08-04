@@ -120,11 +120,13 @@ export const navigationLinksFor = (
     {
       id: 'amap',
       label: '高德',
-      // uri.amap.com/marker 和 /ssr/regeo 都只是 302 到这里，直接给终点少一跳。
-      href: urlWithParams('https://ditu.amap.com/regeo', {
-        lng: String(gcjLongitude),
-        lat: String(gcjLatitude),
+      // 使用官方 URI API；ditu.amap.com/regeo 在 Android 调起 App 时会丢参数。
+      href: urlWithParams('https://uri.amap.com/marker', {
+        position: `${gcjLongitude},${gcjLatitude}`,
         name: building.name,
+        src: 'INFO-studio.CQU-openlib',
+        coordinate: 'gaode',
+        callnative: '1',
       }),
     },
     {
@@ -149,9 +151,11 @@ export const navigationLinksFor = (
     {
       id: 'google',
       label: 'Google',
+      // Google 中国的道路图同样使用 GCJ-02；转成 WGS-84 反而会偏数百米。
+      // 卫星图仍是 WGS-84，这是 Google 自身两层数据不重合，外链无法兼顾。
       href: urlWithParams('https://www.google.com/maps/search/', {
         api: '1',
-        query: `${wgsLatitude},${wgsLongitude}`,
+        query: `${gcjLatitude},${gcjLongitude}`,
       }),
     },
     {

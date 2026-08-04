@@ -102,7 +102,7 @@ export const EmailReader = ({ email }: Props) => (
               key={`${file.filename}-${file.size ?? 0}`}
               className="flex items-baseline gap-2 text-[0.82rem] text-muted"
             >
-              <Paperclip size={12} aria-hidden className="shrink-0" />
+              <Paperclip size={12} aria-hidden className="shrink-0 text-icon" />
               <span className="break-all font-mono">{file.filename}</span>
               {file.size != null ? (
                 <span className="shrink-0 font-mono text-[0.74rem] text-icon">

@@ -30,8 +30,18 @@ describe('map navigation links', () => {
     expect(links.baidu.searchParams.get('location')).toBe(
       `${bdLatitude},${bdLongitude}`,
     );
-    expect(links.amap.searchParams.get('lng')).toBe(String(building.coord[0]));
-    expect(links.amap.searchParams.get('lat')).toBe(String(building.coord[1]));
+    expect(links.amap.origin + links.amap.pathname).toBe(
+      'https://uri.amap.com/marker',
+    );
+    expect(links.amap.searchParams.get('position')).toBe(
+      `${building.coord[0]},${building.coord[1]}`,
+    );
+    expect(links.amap.searchParams.get('name')).toBe(building.name);
+    expect(links.amap.searchParams.get('coordinate')).toBe('gaode');
+    expect(links.amap.searchParams.get('callnative')).toBe('1');
+    expect(links.google.searchParams.get('query')).toBe(
+      `${building.coord[1]},${building.coord[0]}`,
+    );
     expect(links.baidu.searchParams.get('title')).toBe(building.name);
     expect(links.baidu.searchParams.get('content')).toBe(building.name);
     expect(links.baidu.searchParams.get('output')).toBe('html');

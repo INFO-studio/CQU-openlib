@@ -103,7 +103,7 @@ const SiteHeader = ({ currentPath }: Props) => {
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-8 w-8 items-center justify-center rounded text-icon no-underline hover:bg-mist hover:text-ink"
+            className="inline-flex h-8 w-8 items-center justify-center rounded text-icon no-underline hover:bg-mist hover:text-icon-strong"
             aria-label="GitHub 仓库"
           >
             <Github size={16} />

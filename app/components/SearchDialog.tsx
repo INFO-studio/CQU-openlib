@@ -206,7 +206,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
     if (target.to === '/') {
       void navigate({ to: '/' });
     } else if (target.to === '/map') {
-      void navigate({ to: '/map' });
+      void navigate({ to: '/map', search: target.search });
     } else {
       void navigate({ to: '/$', params: target.params });
     }
@@ -277,7 +277,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
               }
             />
             <Dialog.Close
-              className="inline-flex h-8 w-8 items-center justify-center rounded text-icon hover:bg-mist hover:text-ink"
+              className="inline-flex h-8 w-8 items-center justify-center rounded text-icon hover:bg-mist hover:text-icon-strong"
               aria-label="关闭"
             >
               <X size={16} />
@@ -352,7 +352,11 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
                     aria-hidden={!loading}
                   >
                     {loading ? (
-                      <ActivitySpinner size={16} label="加载中" />
+                      <ActivitySpinner
+                        size={16}
+                        className="text-icon"
+                        label="加载中"
+                      />
                     ) : canLoadMore ? null : matched.length ? (
                       `共 ${matched.length} 条`
                     ) : null}

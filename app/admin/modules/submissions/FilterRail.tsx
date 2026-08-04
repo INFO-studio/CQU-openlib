@@ -162,7 +162,7 @@ export const FilterRail = ({
             type="button"
             onClick={() => onQueryChange('')}
             aria-label="清空搜索"
-            className="grid shrink-0 place-items-center text-icon transition-colors hover:text-ink"
+            className="grid shrink-0 place-items-center text-icon transition-colors hover:text-icon-strong"
           >
             <X size={14} />
           </button>

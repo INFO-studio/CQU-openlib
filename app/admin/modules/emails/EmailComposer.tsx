@@ -176,7 +176,7 @@ export const EmailComposer = ({ draft, onSent, onUnauthorized }: Props) => {
               }}
               className="inline-flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-1.5 text-[0.8rem] text-muted transition-colors hover:bg-panel hover:text-ink"
             >
-              <Pencil size={13} aria-hidden />
+              <Pencil size={13} className="text-icon" aria-hidden />
               重新编辑
             </button>
           </div>

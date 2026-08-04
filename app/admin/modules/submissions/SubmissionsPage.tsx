@@ -126,7 +126,7 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
             disabled={loading}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-line bg-panel px-3 py-2 text-[0.82rem] text-muted transition-colors hover:bg-mist hover:text-ink disabled:cursor-progress disabled:opacity-50"
           >
-            <RefreshCw size={13} aria-hidden />
+            <RefreshCw size={13} className="text-icon" aria-hidden />
             刷新
           </button>
         </header>

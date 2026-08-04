@@ -36,7 +36,7 @@ const CodeBlock = ({ value, lang }: Props) => {
         type="button"
         className={cn(
           'cquol-code-block__copy absolute top-[0.35rem] right-[0.35rem] z-1 inline-flex h-7 w-7 items-center justify-center rounded-[0.3rem] border border-line bg-panel text-icon shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[opacity,color,background,border-color] duration-150',
-          'hover:border-primary-soft hover:bg-mist hover:text-ink',
+          'hover:border-primary-soft hover:bg-mist hover:text-icon-strong',
           'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary',
           'opacity-100 [@media(hover:hover)_and_(pointer:fine)]:opacity-0',
           '[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100',

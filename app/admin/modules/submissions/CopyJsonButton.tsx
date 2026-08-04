@@ -56,7 +56,7 @@ export const CopyJsonButton = ({ value }: Props) => {
           ? 'text-error'
           : copied
             ? ''
-            : 'text-icon hover:bg-mist hover:text-ink',
+            : 'text-icon hover:bg-mist hover:text-icon-strong',
       )}
     >
       {copied ? (
