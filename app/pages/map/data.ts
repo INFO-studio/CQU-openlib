@@ -1289,14 +1289,6 @@ export const BUILDINGS = [
     desc: '轨道交通环线站点',
   },
   {
-    id: 'c_transit_01',
-    name: '重庆大学轨道交通站',
-    category: 'transit',
-    campusId: 'c',
-    coord: [106.463616, 29.568332],
-    desc: '轨道交通环线站点',
-  },
-  {
     id: 'b_food_01',
     name: '黑娃餐馆(重大B区店)',
     category: 'food',
