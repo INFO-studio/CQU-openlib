@@ -705,6 +705,14 @@ export const BUILDINGS = [
     desc: '轨道交通1号线站点',
   },
   {
+    id: 'huxi_express_01',
+    name: '虎溪快递点',
+    category: 'express',
+    campusId: 'd',
+    coord: [106.297572,29.598113],
+    desc: '靠近一食堂',
+  },
+  {
     id: 'a_teaching_01',
     name: '主教学楼',
     category: 'teaching',
@@ -1161,6 +1169,22 @@ export const BUILDINGS = [
     desc: '轨道交通环线站点',
   },
   {
+    id: 'a_express_01',
+    name: 'A区邮政快递点',
+    category: 'express',
+    campusId: 'd',
+    coord: [106.467409,29.561742],
+    desc: '邮政快递可以在这里拿取。',
+  },
+  {
+    id: 'a_express_02',
+    name: 'A区主快递点',
+    category: 'express',
+    campusId: 'd',
+    coord: [106.468178,29.562029],
+    desc: '顺丰/京东/圆通/申通/拼多多快递都可在这里拿取。',
+  },
+  {
     id: 'b_teaching_01',
     name: '第二综合楼',
     category: 'teaching',
@@ -1295,6 +1319,14 @@ export const BUILDINGS = [
     campusId: 'c',
     coord: [106.463616, 29.568332],
     desc: '轨道交通环线站点',
+  },
+  {
+    id: 'c_carstop_01',
+    name: 'C区乘车点',
+    category: 'busstation',
+    campusId: 'c',
+    coord: [106.455649,29.560364],
+    desc: '可从这里坐车',
   },
   {
     id: 'e_teaching_01',
