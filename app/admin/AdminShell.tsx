@@ -42,7 +42,11 @@ export const AdminShell = ({
 
   return (
     <div className={cn(SURFACE, 'grid md:grid-cols-[15.5rem_minmax(0,1fr)]')}>
-      <aside className="flex items-center gap-4 overflow-x-auto border-b border-line bg-panel px-4 py-3 md:sticky md:top-0 md:h-screen md:flex-col md:items-stretch md:gap-6 md:border-b-0 md:border-r md:px-3 md:py-5">
+      {/* Phone: one sticky row of three equal tabs. The console has exactly
+          three destinations, so they fit without a drawer or a scrolling rail —
+          and every child is `shrink-0` or `min-w-0` on purpose, since a plain
+          flex row squeezes the labels into each other well before it scrolls. */}
+      <aside className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-panel px-3 py-2 md:h-screen md:flex-col md:items-stretch md:gap-6 md:border-b-0 md:border-r md:px-3 md:py-5">
         <div className="flex shrink-0 items-center gap-2.5 md:px-1.5">
           <span
             className="grid h-8 w-8 shrink-0 place-items-center"
@@ -56,17 +60,20 @@ export const AdminShell = ({
               className="h-full w-full object-contain"
             />
           </span>
-          <div>
+          <div className="hidden md:block">
             <p className="m-0 font-display text-[1.02rem] font-semibold leading-tight">
               openlib 维护台
             </p>
-            <p className="m-0 mt-0.5 hidden font-mono text-[0.66rem] uppercase tracking-[0.12em] text-icon md:block">
+            <p className="m-0 mt-0.5 font-mono text-[0.66rem] uppercase tracking-[0.12em] text-icon">
               console
             </p>
           </div>
         </div>
 
-        <nav className="flex gap-1 md:flex-col" aria-label="维护模块">
+        <nav
+          className="flex min-w-0 flex-1 gap-1 md:flex-none md:flex-col"
+          aria-label="维护模块"
+        >
           <p className="m-0 mb-1 hidden px-1.5 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-icon md:block">
             模块
           </p>
@@ -79,7 +86,8 @@ export const AdminShell = ({
                 to={mod.path}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'grid grid-cols-[1.1rem_minmax(0,1fr)] items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 no-underline transition-colors md:whitespace-normal',
+                  'flex min-w-0 flex-1 items-center justify-center rounded-lg px-1.5 py-1.5 no-underline transition-colors',
+                  'md:grid md:flex-none md:grid-cols-[1.1rem_minmax(0,1fr)] md:justify-start md:gap-2.5 md:px-2.5 md:py-2',
                   active
                     ? 'bg-primary-soft text-ink shadow-rail-active'
                     : 'text-muted hover:bg-mist hover:text-ink',
@@ -87,11 +95,14 @@ export const AdminShell = ({
               >
                 <Icon
                   size={15}
-                  className={active ? 'text-icon-strong' : 'text-icon'}
+                  className={cn(
+                    'hidden md:block',
+                    active ? 'text-icon-strong' : 'text-icon',
+                  )}
                   aria-hidden
                 />
-                <span>
-                  <span className="text-[0.88rem] font-medium">
+                <span className="min-w-0">
+                  <span className="block truncate text-[0.82rem] font-medium md:text-[0.88rem]">
                     {mod.label}
                   </span>
                   <span className="mt-0.5 hidden text-[0.7rem] leading-snug text-icon md:block">
@@ -106,10 +117,11 @@ export const AdminShell = ({
         <button
           type="button"
           onClick={onLock}
-          className="ml-auto inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-[0.83rem] text-muted transition-colors hover:bg-mist hover:text-ink md:ml-0 md:mt-auto md:w-full"
+          aria-label="锁定会话"
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-[0.83rem] text-muted transition-colors hover:bg-mist hover:text-ink md:mt-auto md:w-full md:px-3"
         >
           <Lock size={13} className="text-icon" aria-hidden />
-          锁定会话
+          <span className="hidden md:inline">锁定会话</span>
         </button>
       </aside>
 
