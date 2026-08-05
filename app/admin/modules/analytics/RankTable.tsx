@@ -6,6 +6,9 @@ export type RankRow = {
   sub?: string;
 };
 
+/** Every panel body is the same height, so a row of panels always lines up. */
+const BODY_HEIGHT = 'h-80';
+
 type Props = {
   title: string;
   /** Only for behaviour the title cannot state, e.g. ignoring the range. */
@@ -34,30 +37,44 @@ export const RankTable = ({ title, note, rows, empty }: Props) => {
       </header>
 
       {rows.length === 0 ? (
-        <p className="m-0 py-2.5 text-[0.82rem] text-icon">{empty}</p>
+        <p
+          className={`m-0 grid place-items-center text-[0.82rem] text-icon ${BODY_HEIGHT}`}
+        >
+          {empty}
+        </p>
       ) : (
-        <ol className="m-0 grid list-none gap-px p-0">
+        // Fixed height so a 20-row panel can't stretch the page into a tower;
+        // the list scrolls inside instead.
+        <ol
+          className={`m-0 flex list-none flex-col gap-px overflow-y-auto p-0 pr-1 [scrollbar-color:var(--c-rule)_transparent] [scrollbar-width:thin] ${BODY_HEIGHT}`}
+        >
           {rows.map((row) => (
-            <li key={row.id} className="relative overflow-hidden rounded">
+            // `shrink-0` is load-bearing: `overflow-hidden` drops the automatic
+            // minimum size to 0, so without it the rows compress to fit instead
+            // of overflowing into a scroll.
+            <li
+              key={row.id}
+              className="relative shrink-0 overflow-hidden rounded"
+            >
               <span
                 className="absolute inset-y-0 left-0 bg-primary-faint"
                 style={{ width: `${max ? (row.value / max) * 100 : 0}%` }}
                 aria-hidden
               />
-              <div className="relative flex items-baseline justify-between gap-3 px-2 py-1.5">
+              <div className="relative flex items-baseline justify-between gap-3 px-2 py-1">
                 <span className="min-w-0">
-                  <span className="block truncate text-[0.84rem] text-ink">
+                  <span className="block truncate text-[0.8rem] leading-tight text-ink">
                     {row.label}
                   </span>
                   {row.sub ? (
-                    <span className="mt-0.5 block truncate text-[0.72rem] text-icon">
+                    <span className="mt-px block truncate text-[0.68rem] leading-tight text-icon">
                       {row.sub}
                     </span>
                   ) : null}
                 </span>
-                <span className="shrink-0 whitespace-nowrap text-[0.82rem] tabular-nums text-muted">
+                <span className="shrink-0 whitespace-nowrap text-[0.78rem] leading-tight tabular-nums text-muted">
                   {row.value.toLocaleString('zh-CN')}
-                  <span className="ml-0.5 text-[0.7rem] text-icon">次</span>
+                  <span className="ml-0.5 text-[0.66rem] text-icon">次</span>
                 </span>
               </div>
             </li>

@@ -27,13 +27,13 @@ import { cn } from '~/lib/cn';
  */
 const TrendChart = lazy(() => import('~/admin/modules/analytics/TrendChart'));
 
-const PANEL_ROWS = 12;
-const PAGE_ROWS = 20;
+/** Panels scroll, so every list can carry the same depth. */
+const ROWS = 20;
 
 const Group = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="grid gap-2.5">
     <h2 className="m-0 text-[0.8rem] font-medium text-icon">{title}</h2>
-    {/* `items-start` so a short panel stops stretching to its neighbour's height. */}
+    {/* Panels carry their own fixed body height, so rows already line up. */}
     <div className="grid items-start gap-4 xl:grid-cols-2">{children}</div>
   </section>
 );
@@ -83,14 +83,14 @@ export const AnalyticsPage = ({ refreshToken, onUnauthorized }: Props) => {
       : '';
   const hasTraffic = data.daily.some((point) => point.views > 0);
 
-  const topPages: RankRow[] = data.topPages.slice(0, PAGE_ROWS).map((row) => ({
+  const topPages: RankRow[] = data.topPages.slice(0, ROWS).map((row) => ({
     id: row.path,
     label: row.path,
     value: row.views,
     sub: `${row.sessions.toLocaleString('zh-CN')} 会话`,
   }));
 
-  const allTime: RankRow[] = data.allTime.slice(0, PAGE_ROWS).map((row) => ({
+  const allTime: RankRow[] = data.allTime.slice(0, ROWS).map((row) => ({
     id: row.path,
     label: row.path,
     value: row.count,
@@ -98,19 +98,17 @@ export const AnalyticsPage = ({ refreshToken, onUnauthorized }: Props) => {
   }));
 
   const entryPages: RankRow[] = data.entryPages
-    .slice(0, PANEL_ROWS)
+    .slice(0, ROWS)
     .map((row) => ({ id: row.path, label: row.path, value: row.count }));
 
-  const downloads: RankRow[] = data.downloads
-    .slice(0, PANEL_ROWS)
-    .map((row) => ({
-      id: row.ref,
-      label: row.text || row.ref,
-      value: row.count,
-      sub: [downloadKindLabel(row.kind), row.page].filter(Boolean).join(' · '),
-    }));
+  const downloads: RankRow[] = data.downloads.slice(0, ROWS).map((row) => ({
+    id: row.ref,
+    label: row.text || row.ref,
+    value: row.count,
+    sub: [downloadKindLabel(row.kind), row.page].filter(Boolean).join(' · '),
+  }));
 
-  const searches: RankRow[] = data.searches.slice(0, PANEL_ROWS).map((row) => ({
+  const searches: RankRow[] = data.searches.slice(0, ROWS).map((row) => ({
     id: row.query,
     label: row.query,
     value: row.count,
@@ -118,7 +116,7 @@ export const AnalyticsPage = ({ refreshToken, onUnauthorized }: Props) => {
   }));
 
   const deadSearches: RankRow[] = data.deadSearches
-    .slice(0, PANEL_ROWS)
+    .slice(0, ROWS)
     .map((row) => ({ id: row.query, label: row.query, value: row.count }));
 
   const clicks: RankRow[] = data.clicks.map((row) => ({
@@ -127,14 +125,14 @@ export const AnalyticsPage = ({ refreshToken, onUnauthorized }: Props) => {
     value: row.count,
   }));
 
-  const flows: RankRow[] = data.flows.slice(0, PANEL_ROWS).map((row) => ({
+  const flows: RankRow[] = data.flows.slice(0, ROWS).map((row) => ({
     id: `${row.from}→${row.to}`,
     label: row.to,
     value: row.count,
     sub: `来自 ${row.from}`,
   }));
 
-  const errors: RankRow[] = data.errors.slice(0, PANEL_ROWS).map((row) => ({
+  const errors: RankRow[] = data.errors.slice(0, ROWS).map((row) => ({
     id: `${row.path}|${row.reason}`,
     label: row.path,
     value: row.count,
@@ -250,15 +248,6 @@ export const AnalyticsPage = ({ refreshToken, onUnauthorized }: Props) => {
               )}
             </section>
 
-            <Group title="待处理">
-              <RankTable
-                title="无结果搜索"
-                rows={deadSearches}
-                empty="搜索均有结果"
-              />
-              <RankTable title="页面异常" rows={errors} empty="无异常" />
-            </Group>
-
             <Group title="内容表现">
               <RankTable title="热门页面" rows={topPages} empty="暂无访问" />
               <RankTable
@@ -275,6 +264,15 @@ export const AnalyticsPage = ({ refreshToken, onUnauthorized }: Props) => {
               <RankTable title="落地页" rows={entryPages} empty="暂无落地页" />
               <RankTable title="站内跳转" rows={flows} empty="暂无跳转" />
               <RankTable title="搜索词" rows={searches} empty="暂无搜索" />
+            </Group>
+
+            <Group title="非常规情况">
+              <RankTable
+                title="无结果搜索"
+                rows={deadSearches}
+                empty="搜索均有结果"
+              />
+              <RankTable title="页面异常" rows={errors} empty="无异常" />
             </Group>
           </div>
         </>
