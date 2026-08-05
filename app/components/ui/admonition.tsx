@@ -48,6 +48,7 @@ type CollapsibleShellProps = {
   body: ReactNode;
   titleAside?: ReactNode;
   defaultOpen: boolean;
+  onToggle?: (open: boolean) => void;
 };
 
 const CollapsibleShell = ({
@@ -59,6 +60,7 @@ const CollapsibleShell = ({
   body,
   titleAside,
   defaultOpen,
+  onToggle,
 }: CollapsibleShellProps) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -66,7 +68,10 @@ const CollapsibleShell = ({
       className={shell}
       style={style}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(next) => {
+        setOpen(next);
+        onToggle?.(next);
+      }}
     >
       <div className="relative">
         <Collapsible.Trigger
@@ -107,6 +112,8 @@ type Props = {
   titleAside?: ReactNode;
   /** Material `???` / `???+`. */
   collapse?: 'closed' | 'open';
+  /** Only ever called when `collapse` is set. */
+  onToggle?: (open: boolean) => void;
 };
 
 const Admonition = ({
@@ -116,6 +123,7 @@ const Admonition = ({
   className,
   titleAside,
   collapse,
+  onToggle,
 }: Props) => {
   const Icon = ICONS[type] ?? BookOpen;
   const hasTitle = title != null && title !== false;
@@ -166,6 +174,7 @@ const Admonition = ({
         body={body}
         titleAside={titleAside}
         defaultOpen={collapse === 'open'}
+        onToggle={onToggle}
       />
     );
   }

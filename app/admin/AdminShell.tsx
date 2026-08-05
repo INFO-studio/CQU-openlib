@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Inbox, Lock, type LucideIcon, Mail } from 'lucide-react';
+import { BarChart3, Inbox, Lock, type LucideIcon, Mail } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import {
@@ -22,6 +22,7 @@ const SURFACE = 'theme-dark min-h-screen bg-paper font-sans text-ink';
 const MODULE_ICONS: Record<string, LucideIcon> = {
   submissions: Inbox,
   emails: Mail,
+  analytics: BarChart3,
 };
 
 type ShellProps = {

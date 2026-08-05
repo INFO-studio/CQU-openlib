@@ -1,13 +1,11 @@
 import { Tabs } from '~/components/ui/tabs';
+import { trackItemClick } from '~/lib/analytics';
 import type { MnTabs } from '~/types/mdast';
+import { mdastText } from '~/utils/mdastText';
 import parser from '~/utils/parser/index';
 
-const titleKey = (title: MnTabs['items'][number]['title'], index: number) => {
-  const text = title
-    .map((n) => (n.type === 'text' ? (n.value ?? '') : n.type))
-    .join('');
-  return `${text || 'tab'}-${index}`;
-};
+const titleKey = (title: MnTabs['items'][number]['title'], index: number) =>
+  `${mdastText(title) || 'tab'}-${index}`;
 
 const parserTabs = (mn: MnTabs) => {
   const items = (mn.items ?? []).map((item, i) => ({
@@ -15,7 +13,18 @@ const parserTabs = (mn: MnTabs) => {
     title: <>{item.title.map(parser)}</>,
     children: <>{item.children.map(parser)}</>,
   }));
-  return <Tabs items={items} />;
+  return (
+    <Tabs
+      items={items}
+      onSelect={(index) =>
+        trackItemClick({
+          item_type: 'content_tab',
+          label: mdastText(mn.items?.[index]?.title) || `tab-${index}`,
+          index,
+        })
+      }
+    />
+  );
 };
 
 export default parserTabs;

@@ -11,9 +11,11 @@ export type TabsItem = {
 type Props = {
   items: TabsItem[];
   className?: string;
+  /** Fires on every tab press, including a press on the active tab. */
+  onSelect?: (index: number) => void;
 };
 
-export const Tabs = ({ items, className }: Props) => {
+export const Tabs = ({ items, className, onSelect }: Props) => {
   const [active, setActive] = useState(0);
   /** 0 until the reader switches, so panels do not animate on page load. */
   const [direction, setDirection] = useState(0);
@@ -22,6 +24,7 @@ export const Tabs = ({ items, className }: Props) => {
   const select = (next: number) => {
     setDirection(next === active ? 0 : next > active ? 1 : -1);
     setActive(next);
+    onSelect?.(next);
   };
   const enterAnimation =
     direction === 0

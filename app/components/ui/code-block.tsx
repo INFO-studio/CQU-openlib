@@ -5,11 +5,13 @@ import { cn } from '~/lib/cn';
 type Props = {
   value: string;
   lang?: string;
+  /** Fires only after the clipboard write actually succeeded. */
+  onCopied?: () => void;
 };
 
 const COPIED_MS = 1600;
 
-const CodeBlock = ({ value, lang }: Props) => {
+const CodeBlock = ({ value, lang, onCopied }: Props) => {
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,6 +27,7 @@ const CodeBlock = ({ value, lang }: Props) => {
     } catch {
       return;
     }
+    onCopied?.();
     setCopied(true);
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setCopied(false), COPIED_MS);

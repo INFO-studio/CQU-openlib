@@ -1,7 +1,10 @@
 import DocLink from '~/components/DocLink';
 import { TextLink } from '~/components/ui/link';
 import { useDocBase } from '~/contexts/DocBaseContext';
+import { trackItemClick } from '~/lib/analytics';
+import { classifyDownload } from '~/lib/analyticsDownload';
 import type { MnLink } from '~/types/mdast';
+import { mdastText } from '~/utils/mdastText';
 import { resolveDocHref } from '~/utils/normalizeDocHref';
 import parser from '~/utils/parser/index';
 
@@ -39,6 +42,9 @@ const ParserLink = ({ mn }: { mn: MnLink }) => {
     : 'text-primary no-underline hover:underline';
 
   if (download !== undefined || isStaticAsset(href) || isExternal(href)) {
+    // Null for plain hyperlinks, so a link to a GitHub repo or a video stays
+    // uncounted while a link that hands over a file does not.
+    const asDownload = classifyDownload(href, download !== undefined);
     return (
       <TextLink
         href={href}
@@ -46,6 +52,16 @@ const ParserLink = ({ mn }: { mn: MnLink }) => {
         download={download === true ? '' : download}
         target={href.startsWith('http') ? '_blank' : undefined}
         rel={href.startsWith('http') ? 'noreferrer' : undefined}
+        onClick={
+          asDownload
+            ? () =>
+                trackItemClick({
+                  item_type: 'download',
+                  ...asDownload,
+                  text: mdastText(mn.children) || undefined,
+                })
+            : undefined
+        }
       >
         {children}
       </TextLink>
