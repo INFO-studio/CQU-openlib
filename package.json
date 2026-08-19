@@ -27,6 +27,7 @@
     "lucide-react": "^0.561.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "recharts": "^3.10.1",
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.1",
     "remark-frontmatter": "^5.0.0",

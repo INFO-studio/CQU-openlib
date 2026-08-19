@@ -12,15 +12,19 @@ export type CollapseGroupItem = {
 type CollapseItemProps = {
   item: CollapseGroupItem;
   divided: boolean;
+  onToggle?: (open: boolean) => void;
 };
 
-const CollapseItem = ({ item, divided }: CollapseItemProps) => {
+const CollapseItem = ({ item, divided, onToggle }: CollapseItemProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <Collapsible.Root
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(next) => {
+        setOpen(next);
+        onToggle?.(next);
+      }}
       className={cn(
         'cquol-collapse-group__item',
         divided && 'border-t border-line',
@@ -52,9 +56,10 @@ const CollapseItem = ({ item, divided }: CollapseItemProps) => {
 type Props = {
   items: CollapseGroupItem[];
   className?: string;
+  onToggle?: (index: number, open: boolean) => void;
 };
 
-export const CollapseGroup = ({ items, className }: Props) => {
+export const CollapseGroup = ({ items, className, onToggle }: Props) => {
   if (!items.length) return null;
 
   return (
@@ -69,6 +74,7 @@ export const CollapseGroup = ({ items, className }: Props) => {
           key={item.key ?? `collapse-${index}`}
           item={item}
           divided={index > 0}
+          onToggle={onToggle ? (open) => onToggle(index, open) : undefined}
         />
       ))}
     </div>

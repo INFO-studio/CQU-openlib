@@ -14,6 +14,7 @@ import DocLink from '~/components/DocLink';
 import { ActivitySpinner } from '~/components/ui/activity-spinner';
 import { SearchSkeleton } from '~/components/ui/skeleton';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
+import { log } from '~/lib/analytics';
 import { cn } from '~/lib/cn';
 import type { SearchChunkMeta, SearchEntry } from '~/lib/nav';
 import { toNavTarget } from '~/lib/paths';
@@ -73,6 +74,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
   const loadingRef = useRef(false);
   const queryRef = useRef(query);
   queryRef.current = query;
+  const pickedResult = useRef(false);
 
   const trimmed = query.trim();
   const hasQuery = trimmed.length > 0;
@@ -150,6 +152,25 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
     return () => window.clearTimeout(t);
   }, [open]);
 
+  /**
+   * One record per search session, written on close. Reporting per keystroke
+   * would bury the query the reader actually settled on under its own
+   * prefixes, and a search that found nothing is the most useful row here.
+   */
+  useEffect(() => {
+    if (!open) return;
+    pickedResult.current = false;
+    return () => {
+      const finalQuery = queryRef.current.trim();
+      if (!finalQuery) return;
+      log('search', {
+        query: finalQuery,
+        result_count: matchedRef.current.length,
+        selected: pickedResult.current,
+      });
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     runId.current += 1;
@@ -200,7 +221,14 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
     return () => io.disconnect();
   }, [open, hasQuery, loadMore, visible.length, loading]);
 
+  /** Result clicks close the dialog without going through `goTo`. */
+  const pickResult = () => {
+    pickedResult.current = true;
+    onClose();
+  };
+
   const goTo = (path: string) => {
+    pickedResult.current = true;
     onClose();
     const target = toNavTarget(path);
     if (target.to === '/') {
@@ -324,7 +352,7 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
                               ? 'bg-primary-soft text-ink'
                               : 'hover:bg-mist',
                           )}
-                          onNavigate={onClose}
+                          onNavigate={pickResult}
                         >
                           <span className="min-w-0">
                             <span className="block truncate text-sm text-ink">

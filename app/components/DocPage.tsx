@@ -12,6 +12,7 @@ import { DocSkeleton } from '~/components/ui/skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { useHashScroll } from '~/hooks/useHashScroll';
+import { enterFrom, log } from '~/lib/analytics';
 import { titleFromNav, titleFromPath } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
 import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
@@ -163,6 +164,20 @@ const DocPage = ({ splat }: DocPageProps) => {
     }
     if (linkTitle) applyDocumentTitle(linkTitle);
   }, [file, hasH1, linkTitle, shouldRedirect]);
+
+  /**
+   * Dead links are otherwise invisible: the reader hits a 404 and leaves
+   * without telling anyone. Recording the referring page makes the broken
+   * link findable, not just the broken destination.
+   */
+  useEffect(() => {
+    if (shouldRedirect) return;
+    if (isSuccess && file === null) {
+      log('doc_error', { reason: 'not_found', enter_from: enterFrom() });
+    } else if (isError) {
+      log('doc_error', { reason: 'fetch_error', enter_from: enterFrom() });
+    }
+  }, [shouldRedirect, isSuccess, file, isError]);
 
   useHashScroll(isSuccess && Boolean(file));
 
