@@ -1,4 +1,4 @@
-import type { CampusId, Gcj02Coordinate } from './data';
+import type { CampusId, Gcj02Coordinate } from './type';
 
 type CampusBoundaryMap = Readonly<
   Record<CampusId, readonly (readonly Gcj02Coordinate[])[]>

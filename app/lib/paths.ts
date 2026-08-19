@@ -1,4 +1,5 @@
-import type { CampusId } from '~/pages/map/data';
+import type { MapSearch } from '~/pages/map/type';
+import { validateMapSearch } from '~/pages/map/utils/mapSearch';
 
 export const cleanPath = (path: string): string => {
   return path.replace(/\/+$/, '') || '/';
@@ -18,10 +19,7 @@ export type NavTarget =
   | {
       to: '/map';
       hash?: string;
-      search?: {
-        campus?: CampusId;
-        focus?: string;
-      };
+      search?: MapSearch;
     }
   | {
       to: '/$';
@@ -41,20 +39,12 @@ export const toNavTarget = (path: string): NavTarget => {
   if (clean === '/') return { to: '/', ...hashTarget };
   if (clean === '/map') {
     const params = new URLSearchParams(query);
-    const campus = params.get('campus');
-    const focus = params.get('focus');
-    const search: { campus?: CampusId; focus?: string } = {
-      campus:
-        campus === 'a' ||
-        campus === 'b' ||
-        campus === 'c' ||
-        campus === 'd' ||
-        campus === 'e'
-          ? campus
-          : undefined,
-      focus: focus || undefined,
-    };
-    return search.campus || search.focus
+    const search = validateMapSearch({
+      campus: params.get('campus'),
+      filter: params.get('filter'),
+      focus: params.get('focus'),
+    });
+    return Object.keys(search).length
       ? { to: '/map', search, ...hashTarget }
       : { to: '/map', ...hashTarget };
   }

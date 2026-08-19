@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vite-plus/test';
 import { gcj02ToBd09, navigationLinksFor } from '~/pages/map/navigation';
 
 describe('map navigation links', () => {
-  const building = {
+  const item = {
     name: '重庆大学图书馆',
     coord: [106.298877, 29.596799] as const,
   };
 
   it('builds links for all supported map providers', () => {
-    const links = navigationLinksFor(building);
+    const links = navigationLinksFor(item);
     expect(links.map((link) => link.id)).toEqual([
       'amap',
       'baidu',
@@ -23,10 +23,10 @@ describe('map navigation links', () => {
 
   it('includes every provider-required marker parameter', () => {
     const links = Object.fromEntries(
-      navigationLinksFor(building).map((link) => [link.id, new URL(link.href)]),
+      navigationLinksFor(item).map((link) => [link.id, new URL(link.href)]),
     );
 
-    const [bdLongitude, bdLatitude] = gcj02ToBd09(building.coord);
+    const [bdLongitude, bdLatitude] = gcj02ToBd09(item.coord);
     expect(links.baidu.searchParams.get('location')).toBe(
       `${bdLatitude},${bdLongitude}`,
     );
@@ -34,32 +34,32 @@ describe('map navigation links', () => {
       'https://uri.amap.com/marker',
     );
     expect(links.amap.searchParams.get('position')).toBe(
-      `${building.coord[0]},${building.coord[1]}`,
+      `${item.coord[0]},${item.coord[1]}`,
     );
-    expect(links.amap.searchParams.get('name')).toBe(building.name);
+    expect(links.amap.searchParams.get('name')).toBe(item.name);
     expect(links.amap.searchParams.get('coordinate')).toBe('gaode');
     expect(links.amap.searchParams.get('callnative')).toBe('1');
     expect(links.google.searchParams.get('query')).toBe(
-      `${building.coord[1]},${building.coord[0]}`,
+      `${item.coord[1]},${item.coord[0]}`,
     );
-    expect(links.baidu.searchParams.get('title')).toBe(building.name);
-    expect(links.baidu.searchParams.get('content')).toBe(building.name);
+    expect(links.baidu.searchParams.get('title')).toBe(item.name);
+    expect(links.baidu.searchParams.get('content')).toBe(item.name);
     expect(links.baidu.searchParams.get('output')).toBe('html');
     expect(links.baidu.searchParams.get('src')).toBe(
       'webapp.INFO-studio.CQU-openlib',
     );
 
     const tencentMarker = links.tencent.searchParams.get('marker');
-    expect(tencentMarker).toContain(`title:${building.name}`);
-    expect(tencentMarker).toContain(`addr:${building.name}`);
+    expect(tencentMarker).toContain(`title:${item.name}`);
+    expect(tencentMarker).toContain(`addr:${item.name}`);
     expect(links.tencent.searchParams.get('referer')).toBe('CQU-openlib');
   });
 
   it('shifts coordinates into BD09 only for Baidu', () => {
-    const converted = gcj02ToBd09(building.coord);
+    const converted = gcj02ToBd09(item.coord);
     expect(converted.every(Number.isFinite)).toBe(true);
     // BD09 相对 GCJ-02 有几百米的固定偏移，落点不该一致。
-    expect(converted[0]).toBeGreaterThan(building.coord[0]);
-    expect(converted[1]).toBeGreaterThan(building.coord[1]);
+    expect(converted[0]).toBeGreaterThan(item.coord[0]);
+    expect(converted[1]).toBeGreaterThan(item.coord[1]);
   });
 });

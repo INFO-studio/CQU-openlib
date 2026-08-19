@@ -9,13 +9,16 @@ export type CollapseGroupItem = {
   key?: string;
 };
 
+type CollapseSize = 'default' | 'compact';
+
 type CollapseItemProps = {
   item: CollapseGroupItem;
   divided: boolean;
+  size: CollapseSize;
   onToggle?: (open: boolean) => void;
 };
 
-const CollapseItem = ({ item, divided, onToggle }: CollapseItemProps) => {
+const CollapseItem = ({ item, divided, size, onToggle }: CollapseItemProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,10 +33,15 @@ const CollapseItem = ({ item, divided, onToggle }: CollapseItemProps) => {
         divided && 'border-t border-line',
       )}
     >
-      <Collapsible.Trigger className="flex w-full cursor-pointer select-none items-center gap-2.5 px-4 py-3 text-left font-semibold text-ink transition-colors duration-150 hover:bg-mist">
+      <Collapsible.Trigger
+        className={cn(
+          'flex w-full cursor-pointer select-none items-center text-left font-semibold text-ink transition-colors duration-150 hover:bg-mist',
+          size === 'compact' ? 'gap-2 px-3 py-2 text-xs' : 'gap-2.5 px-4 py-3',
+        )}
+      >
         <span className="min-w-0 flex-1">{item.title}</span>
         <ChevronRight
-          size={17}
+          size={size === 'compact' ? 14 : 17}
           className={cn(
             'shrink-0 text-icon transition-transform duration-150',
             open && 'rotate-90 text-icon-strong',
@@ -45,7 +53,12 @@ const CollapseItem = ({ item, divided, onToggle }: CollapseItemProps) => {
         hiddenUntilFound
         className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-[ending-style]:h-0 data-[starting-style]:h-0 motion-reduce:transition-none"
       >
-        <div className="border-t border-line bg-paper px-4 py-3 pl-6 [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+        <div
+          className={cn(
+            'border-t border-line bg-paper [&>:first-child]:mt-0 [&>:last-child]:mb-0',
+            size === 'compact' ? 'px-3 py-2' : 'px-4 py-3 pl-6',
+          )}
+        >
           {item.children}
         </div>
       </Collapsible.Panel>
@@ -56,10 +69,16 @@ const CollapseItem = ({ item, divided, onToggle }: CollapseItemProps) => {
 type Props = {
   items: CollapseGroupItem[];
   className?: string;
+  size?: CollapseSize;
   onToggle?: (index: number, open: boolean) => void;
 };
 
-export const CollapseGroup = ({ items, className, onToggle }: Props) => {
+export const CollapseGroup = ({
+  items,
+  className,
+  size = 'default',
+  onToggle,
+}: Props) => {
   if (!items.length) return null;
 
   return (
@@ -74,6 +93,7 @@ export const CollapseGroup = ({ items, className, onToggle }: Props) => {
           key={item.key ?? `collapse-${index}`}
           item={item}
           divided={index > 0}
+          size={size}
           onToggle={onToggle ? (open) => onToggle(index, open) : undefined}
         />
       ))}

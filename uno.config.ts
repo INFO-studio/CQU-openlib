@@ -6,6 +6,7 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
+import { LAYOUT_BREAKPOINTS } from './app/theme/breakpoints';
 import { colors, paletteCss } from './app/theme/colors';
 import { height, layoutCss, minHeight, spacing } from './app/theme/layout';
 
@@ -23,6 +24,7 @@ export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
   preflights: [{ getCSS: () => `${paletteCss}\n\n${layoutCss}` }],
   theme: {
+    breakpoints: LAYOUT_BREAKPOINTS,
     colors: {
       ...colors,
       /* Filled per instance by Admonition's inline style. */

@@ -12,6 +12,7 @@ import { DocSkeleton } from '~/components/ui/skeleton';
 import { DocBaseContext } from '~/contexts/DocBaseContext';
 import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { useHashScroll } from '~/hooks/useHashScroll';
+import { useTitle } from '~/hooks/useTitle';
 import { enterFrom, log } from '~/lib/analytics';
 import { titleFromNav, titleFromPath } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
@@ -33,16 +34,6 @@ import {
   remarkKeys,
 } from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
-
-const SITE_TITLE_SUFFIX = ' · CQU-openlib';
-
-const applyDocumentTitle = (name: string) => {
-  const next =
-    name === 'CQU-openlib' || name === '首页'
-      ? 'CQU-openlib'
-      : `${name}${SITE_TITLE_SUFFIX}`;
-  if (document.title !== next) document.title = next;
-};
 
 const UpdatedMeta = ({ updated }: { updated: string }) => (
   <p className="m-0 -mt-0.5 mb-1 text-[0.8125rem] leading-relaxed text-muted">
@@ -144,26 +135,7 @@ const DocPage = ({ splat }: DocPageProps) => {
     }
     return linkTitle || 'CQU-openlib';
   }, [file, hasH1, linkTitle]);
-
-  // Tab title: swap once from the known link/nav title (no blanking).
-  // After AST is ready, refine to H1 only when it differs — never clear first.
-  useEffect(() => {
-    if (shouldRedirect) return;
-
-    if (!file) {
-      if (linkTitle) applyDocumentTitle(linkTitle);
-      return;
-    }
-
-    if (hasH1) {
-      const fromAst = pageTitleFromAst(file.ast);
-      if (fromAst && fromAst !== 'CQU-openlib') {
-        applyDocumentTitle(fromAst);
-        return;
-      }
-    }
-    if (linkTitle) applyDocumentTitle(linkTitle);
-  }, [file, hasH1, linkTitle, shouldRedirect]);
+  useTitle(shouldRedirect ? undefined : title);
 
   /**
    * Dead links are otherwise invisible: the reader hits a 404 and leaves

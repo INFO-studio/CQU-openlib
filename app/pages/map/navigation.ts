@@ -1,4 +1,4 @@
-import type { Building, Gcj02Coordinate } from './data';
+import type { Gcj02Coordinate, MapItem } from './type';
 
 type Coordinate = readonly [longitude: number, latitude: number];
 
@@ -110,11 +110,11 @@ const urlWithParams = (
 };
 
 export const navigationLinksFor = (
-  building: Pick<Building, 'coord' | 'name'>,
+  item: Pick<MapItem, 'coord' | 'name'>,
 ): NavigationLink[] => {
-  const [gcjLongitude, gcjLatitude] = building.coord;
-  const [bdLongitude, bdLatitude] = gcj02ToBd09(building.coord);
-  const [wgsLongitude, wgsLatitude] = gcj02ToWgs84(building.coord);
+  const [gcjLongitude, gcjLatitude] = item.coord;
+  const [bdLongitude, bdLatitude] = gcj02ToBd09(item.coord);
+  const [wgsLongitude, wgsLatitude] = gcj02ToWgs84(item.coord);
 
   return [
     {
@@ -123,7 +123,7 @@ export const navigationLinksFor = (
       // 使用官方 URI API；ditu.amap.com/regeo 在 Android 调起 App 时会丢参数。
       href: urlWithParams('https://uri.amap.com/marker', {
         position: `${gcjLongitude},${gcjLatitude}`,
-        name: building.name,
+        name: item.name,
         src: 'INFO-studio.CQU-openlib',
         coordinate: 'gaode',
         callnative: '1',
@@ -134,8 +134,8 @@ export const navigationLinksFor = (
       label: '百度',
       href: urlWithParams('https://api.map.baidu.com/marker', {
         location: `${bdLatitude},${bdLongitude}`,
-        title: building.name,
-        content: building.name,
+        title: item.name,
+        content: item.name,
         output: 'html',
         src: 'webapp.INFO-studio.CQU-openlib',
       }),
@@ -144,7 +144,7 @@ export const navigationLinksFor = (
       id: 'tencent',
       label: '腾讯',
       href: urlWithParams('https://apis.map.qq.com/uri/v1/marker', {
-        marker: `coord:${gcjLatitude},${gcjLongitude};title:${building.name};addr:${building.name}`,
+        marker: `coord:${gcjLatitude},${gcjLongitude};title:${item.name};addr:${item.name}`,
         referer: 'CQU-openlib',
       }),
     },
@@ -163,7 +163,7 @@ export const navigationLinksFor = (
       label: 'Apple',
       href: urlWithParams('https://maps.apple.com/', {
         ll: `${wgsLatitude},${wgsLongitude}`,
-        q: building.name,
+        q: item.name,
       }),
     },
   ];

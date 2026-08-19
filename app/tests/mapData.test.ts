@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { BUILDING_CATEGORIES, BUILDINGS, CAMPUSES } from '~/pages/map/data';
+import {
+  CAMPUSES,
+  loadAllMapItems,
+  MAP_ITEM_CATEGORIES,
+} from '~/pages/map/data';
 
 describe('campus map data', () => {
-  it('matches the published location count', () => {
-    expect(BUILDINGS).toHaveLength(143);
+  it('matches the published location count', async () => {
+    expect(await loadAllMapItems()).toHaveLength(162);
   });
 
   it('uses the site-wide 校区 / 校园 terminology', () => {
@@ -18,30 +22,38 @@ describe('campus map data', () => {
     ]);
   });
 
-  it('keeps building ids unique and references valid', () => {
-    const ids = BUILDINGS.map((building) => building.id);
+  it('keeps map item ids unique and references valid', async () => {
+    const items = await loadAllMapItems();
+    const ids = items.map((item) => item.id);
     expect(new Set(ids).size).toBe(ids.length);
 
-    for (const building of BUILDINGS) {
-      expect(CAMPUSES.some((campus) => campus.id === building.campusId)).toBe(
-        true,
-      );
+    for (const item of items) {
+      expect(CAMPUSES.some((campus) => campus.id === item.campusId)).toBe(true);
       expect(
-        BUILDING_CATEGORIES.some(
-          (category) => category.id === building.category,
-        ),
+        MAP_ITEM_CATEGORIES.some((category) => category.id === item.category),
       ).toBe(true);
     }
   });
 
-  it('contains finite GCJ-02 longitude-latitude pairs', () => {
-    for (const { coord } of BUILDINGS) {
+  it('contains finite GCJ-02 longitude-latitude pairs', async () => {
+    for (const { coord } of await loadAllMapItems()) {
       expect(coord).toHaveLength(2);
       expect(coord.every(Number.isFinite)).toBe(true);
       expect(coord[0]).toBeGreaterThan(100);
       expect(coord[0]).toBeLessThan(110);
       expect(coord[1]).toBeGreaterThan(25);
       expect(coord[1]).toBeLessThan(35);
+    }
+  });
+
+  it('does not repeat a map item name as its description', async () => {
+    const normalize = (value: string) =>
+      value.replace(/[，,。.;；\s]/g, '').toLocaleLowerCase('zh-CN');
+
+    for (const item of await loadAllMapItems()) {
+      if (item.desc) {
+        expect(normalize(item.desc)).not.toBe(normalize(item.name));
+      }
     }
   });
 });
