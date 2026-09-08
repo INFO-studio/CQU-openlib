@@ -1,5 +1,4 @@
 import { Tabs } from '~/components/ui/tabs';
-import { trackItemClick } from '~/lib/analytics';
 import type { MnTabs } from '~/types/mdast';
 import { mdastText } from '~/utils/mdastText';
 import parser from '~/utils/parser/index';
@@ -13,18 +12,7 @@ const parserTabs = (mn: MnTabs) => {
     title: <>{item.title.map(parser)}</>,
     children: <>{item.children.map(parser)}</>,
   }));
-  return (
-    <Tabs
-      items={items}
-      onSelect={(index) =>
-        trackItemClick({
-          item_type: 'content_tab',
-          label: mdastText(mn.items?.[index]?.title) || `tab-${index}`,
-          index,
-        })
-      }
-    />
-  );
+  return <Tabs items={items} />;
 };
 
 export default parserTabs;

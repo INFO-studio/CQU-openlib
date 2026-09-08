@@ -14,7 +14,6 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as FormTypeRouteImport } from './routes/form.$type'
 
@@ -43,11 +42,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminEmailsRoute = AdminEmailsRouteImport.update({
   id: '/emails',
   path: '/emails',
@@ -64,7 +58,6 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/map': typeof MapRoute
-  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/form/$type': typeof FormTypeRoute
   '/admin/': typeof AdminIndexRoute
@@ -73,7 +66,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/map': typeof MapRoute
-  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/form/$type': typeof FormTypeRoute
   '/admin': typeof AdminIndexRoute
@@ -84,7 +76,6 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/map': typeof MapRoute
-  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/form/$type': typeof FormTypeRoute
   '/admin/': typeof AdminIndexRoute
@@ -96,26 +87,17 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/map'
-    | '/admin/analytics'
     | '/admin/emails'
     | '/form/$type'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/$'
-    | '/map'
-    | '/admin/analytics'
-    | '/admin/emails'
-    | '/form/$type'
-    | '/admin'
+  to: '/' | '/$' | '/map' | '/admin/emails' | '/form/$type' | '/admin'
   id:
     | '__root__'
     | '/'
     | '/$'
     | '/admin'
     | '/map'
-    | '/admin/analytics'
     | '/admin/emails'
     | '/form/$type'
     | '/admin/'
@@ -166,13 +148,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/analytics': {
-      id: '/admin/analytics'
-      path: '/analytics'
-      fullPath: '/admin/analytics'
-      preLoaderRoute: typeof AdminAnalyticsRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/emails': {
       id: '/admin/emails'
       path: '/emails'
@@ -191,13 +166,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
-  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { BarChart3, Inbox, Lock, type LucideIcon, Mail } from 'lucide-react';
+import { Eye, EyeOff, Inbox, Lock, type LucideIcon, Mail } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import {
@@ -22,7 +22,6 @@ const SURFACE = 'theme-dark min-h-screen bg-paper font-sans text-ink';
 const MODULE_ICONS: Record<string, LucideIcon> = {
   submissions: Inbox,
   emails: Mail,
-  analytics: BarChart3,
 };
 
 type ShellProps = {
@@ -42,8 +41,8 @@ export const AdminShell = ({
 
   return (
     <div className={cn(SURFACE, 'grid md:grid-cols-[15.5rem_minmax(0,1fr)]')}>
-      {/* Phone: one sticky row of three equal tabs. The console has exactly
-          three destinations, so they fit without a drawer or a scrolling rail —
+      {/* Phone: one sticky row of equal tabs. The console has exactly two
+          destinations, so they fit without a drawer or a scrolling rail —
           and every child is `shrink-0` or `min-w-0` on purpose, since a plain
           flex row squeezes the labels into each other well before it scrolls. */}
       <aside className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-panel px-3 py-2 md:h-screen md:flex-col md:items-stretch md:gap-6 md:border-b-0 md:border-r md:px-3 md:py-5">
@@ -140,6 +139,7 @@ export const AdminGate = ({ onUnlock }: GateProps) => {
   const [key, setKey] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [keyVisible, setKeyVisible] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -180,16 +180,31 @@ export const AdminGate = ({ onUnlock }: GateProps) => {
         >
           Admin Key
         </label>
-        <input
-          id="admin-key"
-          type="password"
-          autoComplete="off"
-          spellCheck={false}
-          value={key}
-          onChange={(ev) => setKey(ev.target.value)}
-          placeholder="粘贴密钥"
-          className="mt-1.5 block w-full rounded-lg border border-line bg-elev px-3 py-2.5 font-mono text-[0.9rem] transition-colors focus:border-primary"
-        />
+        <div className="relative mt-1.5">
+          <input
+            id="admin-key"
+            type={keyVisible ? 'text' : 'password'}
+            autoComplete="off"
+            spellCheck={false}
+            value={key}
+            onChange={(ev) => setKey(ev.target.value)}
+            placeholder="粘贴密钥"
+            className="block w-full rounded-lg border border-line bg-elev py-2.5 pl-3 pr-11 font-mono text-[0.9rem] transition-colors focus:border-primary"
+          />
+          <button
+            type="button"
+            onClick={() => setKeyVisible((visible) => !visible)}
+            aria-label={keyVisible ? '隐藏密钥' : '显示密钥'}
+            aria-pressed={keyVisible}
+            className="absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-lg text-icon transition-colors hover:bg-mist hover:text-icon-strong"
+          >
+            {keyVisible ? (
+              <EyeOff size={16} aria-hidden />
+            ) : (
+              <Eye size={16} aria-hidden />
+            )}
+          </button>
+        </div>
         {error ? <AdminError>{error}</AdminError> : null}
         <button
           type="submit"
