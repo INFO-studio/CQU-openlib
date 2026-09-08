@@ -45,6 +45,8 @@
 - [阳启万象](阳启万象.md)
 - [Rium](Rium.md)
 - [Tony](Tony.md)
+- [Zhenghong Sun](Zhenghong%20Sun.md)
+- [joker](joker.md)
 - georgeghl  
 - 二战研友侯順玉  
 - DL444
