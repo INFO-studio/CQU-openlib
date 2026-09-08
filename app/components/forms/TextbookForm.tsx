@@ -63,7 +63,6 @@ type TextbookDraft = {
 
 const CONTRIBUTOR_OPTS = {
   showAuthorCredit: false,
-  showIntro: true,
 } as const;
 
 const emptyBook = (): BookDraft => ({

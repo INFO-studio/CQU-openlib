@@ -33,8 +33,6 @@ export const INTRO_KIND_OPTIONS = [
 export type ContributorBlockOptions = {
   /** Show original-author credit question. */
   showAuthorCredit: boolean;
-  /** Show intro (text / file) question. */
-  showIntro: boolean;
 };
 
 export type ContributorPayload = {
@@ -58,11 +56,8 @@ export const toContributorPayload = (
   return {
     credit: values.credit.trim(),
     authorCredit: opts.showAuthorCredit ? values.authorCredit.trim() : '',
-    introKind: opts.showIntro ? values.introKind : '',
-    introText:
-      opts.showIntro && values.introKind === 'text'
-        ? values.introText.trim()
-        : '',
+    introKind: values.introKind,
+    introText: values.introKind === 'text' ? values.introText.trim() : '',
     canContact,
     contactKind: allowContact ? values.contactKind : '',
     contact: allowContact ? values.contact.trim() : '',

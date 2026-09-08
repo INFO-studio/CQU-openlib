@@ -98,49 +98,48 @@ export const contributorItems = ({
       ),
     }),
 
-  options.showIntro &&
-    question({
-      key: 'intro',
-      label: <IntroLabel />,
-      hint: '我们会为您调整格式，请勿担心。介绍可选；若选择上传文件，将在提交时一并上传。',
-      validate: () =>
-        values.introKind === 'file'
-          ? requireFile(introFile, '请选择介绍文件，或改选「纯文字」')()
-          : null,
-      children: (
-        <>
-          <FormChoice
-            value={values.introKind}
-            options={INTRO_KIND_OPTIONS}
-            columns={2}
-            onChange={(v) => {
-              onChange({
-                introKind: v,
-                ...(v !== 'text' ? { introText: '' } : {}),
-              });
-              if (v !== 'file') onIntroFileChange(null);
-            }}
-            aria-label="介绍方式"
+  question({
+    key: 'intro',
+    label: <IntroLabel />,
+    hint: '我们会为您调整格式，请勿担心。介绍可选；若选择上传文件，将在提交时一并上传。',
+    validate: () =>
+      values.introKind === 'file'
+        ? requireFile(introFile, '请选择介绍文件，或改选「纯文字」')()
+        : null,
+    children: (
+      <>
+        <FormChoice
+          value={values.introKind}
+          options={INTRO_KIND_OPTIONS}
+          columns={2}
+          onChange={(v) => {
+            onChange({
+              introKind: v,
+              ...(v !== 'text' ? { introText: '' } : {}),
+            });
+            if (v !== 'file') onIntroFileChange(null);
+          }}
+          aria-label="介绍方式"
+        />
+        {values.introKind === 'text' ? (
+          <Textarea
+            className="mt-3"
+            value={values.introText}
+            onChange={(ev) => onChange({ introText: ev.target.value })}
+            placeholder="在此写下介绍正文，可留空"
           />
-          {values.introKind === 'text' ? (
-            <Textarea
-              className="mt-3"
-              value={values.introText}
-              onChange={(ev) => onChange({ introText: ev.target.value })}
-              placeholder="在此写下介绍正文，可留空"
-            />
-          ) : null}
-          {values.introKind === 'file' ? (
-            <FileInput
-              className="mt-3"
-              file={introFile}
-              onChange={onIntroFileChange}
-              hint="支持 PDF / 图片 / Markdown 等"
-            />
-          ) : null}
-        </>
-      ),
-    }),
+        ) : null}
+        {values.introKind === 'file' ? (
+          <FileInput
+            className="mt-3"
+            file={introFile}
+            onChange={onIntroFileChange}
+            hint="支持 PDF / 图片 / Markdown 等"
+          />
+        ) : null}
+      </>
+    ),
+  }),
 
   question({
     key: 'canContact',

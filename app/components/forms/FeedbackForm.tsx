@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { type FormEvent, useCallback } from 'react';
+import { type FormEvent, useCallback, useState } from 'react';
 import { contributorItems } from '~/components/forms/contributorItems';
 import { FormPage } from '~/components/forms/FormPage';
 import { Input } from '~/components/ui/input';
@@ -30,7 +30,6 @@ const DEFAULTS: FeedbackDraft = {
 
 const CONTRIBUTOR_OPTS = {
   showAuthorCredit: false,
-  showIntro: false,
 };
 
 export const FeedbackForm = ({ initialPage = '' }: Props) => {
@@ -40,6 +39,7 @@ export const FeedbackForm = ({ initialPage = '' }: Props) => {
     seed: initialPage ? { page: initialPage } : undefined,
   });
   const form = useFormSubmit('feedback');
+  const [introFile, setIntroFile] = useState<File | null>(null);
 
   const setContributor = useCallback(
     (patch: Partial<ContributorDraft>) =>
@@ -95,28 +95,29 @@ export const FeedbackForm = ({ initialPage = '' }: Props) => {
     ...contributorItems({
       values,
       onChange: setContributor,
-      introFile: null,
-      onIntroFileChange: () => {},
+      introFile,
+      onIntroFileChange: setIntroFile,
       options: CONTRIBUTOR_OPTS,
     }),
   ];
+
+  const withIntroFile = Boolean(values.introKind === 'file' && introFile);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     void form.submit({
       items,
-      buildPayload: () => {
-        const contributor = toContributorPayload(values, CONTRIBUTOR_OPTS);
-        return {
-          content: values.content.trim(),
-          page: values.page.trim(),
-          credit: contributor.credit,
-          canContact: contributor.canContact,
-          contactKind: contributor.contactKind,
-          contact: contributor.contact,
-        };
+      files: withIntroFile && introFile ? [introFile] : [],
+      buildPayload: (uploaded) => ({
+        content: values.content.trim(),
+        page: values.page.trim(),
+        ...toContributorPayload(values, CONTRIBUTOR_OPTS),
+        introFile: withIntroFile ? uploaded[0] : undefined,
+      }),
+      onSuccess: () => {
+        clear();
+        setIntroFile(null);
       },
-      onSuccess: clear,
     });
   };
 

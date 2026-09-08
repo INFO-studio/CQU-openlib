@@ -73,11 +73,11 @@ const COURSE_CODE_LABEL: Record<Category, string> = {
 };
 
 const CONTRIBUTOR_OPTS: Record<Category, ContributorBlockOptions> = {
-  slides: { showAuthorCredit: false, showIntro: false },
-  textbook: { showAuthorCredit: false, showIntro: true },
-  exam: { showAuthorCredit: true, showIntro: true },
-  notes: { showAuthorCredit: true, showIntro: true },
-  other: { showAuthorCredit: true, showIntro: true },
+  slides: { showAuthorCredit: false },
+  textbook: { showAuthorCredit: false },
+  exam: { showAuthorCredit: true },
+  notes: { showAuthorCredit: true },
+  other: { showAuthorCredit: true },
 };
 
 export const UploadForm = () => {
@@ -258,7 +258,7 @@ export const UploadForm = () => {
   ];
 
   const withIntroFile = Boolean(
-    contributorOpts?.showIntro && values.introKind === 'file' && introFile,
+    contributorOpts && values.introKind === 'file' && introFile,
   );
   const uploadFiles: File[] = file
     ? withIntroFile && introFile
