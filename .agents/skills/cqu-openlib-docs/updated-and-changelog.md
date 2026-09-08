@@ -32,7 +32,7 @@ updated: 2026-07-31
 - 已有 frontmatter：把 `updated` 改成**当天**日期。
 - 没有 frontmatter：在文件最开头补上整块，后面空一行再写正文。
 - 日期必须是 `YYYY-MM-DD` 字符串，不要写时间戳或别的格式。
-- 解析器只认 `updated` 和 `description` 两个键（`description` 是可选的短描述，进 `<meta>`）。写别的键等于写注释。实现见 `app/utils/docFrontmatter.ts`。
+- 解析器只认 `updated`、`description` 和 `title` 三个键。`description` 是可选的短描述；`title` 控制浏览器标题：省略时使用页面 H1，字符串用于自定义，`null` 表示只显示站点名 `CQU-openlib`。写别的键等于写注释。实现见 `app/utils/docFrontmatter.ts`。
 
 ### 不要加 `updated` 的目录
 
@@ -45,6 +45,8 @@ updated: 2026-07-31
 ## 更新日志
 
 日志是写给读者的，不是 commit log。只记录站点「收录了什么内容」和「内容怎么呈现给读者」的变化。
+
+涉及代码修复时，**只写读者能直接观察到的现象与结果**。不得描述配置键、frontmatter、解析器、组件、依赖或其他内部实现机制；删掉实现细节后若没有可陈述的读者变化，就不写日志。
 
 ### 绝对不能出现在日志里
 

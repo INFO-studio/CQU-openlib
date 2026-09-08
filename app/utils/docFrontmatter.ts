@@ -6,6 +6,8 @@ export type DocFrontmatter = {
   /** Last edited date, `YYYY-MM-DD`. */
   updated?: string;
   description?: string;
+  /** Browser title override. `null` means the canonical site title. */
+  title?: string | null;
 };
 
 const unquote = (value: string): string => {
@@ -30,10 +32,16 @@ export const parseDocFrontmatterYaml = (source: string): DocFrontmatter => {
     const colon = line.indexOf(':');
     if (colon <= 0) continue;
     const key = line.slice(0, colon).trim();
-    const value = unquote(line.slice(colon + 1).trim());
+    const rawValue = line.slice(colon + 1).trim();
+    if (key === 'title' && rawValue === 'null') {
+      out.title = null;
+      continue;
+    }
+    const value = unquote(rawValue);
     if (!value) continue;
     if (key === 'updated' && DATE_RE.test(value)) out.updated = value;
     else if (key === 'description') out.description = value;
+    else if (key === 'title') out.title = value;
   }
   return out;
 };

@@ -1,4 +1,5 @@
 ---
+title: null
 description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共享平台，非官方非赢利组织，提供课件、教材pdf、各种杂项信息。
 ---
 

@@ -90,14 +90,25 @@ def apply_rung(params: Params, rung: dict) -> Params:
     return params.replace(**rung) if rung else params
 
 
+def text_dpi(params: Params) -> str:
+    """Render DPI, and the DPI it is thresholded at when those differ."""
+    dpi = params.dpi or 0.0
+    threshold_at = max(dpi, params.bilevel.min_dpi)
+    if threshold_at > dpi:
+        return f"{dpi:g}→{threshold_at:g}dpi"
+    return f"{dpi:g}dpi"
+
+
 def describe(params: Params) -> str:
+    tone = f" +{params.tone.strength * 100:g}% contrast" if params.tone.strength > 0 else ""
     if params.mode is Mode.MRC:
         return (
-            f"{params.dpi:g}dpi text / {params.photo_dpi:g}dpi photos q{params.photo_quality}"
+            f"{text_dpi(params)} text / {params.photo_dpi:g}dpi photos "
+            f"q{params.photo_quality}{tone}"
         )
     if params.mode in (Mode.GRAY, Mode.COLOR):
-        return f"{(params.page_dpi or params.dpi):g}dpi page q{params.page_quality}"
-    return f"{params.dpi:g}dpi bilevel"
+        return f"{(params.page_dpi or params.dpi):g}dpi page q{params.page_quality}{tone}"
+    return f"{text_dpi(params)} bilevel{tone}"
 
 
 def format_estimate(est: Estimate) -> str:

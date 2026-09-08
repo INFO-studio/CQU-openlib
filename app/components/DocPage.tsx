@@ -134,7 +134,9 @@ const DocPage = ({ splat }: DocPageProps) => {
     }
     return linkTitle || 'CQU-openlib';
   }, [file, hasH1, linkTitle]);
-  useTitle(shouldRedirect ? undefined : title);
+  const documentTitle =
+    frontmatter.title === undefined ? title : frontmatter.title;
+  useTitle(shouldRedirect ? undefined : documentTitle);
 
   useHashScroll(isSuccess && Boolean(file));
 

@@ -6,7 +6,8 @@ import { FormBackButton } from '~/components/forms/FormBackButton';
 import { GroupForm } from '~/components/forms/GroupForm';
 import { TextbookForm } from '~/components/forms/TextbookForm';
 import { UploadForm } from '~/components/forms/UploadForm';
-import type { FormSlug } from '~/lib/formTypes';
+import { useTitle } from '~/hooks/useTitle';
+import { FORM_META, type FormSlug } from '~/lib/formTypes';
 
 type Props = {
   type: FormSlug;
@@ -14,6 +15,8 @@ type Props = {
 };
 
 export const CommunityForm = ({ type, initialPage = '' }: Props) => {
+  useTitle(FORM_META[type].title);
+
   const bySlug: Record<FormSlug, ReactNode> = {
     feedback: <FeedbackForm initialPage={initialPage} />,
     textbook: <TextbookForm />,

@@ -25,7 +25,7 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 
 1. **probe** — 页数、原生 DPI、有没有文本层、该用哪个 `--mode`。
 2. **查广告** — 见 [ad-removal.md](ad-removal.md)。有二次加工痕迹就先清副本；**栅格化会把广告烧进像素**。
-3. **决定要不要 run** — 文件已经很小、或 probe 推荐 `color` 且体积可接受 → 可能只需第 2 步（普通地质学：150 DPI / 50MB，只清广告）。
+3. **决定要不要 run** — 文件已经很小、probe 推荐 `color` 且体积可接受、**或原生只有 150 DPI** → 只做第 2 步，再用 `pdfopt ocr` 补文本层（普通地质学：150 DPI / 50MB；新能源材料与器件：150 DPI / 25MB）。150 DPI 的中文扫描二值化必然更难读，见 [compression.md](compression.md) 开头。字发灰是曝光问题，用 `--text-contrast` 修，别用阈值。
 4. **已有文本层时** — 见 [ocr.md](ocr.md) 用书签算召回率；**70% 以上别重做 OCR**。
 5. **run → verify** — 见 [setup-and-usage.md](setup-and-usage.md)、[integrity.md](integrity.md)。
 
@@ -36,6 +36,8 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 **二、别假设字一定烧进像素。** 封面红字网盘链接可以是 PDF 文本对象（`0 Tr` 可见块），删内容流即可，图像流一个字节不动。
 
 **三、已有 Acrobat OCR 层时，重做常常是倒退。** 150 DPI 源图上采样到 300 DPI 喂 tesseract 不会增加信息。标题页错得离谱的可以手工重打几行，正文层别整本替换。
+
+**四、二值化不是默认动作。** 它只在原生 300 DPI 上是净收益。低 DPI 扫描里灰度的抗锯齿就是笔画位置信息，切掉就换不回来——任何参数都救不了，别在参数上耗时间。
 
 ## 收录到站点时
 

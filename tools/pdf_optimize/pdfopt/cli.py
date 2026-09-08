@@ -15,12 +15,13 @@ import argparse
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
 
 from . import budget as budget_mod
 from . import ocr as ocr_mod
 from . import verify as verify_mod
-from .config import Detect, Mode, Params
+from .config import Bilevel, Detect, Mode, Params, Tone
 from .pipeline import Job, run as run_pipeline, stage_probe
 from .probe import probe as probe_source
 from .util import human
@@ -63,18 +64,59 @@ def add_tuning(ap: argparse.ArgumentParser) -> None:
     g.add_argument("--photo-quality", type=int, default=None, help="MRC photo patch JPEG quality")
     g.add_argument("--page-dpi", type=float, default=None, help="gray/color whole-page DPI")
     g.add_argument("--page-quality", type=int, default=None, help="gray/color JPEG quality")
-    g.add_argument(
+    b = ap.add_argument_group("binarization (mrc/bilevel text layer)")
+    b.add_argument(
+        "--bilevel-min-dpi",
+        type=float,
+        default=None,
+        help="resample the text layer up to at least this before thresholding "
+        "(default 300); a low-DPI scan cannot represent its own stroke edges "
+        "on a 1-bit grid",
+    )
+    b.add_argument(
+        "--text-smooth",
+        type=float,
+        default=None,
+        help="Gaussian sigma in source pixels applied before thresholding "
+        "(default 0.3); 0 disables",
+    )
+    b.add_argument(
+        "--sauvola-k",
+        type=float,
+        default=None,
+        help="local threshold strictness (default 0.2); raise for thinner "
+        "strokes, lower for fuller ones",
+    )
+    b.add_argument(
+        "--sauvola-window-in",
+        type=float,
+        default=None,
+        help="local threshold window in inches (default 0.10, about one glyph)",
+    )
+    b.add_argument(
         "--bw-threshold",
         type=int,
         default=None,
-        help="jbig2enc 1bpp threshold (default 200); raise for faint scans to "
-        "thicken strokes — this is threshold tuning, not dilation, so it "
-        "won't smear glyphs",
+        help="escape hatch: one fixed cut level for the whole page instead of "
+        "the local threshold. Only worth it when Sauvola misreads a page",
     )
     g.add_argument(
         "--no-patch-color",
         action="store_true",
         help="force photo patches to grayscale",
+    )
+
+    t = ap.add_argument_group("exposure")
+    t.add_argument(
+        "--text-contrast",
+        type=float,
+        default=None,
+        metavar="PCT",
+        help="deepen faint ink, 0-100 (default 0 = keep the scan's exposure). "
+        "Reads each page's own ink and paper levels and pulls them towards "
+        "black and white. A tone curve, not a threshold: nothing merges and "
+        "no stroke can break, unlike --mode bilevel. Costs size — expanding "
+        "contrast expands the scan's grain with it",
     )
 
     d = ap.add_argument_group("region detection")
@@ -115,13 +157,31 @@ def build_params(args) -> Params:
     if over:
         detect = Detect(**{**detect.__dict__, **over})
 
-    params = Params(mode=args.mode, dpi=args.dpi, detect=detect)
+    bilevel = Bilevel()
+    over = {
+        k: v
+        for k, v in (
+            ("min_dpi", args.bilevel_min_dpi),
+            ("smooth", args.text_smooth),
+            ("k", args.sauvola_k),
+            ("window_in", args.sauvola_window_in),
+            ("global_threshold", args.bw_threshold),
+        )
+        if v is not None
+    }
+    if over:
+        bilevel = Bilevel(**{**bilevel.__dict__, **over})
+
+    tone = Tone()
+    if args.text_contrast is not None:
+        tone = Tone(strength=max(0.0, min(100.0, args.text_contrast)) / 100.0)
+
+    params = Params(mode=args.mode, dpi=args.dpi, detect=detect, bilevel=bilevel, tone=tone)
     for field, value in (
         ("photo_dpi", args.photo_dpi),
         ("photo_quality", args.photo_quality),
         ("page_dpi", args.page_dpi),
         ("page_quality", args.page_quality),
-        ("bw_threshold", args.bw_threshold),
     ):
         if value is not None:
             params = params.replace(**{field: value})
@@ -219,6 +279,11 @@ def cmd_plan(args) -> int:
               f" --page-dpi {(chosen.page_dpi or chosen.dpi):g} --page-quality {chosen.page_quality}"
               if chosen.mode in (Mode.GRAY, Mode.COLOR)
               else ""
+          )
+          + (
+              f" --text-contrast {chosen.tone.strength * 100:g}"
+              if chosen.tone.strength > 0
+              else ""
           ))
     return 0
 
@@ -230,6 +295,68 @@ def cmd_verify(args) -> int:
         print(f"  failed pages: {report.failed_pages}")
     if report.blank_pages:
         print(f"  blank pages:  {report.blank_pages}")
+    return 0 if report.ok else 1
+
+
+def cmd_ocr(args) -> int:
+    """Text layer only — every image stream is left byte-for-byte alone.
+
+    The decision procedure in the skill notes ends at "don't run" for a scan
+    that is already inside budget: re-encoding a 150dpi book can only trade
+    legibility for space you don't need. Searchable text is still worth
+    having, so it has to be reachable without the encode pipeline.
+    """
+    src = args.input.expanduser().resolve()
+    if not src.is_file():
+        raise SystemExit(f"not a file: {src}")
+    workdir = (args.workdir or src.parent / "out").expanduser().resolve()
+    workdir.mkdir(parents=True, exist_ok=True)
+    dst = args.out.expanduser().resolve() if args.out else workdir / f"{src.stem}.ocr.pdf"
+    if dst == src:
+        raise SystemExit("--out would overwrite the source; pick another path")
+
+    tessdata = ocr_mod.resolve_tessdata(args.tessdata_dir)
+    ok, why = ocr_mod.available(args.ocr_langs, tessdata)
+    if not ok:
+        raise SystemExit(f"ocr unavailable — {why}")
+    for lang, _path, size, best in ocr_mod.model_report(args.ocr_langs, tessdata):
+        note = "tessdata_best" if best else "fast/legacy model — run `pdfopt ocr-setup`"
+        print(f"ocr:    {lang}: {human(size)} ({note})")
+
+    from .render import open_doc
+
+    doc = open_doc(src)
+    count = doc.page_count
+    doc.close()
+
+    t0 = time.time()
+    print(
+        f"ocr:    tesseract -l {args.ocr_langs} --psm {args.ocr_psm} @ {args.ocr_dpi:g}dpi, "
+        f"{count} pages, images untouched …"
+    )
+    lines = ocr_mod.add_text_layer(
+        src,
+        list(range(count)),
+        src,
+        dst,
+        ocr_mod.OcrSettings(
+            langs=args.ocr_langs,
+            tessdata_dir=tessdata,
+            dpi=args.ocr_dpi,
+            psm=args.ocr_psm,
+            min_conf=args.ocr_min_conf,
+        ),
+        workers=args.workers,
+        progress=lambda done, total, rate: print(
+            f"  … {done}/{total}  {rate:.1f} p/s  ETA {(total - done) / max(rate, 0.01) / 60:.1f}m"
+        ),
+    )
+    print(
+        f"ocr:    {lines} text lines, {dst.name} ({human(dst.stat().st_size)}, "
+        f"+{human(dst.stat().st_size - src.stat().st_size)}, {(time.time() - t0) / 60:.1f}m)"
+    )
+    report = verify_mod.verify(dst, expect_pages=count)
+    print(f"verify: {report.summary()}")
     return 0 if report.ok else 1
 
 
@@ -336,6 +463,16 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("input", type=Path)
     v.add_argument("--shallow", action="store_true", help="structure only, skip page decode")
     v.set_defaults(func=cmd_verify)
+
+    o = sub.add_parser("ocr", help="add a text layer only, leaving every image untouched")
+    common(o)
+    o.add_argument("--out", type=Path, default=None)
+    o.add_argument("--ocr-langs", default=ocr_mod.DEFAULT_LANGS)
+    o.add_argument("--ocr-dpi", type=float, default=300.0, help="resolution fed to tesseract")
+    o.add_argument("--ocr-psm", type=int, default=ocr_mod.DEFAULT_PSM)
+    o.add_argument("--ocr-min-conf", type=float, default=25.0)
+    o.add_argument("--tessdata-dir", type=Path, default=None)
+    o.set_defaults(func=cmd_ocr)
 
     os_ = sub.add_parser("ocr-setup", help="fetch tessdata_best models into ./tessdata")
     os_.add_argument("--langs", default=ocr_mod.DEFAULT_LANGS)

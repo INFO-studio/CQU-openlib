@@ -18,6 +18,7 @@ python3 -m venv .venv
 ./pdfopt.sh probe "某教材.pdf"                        # 先看它是什么、该用哪个 mode
 ./pdfopt.sh run   "某教材.pdf" --max-mb 50 --ocr      # 自动求参命中上限
 ./pdfopt.sh run   "某教材.pdf" --pages 1-20,285 --ocr # 先抽几页看效果
+./pdfopt.sh ocr   "某教材.clean.pdf"                  # 只补文本层，不重编码图像
 ./pdfopt.sh verify "out/某教材.pdf"                   # 逐页解码校验
 ./pdfopt.sh clean "某教材.pdf"                        # 清掉分页缓存
 ```
@@ -31,6 +32,7 @@ python3 -m venv .venv
 | `probe` | 描述源文件，推荐 `--mode` |
 | `plan` | 抽样求解参数，不跑全书 |
 | `run` | 完整流水线 |
+| `ocr` | **只加文本层**，图像流一个字节不动。文件已在预算内时走这条 |
 | `verify` | `qpdf --check` + 逐页解码 |
 | `ocr-setup` / `ocr-check` | tessdata_best 模型 |
 | `clean` | 删 `.pdfopt` 缓存 |

@@ -4,7 +4,7 @@ Stages (see ``pipeline``): probe → plan → encode → assemble → ocr → ve
 Each is usable on its own; ``cli`` wires them into ``pdfopt run``.
 """
 
-from .config import Detect, Mode, Params
+from .config import Bilevel, Detect, Mode, Params, Tone
 
-__all__ = ["Detect", "Mode", "Params", "__version__"]
+__all__ = ["Bilevel", "Detect", "Mode", "Params", "Tone", "__version__"]
 __version__ = "0.2.0"

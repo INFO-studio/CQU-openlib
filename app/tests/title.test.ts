@@ -6,8 +6,12 @@ describe('formatTitle', () => {
     expect(formatTitle('校园地图')).toBe('校园地图 · CQU-openlib');
   });
 
-  it('keeps the home and site titles canonical', () => {
-    expect(formatTitle('首页')).toBe('CQU-openlib');
-    expect(formatTitle('CQU-openlib')).toBe('CQU-openlib');
+  it('does not guess which page is the homepage', () => {
+    expect(formatTitle('欢迎')).toBe('欢迎 · CQU-openlib');
+    expect(formatTitle('首页')).toBe('首页 · CQU-openlib');
+  });
+
+  it('uses the canonical site title only when explicitly requested', () => {
+    expect(formatTitle(null)).toBe('CQU-openlib');
   });
 });

@@ -22,6 +22,18 @@ describe('parseDocFrontmatterYaml', () => {
     expect(parseDocFrontmatterYaml("description: 'hi'\n")).toEqual({
       description: 'hi',
     });
+    expect(parseDocFrontmatterYaml("title: 'null'\n")).toEqual({
+      title: 'null',
+    });
+  });
+
+  it('reads browser title overrides including null', () => {
+    expect(parseDocFrontmatterYaml('title: 自定义标题\n')).toEqual({
+      title: '自定义标题',
+    });
+    expect(parseDocFrontmatterYaml('title: null\n')).toEqual({
+      title: null,
+    });
   });
 
   it('ignores invalid updated values', () => {
