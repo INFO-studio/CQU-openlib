@@ -101,6 +101,8 @@ def text_dpi(params: Params) -> str:
 
 def describe(params: Params) -> str:
     tone = f" +{params.tone.strength * 100:g}% contrast" if params.tone.strength > 0 else ""
+    if params.tone.showthrough > 0:
+        tone += f" −{params.tone.showthrough * 100:g}% show-through"
     if params.mode is Mode.MRC:
         return (
             f"{text_dpi(params)} text / {params.photo_dpi:g}dpi photos "

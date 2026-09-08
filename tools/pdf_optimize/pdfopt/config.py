@@ -114,6 +114,20 @@ class Tone:
     #: 0 off, 1 maps the measured ink and paper levels all the way to 0/255.
     #: Blended with identity below 1, so this reads as "how much of the way".
     strength: float = 0.0
+    #: Drop everything fainter than this fraction of the way from paper to
+    #: ink, i.e. flatten it to white. Aimed at show-through — the mirrored
+    #: ghost of the next page's type, which is real ink but not *this*
+    #: page's. Expanding contrast expands it too, so a faint book gets
+    #: dirtier as it gets darker unless this is set with it.
+    #:
+    #: A fraction of the *measured* range rather than a grey level, because
+    #: the two populations are only separable relative to each other: on the
+    #: preface page of 新能源材料与器件 show-through bottoms out at 240 while
+    #: real strokes reach 130, so 0.2 of the way down (235) erases 99.9% of
+    #: the ghost and costs only the outermost halo pixel of real type.
+    #: Independent of ``strength`` on purpose — a page can need cleaning
+    #: without needing deepening.
+    showthrough: float = 0.0
     #: Percentile taken to *be* the paper. On a text page paper is the large
     #: majority of pixels, so anything comfortably inside that mass works;
     #: taking a percentile rather than the maximum ignores specular flecks.

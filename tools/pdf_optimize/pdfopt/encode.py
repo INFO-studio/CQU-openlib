@@ -129,14 +129,18 @@ def tone_lut(gray: np.ndarray, cfg: Tone) -> np.ndarray | None:
     was printed on, and cannot break a stroke the way a cut level can. See
     ``Tone`` for why the anchors are measured rather than given.
     """
-    if cfg.strength <= 0:
+    if cfg.strength <= 0 and cfg.showthrough <= 0:
         return None
     paper, ink = np.percentile(gray, [cfg.paper_pct, cfg.ink_pct])
-    if paper < cfg.min_paper or paper - ink < cfg.min_range:
+    white = paper - cfg.showthrough * (paper - ink)
+    if paper < cfg.min_paper or white - ink < cfg.min_range:
         return None
     level = np.arange(256, dtype=np.float32)
-    stretched = np.clip((level - ink) * (255.0 / (paper - ink)), 0.0, 255.0)
+    stretched = np.clip((level - ink) * (255.0 / (white - ink)), 0.0, 255.0)
     blended = level + cfg.strength * (stretched - level)
+    # The clip to white is not the contrast curve's to make: cleaning off the
+    # next page's ghost and deepening this page's ink are separate asks.
+    blended[int(np.ceil(white)) :] = 255.0
     return np.clip(blended, 0.0, 255.0).round().astype(np.uint8)
 
 

@@ -118,6 +118,16 @@ def add_tuning(ap: argparse.ArgumentParser) -> None:
         "no stroke can break, unlike --mode bilevel. Costs size — expanding "
         "contrast expands the scan's grain with it",
     )
+    t.add_argument(
+        "--drop-showthrough",
+        type=float,
+        default=None,
+        metavar="PCT",
+        help="flatten to white anything fainter than this far from paper "
+        "towards ink, 0-100 (default 0 = off). Removes the next page's ghost, "
+        "which --text-contrast would otherwise deepen along with the type. "
+        "Try 20; measure first, the two populations must not overlap",
+    )
 
     d = ap.add_argument_group("region detection")
     d.add_argument("--seed-white", type=float, default=None, help="paper-white fraction below which a block is definitely continuous-tone (default 0.25)")
@@ -172,9 +182,15 @@ def build_params(args) -> Params:
     if over:
         bilevel = Bilevel(**{**bilevel.__dict__, **over})
 
+    def pct(value):
+        return max(0.0, min(100.0, value)) / 100.0
+
     tone = Tone()
-    if args.text_contrast is not None:
-        tone = Tone(strength=max(0.0, min(100.0, args.text_contrast)) / 100.0)
+    if args.text_contrast is not None or args.drop_showthrough is not None:
+        tone = Tone(
+            strength=pct(args.text_contrast or 0.0),
+            showthrough=pct(args.drop_showthrough or 0.0),
+        )
 
     params = Params(mode=args.mode, dpi=args.dpi, detect=detect, bilevel=bilevel, tone=tone)
     for field, value in (
@@ -283,6 +299,11 @@ def cmd_plan(args) -> int:
           + (
               f" --text-contrast {chosen.tone.strength * 100:g}"
               if chosen.tone.strength > 0
+              else ""
+          )
+          + (
+              f" --drop-showthrough {chosen.tone.showthrough * 100:g}"
+              if chosen.tone.showthrough > 0
               else ""
           ))
     return 0
