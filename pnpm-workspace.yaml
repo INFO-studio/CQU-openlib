@@ -1,5 +1,5 @@
 overrides:
-  vite: npm:@voidzero-dev/vite-plus-core@0.2.5
+  vite: npm:@voidzero-dev/vite-plus-core@0.3.0
 enableGlobalVirtualStore: false
 allowBuilds:
   esbuild: true

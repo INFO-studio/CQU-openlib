@@ -7,7 +7,7 @@ import { buildDocNavIndex } from '../../../vite/doc-nav-index';
 const linkedPaths = () => {
   const md = readFileSync(resolve('public/doc/contributor/index.md'), 'utf8');
   return [...md.matchAll(/]\(([^)\s/]+)\.md\)/g)].map(
-    ([, name]) => `/contributor/${name}`,
+    ([, name]) => `/contributor/${decodeURIComponent(name)}`,
   );
 };
 

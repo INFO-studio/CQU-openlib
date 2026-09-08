@@ -1,4 +1,4 @@
-import { Github, Menu, Search } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import DocLink from '~/components/DocLink';
 import ThemeToggle from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
@@ -106,7 +106,11 @@ const SiteHeader = ({ currentPath }: Props) => {
             className="inline-flex h-8 w-8 items-center justify-center rounded text-icon no-underline hover:bg-mist hover:text-icon-strong"
             aria-label="GitHub 仓库"
           >
-            <Github size={16} />
+            <span
+              className="h-4 w-4 bg-current [mask-image:url('/doc/assets/github.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
+              aria-hidden
+            />
+            <span className="sr-only">GitHub 仓库</span>
           </a>
           <ThemeToggle />
         </div>
