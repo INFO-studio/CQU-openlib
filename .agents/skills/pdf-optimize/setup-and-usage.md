@@ -16,7 +16,7 @@ python3 -m venv .venv
 
 ```bash
 ./pdfopt.sh probe "某教材.pdf"                        # 先看它是什么、该用哪个 mode
-./pdfopt.sh run   "某教材.pdf" --max-mb 50 --ocr      # 自动求参命中上限
+./pdfopt.sh run   "某教材.pdf" --max-mb 100 --ocr     # 自动求参命中上限
 ./pdfopt.sh run   "某教材.pdf" --pages 1-20,285 --ocr # 先抽几页看效果
 ./pdfopt.sh ocr   "某教材.clean.pdf"                  # 只补文本层，不重编码图像
 ./pdfopt.sh verify "out/某教材.pdf"                   # 逐页解码校验
@@ -39,7 +39,7 @@ python3 -m venv .venv
 
 ## `--ocr` 的体积余量
 
-工具按 OCR 文本层约占 2% 预留。898 页实测 2.3MB（4.8%）。`--max-mb 50` 时组装到 47.7MB 已贴上限；宁可 `--max-mb 48` 先跑，避免 OCR 完再降参重编。
+工具按 OCR 文本层约占 2% 预留。898 页实测 2.3MB（4.8%）。上限贴满时（如 `--max-mb 50` 组装到 47.7MB）宁可先按 2% 留出余量跑，避免 OCR 完再降参重编。
 
 ## 书签
 
