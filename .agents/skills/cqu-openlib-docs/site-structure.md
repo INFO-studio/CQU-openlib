@@ -6,13 +6,13 @@
 
 | 目录 | 侧边栏标签 | 装什么 | 页面数量级 |
 | --- | --- | --- | --- |
-| `course/` | 课程 | 每门课一页，资源主体 | 3768 |
-| `academic/` | 学业 | 培养方案、专业总览、入学必看 | 234 |
+| `course/` | 课程 | 每门课一页，资源主体 | 3765 |
+| `academic/` | 学业 | 培养方案、专业总览、入学必看 | 239 |
 | `club/` | 社团 | 社团介绍 | 57 |
 | `skill/` | 技巧 | 工具与方法 | 23 |
 | `life/` | 生活 | 校园生活、学生团体 | 17 |
-| `contributor/` | 贡献者 | 每位贡献者一页 | 28 |
-| `sundry/` | 杂项 | 说明书、更新日志、待办事项 | 159 |
+| `contributor/` | 贡献者 | 每位贡献者一页 | 30 |
+| `sundry/` | 杂项 | 说明书、更新日志、待办事项 | 167 |
 
 不进导航的目录（`vite/doc-nav-index.ts` 的 `SKIP_DIRS`，既不进侧边栏也不进搜索）：`assets`、`javascripts`、`resources`、`42`、`notice`。
 
@@ -132,17 +132,15 @@ pnpm image:optimize        # 加 --dry 先看会改什么
 3. 在文档里写 `:l-kebab-name:`。
 4. 跑 `pnpm test`。
 
-图标短名的规则由 `app/lib/icons.ts` 定：**只认 `l-` 前缀**，`l-` 后面就是 lucide 的 kebab 名。`remarkIcon` 的正则也只匹配 `:l-xxx:`，所以正文里的 `8:00-8:30`、`:foo:` 不会被误当图标。
+短名规则由 `app/lib/icons.ts` 定：**只认 `l-` 前缀**，后面就是 lucide 的 kebab 名。`remarkIcon` 的正则也只匹配 `:l-xxx:`，所以正文里的 `8:00-8:30`、`:foo:` 不会被误当图标。白名单是刻意的（lucide 1911 个图标、ESM 源 7.6MB，动态取会让 tree-shaking 失效、全量进 bundle；全库至今只用 15 种，注册表里有 17 个，`arrow-left` 和 `frown` 是遗留）。
 
-白名单是刻意的：lucide 有 1911 个图标、ESM 源 7.6MB，动态取会让 tree-shaking 失效、全量进 bundle。全库至今只用了 15 种图标，注册一行的成本远低于此。
-
-`app/tests/parser/iconCoverage.test.ts` 守着注册表本身：每个键都要对应一个真的 import、键名合法且按字母序、教材页在用的图标都已注册。它**不扫全库**——读 4000 多个文档要几十秒，不值得压在每次 `pnpm test` 上。写了新图标想确认全库没有漏网的，跑这一行（不到 1 秒）：
+`app/tests/parser/iconCoverage.test.ts` 只守注册表本身：每个键都对应一个真的 import、键名合法且按字母序、三个样本页在用的图标都已注册。它**不扫全库**——读 4000 多个文档要几十秒，不值得压在每次 `pnpm test` 上。确认全库没有漏网的跑这一行（不到 1 秒），拿结果对 `STATIC_ICONS`：
 
 ```bash
-rg -oh ':l-[a-z0-9-]+:' public/doc | sort -u
+rg -o --no-filename -e ':l-[a-z0-9-]+:' public/doc | sort -u
 ```
 
-拿结果对一遍 `STATIC_ICONS`。漏注册的后果是页面上出现灰色字面文本 `:l-xxx:`，`pnpm dev` 打开页面就能看见。
+漏注册的后果是页面上出现灰色字面文本 `:l-xxx:`，`pnpm dev` 打开页面就能看见。
 
 ## 构建期产物（不要手改）
 
@@ -158,10 +156,10 @@ rg -oh ':l-[a-z0-9-]+:' public/doc | sort -u
 
 ```bash
 pnpm dev         # 开发服务器，会监听 public/doc 并重建 nav 索引
-pnpm test        # vitest，35 个文件
+pnpm test        # vitest
 pnpm typecheck   # tsc
-pnpm check       # biome check .（只管 JS/TS/JSON，不会碰 Markdown）
+pnpm check       # biome check .
 pnpm build       # 生产构建
 ```
 
-没有任何脚本会格式化或 lint Markdown：`pnpm check` 只管 JS/TS/JSON，pre-commit hook 跑的也是 `biome check --write --staged`，同样绕过 Markdown 正文。所以文档的格式一致性只能靠抄先例和 `rg` 自查。
+没有任何脚本会格式化或 lint Markdown：`pnpm check` 和 pre-commit 的 `biome check --write --staged` 都只管 JS/TS/JSON。文档的格式一致性只能靠抄先例和 `rg` 自查。

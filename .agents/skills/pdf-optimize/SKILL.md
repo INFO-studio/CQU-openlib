@@ -29,7 +29,7 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 4. **已有文本层时** — 见 [ocr.md](ocr.md) 用书签算召回率；**70% 以上别重做 OCR**。
 5. **run → verify** — 见 [setup-and-usage.md](setup-and-usage.md)、[integrity.md](integrity.md)。
 
-## 三条铁律
+## 五条铁律
 
 **一、广告必须在 `run` 之前清。** pdfopt 会栅格化整页，之后广告摘不出来。
 

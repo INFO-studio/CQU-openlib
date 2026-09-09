@@ -10,7 +10,7 @@
 
 ## 改 `public/doc/**` 之前
 
-编写规范全部收在 `.agents/skills/cqu-openlib-docs/`，动手前按需读。入口是该目录下的 `SKILL.md`，四份细则：
+编写规范全部收在 `.agents/skills/cqu-openlib-docs/`，动手前按需读。入口 `SKILL.md`（铁律与收录教材的完整步骤在那里），四份细则：
 
 | 你要做的事 | 读这个 |
 | --- | --- |
@@ -18,12 +18,6 @@
 | 判断要不要动 `updated`、要不要写更新日志 | `updated-and-changelog.md` |
 | 扩展语法：内容 tab、admonition、图标、键位 | `markdown-syntax.md` |
 | 新建页面、放图片、写站内链接、加图标 | `site-structure.md` |
-
-以下三条最容易违反，先记住再去读细则：
-
-1. **`updated` 只在读者看到的信息真的变了时才动。** 格式统一、错别字修正、图标换名都不算，一律不要动日期。
-2. **写更新日志要同步改三处文件**：当天日志、`更新日志/index.md`（顶部链接 + 年/季度/月 tab）、首页 `index.md` 公告的日期链接。漏一处站点上就对不上。
-3. **`:l-xxx:` 图标必须先在 `app/utils/parser/parserIcon.tsx` 的 `STATIC_ICONS` 注册**，否则页面上渲染成灰色字面文本。加完跑 `pnpm test`，`iconCoverage` 用例会兜住漏注册。
 
 ## 动 `tools/pdf_optimize/` 之前
 
@@ -37,10 +31,10 @@
 | 要不要 `--ocr` | `ocr.md` |
 | 产物校验、勿提交大文件 | `integrity.md` |
 
-## 文档与代码习惯
+## 开发习惯
 
-- 优先改现有文件与既有写法；不要顺手大重构或扩写无关文档。抄先例，不要发明写法。
-- 改解析器（`app/utils/remark/**`、`app/utils/preprocess/**`）时补边界测试。
+- 抄先例，不要发明写法；不顺手大重构或扩写无关文档。
+- 改解析器（`app/utils/remark/**`、`app/utils/preprocess/**`）时补边界测试，跑 `pnpm test`；动了类型再跑 `pnpm typecheck`。
 - 用户未要求时不要自动 commit / push；要求提交时用普通 git，不要附加无关署名流程。
 
 ## 前端组件
@@ -48,8 +42,4 @@
 - 项目使用 **Base UI + 类 shadcn 的本地组件管理方式**。页面优先复用 `app/components/ui/` 中的组件，不要在业务页面重复拼装同类交互与样式。
 - Select、Dialog、Popover、Collapsible 等复合交互优先使用 Base UI primitive；缺少通用封装时，先在 `app/components/ui/` 增加可复用组件，再由页面调用。不要用原生 `<select>` 等控件临时替代。
 - 组件样式使用 UnoCSS 和现有语义化 token；避免散落的自定义 CSS、重复样式和脱离主题的硬编码颜色。
-- **所有图标必须使用不透明前景色。** Lucide 由多个 stroke/path 组成，带 alpha 的 `currentColor` 会在路径重叠处重复混色；弱图标使用 `text-icon`，需要接近正文或用于 hover 的强图标使用 `text-icon-strong`，品牌强调使用 `text-primary`，状态图标使用 `text-success` / `text-error` 等不透明语义色。禁止让图标继承 `text-muted`、`text-ink`、`颜色/透明度` 或带 alpha 的硬编码色。整枚 SVG/外层容器用于显隐、禁用、动画的 `opacity-*` 是组后合成，不会造成路径叠色，可以保留；Lucide 的 `fill="none"` 属于图形结构，不是透明前景色。
-
-## 验证
-
-改解析 / 工具函数后跑相关测试：`pnpm test`。涉及类型时再跑 `pnpm typecheck`。
+- **所有图标必须使用不透明前景色**——Lucide 由多个 stroke/path 组成，带 alpha 的 `currentColor` 会在路径重叠处重复混色。弱图标 `text-icon`，接近正文或用于 hover 的强图标 `text-icon-strong`，品牌强调 `text-primary`，状态图标 `text-success` / `text-error`。禁止继承 `text-muted`、`text-ink`、`颜色/透明度` 或带 alpha 的硬编码色。两个不算违规：整枚 SVG 或外层容器用于显隐、禁用、动画的 `opacity-*` 是组后合成，不叠色；Lucide 的 `fill="none"` 是图形结构。

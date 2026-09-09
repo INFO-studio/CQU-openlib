@@ -29,7 +29,7 @@ const iconsUsedIn = (docPath: string): string[] => {
 
 // Full-corpus scanning lives outside the test suite on purpose: reading all
 // 4000+ doc files costs tens of seconds. Self-check with
-// `rg -oh ':l-[a-z0-9-]+:' public/doc | sort -u`.
+// `rg -o --no-filename -e ':l-[a-z0-9-]+:' public/doc | sort -u`.
 describe('doc icon registry', () => {
   const { keys, imported } = readRegistry();
 

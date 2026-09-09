@@ -124,7 +124,7 @@ updated: 2026-07-31
 - 二级标题只用这三个：`## 攻略`、`## 资源`、`## 课外资源`，顺序也是这个。标题行尾同样带两个空格。
 - `=== ":l-book:`课程号`"` 是内容 tab，一门课有多个课程号就写多个 tab。tab 内的内容**必须缩进 4 个空格**。
 - 同一页面有多个课程代码 tab 时，按课程代码的**字母前缀升序、数字部分升序**排列。例如 `EE30011` 必须排在 `OE31600` 前；这条规则不适用于非课程代码 tab。
-- 课程号从 `public/doc/academic/专业培养方案/**` 里查，那里每门课都标了 `:l-book:`课程号``。别自己编。
+- 课程号查 `metadata/course-codes.json`，一条命令见 [site-structure.md](site-structure.md)。别自己编。
 
 ### 占位页
 
@@ -183,6 +183,6 @@ updated: 2026-07-31
 
 ## 文件链接
 
-站内资源文件走 API：`https://api.cqu-openlib.cn/file?key=FILEKEY`。filekey 由维护者上传后给出，不要自己构造或猜测。
+资源文件走 API：`https://api.cqu-openlib.cn/file?key=FILEKEY`，filekey 由维护者上传后给出，不要自己构造或猜测。
 
-文档之间用相对路径并带 `.md` 后缀：`../contributor/贡献者名.md`、`../../../../course/高等数学.md`。站内工具路由用绝对路径无后缀：`/form/textbook`。
+文档之间用相对路径带 `.md` 后缀（`../contributor/贡献者名.md`），站内工具路由用绝对路径无后缀（`/form/textbook`）。锚点规则和表单 slug 清单见 [site-structure.md](site-structure.md)。

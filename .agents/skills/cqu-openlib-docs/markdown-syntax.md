@@ -173,4 +173,4 @@ GFM 表格、脚注、任务列表解析器都在，只是语料里目前一次�
 
 ## frontmatter
 
-只认 `updated` 和 `description` 两个键。何时该动 `updated` 见 [updated-and-changelog.md](updated-and-changelog.md)。
+只认 `updated`、`description`、`title` 三个键（`app/utils/docFrontmatter.ts`）。何时该动 `updated`、`title` 怎么取值，见 [updated-and-changelog.md](updated-and-changelog.md)。
