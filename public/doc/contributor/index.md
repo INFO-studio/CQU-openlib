@@ -40,7 +40,7 @@
 - [tazy_wrld](tazy_wrld.md)
 - [重庆大学吧务组](重庆大学吧务组.md)
 - [qzq](qzq.md)
-- [Leo Moore](LeoMoore.md)
+- [Leo Moore](Leo%20Moore.md)
 - [仮屋和奏](仮屋和奏.md)
 - [阳启万象](阳启万象.md)
 - [Rium](Rium.md)
@@ -97,3 +97,6 @@
 - 龙吟
 - 北冥若汐
 - 我的心绪存活千年
+- 耄耋
+- L33Z22L11
+- 凯必安

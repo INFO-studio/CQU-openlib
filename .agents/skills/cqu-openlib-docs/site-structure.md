@@ -63,6 +63,13 @@ key 是 URL 形式的 `/course/页面名`。一门课有多个课程号时（如
 
 `.md` 后缀其实可省（`normalizeDocHref` 两种都能转），但全库普遍带着，照抄先例。
 
+**贡献者页的文件名照抄显示名**，名字里有空格就带空格：`contributor/Leo Moore.md`、`contributor/Zhenghong Sun.md`。侧边栏标题取自文件名，去掉空格就显示不对。链接里把空格写成 `%20`：
+
+```markdown
+- [Leo Moore](Leo%20Moore.md)
+@ [Zhenghong Sun](../contributor/Zhenghong%20Sun.md)
+```
+
 **锚点**由标题文本 `slugify` 而来：去空白、转小写、空格换 `-`、丢掉除中文和 `\w-` 以外的字符（`app/utils/headingText.ts`）。`## A. 镜像站` → `#a-镜像站`。旧 MkDocs 时代的 `#_6` 这类数字锚点和新规则不兼容，全库残留 3 处，遇到就顺手改成真锚点。
 
 **站内工具路由**：绝对路径、无后缀。共 5 个表单，slug 写错会被重定向到 `feedback`：
