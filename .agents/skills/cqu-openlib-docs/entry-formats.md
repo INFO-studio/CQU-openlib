@@ -181,6 +181,8 @@ updated: 2026-07-31
 
 **不要写成锚点。** 全站只有标题带 id（`app/utils/headingText.ts` 的 `slugify`），列表项没有 id，`textbook.md#legacy138` 跳不过去。
 
+待办条目本身不写贡献者署名，登记与兑现都要写日志，见 [updated-and-changelog.md](updated-and-changelog.md)。
+
 ## 文件链接
 
 资源文件走 API：`https://api.cqu-openlib.cn/file?key=FILEKEY`，filekey 由维护者上传后给出，不要自己构造或猜测。

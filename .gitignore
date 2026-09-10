@@ -20,6 +20,7 @@
 # Local PDF compress scratch (large binaries; keep scripts only)
 /tools/pdf_optimize/**/*.pdf
 /tools/pdf_optimize/out/
+/tools/pdf_optimize/raw/
 /tools/pdf_optimize/.venv/
 /tools/pdf_optimize/tessdata/
 
