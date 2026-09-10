@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
+import { Route as AdminFileFailuresRouteImport } from './routes/admin.file-failures'
 import { Route as FormTypeRouteImport } from './routes/form.$type'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const AdminEmailsRoute = AdminEmailsRouteImport.update({
   path: '/emails',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFileFailuresRoute = AdminFileFailuresRouteImport.update({
+  id: '/file-failures',
+  path: '/file-failures',
+  getParentRoute: () => AdminRoute,
+} as any)
 const FormTypeRoute = FormTypeRouteImport.update({
   id: '/form/$type',
   path: '/form/$type',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/map': typeof MapRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/file-failures': typeof AdminFileFailuresRoute
   '/form/$type': typeof FormTypeRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/map': typeof MapRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/file-failures': typeof AdminFileFailuresRoute
   '/form/$type': typeof FormTypeRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/map': typeof MapRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/file-failures': typeof AdminFileFailuresRoute
   '/form/$type': typeof FormTypeRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -88,10 +97,18 @@ export interface FileRouteTypes {
     | '/admin'
     | '/map'
     | '/admin/emails'
+    | '/admin/file-failures'
     | '/form/$type'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/map' | '/admin/emails' | '/form/$type' | '/admin'
+  to:
+    | '/'
+    | '/$'
+    | '/map'
+    | '/admin/emails'
+    | '/admin/file-failures'
+    | '/form/$type'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -99,6 +116,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/map'
     | '/admin/emails'
+    | '/admin/file-failures'
     | '/form/$type'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -155,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmailsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/file-failures': {
+      id: '/admin/file-failures'
+      path: '/file-failures'
+      fullPath: '/admin/file-failures'
+      preLoaderRoute: typeof AdminFileFailuresRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/form/$type': {
       id: '/form/$type'
       path: '/form/$type'
@@ -167,11 +192,13 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminEmailsRoute: typeof AdminEmailsRoute
+  AdminFileFailuresRoute: typeof AdminFileFailuresRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminEmailsRoute: AdminEmailsRoute,
+  AdminFileFailuresRoute: AdminFileFailuresRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

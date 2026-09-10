@@ -20,6 +20,12 @@ export const ADMIN_MODULES = [
     path: '/admin/emails',
     description: 'contact 信箱的收信与回复',
   },
+  {
+    id: 'file-failures',
+    label: '直链监控',
+    path: '/admin/file-failures',
+    description: 'File API 的失败计数与明细',
+  },
 ] as const satisfies readonly AdminModule[];
 
 export const ADMIN_SESSION_KEY = 'cqu-openlib:admin-key';

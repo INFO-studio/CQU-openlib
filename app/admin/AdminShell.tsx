@@ -1,5 +1,13 @@
 import { Link } from '@tanstack/react-router';
-import { Eye, EyeOff, Inbox, Lock, type LucideIcon, Mail } from 'lucide-react';
+import {
+  Activity,
+  Eye,
+  EyeOff,
+  Inbox,
+  Lock,
+  type LucideIcon,
+  Mail,
+} from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import {
@@ -22,6 +30,7 @@ const SURFACE = 'theme-dark min-h-screen bg-paper font-sans text-ink';
 const MODULE_ICONS: Record<string, LucideIcon> = {
   submissions: Inbox,
   emails: Mail,
+  'file-failures': Activity,
 };
 
 type ShellProps = {
@@ -41,10 +50,9 @@ export const AdminShell = ({
 
   return (
     <div className={cn(SURFACE, 'grid md:grid-cols-[15.5rem_minmax(0,1fr)]')}>
-      {/* Phone: one sticky row of equal tabs. The console has exactly two
-          destinations, so they fit without a drawer or a scrolling rail —
-          and every child is `shrink-0` or `min-w-0` on purpose, since a plain
-          flex row squeezes the labels into each other well before it scrolls. */}
+      {/* Phone: one sticky row of equal tabs. All destinations fit without a
+          drawer; every child is `shrink-0` or `min-w-0` so labels do not
+          squeeze into each other before the row needs to scroll. */}
       <aside className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-panel px-3 py-2 md:h-screen md:flex-col md:items-stretch md:gap-6 md:border-b-0 md:border-r md:px-3 md:py-5">
         <div className="flex shrink-0 items-center gap-2.5 md:px-1.5">
           <span
