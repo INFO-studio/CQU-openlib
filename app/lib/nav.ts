@@ -31,6 +31,7 @@ export const NAV_SECTIONS: NavSection[] = [
     path: '/academic',
     source: 'academic',
     kind: 'dir',
+    indexOrder: true,
   },
   { id: 'club', label: '社团', path: '/club', source: 'club', kind: 'dir' },
   { id: 'skill', label: '技巧', path: '/skill', source: 'skill', kind: 'dir' },
@@ -78,6 +79,21 @@ const MAP_NAV_ITEM: SiteNavItem = {
 export const SITE_NAV_ITEMS: SiteNavItem[] = NAV_SECTIONS_VISIBLE.flatMap(
   (section) => (section.id === 'life' ? [section, MAP_NAV_ITEM] : [section]),
 );
+/**
+ * App routes that live inside a doc section rather than beside it.
+ *
+ * Unlike /map they get no header tab, so the section sidebar is the only way
+ * to find them — and having no markdown file, they would never appear there.
+ * The section's index.md links to each one like any other page, which is what
+ * fixes its position in the sidebar.
+ */
+export const SECTION_APP_PAGES: {
+  section: string;
+  title: string;
+  path: string;
+}[] = [
+  { section: 'academic', title: '毕业去向', path: '/academic/graduation' },
+];
 export type SearchEntry = {
   title: string;
   path: string;

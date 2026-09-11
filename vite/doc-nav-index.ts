@@ -12,6 +12,7 @@ import { ALPHA_LETTERS } from '../app/lib/courseAlpha';
 import {
   type DocNavIndex,
   NAV_SECTIONS,
+  SECTION_APP_PAGES,
   type SearchChunkFile,
   type SearchChunkMeta,
   type SearchEntry,
@@ -114,9 +115,11 @@ const buildTree = (
   docRoot: string,
   sectionDir: string,
   useIndexOrder = false,
+  /** App routes with no file on disk; section root only. */
+  extras: SidebarNode[] = [],
 ): SidebarNode[] => {
   if (!existsSync(sectionDir)) return [];
-  const nodes: SidebarNode[] = [];
+  const nodes: SidebarNode[] = [...extras];
   for (const entry of readdirSync(sectionDir, { withFileTypes: true })) {
     if (entry.name.startsWith('.') || SKIP_DIRS.has(entry.name)) continue;
     const full = join(sectionDir, entry.name);
@@ -155,16 +158,28 @@ const buildTree = (
     ? orderByIndex(sorted, indexLinkOrder(docRoot, sectionDir))
     : sorted;
 };
-/** Doc URLs of the sibling pages an index.md links to, in reading order. */
+/**
+ * URLs of the sibling pages an index.md links to, in reading order.
+ *
+ * Extension-less targets are app routes (`](./graduation)`), which have no
+ * file to resolve but still take a place in the order.
+ */
 const indexLinkOrder = (docRoot: string, dir: string): string[] => {
   const indexFile = join(dir, 'index.md');
   if (!existsSync(indexFile)) return [];
   const order: string[] = [];
-  for (const [, target] of readFileSync(indexFile, 'utf8').matchAll(
-    /]\(([^)\s]+\.mdx?)\)/gi,
+  for (const [, raw] of readFileSync(indexFile, 'utf8').matchAll(
+    /]\(([^)\s]+)\)/g,
   )) {
-    if (/^(?:[a-z]+:)?\//i.test(target)) continue;
-    const path = urlFromDocFile(docRoot, join(dir, decodeURI(target)));
+    if (/^(?:[a-z]+:)?\//i.test(raw)) continue;
+    const target = decodeURI(raw.split('#')[0] ?? '');
+    const isDoc = /\.mdx?$/i.test(target);
+    // Anything else with a suffix is an asset, not a page.
+    if (!target || (!isDoc && /\.[a-z0-9]+$/i.test(target))) continue;
+    const full = join(dir, target);
+    const path = isDoc
+      ? urlFromDocFile(docRoot, full)
+      : `/${relative(docRoot, full).replace(/\\/g, '/')}`;
     if (!order.includes(path)) order.push(path);
   }
   return order;
@@ -236,8 +251,14 @@ export const buildDocNavIndex = (
       return { ...section, tree: [] as SidebarNode[] };
     }
     const sectionDir = join(docRoot, section.source);
+    const appPages = SECTION_APP_PAGES.filter((p) => p.section === section.id);
     const withCodes = attachCodes(
-      buildTree(docRoot, sectionDir, section.indexOrder),
+      buildTree(
+        docRoot,
+        sectionDir,
+        section.indexOrder,
+        appPages.map(({ title, path }) => ({ title, path })),
+      ),
       codesByPath,
     );
     const tree = section.id === 'course' ? attachLetters(withCodes) : withCodes;
@@ -261,6 +282,16 @@ export const buildDocNavIndex = (
       } else {
         sectionEntries.push(entry);
       }
+    }
+    // No markdown file means listMarkdownFiles never saw them, and with no
+    // header tab either, search is the only other way in.
+    for (const page of appPages) {
+      sectionEntries.push({
+        title: page.title,
+        path: page.path,
+        section: section.id,
+        sectionLabel: section.label,
+      });
     }
     const sectionIndex = join(sectionDir, 'index.md');
     if (existsSync(sectionIndex)) {

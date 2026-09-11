@@ -1,5 +1,8 @@
 {
   "include": ["**/*"],
+  // reference/ holds gitignored clones of other people's repos, with their own
+  // deps and tsconfig. They are read for context, never built.
+  "exclude": ["reference", "node_modules", "build"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["node", "vite/client"],

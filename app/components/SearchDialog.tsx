@@ -211,6 +211,12 @@ const SearchDialog = ({ chunks, open, onClose }: Props) => {
         search: target.search,
         hash: target.hash,
       });
+    } else if (target.to === '/academic/graduation') {
+      void navigate({
+        to: '/academic/graduation',
+        search: target.search,
+        hash: target.hash,
+      });
     } else {
       void navigate({
         to: '/$',

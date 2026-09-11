@@ -22,6 +22,13 @@ const lifeTree = () => {
   return index.sections.find((section) => section.id === 'life')?.tree ?? [];
 };
 
+const academicTree = () => {
+  const { index } = buildDocNavIndex(resolve('public/doc'), resolve('.'));
+  return (
+    index.sections.find((section) => section.id === 'academic')?.tree ?? []
+  );
+};
+
 describe('contributor sidebar order', () => {
   it('follows the link order of index.md', () => {
     const linked = linkedPaths();
@@ -65,6 +72,42 @@ describe('life sidebar order', () => {
       '/life/学生团体/EF库洛游戏交流群',
       '/life/学生团体/Paradox同好会',
       '/life/学生团体/CQUcraft',
+    ]);
+  });
+});
+
+describe('academic sidebar order', () => {
+  it('follows academic/index.md at the section root', () => {
+    expect(academicTree().map((node) => node.path)).toEqual([
+      '/academic/入学必看',
+      '/academic/竞赛',
+      '/academic/专业培养方案',
+      '/academic/专业总览',
+      '/academic/graduation',
+      '/academic/转专业相关信息',
+      '/academic/重庆大学视觉形象',
+      '/academic/重庆大学官网汇总',
+    ]);
+  });
+
+  // It has no markdown file, so only the index.md link puts it in the sidebar.
+  it('places the 毕业去向 app route where index.md links to it', () => {
+    const node = academicTree().find((n) => n.path === '/academic/graduation');
+    expect(node?.title).toBe('毕业去向');
+  });
+
+  it('recursively follows 竞赛/index.md for its submenu', () => {
+    const contests = academicTree().find(
+      (node) => node.path === '/academic/竞赛',
+    );
+    expect(contests?.children?.map((node) => node.path)).toEqual([
+      '/academic/竞赛/信息素养大赛',
+      '/academic/竞赛/算法',
+      '/academic/竞赛/全国大学生物理实验竞赛',
+      '/academic/竞赛/数学建模',
+      '/academic/竞赛/智能车竞赛',
+      '/academic/竞赛/智能制造挑战赛',
+      '/academic/竞赛/重庆大学机器人训练大赛',
     ]);
   });
 });

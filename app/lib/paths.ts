@@ -1,3 +1,5 @@
+import type { GraduationSearch } from '~/pages/academic/graduation/utils/scopeSearch';
+import { validateGraduationSearch } from '~/pages/academic/graduation/utils/scopeSearch';
 import type { MapSearch } from '~/pages/map/type';
 import { validateMapSearch } from '~/pages/map/utils/mapSearch';
 
@@ -20,6 +22,11 @@ export type NavTarget =
       to: '/map';
       hash?: string;
       search?: MapSearch;
+    }
+  | {
+      to: '/academic/graduation';
+      hash?: string;
+      search?: GraduationSearch;
     }
   | {
       to: '/$';
@@ -47,6 +54,20 @@ export const toNavTarget = (path: string): NavTarget => {
     return Object.keys(search).length
       ? { to: '/map', search, ...hashTarget }
       : { to: '/map', ...hashTarget };
+  }
+  // A custom route inside a doc section: it must not fall through to the
+  // markdown splat, or the page would try to fetch /doc/academic/graduation.md.
+  if (clean === '/academic/graduation') {
+    const params = new URLSearchParams(query);
+    const search = validateGraduationSearch({
+      college: params.get('college'),
+      edu: params.get('edu'),
+      grade: params.get('grade'),
+      cat: params.get('cat'),
+    });
+    return Object.keys(search).length
+      ? { to: '/academic/graduation', search, ...hashTarget }
+      : { to: '/academic/graduation', ...hashTarget };
   }
   return {
     to: '/$',

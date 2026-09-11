@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as AcademicGraduationRouteImport } from './routes/academic.graduation'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminFileFailuresRouteImport } from './routes/admin.file-failures'
@@ -36,6 +37,11 @@ const AdminRoute = AdminRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademicGraduationRoute = AcademicGraduationRouteImport.update({
+  id: '/academic/graduation',
+  path: '/academic/graduation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/map': typeof MapRoute
+  '/academic/graduation': typeof AcademicGraduationRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/file-failures': typeof AdminFileFailuresRoute
   '/form/$type': typeof FormTypeRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/map': typeof MapRoute
+  '/academic/graduation': typeof AcademicGraduationRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/file-failures': typeof AdminFileFailuresRoute
   '/form/$type': typeof FormTypeRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/map': typeof MapRoute
+  '/academic/graduation': typeof AcademicGraduationRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/file-failures': typeof AdminFileFailuresRoute
   '/form/$type': typeof FormTypeRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/map'
+    | '/academic/graduation'
     | '/admin/emails'
     | '/admin/file-failures'
     | '/form/$type'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/map'
+    | '/academic/graduation'
     | '/admin/emails'
     | '/admin/file-failures'
     | '/form/$type'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/map'
+    | '/academic/graduation'
     | '/admin/emails'
     | '/admin/file-failures'
     | '/form/$type'
@@ -126,6 +138,7 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
   MapRoute: typeof MapRoute
+  AcademicGraduationRoute: typeof AcademicGraduationRoute
   FormTypeRoute: typeof FormTypeRoute
 }
 
@@ -157,6 +170,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academic/graduation': {
+      id: '/academic/graduation'
+      path: '/academic/graduation'
+      fullPath: '/academic/graduation'
+      preLoaderRoute: typeof AcademicGraduationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -209,6 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
   MapRoute: MapRoute,
+  AcademicGraduationRoute: AcademicGraduationRoute,
   FormTypeRoute: FormTypeRoute,
 }
 export const routeTree = rootRouteImport

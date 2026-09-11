@@ -35,10 +35,35 @@ describe('toNavTarget', () => {
     );
   });
 
+  it('keeps the graduation page out of the splat despite sitting under a doc section', () => {
+    expect(toNavTarget('/academic/graduation')).toEqual({
+      to: '/academic/graduation',
+    });
+    expect(toNavTarget('/academic/graduation/')).toEqual({
+      to: '/academic/graduation',
+    });
+    expect(toNavTarget('/academic/graduation?college=128&edu=本科')).toEqual({
+      to: '/academic/graduation',
+      search: { college: '128', edu: '本科' },
+    });
+    expect(toNavTarget('/academic/graduation?grade=2023&cat=就业')).toEqual({
+      to: '/academic/graduation',
+      search: { grade: 2023, cat: '就业' },
+    });
+    expect(toNavTarget('/academic/graduation?grade=abc')).toEqual({
+      to: '/academic/graduation',
+    });
+  });
+
   it('continues routing document paths through the splat route', () => {
     expect(toNavTarget('/course/高等数学')).toEqual({
       to: '/$',
       params: { _splat: 'course/高等数学' },
+    });
+    // A sibling of the graduation route must still resolve as markdown.
+    expect(toNavTarget('/academic/graduation-notes')).toEqual({
+      to: '/$',
+      params: { _splat: 'academic/graduation-notes' },
     });
     expect(toNavTarget('/academic/入学必看/常见问题#校园卡是什么')).toEqual({
       to: '/$',

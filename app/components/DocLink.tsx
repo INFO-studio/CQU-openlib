@@ -50,6 +50,13 @@ const DocLink = ({
         hash: target.hash,
         replace,
       });
+    } else if (target.to === '/academic/graduation') {
+      void navigate({
+        to: '/academic/graduation',
+        search: target.search,
+        hash: target.hash,
+        replace,
+      });
     } else {
       void navigate({
         to: '/$',
