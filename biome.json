@@ -7,7 +7,13 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/routeTree.gen.ts", "!**/build", "!**/metadata"]
+    "includes": [
+      "**",
+      "!**/routeTree.gen.ts",
+      "!**/build",
+      "!**/metadata",
+      "!**/public/data"
+    ]
   },
   "formatter": {
     "enabled": true,

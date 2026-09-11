@@ -26,3 +26,14 @@
   Cache-Control: public, max-age=60, stale-while-revalidate=600
 /search/chunks/*
   Cache-Control: public, max-age=60, stale-while-revalidate=600
+
+# 毕业去向 chunks only change when graduation:build is re-run, which is roughly
+# once a 届 — so they can sit in the browser far longer than the doc index.
+/data/graduation/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/data/graduation/detail/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/data/graduation/detail/*/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/data/graduation/detail/*/*/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
