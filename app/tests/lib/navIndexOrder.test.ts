@@ -81,6 +81,7 @@ describe('academic sidebar order', () => {
     expect(academicTree().map((node) => node.path)).toEqual([
       '/academic/入学必看',
       '/academic/竞赛',
+      '/academic/科研训练计划SRTP',
       '/academic/专业培养方案',
       '/academic/专业总览',
       '/academic/graduation',

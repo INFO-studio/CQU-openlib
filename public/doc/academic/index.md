@@ -1,11 +1,12 @@
 ---
-updated: 2026-09-11
+updated: 2026-09-13
 ---
 
 # 学业
 
 - [入学必看](入学必看/index.md)
 - [竞赛](竞赛/index.md)
+- [科研训练计划SRTP](科研训练计划SRTP.md)
 - [专业培养方案](专业培养方案/index.md)
 - [专业总览](专业总览/index.md)
 - [毕业去向](./graduation)
