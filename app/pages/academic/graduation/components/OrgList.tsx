@@ -38,17 +38,19 @@ type Props = {
  * is rather than as a competitor.
  */
 const WithheldRow = ({ people, total }: { people: number; total: number }) => (
-  <div className="flex items-center gap-2.5 border-b border-line py-[0.4rem] sm:gap-3">
-    <span className="w-6 shrink-0" aria-hidden />
-    <span className="min-w-0 flex-1 truncate text-[0.875rem] text-muted">
+  <div className="flex items-center gap-2 border-b border-line py-[0.4rem] sm:items-baseline sm:gap-3">
+    <span className="min-w-6 shrink-0" aria-hidden />
+    <span className="min-w-0 flex-1 text-[0.875rem] leading-[1.45] text-muted">
       其他（单个去向人数过少）
     </span>
     <span className="hidden w-20 shrink-0 sm:block" aria-hidden />
-    <span className="w-10 shrink-0 text-right text-[0.875rem] font-semibold text-muted tabular-nums">
-      {people}
-    </span>
-    <span className="w-12 shrink-0 text-right text-xs text-muted tabular-nums">
-      {total === 0 ? '—' : `${((people / total) * 100).toFixed(1)}%`}
+    <span className="flex min-w-9 shrink-0 flex-col items-end leading-[1.05] sm:min-w-0 sm:flex-row sm:items-baseline sm:gap-3 sm:leading-[1.45]">
+      <span className="text-[0.75rem] font-semibold text-muted tabular-nums sm:min-w-10 sm:text-right sm:text-[0.875rem]">
+        {people}
+      </span>
+      <span className="text-[0.625rem] text-muted tabular-nums sm:w-12 sm:text-right sm:text-xs">
+        {total === 0 ? '—' : `${((people / total) * 100).toFixed(1)}%`}
+      </span>
     </span>
   </div>
 );
