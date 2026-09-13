@@ -148,12 +148,12 @@ const GraduationPage = () => {
             <p className="m-0 leading-relaxed text-muted">
               本页孵化自{' '}
               <a
-                href="https://github.com/ZCZZENG/CQU---Graduate-Employment-Destination-Inquiry"
+                href="https://github.com/ZCZZENG/CQU-Grad-Destination"
                 target="_blank"
                 rel="noreferrer"
                 className="font-medium text-primary no-underline hover:underline"
               >
-                CQU---Graduate-Employment-Destination-Inquiry
+                CQU-Grad-Destination
               </a>
               <span className="mx-1 text-muted">@</span>
               <DocLink

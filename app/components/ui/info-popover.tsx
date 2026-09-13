@@ -57,7 +57,7 @@ export const InfoPopover = ({ ariaLabel, children, className }: Props) => {
           align="end"
         >
           <Popover.Popup
-            className="w-[min(20rem,calc(100vw-1.5rem))] origin-[var(--transform-origin)] rounded-md border border-line bg-elev p-4 text-sm text-ink shadow-[0_10px_30px_rgba(15,23,42,0.16)] outline-none"
+            className="w-[min(24rem,calc(100vw-1.5rem))] origin-[var(--transform-origin)] rounded-md border border-line bg-elev p-4 text-sm text-ink shadow-[0_10px_30px_rgba(15,23,42,0.16)] outline-none"
             onPointerEnter={openOnHover}
             onPointerLeave={closeAfterHover}
           >
