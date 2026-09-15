@@ -20,10 +20,9 @@
 # Logo master renders (regenerate with pnpm logo:generate)
 /tools/logo/out/
 
-# Raw 毕业去向 crawl: holds the <2 人 rows that graduation:build masks away.
-# Publishing it would undo the masking, so it stays local — re-crawl with
-# pnpm graduation:fetch. Only the masked chunks under public/data/ ship.
+# raw data
 /tools/graduation/data/
+/tools/training-plan-parse/data/
 
 # Local PDF compress scratch (large binaries; keep scripts only)
 /tools/pdf_optimize/**/*.pdf
