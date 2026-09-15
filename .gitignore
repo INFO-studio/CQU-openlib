@@ -13,6 +13,7 @@
 # Local tooling caches and agent state
 **/.ruff_cache/
 **/__pycache__/
+**/.venv/
 
 # Git repo reference
 /reference/
@@ -22,13 +23,12 @@
 
 # raw data
 /tools/graduation/data/
-/tools/training-plan-parse/data/
+/tools/training_plan_parse/data/
 
 # Local PDF compress scratch (large binaries; keep scripts only)
 /tools/pdf_optimize/**/*.pdf
 /tools/pdf_optimize/out/
 /tools/pdf_optimize/raw/
-/tools/pdf_optimize/.venv/
 /tools/pdf_optimize/tessdata/
 
 # IDE

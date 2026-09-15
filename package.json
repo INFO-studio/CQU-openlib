@@ -9,7 +9,7 @@
     "preview": "vp preview",
     "typecheck": "tsc",
     "test": "vp test",
-    "codes:extract": "tsx tools/course-codes/extract.ts",
+    "codes:extract": "tsx tools/course_codes/extract.ts",
     "graduation:fetch": "tsx tools/graduation/fetch.ts",
     "graduation:build": "tsx tools/graduation/build.ts",
     "logo:generate": "tsx tools/logo/generate.ts",
