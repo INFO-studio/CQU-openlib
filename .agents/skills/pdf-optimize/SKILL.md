@@ -44,3 +44,9 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 ## 收录到站点时
 
 清完/压完的 PDF 由维护者上传拿 filekey；文档条目格式见 `.agents/skills/cqu-openlib-docs/`。ISBN 和出版社以书上印的为准，不要照抄流传文件名。
+
+最终交付文件统一命名为 `教材-{书名}-{第一作者}-{出版社}-{ISBN13}.pdf`：
+
+- 书名、第一作者、出版社和 ISBN 均以书名页或版权页为准；去掉书名号、版本号，作者只写第一作者。
+- ISBN 使用不带连字符的 13 位数字；中文教材通常以 `9787` 开头。不存在“ISBN11”，不要截断或自行补位。
+- 示例：`教材-工程热力学-曾丹苓-高等教育出版社-9787040645477.pdf`。
