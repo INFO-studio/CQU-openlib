@@ -1,3 +1,7 @@
+---
+updated: 2026-09-23
+---
+
 !!! warning "Python 是完全免费的软件，如果软件提示收费，请勿缴费并将其删除，您下到了盗版软件"
 
 ## 0. 前提
@@ -26,11 +30,11 @@
 
 ## 资源  
 #### Python安装包
-=== "3.13.2"
-    * [Windows installer (64-bit)](https://api.cqu-openlib.cn/file?key=iN2yU2hqvvud)
-    * [Windows installer (32-bit)](https://api.cqu-openlib.cn/file?key=iZmiF2opqrte)
-    * [Windows installer (ARM64)](https://api.cqu-openlib.cn/file?key=iycS82hqvtpg)
-=== "3.12.9"
-    * [Windows installer (64-bit)](https://api.cqu-openlib.cn/file?key=iLRvZ2opqhsd)
-    * [Windows installer (32-bit)](https://api.cqu-openlib.cn/file?key=iWWWk2opqbti)
-    * [Windows installer (ARM64)](https://api.cqu-openlib.cn/file?key=i77242opqm0f)
+=== "3.14.7"
+    * [Windows installer (64-bit)](https://api.cqu-openlib.cn/file?key=iHYlB49p027i)
+    * [Windows installer (32-bit)](https://api.cqu-openlib.cn/file?key=iXIwh49p0skh)
+    * [Windows installer (ARM64)](https://api.cqu-openlib.cn/file?key=iNr9z49p0dzc)
+=== "3.13.15"
+    * [Windows installer (64-bit)](https://api.cqu-openlib.cn/file?key=iw7Q749p17mj)
+    * [Windows installer (32-bit)](https://api.cqu-openlib.cn/file?key=i8Xfr49p1auf)
+    * [Windows installer (ARM64)](https://api.cqu-openlib.cn/file?key=irOk749p138b)
