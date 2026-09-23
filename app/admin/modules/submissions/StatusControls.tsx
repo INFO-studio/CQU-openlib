@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import type { CSSProperties, FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { AdminError } from '~/admin/AdminShell';
 import type { SubmissionItem } from '~/admin/lib/api';
@@ -13,7 +13,16 @@ import { formatShanghai } from '~/admin/lib/time';
 import { cn } from '~/lib/cn';
 
 const ACTION =
-  'rounded-md border border-line bg-panel px-2.5 py-1.5 text-[0.8rem] text-muted transition-colors hover:bg-mist hover:text-ink disabled:opacity-55 disabled:pointer-events-none';
+  'rounded-md border px-2.5 py-1.5 text-[0.8rem] font-medium transition-[background-color,border-color,color,filter] hover:brightness-95 disabled:pointer-events-none disabled:opacity-55 dark:hover:brightness-110';
+
+const statusActionStyle = (status: SubmissionStatus): CSSProperties => {
+  const tone = statusTone(status);
+  return {
+    color: tone,
+    borderColor: `color-mix(in srgb, ${tone} 52%, var(--c-line))`,
+    backgroundColor: `color-mix(in srgb, ${tone} 12%, var(--c-panel))`,
+  };
+};
 
 type Props = {
   item: SubmissionItem;
@@ -71,6 +80,7 @@ export const StatusControls = ({ item, onUpdated, onUnauthorized }: Props) => {
               key={s}
               type="button"
               className={ACTION}
+              style={statusActionStyle(s)}
               disabled={Boolean(busy)}
               onClick={() => void run(s, false)}
             >
@@ -99,7 +109,7 @@ export const StatusControls = ({ item, onUpdated, onUnauthorized }: Props) => {
           <button
             type="submit"
             disabled={Boolean(busy)}
-            style={{ color: statusTone('completed') }}
+            style={statusActionStyle('completed')}
             className={cn(ACTION, 'justify-self-start')}
           >
             {busy === 'completed' ? '提交中…' : '标为变更完成'}

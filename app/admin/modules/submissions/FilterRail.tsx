@@ -103,10 +103,7 @@ type Props = {
   onReset: () => void;
 };
 
-/**
- * Right rail: search, type facets, and the status ledger.
- * The ledger is both the tally and the filter — triage is this console's job.
- */
+/** Right rail: search plus status and form-type filters. */
 export const FilterRail = ({
   query,
   onQueryChange,
@@ -177,7 +174,7 @@ export const FilterRail = ({
       </div>
 
       <section className={PANEL}>
-        <p className={LEGEND}>状态台账</p>
+        <p className={LEGEND}>状态筛选</p>
         <div
           className="mb-3 flex h-[0.3rem] gap-0.5 overflow-hidden rounded-full"
           role={spread.length ? 'img' : undefined}

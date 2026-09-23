@@ -34,9 +34,9 @@ export const STATUS_TRANSITIONS: Record<
   readonly SubmissionStatus[]
 > = {
   pending_confirm: [...WORK_STATUSES],
-  pending_change: ['invalid', 'blocked', 'completed'],
-  invalid: ['pending_change', 'blocked', 'completed'],
-  blocked: ['pending_change', 'invalid', 'completed'],
+  pending_change: ['completed', 'invalid', 'blocked'],
+  invalid: ['completed', 'pending_change', 'blocked'],
+  blocked: ['completed', 'pending_change', 'invalid'],
   completed: [...WORK_STATUSES],
 };
 

@@ -10,6 +10,11 @@ import type { SubmissionStatus } from '~/admin/lib/status';
 import { FilterRail } from '~/admin/modules/submissions/FilterRail';
 import { submissionSearchText } from '~/admin/modules/submissions/labels';
 import { SubmissionRow } from '~/admin/modules/submissions/SubmissionRow';
+import {
+  createStatusAnchor,
+  matchesStatusFilter,
+  type StatusAnchor,
+} from '~/admin/modules/submissions/statusAnchor';
 import { ActivitySpinner } from '~/components/ui/activity-spinner';
 
 type Props = {
@@ -39,6 +44,7 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
   const [items, setItems] = useState<SubmissionItem[]>([]);
   const [type, setType] = useState<'' | FormType>('');
   const [status, setStatus] = useState<'' | SubmissionStatus>('');
+  const [statusAnchor, setStatusAnchor] = useState<StatusAnchor | null>(null);
   const [query, setQuery] = useState('');
   const [openId, setOpenId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -72,10 +78,12 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
   const typeCounts = useMemo(
     () =>
       tally(
-        searched.filter((item) => !status || item.status === status),
+        searched.filter((item) =>
+          matchesStatusFilter(item, status, statusAnchor),
+        ),
         (item) => item.type,
       ),
-    [searched, status],
+    [searched, status, statusAnchor],
   );
 
   const statusCounts = useMemo(
@@ -91,9 +99,18 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
     () =>
       searched.filter(
         (item) =>
-          (!type || item.type === type) && (!status || item.status === status),
+          (!type || item.type === type) &&
+          matchesStatusFilter(item, status, statusAnchor),
       ),
-    [searched, type, status],
+    [searched, type, status, statusAnchor],
+  );
+
+  const onStatusChange = useCallback(
+    (next: '' | SubmissionStatus) => {
+      setStatus(next);
+      setStatusAnchor(next ? createStatusAnchor(items, next) : null);
+    },
+    [items],
   );
 
   const patchItem = useCallback((next: SubmissionItem) => {
@@ -104,6 +121,7 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
     setQuery('');
     setType('');
     setStatus('');
+    setStatusAnchor(null);
   }, []);
 
   return (
@@ -168,7 +186,7 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
         onTypeChange={setType}
         typeCounts={typeCounts}
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={onStatusChange}
         statusCounts={statusCounts}
         total={searched.length}
         onReset={onReset}
