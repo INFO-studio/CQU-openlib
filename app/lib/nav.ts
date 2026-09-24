@@ -99,20 +99,7 @@ export type SearchEntry = {
   path: string;
   section: string;
   sectionLabel: string;
-  /** Course codes from metadata (e.g. MATH10821). */
   codes?: string[];
-};
-export type SearchChunkMeta = {
-  id: string;
-  /** Public URL, e.g. /search/chunks/course-A.json */
-  url: string;
-  label: string;
-  count: number;
-};
-export type SearchChunkFile = {
-  id: string;
-  label: string;
-  entries: SearchEntry[];
 };
 export type SidebarNode = {
   title: string;
@@ -136,10 +123,6 @@ export type DocNavIndex = {
       tree: SidebarNode[];
     }
   >;
-  /** Lightweight manifest; entries live in /search/chunks/*.json */
-  searchManifest: {
-    chunks: SearchChunkMeta[];
-  };
 };
 export const sectionForPath = (pathname: string): NavSection | undefined => {
   const clean = pathname.replace(/\/+$/, '') || '/';

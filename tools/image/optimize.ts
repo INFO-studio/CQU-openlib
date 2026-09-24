@@ -1,10 +1,10 @@
 /**
- * One-off batch optimiser for the images under public/doc.
+ * One-off batch optimiser for document images under public/assets/doc.
  *
  * Rasters are capped at MAX_WIDTH and re-encoded to WebP in place; every
  * Markdown reference is rewritten to match. Dimensions land in
  * metadata/image-sizes.json so the renderer can reserve the box before the
- * bytes arrive. Usage and the skip rules are in the root README.
+ * bytes arrive. Usage and the skip rules are in the documentation skill.
  *
  *   pnpm image:optimize [--dry]
  */
@@ -20,12 +20,10 @@ import { extname, join, relative } from 'node:path';
 import sharp from 'sharp';
 
 const DOC_ROOT = 'public/doc';
+const ASSET_ROOT = 'public/assets/doc';
 /** Files outside the doc tree that may also link to an image. */
 const EXTRA_REFERENCE_FILES = ['public/llms.txt'];
 const MANIFEST = 'metadata/image-sizes.json';
-/** Owned by tools/logo/generate.ts, which re-emits PNG on every run. */
-const SKIP_DIRS = new Set(['assets']);
-
 /** Prose column is ~800 CSS px, so 1600 already covers a 2x display. */
 const MAX_WIDTH = 1600;
 const QUALITY = 80;
@@ -55,15 +53,14 @@ const walk = (dir: string): string[] => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name.startsWith('.')) continue;
     const full = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (!SKIP_DIRS.has(entry.name)) out.push(...walk(full));
-    } else out.push(full);
+    if (entry.isDirectory()) out.push(...walk(full));
+    else out.push(full);
   }
   return out;
 };
 
-const docUrl = (file: string): string =>
-  `/doc/${relative(DOC_ROOT, file).replace(/\\/g, '/')}`;
+const assetUrl = (file: string): string =>
+  `/assets/doc/${relative(ASSET_ROOT, file).replace(/\\/g, '/')}`;
 
 const mb = (bytes: number): string => (bytes / 1048576).toFixed(2);
 
@@ -113,7 +110,7 @@ const optimise = async (file: string): Promise<Result> => {
 
   // Animated frames would collapse to a still; leave them alone.
   if ((meta.pages ?? 1) > 1) return keep();
-  if (pinnedUrls.has(docUrl(file))) return keep();
+  if (pinnedUrls.has(assetUrl(file))) return keep();
   // Already-converted output: re-encoding it would only add generation loss,
   // so a rerun after new images land is safe.
   if (meta.format === 'webp' && srcWidth <= MAX_WIDTH) return keep();
@@ -171,7 +168,7 @@ const rewriteReferences = (renames: Map<string, string>): number => {
   return touched;
 };
 
-const files = walk(DOC_ROOT).filter((f) =>
+const files = walk(ASSET_ROOT).filter((f) =>
   RASTER.has(extname(f).toLowerCase()),
 );
 
@@ -181,13 +178,13 @@ for (const file of files) results.push(await optimise(file));
 const renames = new Map(
   results
     .filter((r) => r.from !== r.to)
-    .map((r) => [docUrl(r.from), docUrl(r.to)]),
+    .map((r) => [assetUrl(r.from), assetUrl(r.to)]),
 );
 const touched = rewriteReferences(renames);
 
 const sizes: Record<string, [number, number]> = {};
 for (const r of results.sort((a, b) => a.to.localeCompare(b.to))) {
-  if (r.width && r.height) sizes[docUrl(r.to)] = [r.width, r.height];
+  if (r.width && r.height) sizes[assetUrl(r.to)] = [r.width, r.height];
 }
 if (!dryRun) {
   writeFileSync(MANIFEST, `${JSON.stringify(sizes, null, 2)}\n`, 'utf8');
@@ -202,7 +199,7 @@ const saved = results
 console.log(dryRun ? '— dry run, nothing written —\n' : '');
 for (const r of saved.slice(0, 10)) {
   console.log(
-    `${mb(r.before).padStart(7)} → ${mb(r.after).padStart(6)} MB  ${relative(DOC_ROOT, r.to)}`,
+    `${mb(r.before).padStart(7)} → ${mb(r.after).padStart(6)} MB  ${relative(ASSET_ROOT, r.to)}`,
   );
 }
 console.log(

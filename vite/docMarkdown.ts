@@ -9,7 +9,7 @@ import {
 import { basename, dirname, join, normalize, relative, sep } from 'node:path';
 import type { Connect, Plugin } from 'vite';
 
-const MARKDOWN_CONTENT_TYPE = 'text/markdown; charset=utf-8';
+const markdownContentType = 'text/markdown; charset=utf-8';
 
 const tryDocFile = (docRoot: string, rel: string): string | null => {
   const file = normalize(join(docRoot, rel));
@@ -148,7 +148,7 @@ const serveMarkdown = (
       return;
     }
     res.statusCode = 200;
-    res.setHeader('Content-Type', MARKDOWN_CONTENT_TYPE);
+    res.setHeader('Content-Type', markdownContentType);
     res.setHeader('Cache-Control', 'no-cache');
     if (req.method === 'HEAD') {
       res.end();

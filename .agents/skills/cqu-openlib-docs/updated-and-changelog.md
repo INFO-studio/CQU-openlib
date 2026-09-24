@@ -33,7 +33,7 @@ updated: 2026-07-31
 - 已有 frontmatter：把 `updated` 改成**当天**日期。
 - 没有 frontmatter：在文件最开头补上整块，后面空一行再写正文。
 - 日期必须是 `YYYY-MM-DD` 字符串，不要写时间戳或别的格式。
-- 解析器只认 `updated`、`description` 和 `title` 三个键。`description` 是可选的短描述；`title` 控制浏览器标题：省略时使用页面 H1，字符串用于自定义，`null` 表示只显示站点名 `CQU-openlib`。写别的键等于写注释。实现见 `app/utils/docFrontmatter.ts`。
+- 浏览器解析器识别 `updated`、`description`、`title` 和 `placeholder`。`description` 是可选的短描述；`title` 控制浏览器标题：省略时使用页面 H1，字符串用于自定义，`null` 表示只显示站点名 `CQU-openlib`；`placeholder: course` 为课程占位页注入统一正文。构建期另读取 `search.keywords` 与 `search.codes`，这些字段不会渲染或直接进入全文索引。实现见 `app/utils/docFrontmatter.ts` 与 `vite/searchContent.ts`。
 
 ### 不要加 `updated` 的目录
 

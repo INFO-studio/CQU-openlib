@@ -1,10 +1,12 @@
 import { queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '~/queries/keys';
-import type { Mn, MnRoot } from '~/types/mdast';
+import type { MnRoot } from '~/types/mdast';
+import { frontmatterFromAst } from '~/utils/docFrontmatter';
 import { fetchDocMarkdown } from '~/utils/fetchDocMarkdown';
+import { placeholderMap } from '~/utils/placeholderMap';
 import preprocess from '~/utils/preprocess';
 import { removePosition } from '~/utils/remark';
-/** Minimal unified processor surface used by the doc pipeline. */
+
 export type DocProcessor = {
   parse: (file: string) => unknown;
   run: (tree: unknown) => Promise<unknown> | unknown;
@@ -19,17 +21,22 @@ export const loadDocAst = async (
 ): Promise<LoadedDoc | null> => {
   const value = await fetchDocMarkdown(page);
   if (value == null) return null;
-  const preprocessed = preprocess(value.markdown);
-  const parsed = processor.parse(preprocessed);
-  const next = removePosition((await processor.run(parsed)) as Mn);
-  return { ast: next as MnRoot, baseDir: value.baseDir };
+  const parsed = processor.parse(preprocess(value.markdown));
+  const ast = (await processor.run(parsed)) as MnRoot;
+  const placeholder = frontmatterFromAst(ast).placeholder;
+  if (placeholder) {
+    const template = (await processor.run(
+      processor.parse(preprocess(placeholderMap[placeholder])),
+    )) as MnRoot;
+    ast.children = [...(ast.children ?? []), ...(template.children ?? [])];
+  }
+  return { ast: removePosition(ast) as MnRoot, baseDir: value.baseDir };
 };
 export const docAstQueryOptions = (page: string, processor: DocProcessor) => {
   return queryOptions({
     queryKey: queryKeys.doc(page),
     queryFn: () => loadDocAst(page, processor),
-    // Doc content only changes on deploy, and re-parsing costs up to 65 ms, so
-    // keep parsed ASTs around long enough for back/forward within a session.
+    // Re-parsing costs up to 65 ms, so retain ASTs for back/forward navigation.
     gcTime: 1800000,
   });
 };

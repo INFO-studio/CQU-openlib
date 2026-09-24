@@ -13,7 +13,7 @@ describe('remarkAttrList', () => {
             {
               type: 'link',
               title: null,
-              url: '/doc/resources/a.png',
+              url: '/assets/doc/a.png',
               children: [{ type: 'text', value: '下载' }],
             } satisfies MnLink,
             {
@@ -45,7 +45,7 @@ describe('remarkAttrList', () => {
   it('attaches class to preceding image', () => {
     const image: MnImage = {
       type: 'image',
-      url: '/doc/resources/a.svg',
+      url: '/assets/doc/a.svg',
       alt: 'preview',
     };
     const tree: MnRoot = {
@@ -70,7 +70,7 @@ describe('remarkAttrList', () => {
   it('marks an image as previewable with {:preview}', () => {
     const image: MnImage = {
       type: 'image',
-      url: '/doc/resources/evidence.webp',
+      url: '/assets/doc/evidence.webp',
       alt: '证据',
     };
     const tree: MnRoot = {

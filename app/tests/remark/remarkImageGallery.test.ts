@@ -25,7 +25,7 @@ const imageParagraph = (name: string, preview = true): MnParagraph => ({
   children: [
     {
       type: 'image',
-      url: `/doc/resources/${name}.webp`,
+      url: `/assets/doc/${name}.webp`,
       alt: name,
       preview,
     } satisfies MnImage,
@@ -66,13 +66,13 @@ describe('remarkImageGallery', () => {
         images: [
           {
             type: 'image',
-            url: '/doc/resources/a.webp',
+            url: '/assets/doc/a.webp',
             alt: 'a',
             preview: true,
           },
           {
             type: 'image',
-            url: '/doc/resources/b.webp',
+            url: '/assets/doc/b.webp',
             alt: 'b',
             preview: true,
           },
@@ -150,9 +150,9 @@ describe('remarkImageGallery', () => {
       [
         '^^^ 证据',
         '    <ImageGallery>',
-        '    ![第一张](/doc/resources/a.webp){:preview}',
+        '    ![第一张](/assets/doc/a.webp){:preview}',
         '',
-        '    ![第二张](/doc/resources/b.webp){:preview}',
+        '    ![第二张](/assets/doc/b.webp){:preview}',
         '    </ImageGallery>',
       ].join('\n'),
     );

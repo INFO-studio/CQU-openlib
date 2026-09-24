@@ -117,11 +117,11 @@ pymdownx.keys 风格，token 用 `+` 分隔，别名表在 `app/lib/kbdKeys.ts`�
 ## 属性列表
 
 ```markdown
-* [下载-svg](/doc/resources/学业_重庆大学视觉形象/校徽/校徽_蓝色.svg){:download="校徽_蓝色.svg"}
+* [下载-svg](/assets/doc/学业_重庆大学视觉形象/校徽/校徽_蓝色.svg){:download="校徽_蓝色.svg"}
 <ImageGallery>
-![第一张证据的图注](/doc/resources/生活_谨防诈骗_2026-08_劣质床品诈骗_001.webp){:preview}
+![第一张证据的图注](/assets/doc/生活_谨防诈骗_2026-08_劣质床品诈骗_001.webp){:preview}
 
-![第二张证据的图注](/doc/resources/生活_谨防诈骗_2026-08_劣质床品诈骗_002.webp){:preview}
+![第二张证据的图注](/assets/doc/生活_谨防诈骗_2026-08_劣质床品诈骗_002.webp){:preview}
 </ImageGallery>
 ```
 
@@ -144,7 +144,7 @@ CommonMark 里 4 空格缩进等于代码块，但本站禁用了这条规则（
 单行的居中图片会被转成标准 Markdown 图片：
 
 ```markdown
-<center><img src="/doc/resources/学业_专业总览_数统_数统教材_001.webp" alt="pic001"></center>
+<center><img src="/assets/doc/学业_专业总览_数统_数统教材_001.webp" alt="pic001"></center>
 ```
 
 多行 `<figure>` 会被隔离处理（CommonMark 的 HTML 块会一直吃到空行，不隔离的话内部的 `![...](...)` 永远不会变成图片节点）。实现 `app/utils/preprocess/preprocessHtmlBlocks.ts`。
@@ -173,4 +173,4 @@ GFM 表格、脚注、任务列表解析器都在，只是语料里目前一次�
 
 ## frontmatter
 
-只认 `updated`、`description`、`title` 三个键（`app/utils/docFrontmatter.ts`）。何时该动 `updated`、`title` 怎么取值，见 [updated-and-changelog.md](updated-and-changelog.md)。
+浏览器识别 `updated`、`description`、`title`、`placeholder`；构建期搜索另读取 `search.keywords` 与 `search.codes`。`placeholder: course` 会注入统一课程占位正文，frontmatter 本身不进入全文索引。何时该动 `updated`、`title` 怎么取值，见 [updated-and-changelog.md](updated-and-changelog.md)。

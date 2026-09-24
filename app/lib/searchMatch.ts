@@ -1,25 +1,65 @@
-import type { SearchEntry } from '~/lib/nav';
-export const entryMatches = (entry: SearchEntry, query: string): boolean => {
-  const q = query.trim().toLowerCase();
-  if (!q) return true;
-  if (entry.title.toLowerCase().includes(q)) return true;
-  if (entry.path.toLowerCase().includes(q)) return true;
-  if (entry.sectionLabel.toLowerCase().includes(q)) return true;
-  return entry.codes?.some((code) => code.toLowerCase().includes(q)) ?? false;
+export type SearchFragment = {
+  url: string;
+  excerpt: string;
+  meta: Record<string, string>;
+  sub_results: { url: string; title: string; excerpt: string }[];
 };
-export const matchScore = (entry: SearchEntry, query: string): number => {
-  const q = query.trim().toLowerCase();
-  if (!q || !entry.codes?.length) return 3;
-  if (entry.codes.some((c) => c.toLowerCase() === q)) return 0;
-  if (entry.codes.some((c) => c.toLowerCase().startsWith(q))) return 1;
-  if (entry.codes.some((c) => c.toLowerCase().includes(q))) return 2;
-  return 3;
+export type SearchHit = {
+  id: string;
+  data: () => Promise<SearchFragment>;
 };
-export const sortMatches = (
-  entries: SearchEntry[],
+export type SearchResult = {
+  id: string;
+  path: string;
+  title: string;
+  section: string;
+  codes: string;
+  excerpt: string;
+  exact: boolean;
+};
+export type SearchEngine = {
+  options: (options: {
+    basePath?: string;
+    baseUrl?: string;
+    excerptLength: number;
+  }) => Promise<void>;
+  init: () => Promise<void>;
+  search: (query: string) => Promise<{ results: SearchHit[] }>;
+};
+
+const asciiTokenPattern = /^[a-z0-9_-]+$/i;
+const hanPattern = /\p{Script=Han}/gu;
+
+export const searchDocuments = async (
+  engine: SearchEngine,
   query: string,
-): SearchEntry[] => {
-  const q = query.trim();
-  if (!q) return entries;
-  return [...entries].sort((a, b) => matchScore(a, q) - matchScore(b, q));
+): Promise<SearchHit[]> => {
+  const normalized = query.trim();
+  if (!normalized) return [];
+  const hanLength = normalized.match(hanPattern)?.length ?? 0;
+  const exact =
+    asciiTokenPattern.test(normalized) ||
+    (!normalized.includes(' ') && hanLength >= 5);
+  return (await engine.search(exact ? `"${normalized}"` : normalized)).results;
 };
+
+export const loadSearchResults = async (
+  hits: SearchHit[],
+): Promise<SearchResult[]> =>
+  Promise.all(
+    hits.map(async (hit) => {
+      const data = await hit.data();
+      const sub = data.sub_results?.find((result) => result.url.includes('#'));
+      return {
+        id: hit.id,
+        path: sub?.url ?? data.url,
+        title: data.meta.title,
+        section: [data.meta.section, data.meta.heading || sub?.title]
+          .filter(Boolean)
+          .join(' · '),
+        codes: data.meta.codes ?? '',
+        excerpt: sub?.excerpt ?? data.excerpt,
+        exact: false,
+      };
+    }),
+  );

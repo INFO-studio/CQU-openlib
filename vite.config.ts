@@ -2,14 +2,16 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import UnoCSS from 'unocss/vite';
 import { defineConfig, lazyPlugins } from 'vite-plus';
-import { docMarkdownPlugin } from './vite/doc-markdown';
-import { docNavIndexPlugin } from './vite/doc-nav-index';
+import { docMarkdownPlugin } from './vite/docMarkdown';
+import { docNavIndexPlugin } from './vite/docNavIndex';
+import { docSearchPlugin } from './vite/docSearch';
 
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
   build: {
+    assetsDir: 'app-assets',
     outDir: 'build/client',
     emptyOutDir: true,
   },
@@ -29,5 +31,6 @@ export default defineConfig({
     UnoCSS(),
     docNavIndexPlugin(),
     docMarkdownPlugin(),
+    docSearchPlugin(),
   ]),
 });

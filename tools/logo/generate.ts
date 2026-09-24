@@ -4,7 +4,7 @@
  *   pnpm logo:generate
  *   pnpm logo:generate -- --size 4096
  *
- * Site assets → public/doc/assets (SVG + small PNG)
+ * Site assets → public/assets/logo (SVG + small PNG)
  * Master PNGs → tools/logo/out (high-res, not deployed)
  */
 
@@ -32,7 +32,7 @@ type CliOptions = {
 
 function parseArgs(argv: string[]): CliOptions {
   let size = 4096;
-  let webDir = join(ROOT, 'public/doc/assets');
+  let webDir = join(ROOT, 'public/assets/logo');
   let masterDir = join(TOOL_ROOT, 'out');
   let fontPath = defaultFontPath();
   let webPng = 512;
@@ -81,7 +81,7 @@ function printHelp() {
 Options:
   --size <n>         Master PNG edge length (default 4096)
   --web-png <n>      Site PNG edge length (default 512); 0 to skip
-  --out <dir>        Site asset directory (default public/doc/assets)
+  --out <dir>        Site asset directory (default public/assets/logo)
   --master-out <dir> High-res PNG directory (default tools/logo/out)
   --font <path>      OFL serif TTF (default tools/logo/fonts/AbhayaLibre-Regular.ttf)
 `);

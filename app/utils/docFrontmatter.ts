@@ -1,13 +1,13 @@
 import type { Mn, MnRoot } from '~/types/mdast';
+import { isPlaceholderKey, type PlaceholderKey } from '~/utils/placeholderMap';
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
 export type DocFrontmatter = {
-  /** Last edited date, `YYYY-MM-DD`. */
   updated?: string;
   description?: string;
-  /** Browser title override. `null` means the canonical site title. */
   title?: string | null;
+  placeholder?: PlaceholderKey;
 };
 
 const unquote = (value: string): string => {
@@ -18,13 +18,7 @@ const unquote = (value: string): string => {
   return value;
 };
 
-/**
- * Minimal reader for the frontmatter dialect this repo actually uses: top-level
- * `key: value` with bare or quoted scalars. Indented lines belong to nested
- * blocks (only MkDocs leftovers like `search:`), which nobody consumes, so they
- * are skipped rather than parsed. Shipping a general YAML parser to the browser
- * for this cost 29 KB brotli.
- */
+// Search configuration is build-only; a full YAML parser costs 29 KB brotli in the browser.
 export const parseDocFrontmatterYaml = (source: string): DocFrontmatter => {
   const out: DocFrontmatter = {};
   for (const line of source.split('\n')) {
@@ -39,9 +33,12 @@ export const parseDocFrontmatterYaml = (source: string): DocFrontmatter => {
     }
     const value = unquote(rawValue);
     if (!value) continue;
-    if (key === 'updated' && DATE_RE.test(value)) out.updated = value;
+    if (key === 'updated' && datePattern.test(value)) out.updated = value;
     else if (key === 'description') out.description = value;
     else if (key === 'title') out.title = value;
+    else if (key === 'placeholder' && isPlaceholderKey(value)) {
+      out.placeholder = value;
+    }
   }
   return out;
 };

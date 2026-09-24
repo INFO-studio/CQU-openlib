@@ -14,18 +14,28 @@
 /*/*/*/*/*/*/*.md
   Content-Type: text/markdown; charset=utf-8
 
-# Filenames under /assets carry a content hash, so they can never go stale.
-/assets/*
+# Vite app assets carry a content hash, so they can never go stale.
+/app-assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Public document assets and logos keep stable URLs and may be replaced in place.
+/assets/doc/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/assets/logo/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 /favicon.png
   Cache-Control: public, max-age=604800
 
-# Fixed filenames: keep the window short so new docs surface quickly.
+# Fixed filenames and deterministic search buckets: keep the window short so new docs surface quickly.
 /nav-index.json
   Cache-Control: public, max-age=60, stale-while-revalidate=600
-/search/chunks/*
+/search/codes/*
   Cache-Control: public, max-age=60, stale-while-revalidate=600
+/search/pagefind/*
+  Cache-Control: public, max-age=60, stale-while-revalidate=600
+/search/pagefind/*/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # 毕业去向 chunks only change when graduation:build is re-run, which is roughly
 # once a 届 — so they can sit in the browser far longer than the doc index.

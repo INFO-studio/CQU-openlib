@@ -1,4 +1,5 @@
 import { Menu, Search } from 'lucide-react';
+import githubIconUrl from '~/assets/icon/github.svg?url';
 import DocLink from '~/components/DocLink';
 import ThemeToggle from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
@@ -38,12 +39,12 @@ const SiteHeader = ({ currentPath }: Props) => {
                 aria-hidden
               >
                 <img
-                  src="/doc/assets/openlib-logo-light.svg"
+                  src="/assets/logo/openlib-logo-light.svg"
                   alt=""
                   className="h-7 w-7 object-contain dark:hidden"
                 />
                 <img
-                  src="/doc/assets/openlib-logo-dark.svg"
+                  src="/assets/logo/openlib-logo-dark.svg"
                   alt=""
                   className="hidden h-7 w-7 object-contain dark:block"
                 />
@@ -107,7 +108,11 @@ const SiteHeader = ({ currentPath }: Props) => {
             aria-label="GitHub 仓库"
           >
             <span
-              className="h-4 w-4 bg-current [mask-image:url('/doc/assets/github.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
+              className="h-4 w-4 bg-current mask-center mask-no-repeat mask-contain"
+              style={{
+                WebkitMaskImage: `url(${githubIconUrl})`,
+                maskImage: `url(${githubIconUrl})`,
+              }}
               aria-hidden
             />
             <span className="sr-only">GitHub 仓库</span>

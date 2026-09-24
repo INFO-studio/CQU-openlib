@@ -1,5 +1,5 @@
 import { baseDirFromDocUrl } from '~/utils/normalizeDocHref';
-// Written by vite/doc-nav-index on every build; see vite/doc-markdown.
+// Written by vite/docNavIndex on every build; see vite/docMarkdown.
 import folderPages from '../../metadata/doc-folder-pages.json';
 
 const FOLDER_PAGES = new Set<string>(folderPages);

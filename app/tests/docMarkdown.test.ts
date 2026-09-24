@@ -8,7 +8,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vite-plus/test';
-import { mirrorDocMarkdown, resolveDocFile } from '../../vite/doc-markdown';
+import { mirrorDocMarkdown, resolveDocFile } from '../../vite/docMarkdown';
 
 const temps: string[] = [];
 

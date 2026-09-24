@@ -31,13 +31,13 @@ describe('preprocessHtmlBlocks', () => {
   it('extracts images from multi-line MkDocs figures (魔法领域)', () => {
     const input = [
       '<figure markdown="span">',
-      '![img001](/doc/resources/42_index_001.jpg)',
+      '![img001](/assets/doc/42_index_001.jpg)',
       '<figcaption>@ 键摄 pixiv: 90724581</figcaption>',
       '</figure>',
     ].join('\n');
     expect(preprocess(input)).toBe(
       [
-        '![img001](/doc/resources/42_index_001.jpg)',
+        '![img001](/assets/doc/42_index_001.jpg)',
         '',
         '<p class="docs-figcaption">@ 键摄 pixiv: 90724581</p>',
         '',
@@ -46,8 +46,7 @@ describe('preprocessHtmlBlocks', () => {
   });
 
   it('converts single-line center img tags to markdown', () => {
-    const input =
-      '<center><img src="/doc/resources/a.png" alt="pic1"></center>';
-    expect(preprocess(input)).toBe('![pic1](/doc/resources/a.png)\n');
+    const input = '<center><img src="/assets/doc/a.png" alt="pic1"></center>';
+    expect(preprocess(input)).toBe('![pic1](/assets/doc/a.png)\n');
   });
 });

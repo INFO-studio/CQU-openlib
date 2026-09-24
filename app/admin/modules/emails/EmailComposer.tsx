@@ -150,10 +150,6 @@ export const EmailComposer = ({ draft, onSent, onUnauthorized }: Props) => {
               </span>
             ) : null}
           </div>
-          <p className="m-0 mt-1 text-[0.76rem] leading-relaxed text-muted">
-            全文已私信给站长。核对私信里的编号一致后，输入他给的口令放行。
-          </p>
-
           <div className="mt-2.5 flex flex-wrap items-center gap-2">
             <KeyRound size={14} className="text-icon" aria-hidden />
             <input

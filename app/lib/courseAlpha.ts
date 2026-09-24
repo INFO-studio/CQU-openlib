@@ -22,7 +22,7 @@ export const groupCoursesByAlpha = (tree: SidebarNode[]): AlphaGroup[] => {
   const leaves = flattenLeaves(tree);
   const buckets = new Map<AlphaLetter, SidebarNode[]>();
   for (const item of leaves) {
-    // Baked in at build time by vite/doc-nav-index.
+    // Baked in at build time by vite/docNavIndex.
     const letter = item.letter ?? '#';
     const list = buckets.get(letter) ?? [];
     list.push(item);

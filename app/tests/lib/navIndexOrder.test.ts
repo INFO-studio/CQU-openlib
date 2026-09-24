@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vite-plus/test';
-import { buildDocNavIndex } from '../../../vite/doc-nav-index';
+import { buildDocNavIndex } from '../../../vite/docNavIndex';
 
 const fixtureRoot = resolve('app/tests/fixtures/nav-index');
 const docRoot = resolve(fixtureRoot, 'doc');

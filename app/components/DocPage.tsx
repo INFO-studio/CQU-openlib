@@ -1,10 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, Navigate, useRouterState } from '@tanstack/react-router';
 import { Fragment, type ReactNode, useMemo } from 'react';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkParse from 'remark-parse';
-import { unified } from 'unified';
 import BookmarkButton from '~/components/BookmarkButton';
 import DocsShell from '~/components/DocsShell';
 import HomeManualLink from '~/components/HomeManualLink';
@@ -19,19 +15,9 @@ import { type DocProcessor, docAstQueryOptions } from '~/queries/doc';
 import { useNavIndex } from '~/queries/nav';
 import type { MnRoot } from '~/types/mdast';
 import { frontmatterFromAst } from '~/utils/docFrontmatter';
+import { createDocProcessor } from '~/utils/docProcessor';
 import parser from '~/utils/parser';
 import { mapDocNodes } from '~/utils/parser/mapDocNodes';
-import {
-  remarkAdmonition,
-  remarkAttrList,
-  remarkCollapseGroup,
-  remarkContentTabs,
-  remarkDisableIndentedCode,
-  remarkFormatting,
-  remarkIcon,
-  remarkImageGallery,
-  remarkKeys,
-} from '~/utils/remark';
 import { extractToc, pageTitleFromAst } from '~/utils/toc';
 
 const UpdatedMeta = ({ updated }: { updated: string }) => (
@@ -52,23 +38,7 @@ const hasH1Heading = (root: MnRoot): boolean => {
 };
 
 const useDocAst = (page: string, enabled: boolean) => {
-  const processor = useMemo(
-    () =>
-      unified()
-        .use(remarkDisableIndentedCode)
-        .use(remarkParse)
-        .use(remarkFrontmatter)
-        .use(remarkGfm, { singleTilde: false })
-        .use(remarkContentTabs)
-        .use(remarkCollapseGroup)
-        .use(remarkAdmonition)
-        .use(remarkAttrList)
-        .use(remarkImageGallery)
-        .use(remarkFormatting)
-        .use(remarkKeys)
-        .use(remarkIcon),
-    [],
-  );
+  const processor = useMemo(createDocProcessor, []);
 
   return useQuery({
     ...docAstQueryOptions(page, processor as DocProcessor),

@@ -60,7 +60,7 @@ export const AdminShell = ({
             aria-hidden
           >
             <img
-              src="/doc/assets/openlib-logo-dark.svg"
+              src="/assets/logo/openlib-logo-dark.svg"
               alt=""
               width={28}
               height={28}

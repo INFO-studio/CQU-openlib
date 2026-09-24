@@ -18,7 +18,7 @@ import { useUiStore } from '~/stores/uiStore';
 type Props = {
   children: ReactNode;
   toc?: TocItem[];
-  /** Desktop left column slot (e.g. form back). Hidden on mobile. */
+  /** Desktop left column slot (e.g. form back). */
   leftRail?: ReactNode;
   /** Keep site chrome while allowing an app-like page to own the full body. */
   fullBleed?: boolean;
@@ -90,7 +90,7 @@ const DocsShell = ({
     if (hasSidebar && isCourse && sectionData) {
       return <CourseSidebar tree={sectionData.tree} currentPath={pathname} />;
     }
-    if (hasSidebar && !isCourse && section && sectionData) {
+    if (hasSidebar && section && sectionData) {
       return (
         <Sidebar
           title={section.label}
@@ -127,7 +127,7 @@ const DocsShell = ({
               isCourse && hasSidebar && !loading && !errorMessage
                 ? 'lg:flex lg:flex-col lg:overflow-hidden'
                 : showLeftRail
-                  ? 'lg:flex lg:items-start lg:justify-end lg:overflow-visible'
+                  ? 'lg:flex lg:flex-col lg:items-start lg:justify-end'
                   : 'lg:overflow-y-auto',
               showLeftColumn
                 ? undefined
@@ -164,11 +164,7 @@ const DocsShell = ({
         onRetryNav={() => void refetch()}
       />
 
-      <SearchDialog
-        chunks={index?.searchManifest.chunks ?? []}
-        open={searchOpen}
-        onClose={closeSearch}
-      />
+      <SearchDialog open={searchOpen} onClose={closeSearch} />
     </div>
   );
 };

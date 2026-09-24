@@ -14,15 +14,15 @@
 | `contributor/` | 贡献者 | 每位贡献者一页 | 30 |
 | `sundry/` | 杂项 | 说明书、更新日志、待办事项 | 167 |
 
-不进导航的目录（`vite/doc-nav-index.ts` 的 `SKIP_DIRS`，既不进侧边栏也不进搜索）：`assets`、`javascripts`、`resources`、`42`、`notice`。
+`public/doc/` 只存放 Markdown 页面；文档静态资源统一放在 `public/assets/doc/`。`42/` 是不进主导航和搜索的隐藏页面树，它未列入 `app/lib/nav.ts` 的 `NAV_SECTIONS`，但仍属于可访问的文档内容。
 
-`sundry/更新日志/` 是特例：**进侧边栏但不进搜索**（`SKIP_SEARCH_PREFIXES`），因为 130 多个日期标题的页面正文都是别处内容的摘要，会挤掉读者真正要找的页面。只有它的 `index.md` 进搜索。
+`sundry/更新日志/` 是特例：**进侧边栏但不进搜索**（`skipSearchPrefixes`），因为 130 多个日期标题的页面正文都是别处内容的摘要，会挤掉读者真正要找的页面。只有它的 `index.md` 进搜索。
 
 `public/doc/42/**` 的任何改动**不得写进更新日志**。
 
 ## URL 映射
 
-`vite/doc-nav-index.ts` 的 `urlFromDocFile`：
+`vite/docNavIndex.ts` 的 `urlFromDocFile`：
 
 | 文件 | URL |
 | --- | --- |
@@ -89,7 +89,7 @@ key 是 URL 形式的 `/course/页面名`。一门课有多个课程号时（如
 
 ## 图片
 
-放在 `public/doc/resources/`，文档里用**绝对路径** `/doc/resources/...` 引用。全库 41 张图无一例外是 `.webp`。
+放在 `public/assets/doc/`，文档里用**绝对路径** `/assets/doc/...` 引用。正文展示图统一使用 `.webp`；带 `{:download}` 的原始素材可以保留 SVG、PDF 或 PNG。
 
 命名规则是「板块_路径_页面_序号」，段之间下划线，板块名用中文：`academic` → 学业、`club` → 社团、`life` → 生活、`skill` → 技巧、`contributor` → 贡献者。
 
@@ -103,14 +103,14 @@ key 是 URL 形式的 `/course/页面名`。一门课有多个课程号时（如
 contributor/贡献者名/贡献者_贡献者名_001.webp
 ```
 
-贡献者页的图放 `resources/contributor/<名字>/` 子目录。
+贡献者页的图放 `public/assets/doc/contributor/<名字>/` 子目录。
 
-例外：站点 logo 和 favicon 在 `public/doc/assets/`，由 `pnpm logo:generate` 维护，**不参与** `image:optimize`。`{:download}` 承诺了具体格式的下载文件（SVG、PDF、PNG 素材）也不要转 WebP，优化脚本本身会跳过它们。
+例外：站点 logo 在 `public/assets/logo/`，由 `pnpm logo:generate` 维护；favicon 固定放在 `public/favicon.png`。两者都**不参与** `image:optimize`。`{:download}` 承诺了具体格式的下载文件（SVG、PDF、PNG 素材）也不要转 WebP，优化脚本本身会跳过它们。
 
 居中显示用 HTML 块：
 
 ```markdown
-<center><img src="/doc/resources/学业_专业总览_数统_数统教材_001.webp" alt="pic001"></center>
+<center><img src="/assets/doc/学业_专业总览_数统_数统教材_001.webp" alt="pic001"></center>
 ```
 
 需要查看原图时，在 Markdown 图片后紧跟 `{:preview}`。多张图片需要分栏时，再用 `<ImageGallery>` 与 `</ImageGallery>` 明确包住整组；画廊以 alt 文本作为图注，不要额外重复图片说明。边界外的图片不会自动成组。
@@ -146,8 +146,9 @@ rg -o --no-filename -e ':l-[a-z0-9-]+:' public/doc | sort -u
 
 | 产物 | 谁生成 |
 | --- | --- |
-| `public/nav-index.json` | `vite/doc-nav-index.ts`，每次 build / dev 改动重写 |
-| `public/search/chunks/*.json` | 同上，搜索索引分片 |
+| `public/nav-index.json` | `vite/docNavIndex.ts`，每次 build / dev 改动重写 |
+| `build/client/search/pagefind/**` | `vite/docSearch.ts`，Pagefind 全文索引与运行时 |
+| `build/client/search/codes/*.json` | `vite/docSearch.ts`，课程号精确查询哈希分片 |
 | `metadata/doc-folder-pages.json` | 同上，内容变化时才写 |
 | `metadata/image-sizes.json` | `pnpm image:optimize` |
 | `metadata/course-codes.json` | 从培养方案抽取，只读 |

@@ -50,6 +50,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "husky": "^9.1.7",
     "opentype.js": "^2.0.0",
+    "pagefind": "1.5.2",
     "pinyin-pro": "^3.29.3",
     "remark": "^15.0.1",
     "sharp": "^0.35.4",
@@ -57,7 +58,8 @@
     "typescript": "^7.0.2",
     "unocss": "^66.10.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
-    "vite-plus": "0.3.0"
+    "vite-plus": "0.3.0",
+    "yaml": "^2.9.0"
   },
   "packageManager": "pnpm@11.15.1"
 }

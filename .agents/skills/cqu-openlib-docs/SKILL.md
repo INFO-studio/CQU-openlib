@@ -37,7 +37,7 @@ description: Rules for editing the CQU-openlib documentation site (public/doc/**
 5. **写更新日志三处**。
 6. **兑现了待办条目**：删掉 `sundry/待办事项/textbook.md` 里那条、该页 `updated` 也改当天，日志补一行 `完成 … legacy#134`。
 
-**只知道书目、拿不到文件**时不要把页面留成空占位：按 [entry-formats.md](entry-formats.md) 的「已知教材但没拿到文件」写说明并引用待办序号，让读者看出「知道是哪本，只是没有」。
+**只知道书目、拿不到文件**时只登记 `sundry/待办事项/textbook.md`，课程页继续保持 `placeholder: course`，不要复制书目信息。完整规则见 [entry-formats.md](entry-formats.md)。
 
 ## 验证
 

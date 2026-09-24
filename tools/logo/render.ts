@@ -26,7 +26,7 @@ export const LOGO_CY = 1000;
 /** Original mid-row radius ≈ 998.65 on 2000×1999; use 999 on square canvas. */
 export const LOGO_DISK_R = 999;
 
-/** Ink-band targets measured from public/doc/assets original. */
+/** Ink-band targets measured from public/assets/logo original. */
 export const LAYOUT = {
   /** Cap box for C/U (excludes Q descender). */
   cquCap: { top: 510, bottom: 912, width: 1242 },
