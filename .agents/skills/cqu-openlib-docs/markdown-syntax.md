@@ -155,9 +155,9 @@ CommonMark 里 4 空格缩进等于代码块，但本站禁用了这条规则（
 
 行尾两个空格是软换行。全库的资源条目行都以两个空格结尾（书目条目 341/349 有），新写的照做。
 
-## 首页专属
+## 文档内 React 组件
 
-`public/doc/index.md` 用 `<div class="docs-home-pair">` 让两个块在桌面端并排，并且可以写 `<HomeBookmarks />` 插入书签组件。**只有 PascalCase 的自闭合标签会被映射成组件，且注册表里目前只有 `HomeBookmarks`**（`app/utils/parser/parserHtml.tsx`）。别在其它页面模仿这套写法。
+`public/doc/index.md` 用 `<div class="docs-home-pair">` 让两个块在桌面端并排，并且可以写 `<HomeBookmarks />` 插入书签组件。`public/doc/life/校车时刻表.md` 使用 `<BusTimeTable />` 插入动态时刻表。只有 `app/utils/parser/parserHtml.tsx` 注册表中列出的 PascalCase 自闭合标签会被映射成组件，其他标签不要模仿这套写法。
 
 ## 不支持的东西
 

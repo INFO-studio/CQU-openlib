@@ -7,6 +7,7 @@ export type SelectOption<T extends string> = {
   value: T;
   label: string;
   icon?: ReactNode;
+  muted?: boolean;
 };
 
 type Props<T extends string> = {
@@ -87,7 +88,10 @@ export const SelectField = <T extends string>({
                   key={option.value}
                   value={option.value}
                   label={option.label}
-                  className="group flex min-w-max cursor-pointer items-center gap-1.5 px-2.5 py-1.5 text-sm whitespace-nowrap text-ink outline-none select-none data-[highlighted]:bg-primary-soft data-[selected]:font-medium"
+                  className={cn(
+                    'group flex min-w-max cursor-pointer items-center gap-1.5 px-2.5 py-1.5 text-sm whitespace-nowrap text-ink outline-none select-none data-[highlighted]:bg-primary-soft data-[selected]:font-medium',
+                    option.muted && 'text-muted',
+                  )}
                 >
                   <span
                     className="flex w-3 shrink-0 text-primary opacity-0 group-data-[selected]:opacity-100"

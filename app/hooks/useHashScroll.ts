@@ -1,29 +1,51 @@
 import { useRouterState } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { decodePathname } from '~/lib/paths';
 
 /** How far above the target the page lands before easing down onto it. */
 const RUN_UP_PX = 320;
 
-/** Distance the sticky header claims, declared once as `scroll-padding-top`. */
+type HashScrollEntry = {
+  pathname: string;
+  hash: string;
+  handled: boolean;
+};
+
+export const captureInitialHash = (
+  entry: HashScrollEntry,
+  location: Pick<HashScrollEntry, 'pathname' | 'hash'>,
+): HashScrollEntry =>
+  entry.pathname === location.pathname
+    ? entry
+    : { pathname: location.pathname, hash: location.hash, handled: false };
+
+/** Distance the sticky header claims, declared once as scroll-padding-top. */
 const scrollPadding = (): number =>
   Number.parseFloat(
     getComputedStyle(document.documentElement).scrollPaddingTop,
   ) || 0;
 
 /**
- * Docs arrive from an async fetch, so the browser runs its own fragment scroll
- * while the page is still a skeleton and finds nothing. Re-run it once the
- * target actually exists.
- *
- * @param ready whether the document body has rendered
+ * The document body arrives after the browser's initial fragment jump. Capture
+ * that entry hash once per page and replay it after the async body is ready.
+ * Later in-page hash changes are native anchor navigation and must not replay
+ * the run-up animation.
  */
 export const useHashScroll = (ready: boolean) => {
-  const hash = useRouterState({ select: (s) => s.location.hash });
+  const location = useRouterState({
+    select: (state) => ({
+      pathname: state.location.pathname,
+      hash: state.location.hash,
+    }),
+  });
+  const entry = useRef<HashScrollEntry>({ ...location, handled: false });
+  entry.current = captureInitialHash(entry.current, location);
 
   useEffect(() => {
-    if (!ready) return;
-    const raw = hash.replace(/^#/, '');
+    if (!ready || entry.current.handled) return;
+    entry.current.handled = true;
+
+    const raw = entry.current.hash.replace(/^#/, '');
     if (!raw) return;
     const el =
       document.getElementById(decodePathname(raw)) ??
@@ -35,17 +57,13 @@ export const useHashScroll = (ready: boolean) => {
       return;
     }
 
-    // Easing all the way from the top of a long doc reads as a glitch, and
-    // landing hard on the anchor loses the sense of where it sits. Jump to just
-    // above the target, then let the browser ease the last stretch.
     const finalY = window.scrollY + el.getBoundingClientRect().top;
     const runUp = Math.max(0, finalY - scrollPadding() - RUN_UP_PX);
     window.scrollTo({ top: runUp, behavior: 'instant' });
 
-    // Same-task scrolls get coalesced, so hand the smooth leg to the next frame.
     const frame = requestAnimationFrame(() =>
       el.scrollIntoView({ behavior: 'smooth' }),
     );
     return () => cancelAnimationFrame(frame);
-  }, [hash, ready]);
+  }, [location.pathname, ready]);
 };
