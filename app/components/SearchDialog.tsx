@@ -11,10 +11,11 @@ import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { cn } from '~/lib/cn';
 import { toNavTarget } from '~/lib/paths';
 import {
+  loadInitialSearchResults,
   loadSearchResults,
+  mergeSearchResults,
   type SearchHit,
   type SearchResult,
-  searchDocuments,
 } from '~/lib/searchMatch';
 import { findExactCourseCodes, getSearchEngine } from '~/queries/search';
 
@@ -28,6 +29,7 @@ const SearchDialog = ({ open, onClose }: Props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [hits, setHits] = useState<SearchHit[]>([]);
+  const [loadedHitCount, setLoadedHitCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
@@ -36,7 +38,7 @@ const SearchDialog = ({ open, onClose }: Props) => {
   const runId = useRef(0);
   const loadingMore = useRef(false);
   const hasQuery = Boolean(query.trim());
-  const canLoadMore = results.length < hits.length;
+  const canLoadMore = loadedHitCount < hits.length;
 
   useEffect(() => {
     if (!open) return;
@@ -49,6 +51,7 @@ const SearchDialog = ({ open, onClose }: Props) => {
     const id = ++runId.current;
     setResults([]);
     setHits([]);
+    setLoadedHitCount(0);
     setActiveIndex(0);
     setError('');
     setLoading(false);
@@ -57,31 +60,21 @@ const SearchDialog = ({ open, onClose }: Props) => {
     setLoading(true);
     const timer = window.setTimeout(async () => {
       try {
-        const exact = await findExactCourseCodes(query);
+        const [exact, engine] = await Promise.all([
+          findExactCourseCodes(query),
+          getSearchEngine(),
+        ]);
         if (id !== runId.current) return;
-        if (exact.length) {
-          setHits([]);
-          setResults(
-            exact.map((entry) => ({
-              id: `code:${entry.path}`,
-              path: entry.path,
-              title: entry.title,
-              section: entry.section,
-              codes: entry.codes.join(' '),
-              excerpt: '',
-              exact: true,
-            })),
-          );
-          return;
-        }
-        const engine = await getSearchEngine();
+        const initial = await loadInitialSearchResults(
+          engine,
+          query,
+          exact,
+          pageSize,
+        );
         if (id !== runId.current) return;
-        const next = await searchDocuments(engine, query);
-        if (id !== runId.current) return;
-        const first = await loadSearchResults(next.slice(0, pageSize));
-        if (id !== runId.current) return;
-        setHits(next);
-        setResults(first);
+        setHits(initial.hits);
+        setLoadedHitCount(initial.loadedHitCount);
+        setResults(initial.results);
       } catch {
         if (id === runId.current) setError('搜索加载失败，请重试');
       } finally {
@@ -107,11 +100,17 @@ const SearchDialog = ({ open, onClose }: Props) => {
     setError('');
     const id = runId.current;
     try {
-      const more = await loadSearchResults(
-        hits.slice(results.length, results.length + pageSize),
+      const nextLoadedHitCount = Math.min(
+        loadedHitCount + pageSize,
+        hits.length,
       );
-      if (id === runId.current)
-        setResults((previous) => [...previous, ...more]);
+      const more = await loadSearchResults(
+        hits.slice(loadedHitCount, nextLoadedHitCount),
+      );
+      if (id === runId.current) {
+        setResults((previous) => mergeSearchResults(previous, more));
+        setLoadedHitCount(nextLoadedHitCount);
+      }
     } catch {
       if (id === runId.current) setError('搜索加载失败，请重试');
     } finally {
@@ -319,7 +318,7 @@ const SearchDialog = ({ open, onClose }: Props) => {
                       role="status"
                       className="px-3 pb-3 text-center text-[0.7rem] text-muted"
                     >
-                      共 {hits.length || results.length} 条结果
+                      共 {results.length} 条结果
                     </p>
                   ) : null}
                 </>

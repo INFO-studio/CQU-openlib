@@ -1,3 +1,6 @@
+import type { CourseCodeSearchEntry } from '~/lib/courseCodeSearch';
+import { cleanPath, decodePathname } from '~/lib/paths';
+
 export type SearchFragment = {
   url: string;
   excerpt: string;
@@ -27,8 +30,17 @@ export type SearchEngine = {
   search: (query: string) => Promise<{ results: SearchHit[] }>;
 };
 
+export type InitialSearchResults = {
+  hits: SearchHit[];
+  loadedHitCount: number;
+  results: SearchResult[];
+};
+
 const asciiTokenPattern = /^[a-z0-9_-]+$/i;
 const hanPattern = /\p{Script=Han}/gu;
+
+const documentPath = (path: string): string =>
+  cleanPath(decodePathname(path.split(/[?#]/, 1)[0] ?? path));
 
 export const searchDocuments = async (
   engine: SearchEngine,
@@ -63,3 +75,45 @@ export const loadSearchResults = async (
       };
     }),
   );
+
+export const exactCourseCodeResults = (
+  entries: CourseCodeSearchEntry[],
+): SearchResult[] =>
+  entries.map((entry) => ({
+    id: `code:${entry.path}`,
+    path: entry.path,
+    title: entry.title,
+    section: entry.section,
+    codes: entry.codes.join(' '),
+    excerpt: '',
+    exact: true,
+  }));
+
+export const mergeSearchResults = (
+  priority: SearchResult[],
+  rest: SearchResult[],
+): SearchResult[] => {
+  const seen = new Set<string>();
+  return [...priority, ...rest].filter(({ path }) => {
+    const key = documentPath(path);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+export const loadInitialSearchResults = async (
+  engine: SearchEngine,
+  query: string,
+  exactEntries: CourseCodeSearchEntry[],
+  pageSize: number,
+): Promise<InitialSearchResults> => {
+  const hits = await searchDocuments(engine, query);
+  const loadedHitCount = Math.min(pageSize, hits.length);
+  const fulltext = await loadSearchResults(hits.slice(0, loadedHitCount));
+  return {
+    hits,
+    loadedHitCount,
+    results: mergeSearchResults(exactCourseCodeResults(exactEntries), fulltext),
+  };
+};
