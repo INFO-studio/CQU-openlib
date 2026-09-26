@@ -1,7 +1,3 @@
-/**
- * Display labels for pymdownx.keys shortcodes used in this corpus
- * (and common modifiers). Unknown ids fall back to Title Case.
- */
 const KEY_LABELS: Record<string, string> = {
   ctrl: 'Ctrl',
   control: 'Ctrl',
@@ -55,14 +51,7 @@ export const kbdKeyLabel = (raw: string): string => {
     .join(' ');
 };
 
-/** Split `ctrl+alt+"My Key"` into raw key tokens. */
-export const splitKbdTokens = (inner: string): string[] => {
-  const tokens: string[] = [];
-  const re = /"([^"]+)"|'([^']+)'|([A-Za-z0-9_.-]+)/g;
-  let m = re.exec(inner);
-  while (m) {
-    tokens.push(m[1] ?? m[2] ?? m[3]!);
-    m = re.exec(inner);
-  }
-  return tokens;
-};
+export const splitKbdTokens = (inner: string): string[] =>
+  [...inner.matchAll(/"([^"]+)"|'([^']+)'|([A-Za-z0-9_.-]+)/g)].map(
+    (matched) => matched[1] ?? matched[2] ?? matched[3]!,
+  );

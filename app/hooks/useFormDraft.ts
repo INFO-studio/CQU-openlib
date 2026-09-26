@@ -9,23 +9,16 @@ import type { FormSlug } from '~/lib/formTypes';
 type Options<T extends object> = {
   slug: FormSlug;
   defaults: T;
-  /**
-   * Navigation context (e.g. `?page=`). Non-empty seed values always win over
-   * saved drafts — arriving from a doc's「问题反馈」must prefill.
-   */
+  /** Non-empty navigation context takes precedence over saved drafts. */
   seed?: Partial<T>;
 };
 
 const applySeed = <T extends object>(base: T, seed?: Partial<T>): T => {
-  if (!seed) return base;
-  let next: T | null = null;
-  for (const [key, value] of Object.entries(seed)) {
-    if (value == null || value === '') continue;
-    if (base[key as keyof T] === value) continue;
-    if (!next) next = { ...base };
-    next[key as keyof T] = value as T[keyof T];
-  }
-  return next ?? base;
+  const changes = Object.entries(seed ?? {}).filter(
+    ([key, value]) =>
+      value != null && value !== '' && base[key as keyof T] !== value,
+  );
+  return changes.length ? { ...base, ...Object.fromEntries(changes) } : base;
 };
 
 const mergeDraft = <T extends object>(
@@ -34,10 +27,6 @@ const mergeDraft = <T extends object>(
   seed?: Partial<T>,
 ): T => applySeed({ ...defaults, ...(saved ?? {}) } as T, seed);
 
-/**
- * Controlled draft for one form slug. All slugs share one localStorage record.
- * Values must be JSON-serializable (no File / Blob).
- */
 export const useFormDraft = <T extends object>({
   slug,
   defaults,

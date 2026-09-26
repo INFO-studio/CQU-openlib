@@ -34,50 +34,50 @@ export const gcj02ToBd09 = ([
 };
 
 const transformLatitude = (longitude: number, latitude: number) => {
-  let value =
+  const base =
     -100 +
     2 * longitude +
     3 * latitude +
     0.2 * latitude * latitude +
     0.1 * longitude * latitude +
     0.2 * Math.sqrt(Math.abs(longitude));
-  value +=
+  const shortWave =
     ((20 * Math.sin(6 * longitude * PI) + 20 * Math.sin(2 * longitude * PI)) *
       2) /
     3;
-  value +=
+  const mediumWave =
     ((20 * Math.sin(latitude * PI) + 40 * Math.sin((latitude / 3) * PI)) * 2) /
     3;
-  value +=
+  const longWave =
     ((160 * Math.sin((latitude / 12) * PI) +
       320 * Math.sin((latitude * PI) / 30)) *
       2) /
     3;
-  return value;
+  return base + shortWave + mediumWave + longWave;
 };
 
 const transformLongitude = (longitude: number, latitude: number) => {
-  let value =
+  const base =
     300 +
     longitude +
     2 * latitude +
     0.1 * longitude * longitude +
     0.1 * longitude * latitude +
     0.1 * Math.sqrt(Math.abs(longitude));
-  value +=
+  const shortWave =
     ((20 * Math.sin(6 * longitude * PI) + 20 * Math.sin(2 * longitude * PI)) *
       2) /
     3;
-  value +=
+  const mediumWave =
     ((20 * Math.sin(longitude * PI) + 40 * Math.sin((longitude / 3) * PI)) *
       2) /
     3;
-  value +=
+  const longWave =
     ((150 * Math.sin((longitude / 12) * PI) +
       300 * Math.sin((longitude / 30) * PI)) *
       2) /
     3;
-  return value;
+  return base + shortWave + mediumWave + longWave;
 };
 
 export const gcj02ToWgs84 = ([longitude, latitude]: Coordinate): Coordinate => {
@@ -103,9 +103,9 @@ const urlWithParams = (
   params: Record<string, string>,
 ): string => {
   const url = new URL(base);
-  for (const [key, value] of Object.entries(params)) {
+  Object.entries(params).forEach(([key, value]) => {
     url.searchParams.set(key, value);
-  }
+  });
   return url.toString();
 };
 

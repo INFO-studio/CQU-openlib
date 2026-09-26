@@ -1,44 +1,22 @@
+import { match } from 'ts-pattern';
 import type { Mn, MnRoot } from '~/types/mdast';
 import { mapTextNodes } from '~/utils/remark/mapTextNodes';
+import { splitByPattern } from '~/utils/splitByPattern';
 
-/** dotAll so a soft-wrapped paragraph still matches; a text node never spans one. */
-const MARKER_RE = /({==.*?==})|({!!.*?!!})|({--.*?--})/gs;
+const MARKER_RE = /({==.*?==})|({!!.*?!!})|({--.*?--})/s;
 
-const parseFormatting = (value: string): Mn[] => {
-  let lastIndex = 0;
-  const parts: Mn[] = [];
-
-  value.replace(MARKER_RE, (match, _highlight, _danger, _delete, offset) => {
-    if (offset > lastIndex) {
-      parts.push({ type: 'text', value: value.slice(lastIndex, offset) });
-    }
-
-    const content = match.slice(3, -3);
-    if (match.startsWith('{==')) {
-      parts.push({ type: 'highlight', children: parseFormatting(content) });
-    } else if (match.startsWith('{!!')) {
-      parts.push({
-        type: 'highlight',
-        tone: 'danger',
-        children: parseFormatting(content),
-      });
-    } else {
-      parts.push({
-        type: 'strikethrough',
-        children: parseFormatting(content),
-      });
-    }
-
-    lastIndex = offset + match.length;
-    return match;
+const parseFormatting = (value: string): Mn[] =>
+  splitByPattern(value, MARKER_RE).map((part): Mn => {
+    if (!MARKER_RE.test(part)) return { type: 'text', value: part };
+    const children = parseFormatting(part.slice(3, -3));
+    return match(part.slice(0, 3))
+      .with('{==', () => ({ type: 'highlight', children }) as const)
+      .with(
+        '{!!',
+        () => ({ type: 'highlight', tone: 'danger', children }) as const,
+      )
+      .otherwise(() => ({ type: 'strikethrough', children }) as const);
   });
-
-  if (lastIndex < value.length) {
-    parts.push({ type: 'text', value: value.slice(lastIndex) });
-  }
-
-  return parts;
-};
 
 const remarkFormatting = () => (tree: MnRoot) => {
   tree.children = mapTextNodes(tree.children, parseFormatting);

@@ -1,14 +1,6 @@
 import { useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
-
-/** Heading ids keep CJK, so the address bar carries a percent-encoded hash. */
-const decode = (value: string): string => {
-  try {
-    return decodeURIComponent(value);
-  } catch {
-    return value;
-  }
-};
+import { decodePathname } from '~/lib/paths';
 
 /** How far above the target the page lands before easing down onto it. */
 const RUN_UP_PX = 320;
@@ -34,7 +26,8 @@ export const useHashScroll = (ready: boolean) => {
     const raw = hash.replace(/^#/, '');
     if (!raw) return;
     const el =
-      document.getElementById(decode(raw)) ?? document.getElementById(raw);
+      document.getElementById(decodePathname(raw)) ??
+      document.getElementById(raw);
     if (!el) return;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

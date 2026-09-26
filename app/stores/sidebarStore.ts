@@ -1,7 +1,6 @@
 import { createGlobalStore } from 'hox';
 import { useCallback, useState } from 'react';
 
-/** Expanded folder paths in the docs sidebar tree. Default: all collapsed. */
 export const [useSidebarStore, getSidebarStore] = createGlobalStore(() => {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
 
@@ -28,19 +27,13 @@ export const [useSidebarStore, getSidebarStore] = createGlobalStore(() => {
     });
   }, []);
 
-  /** Ensure ancestors of the current page are expanded (still default-collapsed otherwise). */
   const ensureAncestorsOpen = useCallback((currentPath: string) => {
     const parts = currentPath.replace(/^\//, '').split('/').filter(Boolean);
     if (parts.length === 0) return;
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      let acc = '';
-      for (let i = 0; i < parts.length - 1; i++) {
-        acc += `/${parts[i]}`;
-        next.add(acc);
-      }
-      return next;
-    });
+    const ancestors = parts
+      .slice(0, -1)
+      .map((_, index) => `/${parts.slice(0, index + 1).join('/')}`);
+    setExpanded((prev) => new Set([...prev, ...ancestors]));
   }, []);
 
   return { expanded, isExpanded, setOpen, toggle, ensureAncestorsOpen };

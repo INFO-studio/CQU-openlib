@@ -2,5 +2,5 @@
 # Existing files under /doc/ still win via Netlify shadowing.
 /doc/*  /doc-not-found.txt  404
 
-# SPA fallback for client routes
-/*    /index.html  200
+# Known client routes are emitted as static HTML; everything else gets the 404 shell.
+/*    /404.html  404

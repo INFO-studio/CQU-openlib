@@ -1,8 +1,9 @@
 import { createHash } from 'node:crypto';
 import { type DOMNode, htmlToDOM } from 'html-react-parser';
+import { match } from 'ts-pattern';
 import { parseDocument } from 'yaml';
 import type { SearchEntry } from '../app/lib/nav';
-import type { Mn, MnRoot } from '../app/types/mdast';
+import type { Mn, MnHeading, MnRoot } from '../app/types/mdast';
 import { createDocProcessor } from '../app/utils/docProcessor';
 import { slugify, textFromChildren } from '../app/utils/headingText';
 import { isPlaceholderKey } from '../app/utils/placeholderMap';
@@ -23,9 +24,9 @@ const strings = (value: unknown, field: string): string[] => {
 };
 
 export const searchMetadata = (markdown: string) => {
-  const match = markdown.match(frontmatterPattern);
-  const body = match ? markdown.slice(match[0].length) : markdown;
-  const parsed = parseDocument(match?.[1] ?? '');
+  const matched = markdown.match(frontmatterPattern);
+  const body = matched ? markdown.slice(matched[0].length) : markdown;
+  const parsed = parseDocument(matched?.[1] ?? '');
   if (parsed.errors.length) throw new Error(parsed.errors[0].message);
   const metadata = parsed.toJS({ maxAliasCount: 0 }) ?? {};
   if (typeof metadata !== 'object' || Array.isArray(metadata)) {
@@ -68,46 +69,88 @@ const htmlText = (nodes: DOMNode[]): string =>
   nodes
     .map((node) => {
       if (node.type === 'text') return escapeHtml(node.data);
-      if (node.type !== 'tag') return '';
-      if (['nav', 'footer', 'form', 'svg'].includes(node.name)) return '';
+      if (
+        node.type !== 'tag' ||
+        ['nav', 'footer', 'form', 'svg'].includes(node.name)
+      )
+        return '';
       return `${htmlText(node.children as DOMNode[])} `;
     })
     .join('');
 
-const nodeHtml = (node: Mn): string => {
-  if (node.type === 'yaml' || node.type === 'icon') return '';
-  if (
-    node.type === 'text' ||
-    node.type === 'inlineCode' ||
-    node.type === 'code'
-  )
-    return escapeHtml(node.value);
-  if (node.type === 'html') return htmlText(htmlToDOM(node.value));
-  if (node.type === 'image') return escapeHtml(node.alt ?? '');
-  if (node.type === 'imageGallery') return node.images.map(nodeHtml).join(' ');
-  if (node.type === 'tabs' || node.type === 'collapseGroup') {
-    return node.items
-      .map(
-        (item) =>
-          `<section><p>${childrenHtml(item.title)}</p>${childrenHtml(item.children)}</section>`,
-      )
-      .join('');
-  }
-  if (node.type === 'admonition')
-    return `<section><p>${childrenHtml(node.title)}</p>${childrenHtml(node.children)}</section>`;
-  if (node.type === 'break' || node.type === 'thematicBreak') return ' ';
-  if (node.type === 'heading') {
-    const id = slugify(textFromChildren(node.children));
-    return `<h${node.depth} id="${escapeHtml(id)}">${childrenHtml(node.children)}</h${node.depth}>`;
-  }
-  if ('children' in node) {
-    const content = childrenHtml(node.children as Mn[]);
-    if (['paragraph', 'listItem', 'tableRow', 'blockquote'].includes(node.type))
-      return `<div>${content}</div>`;
-    if (node.type === 'tableCell') return `${content} `;
-    return content;
-  }
-  return '';
+const nodeHtml = (node: Mn): string =>
+  match(node)
+    .with({ type: 'yaml' }, { type: 'icon' }, () => '')
+    .with(
+      { type: 'text' },
+      { type: 'inlineCode' },
+      { type: 'code' },
+      ({ value }) => escapeHtml(value),
+    )
+    .with({ type: 'html' }, ({ value }) => htmlText(htmlToDOM(value)))
+    .with({ type: 'image' }, ({ alt }) => escapeHtml(alt ?? ''))
+    .with({ type: 'imageGallery' }, ({ images }) =>
+      images.map(nodeHtml).join(' '),
+    )
+    .with({ type: 'tabs' }, { type: 'collapseGroup' }, ({ items }) =>
+      items
+        .map(
+          (item) =>
+            `<section><p>${childrenHtml(item.title)}</p>${childrenHtml(item.children)}</section>`,
+        )
+        .join(''),
+    )
+    .with(
+      { type: 'admonition' },
+      ({ title, children }) =>
+        `<section><p>${childrenHtml(title)}</p>${childrenHtml(children)}</section>`,
+    )
+    .with({ type: 'break' }, { type: 'thematicBreak' }, () => ' ')
+    .with({ type: 'heading' }, (heading) => {
+      const id = heading.id ?? slugify(textFromChildren(heading.children));
+      return `<h${heading.depth} id="${escapeHtml(id)}">${childrenHtml(heading.children)}</h${heading.depth}>`;
+    })
+    .with(
+      { type: 'paragraph' },
+      { type: 'listItem' },
+      { type: 'tableRow' },
+      { type: 'blockquote' },
+      ({ children }) => `<div>${childrenHtml(children)}</div>`,
+    )
+    .with({ type: 'tableCell' }, ({ children }) => `${childrenHtml(children)} `)
+    .otherwise((parent) =>
+      'children' in parent ? childrenHtml(parent.children) : '',
+    );
+
+type SearchPart = { html: string; anchor: string; heading: string };
+const isSectionHeading = (node: Mn): node is MnHeading =>
+  node.type === 'heading' && node.depth >= 2 && node.depth <= 3;
+
+const splitSearchParts = (nodes: Mn[], html: string): SearchPart[] => {
+  if (Buffer.byteLength(html) <= maxRecordBytes)
+    return [{ html, anchor: '', heading: '' }];
+  const boundaries = [
+    0,
+    ...nodes.flatMap((node, index) =>
+      index > 0 && isSectionHeading(node) ? [index] : [],
+    ),
+  ];
+  const parts = boundaries
+    .map((start, index): SearchPart => {
+      const node = nodes[start];
+      const heading =
+        node && isSectionHeading(node) ? textFromChildren(node.children) : '';
+      return {
+        html: childrenHtml(nodes.slice(start, boundaries[index + 1])),
+        anchor:
+          node && isSectionHeading(node) ? (node.id ?? slugify(heading)) : '',
+        heading,
+      };
+    })
+    .filter((part) => part.html);
+  return parts[0]?.anchor
+    ? [{ html: '', anchor: '', heading: '' }, ...parts]
+    : parts;
 };
 
 export const buildSearchRecords = (
@@ -126,23 +169,7 @@ export const buildSearchRecords = (
     processor.parse(preprocess(metadata.body)),
   ) as unknown as MnRoot;
   const nodes = (tree.children ?? []).filter((node) => node.type !== 'yaml');
-  const totalHtml = childrenHtml(nodes);
-  const parts: { html: string; anchor: string; heading: string }[] = [];
-  if (Buffer.byteLength(totalHtml) <= maxRecordBytes) {
-    parts.push({ html: totalHtml, anchor: '', heading: '' });
-  } else {
-    let part = { html: '', anchor: '', heading: '' };
-    for (const node of nodes) {
-      if (node.type === 'heading' && node.depth >= 2 && node.depth <= 3) {
-        if (part.html) parts.push(part);
-        const heading = textFromChildren(node.children);
-        part = { html: '', anchor: slugify(heading), heading };
-      }
-      part.html += nodeHtml(node);
-    }
-    if (part.html) parts.push(part);
-    if (parts[0]?.anchor) parts.unshift({ html: '', anchor: '', heading: '' });
-  }
+  const parts = splitSearchParts(nodes, childrenHtml(nodes));
   const meta = (key: string, value: string) =>
     `<meta data-pagefind-meta="${key}[content]" content="${escapeHtml(value)}">`;
   return parts.map((part) => {

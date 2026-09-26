@@ -32,10 +32,26 @@
   Cache-Control: public, max-age=60, stale-while-revalidate=600
 /search/codes/*
   Cache-Control: public, max-age=60, stale-while-revalidate=600
-/search/pagefind/*
-  Cache-Control: public, max-age=60, stale-while-revalidate=600
-/search/pagefind/*/*
+/search/pagefind/fragment/*
   Cache-Control: public, max-age=31536000, immutable
+/search/pagefind/index/*
+  Cache-Control: public, max-age=31536000, immutable
+/search/pagefind/*.pf_meta
+  Cache-Control: public, max-age=31536000, immutable
+/search/pagefind/pagefind-entry.json
+  Cache-Control: public, max-age=86400, must-revalidate
+/search/pagefind/pagefind.js
+  Cache-Control: public, max-age=86400, must-revalidate
+/search/pagefind/pagefind-worker.js
+  Cache-Control: public, max-age=86400, must-revalidate
+/search/pagefind/pagefind-highlight.js
+  Cache-Control: public, max-age=86400, must-revalidate
+/search/pagefind/pagefind-modular-ui.js
+  Cache-Control: public, max-age=86400, must-revalidate
+/search/pagefind/pagefind-modular-ui.css
+  Cache-Control: public, max-age=86400, must-revalidate
+/search/pagefind/wasm.unknown.pagefind
+  Cache-Control: public, max-age=86400, must-revalidate
 
 # 毕业去向 chunks only change when graduation:build is re-run, which is roughly
 # once a 届 — so they can sit in the browser far longer than the doc index.

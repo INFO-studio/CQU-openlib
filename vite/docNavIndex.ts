@@ -24,13 +24,13 @@ type CourseCodesMeta = {
 };
 const loadCourseCodes = (root: string): Map<string, string[]> => {
   const file = join(root, 'metadata', 'course-codes.json');
-  const map = new Map<string, string[]>();
-  if (!existsSync(file)) return map;
+  if (!existsSync(file)) return new Map();
   const raw = JSON.parse(readFileSync(file, 'utf8')) as CourseCodesMeta;
-  for (const [path, entry] of Object.entries(raw.courses ?? {})) {
-    if (entry.codes?.length) map.set(path, entry.codes);
-  }
-  return map;
+  return new Map(
+    Object.entries(raw.courses ?? {}).flatMap(([path, entry]) =>
+      entry.codes?.length ? [[path, entry.codes] as const] : [],
+    ),
+  );
 };
 const attachCodes = (
   nodes: SidebarNode[],
@@ -60,16 +60,16 @@ const isSearchable = (docRoot: string, file: string): boolean => {
 };
 const listMarkdownFiles = (dir: string): string[] => {
   if (!existsSync(dir)) return [];
-  const out: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith('.')) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...listMarkdownFiles(full));
-    else if (/\.mdx?$/i.test(entry.name)) {
-      out.push(full);
-    }
-  }
-  return out;
+  return readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => !entry.name.startsWith('.'))
+    .flatMap((entry) => {
+      const full = join(dir, entry.name);
+      return entry.isDirectory()
+        ? listMarkdownFiles(full)
+        : /\.mdx?$/i.test(entry.name)
+          ? [full]
+          : [];
+    });
 };
 const urlFromDocFile = (docRoot: string, file: string): string => {
   const rel = relative(docRoot, file).replace(/\\/g, '/');
@@ -84,39 +84,45 @@ const buildTree = (
   extras: SidebarNode[] = [],
 ): SidebarNode[] => {
   if (!existsSync(sectionDir)) return [];
-  const nodes: SidebarNode[] = [...extras];
-  for (const entry of readdirSync(sectionDir, { withFileTypes: true })) {
-    if (entry.name.startsWith('.')) continue;
-    const full = join(sectionDir, entry.name);
-    if (entry.isDirectory()) {
+  const entries = readdirSync(sectionDir, { withFileTypes: true })
+    .filter((entry) => !entry.name.startsWith('.'))
+    .flatMap((entry): SidebarNode[] => {
+      const full = join(sectionDir, entry.name);
+      if (!entry.isDirectory()) {
+        return /\.mdx?$/i.test(entry.name) && entry.name !== 'index.md'
+          ? [
+              {
+                title: titleFromPath(entry.name),
+                path: urlFromDocFile(docRoot, full),
+              },
+            ]
+          : [];
+      }
       const indexFile = join(full, 'index.md');
       const children = buildTree(docRoot, full, useIndexOrder);
-      const dirPath = `/${relative(docRoot, full).replace(/\\/g, '/')}`;
-      if (existsSync(indexFile)) {
-        nodes.push({
-          title: entry.name,
-          path: urlFromDocFile(docRoot, indexFile),
-          children: children.length ? children : undefined,
-        });
-      } else {
-        const first = children[0]?.path;
-        if (!first) continue;
-        nodes.push({
-          title: entry.name,
-          path: first,
-          matchPrefix: dirPath,
-          children,
-        });
-      }
-      continue;
-    }
-    if (!/\.mdx?$/i.test(entry.name) || entry.name === 'index.md') continue;
-    nodes.push({
-      title: titleFromPath(entry.name),
-      path: urlFromDocFile(docRoot, full),
+      if (existsSync(indexFile))
+        return [
+          {
+            title: entry.name,
+            path: urlFromDocFile(docRoot, indexFile),
+            children: children.length ? children : undefined,
+          },
+        ];
+      const first = children[0]?.path;
+      return first
+        ? [
+            {
+              title: entry.name,
+              path: first,
+              matchPrefix: `/${relative(docRoot, full).replace(/\\/g, '/')}`,
+              children,
+            },
+          ]
+        : [];
     });
-  }
-  const sorted = nodes.sort((a, b) => compareTitles(a.title, b.title));
+  const sorted = [...extras, ...entries].sort((a, b) =>
+    compareTitles(a.title, b.title),
+  );
   return useIndexOrder
     ? orderByIndex(sorted, indexLinkOrder(docRoot, sectionDir))
     : sorted;
@@ -124,29 +130,29 @@ const buildTree = (
 const indexLinkOrder = (docRoot: string, dir: string): string[] => {
   const indexFile = join(dir, 'index.md');
   if (!existsSync(indexFile)) return [];
-  const order: string[] = [];
-  for (const [, raw] of readFileSync(indexFile, 'utf8').matchAll(
-    /]\(([^)\s]+)\)/g,
-  )) {
-    if (/^(?:[a-z]+:)?\//i.test(raw)) continue;
+  const paths = [
+    ...readFileSync(indexFile, 'utf8').matchAll(/]\(([^)\s]+)\)/g),
+  ].flatMap(([, raw]): string[] => {
+    if (/^(?:[a-z]+:)?\//i.test(raw)) return [];
     const target = decodeURI(raw.split('#')[0] ?? '');
     const isDoc = /\.mdx?$/i.test(target);
-    if (!target || (!isDoc && /\.[a-z0-9]+$/i.test(target))) continue;
+    if (!target || (!isDoc && /\.[a-z0-9]+$/i.test(target))) return [];
     const full = join(dir, target);
-    const path = isDoc
-      ? urlFromDocFile(docRoot, full)
-      : `/${relative(docRoot, full).replace(/\\/g, '/')}`;
-    if (!order.includes(path)) order.push(path);
-  }
-  return order;
+    return [
+      isDoc
+        ? urlFromDocFile(docRoot, full)
+        : `/${relative(docRoot, full).replace(/\\/g, '/')}`,
+    ];
+  });
+  return [...new Set(paths)];
 };
 const orderByIndex = (nodes: SidebarNode[], order: string[]): SidebarNode[] => {
-  const rank = new Map(order.map((path, i) => [path, i]));
-  return [...nodes].sort((a, b) => {
-    const rankA = rank.get(a.path) ?? order.length;
-    const rankB = rank.get(b.path) ?? order.length;
-    return rankA - rankB || compareTitles(a.title, b.title);
-  });
+  const rank = new Map(order.map((path, index) => [path, index]));
+  return [...nodes].sort(
+    (a, b) =>
+      (rank.get(a.path) ?? order.length) - (rank.get(b.path) ?? order.length) ||
+      compareTitles(a.title, b.title),
+  );
 };
 
 export type IndexedDocument = SearchEntry & { file?: string };
@@ -156,63 +162,77 @@ export const buildDocNavIndex = (
   projectRoot = join(docRoot, '..', '..'),
 ): { index: DocNavIndex; documents: IndexedDocument[] } => {
   const codesByPath = loadCourseCodes(projectRoot);
-  const documents: IndexedDocument[] = [];
   const homeFile = join(docRoot, 'index.md');
-  if (existsSync(homeFile)) {
-    documents.push({
-      title: '首页',
-      path: '/',
-      section: 'home',
-      sectionLabel: '首页',
-      file: homeFile,
-    });
-  }
+  const home: IndexedDocument[] = existsSync(homeFile)
+    ? [
+        {
+          title: '首页',
+          path: '/',
+          section: 'home',
+          sectionLabel: '首页',
+          file: homeFile,
+        },
+      ]
+    : [];
   const sections = NAV_SECTIONS.map((section) => {
     const sectionDir = join(docRoot, section.source);
-    const appPages = SECTION_APP_PAGES.filter((p) => p.section === section.id);
+    const appPages = SECTION_APP_PAGES.filter(
+      (page) => page.section === section.id,
+    );
     const files =
       section.kind === 'file'
         ? existsSync(sectionDir)
           ? [sectionDir]
           : []
         : listMarkdownFiles(sectionDir);
-    for (const file of files) {
-      if (!isSearchable(docRoot, file)) continue;
-      const path = urlFromDocFile(docRoot, file);
-      documents.push({
-        title:
-          path === section.path
-            ? section.label
-            : titleFromPath(relative(docRoot, file)),
-        path,
-        file,
-        section: section.id,
-        sectionLabel: section.label,
-        codes: codesByPath.get(path),
-      });
-    }
-    for (const page of appPages) {
-      documents.push({ ...page, sectionLabel: section.label });
-    }
-    if (section.kind === 'file')
-      return { ...section, tree: [] as SidebarNode[] };
-    const withCodes = attachCodes(
-      buildTree(
-        docRoot,
-        sectionDir,
-        section.indexOrder,
-        appPages.map(({ title, path }) => ({ title, path })),
-      ),
-      codesByPath,
-    );
+    const documents: IndexedDocument[] = [
+      ...files
+        .filter((file) => isSearchable(docRoot, file))
+        .map((file) => {
+          const path = urlFromDocFile(docRoot, file);
+          return {
+            title:
+              path === section.path
+                ? section.label
+                : titleFromPath(relative(docRoot, file)),
+            path,
+            file,
+            section: section.id,
+            sectionLabel: section.label,
+            codes: codesByPath.get(path),
+          };
+        }),
+      ...appPages.map((page) => ({ ...page, sectionLabel: section.label })),
+    ];
+    const withCodes =
+      section.kind === 'file'
+        ? []
+        : attachCodes(
+            buildTree(
+              docRoot,
+              sectionDir,
+              section.indexOrder,
+              appPages.map(({ title, path }) => ({ title, path })),
+            ),
+            codesByPath,
+          );
     return {
-      ...section,
-      tree: section.id === 'course' ? attachLetters(withCodes) : withCodes,
+      navigation: {
+        ...section,
+        tree: section.id === 'course' ? attachLetters(withCodes) : withCodes,
+      },
+      documents,
     };
   });
   return {
-    index: { generatedAt: new Date().toISOString(), sections },
-    documents: documents.sort(
+    index: {
+      generatedAt: new Date().toISOString(),
+      sections: sections.map(({ navigation }) => navigation),
+    },
+    documents: [
+      ...home,
+      ...sections.flatMap(({ documents }) => documents),
+    ].sort(
       (a, b) => compareTitles(a.title, b.title) || a.path.localeCompare(b.path),
     ),
   };

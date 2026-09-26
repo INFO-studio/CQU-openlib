@@ -10,46 +10,33 @@ import { basename, dirname, join, normalize, relative, sep } from 'node:path';
 import type { Connect, Plugin } from 'vite';
 
 const markdownContentType = 'text/markdown; charset=utf-8';
-
 const tryDocFile = (docRoot: string, rel: string): string | null => {
   const file = normalize(join(docRoot, rel));
   const root = normalize(docRoot);
   const relToRoot = relative(root, file);
-  if (relToRoot.startsWith('..') || relToRoot.includes(`..${sep}`)) {
-    return null;
-  }
-  if (!existsSync(file) || !statSync(file).isFile()) {
-    return null;
-  }
-  return file;
+  if (relToRoot.startsWith('..') || relToRoot.includes(`..${sep}`)) return null;
+  return existsSync(file) && statSync(file).isFile() ? file : null;
 };
 
-/**
- * Copy markdown under public/doc into the publish root so /path.md is a static
- * file (Netlify/GH Pages shadow the SPA fallback).
- *
- * Folder indexes (foo/index.md) also emit foo.md so clean page URLs map to raw
- * markdown the Fumadocs / llms.txt way: /academic → /academic.md.
- */
+// Root mirrors also expose directory indexes as <folder>.md.
 export const mirrorDocMarkdown = (
   srcDir: string,
   destDir: string,
   destRoot = destDir,
 ): void => {
-  for (const entry of readdirSync(srcDir, { withFileTypes: true })) {
+  readdirSync(srcDir, { withFileTypes: true }).forEach((entry) => {
     const from = join(srcDir, entry.name);
     const to = join(destDir, entry.name);
     if (entry.isDirectory()) {
       mirrorDocMarkdown(from, to, destRoot);
-      continue;
+      return;
     }
-    if (!/\.mdx?$/i.test(entry.name)) continue;
+    if (!/\.mdx?$/i.test(entry.name)) return;
     mkdirSync(dirname(to), { recursive: true });
     cpSync(from, to);
-
-    if (!/^index\.mdx?$/i.test(entry.name)) continue;
+    if (!/^index\.mdx?$/i.test(entry.name)) return;
     const folderPath = dirname(to);
-    if (normalize(folderPath) === normalize(destRoot)) continue;
+    if (normalize(folderPath) === normalize(destRoot)) return;
     const ext = entry.name.match(/\.mdx?$/i)?.[0] ?? '.md';
     const aliasPath = join(
       dirname(folderPath),
@@ -57,64 +44,51 @@ export const mirrorDocMarkdown = (
     );
     mkdirSync(dirname(aliasPath), { recursive: true });
     cpSync(from, aliasPath);
+  });
+};
+
+// Knowing directory pages avoids a speculative 404 and preserves relative-link bases.
+export const listFolderPages = (docRoot: string): string[] => {
+  const walk = (dir: string, prefix: string): string[] => {
+    if (!existsSync(dir)) return [];
+    return readdirSync(dir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+      .flatMap((entry) => {
+        const page = prefix ? `${prefix}/${entry.name}` : entry.name;
+        const hasIndex =
+          tryDocFile(docRoot, `${page}/index.md`) ||
+          tryDocFile(docRoot, `${page}/index.mdx`);
+        return [
+          ...(hasIndex ? [page] : []),
+          ...walk(join(dir, entry.name), page),
+        ];
+      });
+  };
+  return walk(docRoot, '').sort();
+};
+
+const isMarkdownPath = (pathname: string): boolean => /\.mdx?$/i.test(pathname);
+const decodeDocPath = (pathname: string): string | null => {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return null;
   }
 };
 
-/**
- * Clean page paths backed by `<page>/index.md` instead of `<page>.md`.
- *
- * The two layouts need different base dirs for relative links (`/academic` vs
- * `/course`), so a single URL shape cannot serve both and the client has to
- * know which is which before it fetches. Writing the list to
- * metadata/doc-folder-pages.json lets the bundle inline it, turning that
- * question into zero bytes of latency instead of a speculative 404.
- */
-export const listFolderPages = (docRoot: string): string[] => {
-  const out: string[] = [];
-  const walk = (dir: string, prefix: string): void => {
-    if (!existsSync(dir)) return;
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
-      const page = prefix ? `${prefix}/${entry.name}` : entry.name;
-      if (
-        tryDocFile(docRoot, `${page}/index.md`) ||
-        tryDocFile(docRoot, `${page}/index.mdx`)
-      ) {
-        out.push(page);
-      }
-      walk(join(dir, entry.name), page);
-    }
-  };
-  walk(docRoot, '');
-  return out.sort();
-};
-
-const isMarkdownPath = (pathname: string): boolean => {
-  return /\.mdx?$/i.test(pathname);
-};
-
-/** Resolve `/academic.md` → `academic.md` or `academic/index.md`. */
 export const resolveDocFile = (
   docRoot: string,
   pathname: string,
 ): string | null => {
   const underDoc = pathname.startsWith('/doc/');
-  let rel = underDoc
-    ? pathname.slice('/doc/'.length)
-    : pathname.replace(/^\//, '');
-  try {
-    rel = decodeURIComponent(rel);
-  } catch {
-    return null;
-  }
-
+  const rel = decodeDocPath(
+    underDoc ? pathname.slice('/doc/'.length) : pathname.replace(/^\//, ''),
+  );
+  if (rel === null) return null;
   const exact = tryDocFile(docRoot, rel);
   if (exact) return exact;
-
-  // Only the root mirror aliases <folder>/index.md as <folder>.md. Under /doc/
-  // the tree is served verbatim, so dev must 404 exactly where production does.
-  if (underDoc) return null;
-  if (!/\.mdx?$/i.test(rel)) return null;
+  // Only root mirrors have aliases; /doc is the verbatim source tree.
+  if (underDoc || !/\.mdx?$/i.test(rel)) return null;
   const withoutExt = rel.replace(/\.mdx?$/i, '');
   if (!withoutExt || withoutExt.endsWith('/index')) return null;
   return (
@@ -123,10 +97,9 @@ export const resolveDocFile = (
   );
 };
 
-const serveMarkdown = (
-  getDocRoot: () => string,
-): Connect.NextHandleFunction => {
-  return (req, res, next) => {
+const serveMarkdown =
+  (getDocRoot: () => string): Connect.NextHandleFunction =>
+  (req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       next();
       return;
@@ -156,7 +129,6 @@ const serveMarkdown = (
     }
     createReadStream(file).pipe(res);
   };
-};
 
 export const docMarkdownPlugin = (): Plugin => {
   let docRoot = '';
@@ -176,7 +148,6 @@ export const docMarkdownPlugin = (): Plugin => {
       server.middlewares.use(serveMarkdown(() => docRoot));
     },
     closeBundle() {
-      // Skip Vitest's sentinel outDir (never create / write into it).
       const dest = join(root, outDir);
       if (!existsSync(dest)) return;
       mirrorDocMarkdown(docRoot, dest);

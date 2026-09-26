@@ -1,3 +1,4 @@
+import { match, P } from 'ts-pattern';
 import type { Mn, MnRoot } from '~/types/mdast';
 import { isPlaceholderKey, type PlaceholderKey } from '~/utils/placeholderMap';
 
@@ -12,41 +13,44 @@ export type DocFrontmatter = {
 
 const unquote = (value: string): string => {
   const quote = value[0];
-  if ((quote === '"' || quote === "'") && value.endsWith(quote)) {
-    return value.slice(1, -1);
-  }
-  return value;
+  return (quote === '"' || quote === "'") && value.endsWith(quote)
+    ? value.slice(1, -1)
+    : value;
 };
 
-// Search configuration is build-only; a full YAML parser costs 29 KB brotli in the browser.
-export const parseDocFrontmatterYaml = (source: string): DocFrontmatter => {
-  const out: DocFrontmatter = {};
-  for (const line of source.split('\n')) {
-    if (!line.trim() || /^\s/.test(line)) continue;
-    const colon = line.indexOf(':');
-    if (colon <= 0) continue;
-    const key = line.slice(0, colon).trim();
-    const rawValue = line.slice(colon + 1).trim();
-    if (key === 'title' && rawValue === 'null') {
-      out.title = null;
-      continue;
-    }
-    const value = unquote(rawValue);
-    if (!value) continue;
-    if (key === 'updated' && datePattern.test(value)) out.updated = value;
-    else if (key === 'description') out.description = value;
-    else if (key === 'title') out.title = value;
-    else if (key === 'placeholder' && isPlaceholderKey(value)) {
-      out.placeholder = value;
-    }
-  }
-  return out;
+const parseField = (line: string): DocFrontmatter => {
+  if (!line.trim() || /^\s/.test(line)) return {};
+  const colon = line.indexOf(':');
+  if (colon <= 0) return {};
+  const key = line.slice(0, colon).trim();
+  const raw = line.slice(colon + 1).trim();
+  const value = unquote(raw);
+  return match({ key, raw, value })
+    .with({ key: 'title', raw: 'null' }, () => ({ title: null }))
+    .with({ value: '' }, () => ({}))
+    .with(
+      { key: 'updated', value: P.when((text) => datePattern.test(text)) },
+      ({ value: updated }) => ({ updated }),
+    )
+    .with({ key: 'description' }, ({ value: description }) => ({ description }))
+    .with({ key: 'title' }, ({ value: title }) => ({ title }))
+    .with(
+      { key: 'placeholder', value: P.when(isPlaceholderKey) },
+      ({ value: placeholder }) => ({ placeholder }),
+    )
+    .otherwise(() => ({}));
 };
+
+// A full YAML parser costs 29 KB brotli in the browser; search metadata stays build-only.
+export const parseDocFrontmatterYaml = (source: string): DocFrontmatter =>
+  Object.fromEntries(
+    source.split('\n').flatMap((line) => Object.entries(parseField(line))),
+  );
 
 export const frontmatterFromAst = (root: MnRoot): DocFrontmatter => {
   const yamlNode = (root.children ?? []).find(
-    (n: Mn): n is Mn & { type: 'yaml'; value: string } => n.type === 'yaml',
+    (node: Mn): node is Mn & { type: 'yaml'; value: string } =>
+      node.type === 'yaml',
   );
-  if (!yamlNode) return {};
-  return parseDocFrontmatterYaml(yamlNode.value);
+  return yamlNode ? parseDocFrontmatterYaml(yamlNode.value) : {};
 };

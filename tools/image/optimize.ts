@@ -48,16 +48,13 @@ const dryRun = process.argv.includes('--dry');
  */
 const DOWNLOAD_LINK = /\(([^)\s]+)\)\{:download=/g;
 
-const walk = (dir: string): string[] => {
-  const out: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith('.')) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walk(full));
-    else out.push(full);
-  }
-  return out;
-};
+const walk = (dir: string): string[] =>
+  readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => !entry.name.startsWith('.'))
+    .flatMap((entry) => {
+      const full = join(dir, entry.name);
+      return entry.isDirectory() ? walk(full) : [full];
+    });
 
 const assetUrl = (file: string): string =>
   `/assets/doc/${relative(ASSET_ROOT, file).replace(/\\/g, '/')}`;
@@ -65,21 +62,25 @@ const assetUrl = (file: string): string =>
 const mb = (bytes: number): string => (bytes / 1048576).toFixed(2);
 
 const referenceFiles = [
-  ...walk(DOC_ROOT).filter((f) => REWRITABLE.test(f)),
+  ...walk(DOC_ROOT).filter((file) => REWRITABLE.test(file)),
   ...EXTRA_REFERENCE_FILES,
 ];
 
-/** Image URLs published as downloads, whose file format is part of the offer. */
-const pinnedUrls = new Set<string>();
-for (const file of referenceFiles) {
-  for (const [, url] of readFileSync(file, 'utf8').matchAll(DOWNLOAD_LINK)) {
-    try {
-      pinnedUrls.add(decodeURI(url));
-    } catch {
-      pinnedUrls.add(url);
-    }
+const decodeUrl = (url: string): string => {
+  try {
+    return decodeURI(url);
+  } catch {
+    return url;
   }
-}
+};
+
+const pinnedUrls = new Set(
+  referenceFiles.flatMap((file) =>
+    [...readFileSync(file, 'utf8').matchAll(DOWNLOAD_LINK)].map(([, url]) =>
+      decodeUrl(url),
+    ),
+  ),
+);
 
 type Result = {
   from: string;
@@ -143,33 +144,36 @@ const optimise = async (file: string): Promise<Result> => {
   };
 };
 
-const rewriteReferences = (renames: Map<string, string>): number => {
-  if (!renames.size) return 0;
-  let touched = 0;
-  for (const file of referenceFiles) {
-    let text: string;
-    try {
-      text = readFileSync(file, 'utf8');
-    } catch {
-      continue;
-    }
-    const next = [...renames].reduce((acc, [from, to]) => {
-      // Authors write the path raw or percent-encoded; both must resolve.
-      return acc
-        .split(from)
-        .join(to)
-        .split(encodeURI(from))
-        .join(encodeURI(to));
-    }, text);
-    if (next === text) continue;
-    touched += 1;
-    if (!dryRun) writeFileSync(file, next, 'utf8');
+const readReference = (file: string): string | null => {
+  try {
+    return readFileSync(file, 'utf8');
+  } catch {
+    return null;
   }
-  return touched;
 };
 
-const files = walk(ASSET_ROOT).filter((f) =>
-  RASTER.has(extname(f).toLowerCase()),
+const rewriteReferences = (renames: Map<string, string>): number => {
+  if (!renames.size) return 0;
+  const changes = referenceFiles.flatMap((file) => {
+    const text = readReference(file);
+    if (text === null) return [];
+    const next = [...renames].reduce(
+      (content, [from, to]) =>
+        content.split(from).join(to).split(encodeURI(from)).join(encodeURI(to)),
+      text,
+    );
+    return next === text ? [] : [{ file, text: next }];
+  });
+  if (!dryRun) {
+    changes.forEach(({ file, text }) => {
+      writeFileSync(file, text, 'utf8');
+    });
+  }
+  return changes.length;
+};
+
+const files = walk(ASSET_ROOT).filter((file) =>
+  RASTER.has(extname(file).toLowerCase()),
 );
 
 const results: Result[] = [];
@@ -177,31 +181,33 @@ for (const file of files) results.push(await optimise(file));
 
 const renames = new Map(
   results
-    .filter((r) => r.from !== r.to)
-    .map((r) => [assetUrl(r.from), assetUrl(r.to)]),
+    .filter((result) => result.from !== result.to)
+    .map((result) => [assetUrl(result.from), assetUrl(result.to)]),
 );
 const touched = rewriteReferences(renames);
 
-const sizes: Record<string, [number, number]> = {};
-for (const r of results.sort((a, b) => a.to.localeCompare(b.to))) {
-  if (r.width && r.height) sizes[assetUrl(r.to)] = [r.width, r.height];
-}
+const sortedResults = [...results].sort((a, b) => a.to.localeCompare(b.to));
+const sizes: Record<string, [number, number]> = Object.fromEntries(
+  sortedResults
+    .filter((result) => result.width && result.height)
+    .map((result) => [assetUrl(result.to), [result.width, result.height]]),
+);
 if (!dryRun) {
   writeFileSync(MANIFEST, `${JSON.stringify(sizes, null, 2)}\n`, 'utf8');
 }
 
-const before = results.reduce((a, r) => a + r.before, 0);
-const after = results.reduce((a, r) => a + r.after, 0);
-const saved = results
-  .filter((r) => r.before !== r.after)
+const before = sortedResults.reduce((sum, result) => sum + result.before, 0);
+const after = sortedResults.reduce((sum, result) => sum + result.after, 0);
+const saved = sortedResults
+  .filter((result) => result.before !== result.after)
   .sort((a, b) => b.before - b.after - (a.before - a.after));
 
 console.log(dryRun ? '— dry run, nothing written —\n' : '');
-for (const r of saved.slice(0, 10)) {
+saved.slice(0, 10).forEach((result) => {
   console.log(
-    `${mb(r.before).padStart(7)} → ${mb(r.after).padStart(6)} MB  ${relative(ASSET_ROOT, r.to)}`,
+    `${mb(result.before).padStart(7)} → ${mb(result.after).padStart(6)} MB  ${relative(ASSET_ROOT, result.to)}`,
   );
-}
+});
 console.log(
   `\n${results.length} 张：${mb(before)} MB → ${mb(after)} MB（省 ${(100 - (after / before) * 100).toFixed(1)}%）`,
 );

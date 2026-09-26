@@ -48,7 +48,10 @@ const GraduationPage = () => {
   const scope = useMemo<Scope>(() => scopeFromSearch(search), [search]);
   const [shown, setShown] = useState(PAGE_SIZE);
 
-  useTitle('毕业去向');
+  useTitle(
+    '毕业去向',
+    '查询重庆大学历届毕业生按院系、学历、届次和去向类别汇总的毕业去向。',
+  );
 
   const manifestQuery = useQuery(graduationManifestQueryOptions());
   const overviewQuery = useQuery(graduationOverviewQueryOptions());

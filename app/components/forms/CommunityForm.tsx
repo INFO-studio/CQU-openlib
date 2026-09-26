@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const CommunityForm = ({ type, initialPage = '' }: Props) => {
-  useTitle(FORM_META[type].title);
+  useTitle(FORM_META[type].title, FORM_META[type].description);
 
   const bySlug: Record<FormSlug, ReactNode> = {
     feedback: <FeedbackForm initialPage={initialPage} />,

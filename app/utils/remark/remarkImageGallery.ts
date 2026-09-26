@@ -1,3 +1,4 @@
+import { match } from 'ts-pattern';
 import type { Mn, MnImage, MnImageGallery, MnRoot } from '~/types/mdast';
 import {
   IMAGE_GALLERY_END,
@@ -13,35 +14,30 @@ const previewImageFromParagraph = (node: Mn): MnImage | null => {
   return image?.type === 'image' && image.preview ? image : null;
 };
 
-const descend = (node: Mn): Mn => {
-  switch (node.type) {
-    case 'tabs':
-    case 'collapseGroup':
-      return {
-        ...node,
-        items: node.items.map((item) => ({
-          ...item,
-          children: convertImageGalleries(item.children),
-        })),
-      };
-    case 'admonition':
-    case 'root':
-      return {
-        ...node,
-        children: convertImageGalleries(node.children ?? []),
-      };
-    case 'blockquote':
-    case 'footnoteDefinition':
-    case 'list':
-    case 'listItem':
-      return {
-        ...node,
-        children: convertImageGalleries(node.children),
-      };
-    default:
-      return node;
-  }
-};
+const descend = (node: Mn): Mn =>
+  match(node)
+    .with({ type: 'tabs' }, { type: 'collapseGroup' }, (parent) => ({
+      ...parent,
+      items: parent.items.map((item) => ({
+        ...item,
+        children: convertImageGalleries(item.children),
+      })),
+    }))
+    .with({ type: 'admonition' }, { type: 'root' }, (parent) => ({
+      ...parent,
+      children: convertImageGalleries(parent.children ?? []),
+    }))
+    .with(
+      { type: 'blockquote' },
+      { type: 'footnoteDefinition' },
+      { type: 'list' },
+      { type: 'listItem' },
+      (parent) => ({
+        ...parent,
+        children: convertImageGalleries(parent.children),
+      }),
+    )
+    .otherwise((current) => current);
 
 const parseImageGallery = (
   nodes: Mn[],

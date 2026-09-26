@@ -1,20 +1,58 @@
 import { useEffect } from 'react';
+import { canonicalUrl, defaultDescription, formatTitle } from '~/lib/pageMeta';
+import { decodePathname } from '~/lib/paths';
 
-const SITE_TITLE = 'CQU-openlib';
-const SITE_TITLE_SUFFIX = ` · ${SITE_TITLE}`;
+export { formatTitle } from '~/lib/pageMeta';
 
-export const formatTitle = (title: string | null): string =>
-  title === null ? SITE_TITLE : `${title}${SITE_TITLE_SUFFIX}`;
+const metaElement = (selector: string): HTMLMetaElement => {
+  const existing = document.head.querySelector<HTMLMetaElement>(selector);
+  if (existing) return existing;
+  const created = document.createElement('meta');
+  const matched = selector.match(/meta\[([^=]+)="([^"]+)"\]/);
+  if (matched) created.setAttribute(matched[1]!, matched[2]!);
+  document.head.appendChild(created);
+  return created;
+};
 
-export const useTitle = (title: string | null | undefined): void => {
+const setMeta = (selector: string, attribute: string, value: string) => {
+  metaElement(selector).setAttribute(attribute, value);
+};
+
+const canonicalElement = (): HTMLLinkElement => {
+  const existing = document.head.querySelector<HTMLLinkElement>(
+    'link[rel="canonical"]',
+  );
+  if (existing) return existing;
+  const created = document.createElement('link');
+  created.rel = 'canonical';
+  document.head.appendChild(created);
+  return created;
+};
+
+const setCanonical = (href: string) => {
+  canonicalElement().href = href;
+};
+
+export const useTitle = (
+  title: string | null | undefined,
+  description?: string,
+): void => {
+  const pathname =
+    typeof window === 'undefined'
+      ? '/'
+      : decodePathname(window.location.pathname);
   useEffect(() => {
     if (title === undefined) return;
-    const previous = document.title;
-    const next = formatTitle(title);
-    if (previous !== next) document.title = next;
-
-    return () => {
-      if (document.title === next) document.title = previous;
-    };
-  }, [title]);
+    const formatted = formatTitle(title);
+    const resolvedDescription = description ?? defaultDescription(title);
+    const canonical = canonicalUrl(pathname);
+    document.title = formatted;
+    setMeta('meta[name="description"]', 'content', resolvedDescription);
+    setMeta('meta[property="og:title"]', 'content', formatted);
+    setMeta('meta[property="og:description"]', 'content', resolvedDescription);
+    setMeta('meta[property="og:type"]', 'content', 'website');
+    setMeta('meta[property="og:url"]', 'content', canonical);
+    setMeta('meta[name="twitter:card"]', 'content', 'summary');
+    setCanonical(canonical);
+  }, [description, pathname, title]);
 };

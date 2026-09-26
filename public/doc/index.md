@@ -11,7 +11,7 @@ description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共�
     * [谨防诈骗](life/谨防诈骗.md){.home-fraud-alert}
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     * {==openlib 运维小组招新==}[加入运维小组](sundry/加入运维小组.md)
-    * [更新日志](sundry/更新日志/index.md) / [2026-09-24](sundry/更新日志/2026/2026-09/2026-09-24.md)
+    * [更新日志](sundry/更新日志/index.md) / [2026-09-26](sundry/更新日志/2026/2026-09/2026-09-26.md)
 
 <HomeBookmarks />
 

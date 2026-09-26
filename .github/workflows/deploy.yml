@@ -42,11 +42,6 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Prepare SPA fallback
-        run: |
-          # SPA fallback: GH Pages serves 404.html for unknown paths
-          cp build/client/index.html build/client/404.html
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -65,7 +65,7 @@ const Toc = ({ items }: Props) => {
                     : 'border-transparent text-muted hover:text-ink',
                 )}
                 style={{
-                  paddingLeft: `${0.55 + (item.level - 2) * 0.55}rem`,
+                  paddingLeft: `${0.55 + item.indent * 0.55}rem`,
                 }}
               >
                 {item.text}

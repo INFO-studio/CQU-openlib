@@ -1,6 +1,6 @@
 import { Collapsible } from '@base-ui/react/collapsible';
 import { ChevronRight } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import DocLink from '~/components/DocLink';
 import { cn } from '~/lib/cn';
 import type { SidebarNode } from '~/lib/nav';
@@ -138,13 +138,35 @@ const Sidebar = ({
   onNavigate,
 }: Props) => {
   const { ensureAncestorsOpen } = useSidebarStore();
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     ensureAncestorsOpen(currentPath);
+    const lookup = { cancelled: false, attempts: 0 };
+    const revealCurrentPage = () => {
+      if (lookup.cancelled) return;
+      const active = navRef.current?.querySelector<HTMLElement>(
+        '[data-active="true"]',
+      );
+      if (active) {
+        active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        return;
+      }
+      if (lookup.attempts++ < 8) requestAnimationFrame(revealCurrentPage);
+    };
+    const frame = requestAnimationFrame(revealCurrentPage);
+    return () => {
+      lookup.cancelled = true;
+      cancelAnimationFrame(frame);
+    };
   }, [currentPath, ensureAncestorsOpen]);
 
   return (
-    <nav aria-label="章节目录" className="docs-nav flex flex-col gap-2">
+    <nav
+      ref={navRef}
+      aria-label="章节目录"
+      className="docs-nav flex flex-col gap-2"
+    >
       <DocLink
         path={sectionPath}
         onNavigate={onNavigate}

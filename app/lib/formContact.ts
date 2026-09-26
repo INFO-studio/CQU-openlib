@@ -1,7 +1,6 @@
-/** Shared contact channel + value used by contributor block and club form. */
+import { match } from 'ts-pattern';
 
 export const CONTACT_KINDS = ['qq', 'wechat', 'email'] as const;
-
 export type ContactKind = (typeof CONTACT_KINDS)[number];
 
 export const CONTACT_KIND_OPTIONS = [
@@ -20,18 +19,12 @@ export const isContactKind = (value: unknown): value is ContactKind =>
   typeof value === 'string' &&
   (CONTACT_KINDS as readonly string[]).includes(value);
 
-export const contactPlaceholder = (kind: '' | ContactKind): string => {
-  switch (kind) {
-    case 'qq':
-      return 'QQ 号';
-    case 'wechat':
-      return '微信号';
-    case 'email':
-      return '邮箱地址';
-    default:
-      return '联系方式';
-  }
-};
+export const contactPlaceholder = (kind: '' | ContactKind): string =>
+  match(kind)
+    .with('qq', () => 'QQ 号')
+    .with('wechat', () => '微信号')
+    .with('email', () => '邮箱地址')
+    .otherwise(() => '联系方式');
 
 export const contactInputMode = (
   kind: '' | ContactKind,
@@ -41,7 +34,6 @@ export const contactInputMode = (
   return undefined;
 };
 
-/** Validate channel + value (both required). */
 export const validateContactFields = (
   kind: '' | ContactKind,
   value: string,

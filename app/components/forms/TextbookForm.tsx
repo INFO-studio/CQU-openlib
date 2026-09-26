@@ -103,11 +103,12 @@ const clampCount = (raw: string): number => {
   return Math.min(MAX_BOOKS, Math.floor(n));
 };
 
-const resizeBooks = (books: BookDraft[], count: number): BookDraft[] => {
-  const next = books.slice(0, count);
-  while (next.length < count) next.push(emptyBook());
-  return next;
-};
+const resizeBooks = (books: BookDraft[], count: number): BookDraft[] => [
+  ...books.slice(0, count),
+  ...Array.from({ length: Math.max(0, count - books.length) }, () =>
+    emptyBook(),
+  ),
+];
 
 export const TextbookForm = () => {
   const { values, setField, setValues, clear } = useFormDraft({
@@ -382,8 +383,10 @@ export const TextbookForm = () => {
     return book.hasHd === 'yes' && file ? [{ bookIndex, file }] : [];
   });
   const withIntroFile = Boolean(values.introKind === 'file' && introFile);
-  const uploadFiles: File[] = uploadQueue.map((item) => item.file);
-  if (withIntroFile && introFile) uploadFiles.push(introFile);
+  const uploadFiles: File[] = [
+    ...uploadQueue.map((item) => item.file),
+    ...(withIntroFile && introFile ? [introFile] : []),
+  ];
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -391,10 +394,11 @@ export const TextbookForm = () => {
       items,
       files: uploadFiles,
       buildPayload: (uploaded) => {
-        const byBook = new Map<number, StagingFileRef>();
-        uploadQueue.forEach((item, i) => {
-          byBook.set(item.bookIndex, uploaded[i]);
-        });
+        const byBook = new Map<number, StagingFileRef>(
+          uploadQueue.map(
+            (item, index) => [item.bookIndex, uploaded[index]] as const,
+          ),
+        );
         return {
           year: values.year,
           college: values.college.trim(),

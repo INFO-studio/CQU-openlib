@@ -20,7 +20,8 @@ import {
   readFileSync,
   writeFileSync,
 } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const ORIGIN = 'https://cqu.cqbys.com';
 const FORM_URL = `${ORIGIN}/affair/lnjydw`;
@@ -115,7 +116,7 @@ const fetchText = async (url: string): Promise<string> => {
   throw new Error(`giving up on ${url}: ${String(lastErr)}`);
 };
 
-const parseOptions = (
+export const parseOptions = (
   html: string,
   selectName: string,
 ): Array<{ value: string; label: string }> => {
@@ -126,15 +127,16 @@ const parseOptions = (
     throw new Error(
       `select "${selectName}" not found — the form markup changed`,
     );
-  const out: Array<{ value: string; label: string }> = [];
-  for (const m of block[1].matchAll(
-    /<option[^>]*value="([^"]*)"[^>]*>([\s\S]*?)<\/option>/g,
-  )) {
-    const value = (m[1] ?? '').trim();
-    const label = decodeEntities((m[2] ?? '').replace(/<[^>]+>/g, '')).trim();
-    if (value) out.push({ value, label });
-  }
-  return out;
+  return [
+    ...block[1].matchAll(
+      /<option[^>]*value="([^"]*)"[^>]*>([\s\S]*?)<\/option>/g,
+    ),
+  ]
+    .map((matched) => ({
+      value: (matched[1] ?? '').trim(),
+      label: decodeEntities((matched[2] ?? '').replace(/<[^>]+>/g, '')).trim(),
+    }))
+    .filter(({ value }) => Boolean(value));
 };
 
 const scrapeEnums = async (): Promise<Enums> => {
@@ -172,24 +174,24 @@ const pageUrl = (c: Combo, page: number): string => {
  * values live in `title` so they survive CSS truncation. Reading whole blocks
  * keeps a stray `<li title>` elsewhere on the page from shifting every column.
  */
-const parseRows = (html: string): RawRow[] => {
-  const rows: RawRow[] = [];
-  for (const block of html.matchAll(/<ul class="infoList">([\s\S]*?)<\/ul>/g)) {
-    const cells = [
-      ...(block[1] ?? '').matchAll(/<li[^>]*\btitle="([^"]*)"/g),
-    ].map((m) => decodeEntities(m[1] ?? '').trim());
-    if (cells.length !== 4) continue;
-    const [year, category, org, count] = cells as [
-      string,
-      string,
-      string,
-      string,
-    ];
-    if (!/^\d{4}$/.test(year) || !/^\d+$/.test(count)) continue;
-    rows.push({ year, category, org, count });
-  }
-  return rows;
-};
+export const parseRows = (html: string): RawRow[] =>
+  [...html.matchAll(/<ul class="infoList">([\s\S]*?)<\/ul>/g)].flatMap(
+    (block) => {
+      const cells = [
+        ...(block[1] ?? '').matchAll(/<li[^>]*\btitle="([^"]*)"/g),
+      ].map((matched) => decodeEntities(matched[1] ?? '').trim());
+      if (cells.length !== 4) return [];
+      const [year, category, org, count] = cells as [
+        string,
+        string,
+        string,
+        string,
+      ];
+      return /^\d{4}$/.test(year) && /^\d+$/.test(count)
+        ? [{ year, category, org, count }]
+        : [];
+    },
+  );
 
 const parseTotalPages = (html: string): number => {
   const m = /共\s*(\d+)\s*页/.exec(html);
@@ -242,32 +244,42 @@ const argOf = (flag: string): string | undefined => {
   return i === -1 ? undefined : process.argv[i + 1];
 };
 
+export const buildCombos = (
+  enums: Pick<Enums, 'schools' | 'grades' | 'educations'>,
+  filters: { school?: string; grade?: string; education?: string } = {},
+): Combo[] => {
+  const schools = enums.schools.filter(
+    ({ value }) => !filters.school || value === filters.school,
+  );
+  const grades = enums.grades.filter(
+    ({ value }) => !filters.grade || value === filters.grade,
+  );
+  const educations = enums.educations.filter(
+    ({ value }) => !filters.education || value === filters.education,
+  );
+  return schools.flatMap((school) =>
+    grades.flatMap((grade) =>
+      educations.map((education) => ({
+        school: school.value,
+        schoolName: school.label,
+        grade: grade.value,
+        education: education.value,
+        educationName: education.label,
+      })),
+    ),
+  );
+};
+
 const main = async (): Promise<void> => {
   mkdirSync(DATA_DIR, { recursive: true });
   const enums = await scrapeEnums();
   if (process.argv.includes('--enums')) return;
 
-  const onlySchool = argOf('--school');
-  const onlyGrade = argOf('--grade');
-  const onlyEducation = argOf('--education');
-
-  const combos: Combo[] = [];
-  for (const school of enums.schools) {
-    if (onlySchool && school.value !== onlySchool) continue;
-    for (const grade of enums.grades) {
-      if (onlyGrade && grade.value !== onlyGrade) continue;
-      for (const education of enums.educations) {
-        if (onlyEducation && education.value !== onlyEducation) continue;
-        combos.push({
-          school: school.value,
-          schoolName: school.label,
-          grade: grade.value,
-          education: education.value,
-          educationName: education.label,
-        });
-      }
-    }
-  }
+  const combos = buildCombos(enums, {
+    school: argOf('--school'),
+    grade: argOf('--grade'),
+    education: argOf('--education'),
+  });
 
   const state = loadState();
   if (!existsSync(RAW_FILE)) writeFileSync(RAW_FILE, `${RAW_HEADER}\n`, 'utf8');
@@ -296,7 +308,12 @@ const main = async (): Promise<void> => {
   console.log(`\nDONE. ${rowTotal} rows → ${RAW_FILE}`);
 };
 
-main().catch((err: unknown) => {
-  console.error(err);
-  process.exit(1);
-});
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+) {
+  main().catch((err: unknown) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

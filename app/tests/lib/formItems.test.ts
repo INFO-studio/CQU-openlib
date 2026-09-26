@@ -40,6 +40,15 @@ describe('numberFormItems', () => {
     expect(numberFormItems(items)).toHaveLength(3);
   });
 
+  it('numbers positions independently without mutating repeated question objects', () => {
+    const item = q('shared');
+    const numbered = numberFormItems([item, section('group', '分组'), item]);
+    expect(
+      numbered.map((entry) => (entry.kind === 'question' ? entry.index : null)),
+    ).toEqual(['01', null, '02']);
+    expect(item).not.toHaveProperty('index');
+  });
+
   it('keeps counting past nine without extra padding', () => {
     const items = Array.from({ length: 12 }, (_, i) => q(`q${i}`));
     expect(indexOf(items, 'q8')).toBe('09');

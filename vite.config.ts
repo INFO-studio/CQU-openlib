@@ -5,6 +5,7 @@ import { defineConfig, lazyPlugins } from 'vite-plus';
 import { docMarkdownPlugin } from './vite/docMarkdown';
 import { docNavIndexPlugin } from './vite/docNavIndex';
 import { docSearchPlugin } from './vite/docSearch';
+import { docSeoPlugin } from './vite/docSeo';
 
 export default defineConfig({
   resolve: {
@@ -32,5 +33,6 @@ export default defineConfig({
     docNavIndexPlugin(),
     docMarkdownPlugin(),
     docSearchPlugin(),
+    docSeoPlugin(),
   ]),
 });

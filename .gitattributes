@@ -1,1 +1,2 @@
 * text=auto eol=lf
+*.md whitespace=-blank-at-eol

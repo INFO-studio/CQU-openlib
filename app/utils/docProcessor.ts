@@ -9,6 +9,7 @@ import {
   remarkContentTabs,
   remarkDisableIndentedCode,
   remarkFormatting,
+  remarkHeadingIds,
   remarkIcon,
   remarkImageGallery,
   remarkKeys,
@@ -27,4 +28,5 @@ export const createDocProcessor = () =>
     .use(remarkImageGallery)
     .use(remarkFormatting)
     .use(remarkKeys)
-    .use(remarkIcon);
+    .use(remarkIcon)
+    .use(remarkHeadingIds);

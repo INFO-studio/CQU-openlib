@@ -1,6 +1,6 @@
 import { defaultStringifySearch } from '@tanstack/react-router';
 import { describe, expect, it } from 'vite-plus/test';
-import { toNavTarget } from '~/lib/paths';
+import { canonicalPathname, decodePathname, toNavTarget } from '~/lib/paths';
 
 describe('toNavTarget', () => {
   it('keeps app routes out of the markdown catch-all', () => {
@@ -55,12 +55,25 @@ describe('toNavTarget', () => {
     });
   });
 
+  it('normalizes repeatedly encoded document paths and hashes', () => {
+    const malformed =
+      '/skill/%25E8%25BD%25AF%25E4%25BB%25B6#6-%25E5%2585%25A8%25E9%2583%25A8';
+    expect(decodePathname(malformed)).toBe('/skill/软件#6-全部');
+    expect(canonicalPathname(malformed)).toBe(
+      '/skill/%E8%BD%AF%E4%BB%B6#6-%E5%85%A8%E9%83%A8',
+    );
+    expect(toNavTarget(malformed)).toEqual({
+      to: '/$',
+      params: { _splat: 'skill/软件' },
+      hash: '6-全部',
+    });
+  });
+
   it('continues routing document paths through the splat route', () => {
     expect(toNavTarget('/course/高等数学')).toEqual({
       to: '/$',
       params: { _splat: 'course/高等数学' },
     });
-    // A sibling of the graduation route must still resolve as markdown.
     expect(toNavTarget('/academic/graduation-notes')).toEqual({
       to: '/$',
       params: { _splat: 'academic/graduation-notes' },

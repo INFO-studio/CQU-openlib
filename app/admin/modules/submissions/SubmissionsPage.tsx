@@ -26,14 +26,13 @@ type Props = {
 const tally = <T extends string>(
   items: SubmissionItem[],
   pick: (item: SubmissionItem) => T,
-): Record<string, number> => {
-  const counts: Record<string, number> = {};
-  for (const item of items) {
+): Record<string, number> =>
+  items.reduce<Record<string, number>>((counts, item) => {
     const key = pick(item);
+    // This accumulator is created here and never escapes the reduction.
     counts[key] = (counts[key] ?? 0) + 1;
-  }
-  return counts;
-};
+    return counts;
+  }, {});
 
 /**
  * The whole set is fetched once and filtered in the browser: the collection is

@@ -34,17 +34,19 @@ const GradeTrend = ({
 }: Props) => {
   if (points.length < 2) return null;
 
-  const data: Datum[] = points.map((point) => {
-    const row: Datum = {
-      grade: String(point.grade).slice(2),
-      raw: point.grade,
-    };
-    for (const [k, category] of categories.entries()) {
-      const value = point.byCategory[k] ?? 0;
-      row[category] = point.people === 0 ? 0 : (value / point.people) * 100;
-    }
-    return row;
-  });
+  const data: Datum[] = points.map((point) => ({
+    grade: String(point.grade).slice(2),
+    raw: point.grade,
+    ...Object.fromEntries(
+      categories.map((category, index) => {
+        const value = point.byCategory[index] ?? 0;
+        return [
+          category,
+          point.people === 0 ? 0 : (value / point.people) * 100,
+        ];
+      }),
+    ),
+  }));
 
   return (
     <div className="h-32 -ml-1">

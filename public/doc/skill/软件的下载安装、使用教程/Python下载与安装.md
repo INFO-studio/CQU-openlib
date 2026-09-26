@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-23
+updated: 2026-09-25
 ---
 
 !!! warning "Python 是完全免费的软件，如果软件提示收费，请勿缴费并将其删除，您下到了盗版软件"
@@ -15,7 +15,7 @@ updated: 2026-09-23
 ## 1. 下载  
 - 打开[Python下载页](https://www.python.org/downloads/)  
 - 点击 `Download Python 3.{!ver}`  
-- 下载可能会十分缓慢，可以使用资源[Python安装包](#python)  
+- 下载可能会十分缓慢，可以使用资源[Python安装包](#python安装包)  
     - 并非最新最好，应对学校课程请尽量使用机房版本  
     - 请选择适合您电脑 `系统架构` 的安装包  
 
@@ -29,6 +29,7 @@ updated: 2026-09-23
 ---
 
 ## 资源  
+
 #### Python安装包
 === "3.14.7"
     * [Windows installer (64-bit)](https://api.cqu-openlib.cn/file?key=iHYlB49p027i)

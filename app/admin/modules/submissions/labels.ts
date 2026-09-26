@@ -12,11 +12,9 @@ export const FORM_TYPE_META: Record<FormType, { label: string; tone: string }> =
 
 export const typeLabel = (type: string): string =>
   FORM_TYPE_META[type as FormType]?.label ?? type;
-
 export const typeTone = (type: string): string =>
   FORM_TYPE_META[type as FormType]?.tone ?? '#8a909c';
 
-/** Human labels for known payload keys. Unknown keys fall back to the raw key. */
 const FIELD_LABELS: Record<string, string> = {
   content: '问题说明',
   credit: '贡献者署名',
@@ -57,9 +55,7 @@ const FIELD_LABELS: Record<string, string> = {
   key: '对象键',
   size: '大小',
 };
-
 export const fieldLabel = (key: string): string => FIELD_LABELS[key] ?? key;
-
 export const CATEGORY_LABELS: Record<string, string> = {
   textbook: '教材',
   exam: '试卷',
@@ -74,11 +70,8 @@ export const formatBytes = (n: unknown): string => {
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   return `${(n / (1024 * 1024)).toFixed(2)} MB`;
 };
-
 const text = (value: unknown): string =>
   typeof value === 'string' ? value.trim() : '';
-
-/** Fields that read best as a one-line preview, in priority order per type. */
 const SUMMARY_KEYS: Record<string, readonly string[]> = {
   feedback: ['content', 'page'],
   textbook: ['course', 'courseCode'],
@@ -86,25 +79,17 @@ const SUMMARY_KEYS: Record<string, readonly string[]> = {
   club: ['name'],
   group: ['name'],
 };
-
 const FALLBACK_KEYS = ['name', 'title', 'course', 'content', 'intro'] as const;
 
-/** One scannable line per row, so triage rarely needs an open. */
 export const submissionSummary = (item: SubmissionItem): string => {
-  const payload = (item.payload ?? {}) as Record<string, unknown>;
+  const payload = item.payload ?? {};
   const keys = SUMMARY_KEYS[item.type] ?? FALLBACK_KEYS;
-  for (const key of keys) {
-    const value = text(payload[key]);
-    if (value) return value.replace(/\s+/g, ' ');
-  }
-  for (const value of Object.values(payload)) {
-    const found = text(value);
-    if (found) return found.replace(/\s+/g, ' ');
-  }
-  return '无可预览字段';
+  const summary =
+    keys.map((key) => text(payload[key])).find(Boolean) ||
+    Object.values(payload).map(text).find(Boolean);
+  return summary ? summary.replace(/\s+/g, ' ') : '无可预览字段';
 };
 
-/** Lowercased haystack for the rail search box. */
 export const submissionSearchText = (item: SubmissionItem): string =>
   [
     item.id,

@@ -11,8 +11,9 @@ type Props = {
 };
 
 export const CopyJsonButton = ({ value }: Props) => {
-  const [copied, setCopied] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [feedback, setFeedback] = useState<'idle' | 'copied' | 'failed'>(
+    'idle',
+  );
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -23,13 +24,9 @@ export const CopyJsonButton = ({ value }: Props) => {
 
   const onCopy = async () => {
     const reset = (ok: boolean) => {
-      setCopied(ok);
-      setFailed(!ok);
+      setFeedback(ok ? 'copied' : 'failed');
       if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => {
-        setCopied(false);
-        setFailed(false);
-      }, COPIED_MS);
+      timer.current = setTimeout(() => setFeedback('idle'), COPIED_MS);
     };
     try {
       await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
@@ -41,6 +38,8 @@ export const CopyJsonButton = ({ value }: Props) => {
     }
   };
 
+  const copied = feedback === 'copied';
+  const failed = feedback === 'failed';
   const label = failed ? '复制失败' : copied ? '已复制 JSON' : '复制 JSON';
 
   return (

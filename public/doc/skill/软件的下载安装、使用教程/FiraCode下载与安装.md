@@ -34,4 +34,4 @@ FiraCode 是一款专门为广大程序员们提供的一种编程连字等宽�
     3. 保存后即可生效  
 
 ## 4. 特性预览
-![image](/assets/doc/技巧_软件的下载安装、使用教程_FiraCode下载与安装.webp)
+![Fira Code 与 Fira Mono 编程符号连字效果对比](/assets/doc/技巧_软件的下载安装、使用教程_FiraCode下载与安装.webp)

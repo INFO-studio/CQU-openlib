@@ -3,20 +3,14 @@ import type { AlphaLetter } from '~/lib/courseAlpha';
 export type NavSection = {
   id: string;
   label: string;
-  /** URL path prefix, e.g. /course */
   path: string;
-  /** Relative dir under public/doc, or a single .md file */
   source: string;
   kind: 'dir' | 'file';
-  /** Hide from header / mobile tabs (route + search can still exist). */
   hiddenInNav?: boolean;
-  /**
-   * Recursively order each folder by its index.md link order instead of title.
-   * For lists curated by hand, an alphabetical sidebar contradicts the page.
-   */
+  /** Curated index links take precedence over the default title ordering. */
   indexOrder?: boolean;
 };
-/** Top-level information architecture (mirrors the MkDocs site). */
+
 export const NAV_SECTIONS: NavSection[] = [
   {
     id: 'course',
@@ -59,34 +53,22 @@ export const NAV_SECTIONS: NavSection[] = [
     kind: 'dir',
   },
 ];
-/** Sections shown in header / mobile directory tabs. */
-export const NAV_SECTIONS_VISIBLE = NAV_SECTIONS.filter((s) => !s.hiddenInNav);
+export const NAV_SECTIONS_VISIBLE = NAV_SECTIONS.filter(
+  (section) => !section.hiddenInNav,
+);
 export type SiteNavItem =
   | NavSection
-  | {
-      id: 'map';
-      label: '地图';
-      path: '/map';
-      kind: 'app';
-    };
+  | { id: 'map'; label: string; path: '/map'; kind: 'app' };
 const MAP_NAV_ITEM: SiteNavItem = {
   id: 'map',
   label: '地图',
   path: '/map',
   kind: 'app',
 };
-/** Primary navigation, including app pages that do not belong to doc-index. */
 export const SITE_NAV_ITEMS: SiteNavItem[] = NAV_SECTIONS_VISIBLE.flatMap(
   (section) => (section.id === 'life' ? [section, MAP_NAV_ITEM] : [section]),
 );
-/**
- * App routes that live inside a doc section rather than beside it.
- *
- * Unlike /map they get no header tab, so the section sidebar is the only way
- * to find them — and having no markdown file, they would never appear there.
- * The section's index.md links to each one like any other page, which is what
- * fixes its position in the sidebar.
- */
+
 export const SECTION_APP_PAGES: {
   section: string;
   title: string;
@@ -103,73 +85,50 @@ export type SearchEntry = {
 };
 export type SidebarNode = {
   title: string;
-  /** Click / navigation target. */
   path: string;
-  /**
-   * Directory URL used for ancestor expand + highlight.
-   * Set when a folder has no index.md and `path` aliases the first child.
-   */
+  /** Folders without an index link to their first child but match the directory. */
   matchPrefix?: string;
   children?: SidebarNode[];
-  /** Course codes from metadata (course section). */
   codes?: string[];
-  /** A–Z bucket, computed at build time (course section leaves only). */
   letter?: AlphaLetter;
 };
 export type DocNavIndex = {
   generatedAt: string;
-  sections: Array<
-    NavSection & {
-      tree: SidebarNode[];
-    }
-  >;
+  sections: Array<NavSection & { tree: SidebarNode[] }>;
 };
 export const sectionForPath = (pathname: string): NavSection | undefined => {
   const clean = pathname.replace(/\/+$/, '') || '/';
   if (clean === '/') return undefined;
   return NAV_SECTIONS.find(
-    (s) => clean === s.path || clean.startsWith(`${s.path}/`),
+    (section) => clean === section.path || clean.startsWith(`${section.path}/`),
   );
 };
 
-const titleInTree = (
-  nodes: SidebarNode[],
-  path: string,
-): string | undefined => {
-  for (const node of nodes) {
+const titleInTree = (nodes: SidebarNode[], path: string): string | undefined =>
+  nodes.reduce<string | undefined>((found, node) => {
+    if (found !== undefined) return found;
     if (node.path === path) return node.title;
-    if (node.children?.length) {
-      const found = titleInTree(node.children, path);
-      if (found) return found;
-    }
-  }
-  return undefined;
-};
+    return node.children?.length
+      ? titleInTree(node.children, path) || undefined
+      : undefined;
+  }, undefined);
 
-/** Sidebar / section label for a public URL, if present in nav-index. */
 export const titleFromNav = (
   pathname: string,
   nav: DocNavIndex | null | undefined,
 ): string | undefined => {
   const clean = pathname.replace(/\/+$/, '') || '/';
   if (clean === '/') return '首页';
-  // Section roots are known without waiting for nav-index.json.
-  const sectionRoot = NAV_SECTIONS.find((s) => s.path === clean);
+  const sectionRoot = NAV_SECTIONS.find((section) => section.path === clean);
   if (sectionRoot) return sectionRoot.label;
-  if (!nav) return undefined;
-  for (const section of nav.sections) {
-    const found = titleInTree(section.tree, clean);
-    if (found) return found;
-  }
-  return undefined;
+  return nav?.sections.reduce<string | undefined>(
+    (found, section) => found || titleInTree(section.tree, clean) || undefined,
+    undefined,
+  );
 };
 
 export const titleFromPath = (filePath: string): string => {
   const base = filePath.split('/').pop() ?? filePath;
   const name = base.replace(/\.mdx?$/i, '');
-  if (name === 'index') {
-    const parts = filePath.split('/');
-    return parts.at(-2) ?? '首页';
-  }
-  return name;
+  return name === 'index' ? (filePath.split('/').at(-2) ?? '首页') : name;
 };

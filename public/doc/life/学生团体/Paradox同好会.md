@@ -1,4 +1,4 @@
-![image_001](/assets/doc/生活_学生团体_Paradox同好会_001.webp)
+![CQU Paradox 同好会头像](/assets/doc/生活_学生团体_Paradox同好会_001.webp)
 
 ## 简介
 

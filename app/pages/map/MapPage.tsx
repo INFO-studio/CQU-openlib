@@ -62,7 +62,10 @@ const MapPage = () => {
     return [...markerItems, selected];
   }, [markerItems, selected]);
 
-  useTitle('校园地图');
+  useTitle(
+    '校园地图',
+    '重庆大学各校区教学楼、宿舍、食堂、快递点与公共设施地图。',
+  );
 
   useEffect(() => {
     if (!selected && mapCampusId !== campusId) setMapCampusId(campusId);

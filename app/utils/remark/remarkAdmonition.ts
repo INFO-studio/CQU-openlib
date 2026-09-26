@@ -45,7 +45,7 @@ const inlineToText = (curs: Mn[]): string =>
     .join('');
 
 export const extractTitle = (children?: Mn[]): Mn[] => {
-  if (!children || !children.length) return [];
+  if (!children?.length) return [];
   let charCount = 0;
   let quoteStart = -1;
   let quoteEnd = -1;
@@ -53,7 +53,7 @@ export const extractTitle = (children?: Mn[]): Mn[] => {
   const firstText = children.find((c) => c.type === 'text') as
     | MnText
     | undefined;
-  if (!firstText || !firstText.value) return [];
+  if (!firstText?.value) return [];
   const match = firstText.value.match(HEAD_OPEN_QUOTE);
   if (match) {
     quoteStart = match[0].length;

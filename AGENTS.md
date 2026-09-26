@@ -8,6 +8,10 @@
 - 包管理：`pnpm`。常用：`pnpm dev` / `pnpm test` / `pnpm typecheck` / `pnpm check`。
 - 默认分支：`main`。
 
+## 改代码之前
+
+代码书写范式在 `.agents/skills/cqu-openlib-code-style/SKILL.md`。修改 `app/**`、`vite/**`、TypeScript 工具或后端源码前必须先读并遵守：函数式优先、`const` 优先、箭头函数、适度使用 `ts-pattern`，限制不必要的 `let` / `for` / `while`。
+
 ## 改 `public/doc/**` 之前
 
 编写规范全部收在 `.agents/skills/cqu-openlib-docs/`，动手前按需读。入口 `SKILL.md`（铁律与收录教材的完整步骤在那里），四份细则：

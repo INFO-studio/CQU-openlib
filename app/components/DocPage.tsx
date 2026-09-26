@@ -27,7 +27,7 @@ const UpdatedMeta = ({ updated }: { updated: string }) => (
 );
 
 const resolvePagePath = (splat: string | undefined): string => {
-  return splat?.replace(/\.mdx?$/i, '') || 'index';
+  return decodePathname(splat?.replace(/\.mdx?$/i, '') || 'index');
 };
 
 /** True when the doc already has an H1 (usually at the top). */
@@ -106,7 +106,7 @@ const DocPage = ({ splat }: DocPageProps) => {
   }, [file, hasH1, linkTitle]);
   const documentTitle =
     frontmatter.title === undefined ? title : frontmatter.title;
-  useTitle(shouldRedirect ? undefined : documentTitle);
+  useTitle(shouldRedirect ? undefined : documentTitle, frontmatter.description);
 
   useHashScroll(isSuccess && Boolean(file));
 

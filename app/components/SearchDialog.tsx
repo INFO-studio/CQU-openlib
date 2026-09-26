@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import parse from 'html-react-parser';
 import { Search, X } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { match } from 'ts-pattern';
 import DocLink from '~/components/DocLink';
 import { ActivitySpinner } from '~/components/ui/activity-spinner';
 import { SearchSkeleton } from '~/components/ui/skeleton';
@@ -123,19 +124,22 @@ const SearchDialog = ({ open, onClose }: Props) => {
 
   const goTo = (path: string) => {
     onClose();
-    const target = toNavTarget(path);
-    if (target.to === '/') void navigate({ to: '/', hash: target.hash });
-    else if (target.to === '/map')
-      void navigate({ to: '/map', search: target.search, hash: target.hash });
-    else if (target.to === '/academic/graduation')
-      void navigate({
-        to: '/academic/graduation',
-        search: target.search,
-        hash: target.hash,
-      });
-    else void navigate({ to: '/$', params: target.params, hash: target.hash });
+    void match(toNavTarget(path))
+      .with({ to: '/' }, (target) => navigate({ to: '/', hash: target.hash }))
+      .with({ to: '/map' }, (target) =>
+        navigate({ to: '/map', search: target.search, hash: target.hash }),
+      )
+      .with({ to: '/academic/graduation' }, (target) =>
+        navigate({
+          to: '/academic/graduation',
+          search: target.search,
+          hash: target.hash,
+        }),
+      )
+      .otherwise((target) =>
+        navigate({ to: '/$', params: target.params, hash: target.hash }),
+      );
   };
-
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.nativeEvent.isComposing || composing) return;
     if (event.key === 'ArrowDown') {

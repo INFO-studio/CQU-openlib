@@ -10,7 +10,9 @@ const LEGACY_KEYS = ['userCredentials', 'curriculumEvents'];
 export const purgeLegacyStorage = (): void => {
   if (typeof window === 'undefined' || !window.localStorage) return;
   try {
-    for (const key of LEGACY_KEYS) window.localStorage.removeItem(key);
+    LEGACY_KEYS.forEach((key) => {
+      window.localStorage.removeItem(key);
+    });
   } catch {
     // Private mode or a blocked origin — nothing we can do, and nothing to fix.
   }

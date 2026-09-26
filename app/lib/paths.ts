@@ -6,41 +6,42 @@ import { validateMapSearch } from '~/pages/map/utils/mapSearch';
 export const cleanPath = (path: string): string => {
   return path.replace(/\/+$/, '') || '/';
 };
-export const decodePathname = (pathname: string): string => {
+
+const decodeOnce = (value: string): string => {
   try {
-    return decodeURIComponent(pathname);
+    return decodeURIComponent(value);
   } catch {
-    return pathname;
+    return value;
   }
 };
+
+/** Decode malformed repeatedly-encoded incoming paths without looping forever. */
+export const decodePathname = (pathname: string, remaining = 3): string => {
+  if (remaining <= 0) return pathname;
+  const decoded = decodeOnce(pathname);
+  return decoded === pathname
+    ? pathname
+    : decodePathname(decoded, remaining - 1);
+};
+
+/** Canonical browser pathname: readable internally, encoded once in the URL. */
+export const canonicalPathname = (pathname: string): string =>
+  encodeURI(decodePathname(pathname));
+
 export type NavTarget =
-  | {
-      to: '/';
-      hash?: string;
-    }
-  | {
-      to: '/map';
-      hash?: string;
-      search?: MapSearch;
-    }
-  | {
-      to: '/academic/graduation';
-      hash?: string;
-      search?: GraduationSearch;
-    }
-  | {
-      to: '/$';
-      params: {
-        _splat: string;
-      };
-      hash?: string;
-    };
+  | { to: '/'; hash?: string }
+  | { to: '/map'; hash?: string; search?: MapSearch }
+  | { to: '/academic/graduation'; hash?: string; search?: GraduationSearch }
+  | { to: '/$'; params: { _splat: string }; hash?: string };
+
 export const toNavTarget = (path: string): NavTarget => {
-  const hashIndex = path.indexOf('#');
+  const decodedPath = decodePathname(path);
+  const hashIndex = decodedPath.indexOf('#');
   const hash =
-    hashIndex >= 0 ? path.slice(hashIndex + 1) || undefined : undefined;
+    hashIndex >= 0 ? decodedPath.slice(hashIndex + 1) || undefined : undefined;
   const hashTarget = hash ? { hash } : {};
-  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const pathWithoutHash =
+    hashIndex >= 0 ? decodedPath.slice(0, hashIndex) : decodedPath;
   const [pathname, query = ''] = pathWithoutHash.split('?', 2);
   const clean = cleanPath(pathname);
   if (clean === '/') return { to: '/', ...hashTarget };
@@ -55,8 +56,6 @@ export const toNavTarget = (path: string): NavTarget => {
       ? { to: '/map', search, ...hashTarget }
       : { to: '/map', ...hashTarget };
   }
-  // A custom route inside a doc section: it must not fall through to the
-  // markdown splat, or the page would try to fetch /doc/academic/graduation.md.
   if (clean === '/academic/graduation') {
     const params = new URLSearchParams(query);
     const search = validateGraduationSearch({
