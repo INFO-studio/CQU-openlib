@@ -42,3 +42,4 @@
 
 # Local Netlify folder
 .netlify
+.vitest/

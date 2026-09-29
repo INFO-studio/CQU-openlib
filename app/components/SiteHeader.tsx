@@ -1,9 +1,8 @@
 import { Menu, Search } from 'lucide-react';
-import githubIconUrl from '~/assets/icon/github.svg?url';
+import GithubIcon from '~/assets/icon/github.svg?react';
 import DocLink from '~/components/DocLink';
 import ThemeToggle from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
-import { RepoIcon } from '~/components/ui/repo-icon';
 import { cn } from '~/lib/cn';
 import { SITE_NAV_ITEMS } from '~/lib/nav';
 import { useUiStore } from '~/stores/uiStore';
@@ -108,7 +107,7 @@ const SiteHeader = ({ currentPath }: Props) => {
             className="inline-flex h-8 w-8 items-center justify-center rounded text-icon no-underline hover:bg-mist hover:text-icon-strong"
             aria-label="GitHub 仓库"
           >
-            <RepoIcon icon={githubIconUrl} />
+            <GithubIcon className="h-4 w-4 shrink-0" aria-hidden />
             <span className="sr-only">GitHub 仓库</span>
           </a>
           <ThemeToggle />

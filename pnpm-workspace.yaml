@@ -1,5 +1,5 @@
 overrides:
-  vite: npm:@voidzero-dev/vite-plus-core@0.3.0
+  vite@*: 'catalog:'
 enableGlobalVirtualStore: false
 allowBuilds:
   esbuild: true
@@ -8,3 +8,6 @@ peerDependencyRules:
     - vite
   allowedVersions:
     vite: '*'
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.0.0
+  vite-plus: 1.0.0

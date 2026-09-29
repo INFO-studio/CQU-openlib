@@ -1,6 +1,7 @@
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import UnoCSS from 'unocss/vite';
+import svgr from 'vite-plugin-svgr';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 import { docMarkdownPlugin } from './vite/docMarkdown';
 import { docNavIndexPlugin } from './vite/docNavIndex';
@@ -29,6 +30,7 @@ export default defineConfig({
       quoteStyle: 'single',
     }),
     react(),
+    svgr(),
     UnoCSS(),
     docNavIndexPlugin(),
     docMarkdownPlugin(),
