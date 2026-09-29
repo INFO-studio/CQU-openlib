@@ -9,7 +9,7 @@ type Props = {
 export const Blockquote = ({ children, className }: Props) => (
   <blockquote
     className={cn(
-      'cquol-blockquote my-[0.6rem] border-l-2 border-l-primary-soft pl-[0.85rem] text-muted',
+      'cquol-blockquote mx-0 my-[0.6rem] border-l-2 border-l-primary-soft pl-[0.85rem] text-muted',
       className,
     )}
   >
