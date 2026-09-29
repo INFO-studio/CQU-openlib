@@ -3,6 +3,7 @@ import githubIconUrl from '~/assets/icon/github.svg?url';
 import DocLink from '~/components/DocLink';
 import ThemeToggle from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
+import { RepoIcon } from '~/components/ui/repo-icon';
 import { cn } from '~/lib/cn';
 import { SITE_NAV_ITEMS } from '~/lib/nav';
 import { useUiStore } from '~/stores/uiStore';
@@ -107,14 +108,7 @@ const SiteHeader = ({ currentPath }: Props) => {
             className="inline-flex h-8 w-8 items-center justify-center rounded text-icon no-underline hover:bg-mist hover:text-icon-strong"
             aria-label="GitHub 仓库"
           >
-            <span
-              className="h-4 w-4 bg-current mask-center mask-no-repeat mask-contain"
-              style={{
-                WebkitMaskImage: `url(${githubIconUrl})`,
-                maskImage: `url(${githubIconUrl})`,
-              }}
-              aria-hidden
-            />
+            <RepoIcon icon={githubIconUrl} />
             <span className="sr-only">GitHub 仓库</span>
           </a>
           <ThemeToggle />
