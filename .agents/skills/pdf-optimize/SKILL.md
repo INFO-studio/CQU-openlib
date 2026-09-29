@@ -1,6 +1,6 @@
 ---
 name: pdf-optimize
-description: Guide for processing scanned textbook PDFs with tools/pdf_optimize (pdfopt) — ad removal before rasterization, MRC/JBIG2 compression for size limits, OCR text layer decisions, and when NOT to re-encode. Use when cleaning, compressing, or OCR-ing PDFs under tools/pdf_optimize, or before uploading textbook PDFs to the site.
+description: Guide for processing scanned textbook PDFs with tools/pdf_optimize (pdfopt) — ad removal before rasterization, continuous-tone JPEG 2000 for image-only scans, MRC/JBIG2 compression, OCR text layer decisions, and when NOT to re-encode. Use when cleaning, compressing, or OCR-ing PDFs under tools/pdf_optimize, or before uploading textbook PDFs to the site.
 ---
 
 # pdfopt — 扫描版 PDF 处理
@@ -15,6 +15,7 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 | --- | --- |
 | 装依赖、跑 probe/run/verify | [setup-and-usage.md](setup-and-usage.md) |
 | 压体积、调 `--dpi` / `--photo-*` / `--mode` | [compression.md](compression.md) |
+| 单图扫描、双色教材、MRC 误判、JPEG 2000 | [continuous-tone.md](continuous-tone.md) |
 | 去广告、水印、超星信息页（**必须在 run 之前**） | [ad-removal.md](ad-removal.md) |
 | 要不要 `--ocr`、已有文本层怎么处理 | [ocr.md](ocr.md) |
 | 产物校验、输出路径、勿提交大文件 | [integrity.md](integrity.md) |
@@ -25,11 +26,12 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 
 1. **probe** — 页数、原生 DPI、有没有文本层、该用哪个 `--mode`。
 2. **查广告** — 见 [ad-removal.md](ad-removal.md)。有二次加工痕迹就先清副本；**栅格化会把广告烧进像素**。
-3. **决定要不要 run** — 文件已经很小、probe 推荐 `color` 且体积可接受、**或原生只有 150 DPI** → 只做第 2 步，再用 `pdfopt ocr` 补文本层（普通地质学：150 DPI / 50MB；新能源材料与器件：150 DPI / 25MB）。150 DPI 的中文扫描二值化必然更难读，见 [compression.md](compression.md) 开头。字发灰是曝光问题，用 `--text-contrast` 修，别用阈值。
-4. **已有文本层时** — 见 [ocr.md](ocr.md) 用书签算召回率；**70% 以上别重做 OCR**。
-5. **run → verify** — 见 [setup-and-usage.md](setup-and-usage.md)、[integrity.md](integrity.md)。
+3. **验证 DPI 是否可信** — PDF 页框尺寸可能错，导致 probe 把 1888×2992 px 的扫描图报告为约 96 DPI。对每页单张全幅图的文件，同时检查原图像素尺寸与页面矩阵；不要只凭 PDF 页框推导的 DPI 决定降采样或二值化。
+4. **决定要不要 run** — 文件已经很小、probe 推荐 `color` 且体积可接受、**或原生只有 150 DPI** → 只做第 2 步，再用 `pdfopt ocr` 补文本层（普通地质学：150 DPI / 50MB；新能源材料与器件：150 DPI / 25MB）。150 DPI 的中文扫描二值化必然更难读，见 [compression.md](compression.md) 开头。字发灰是曝光问题，用 `--text-contrast` 修，别用阈值。若是每页单张全幅图、原像素质量高、双色底纹或工程图导致 MRC 误判，改读 [continuous-tone.md](continuous-tone.md)，优先用 `pdfopt continuous` 保留连续灰阶。
+5. **已有文本层时** — 见 [ocr.md](ocr.md) 用书签算召回率；**70% 以上别重做 OCR**。
+6. **run / continuous → verify** — 见 [setup-and-usage.md](setup-and-usage.md)、[integrity.md](integrity.md)。
 
-## 五条铁律
+## 六条铁律
 
 **一、广告必须在 `run` 之前清。** pdfopt 会栅格化整页，之后广告摘不出来。
 
@@ -39,7 +41,9 @@ description: Guide for processing scanned textbook PDFs with tools/pdf_optimize 
 
 **四、二值化不是默认动作，判据是曝光而非 DPI。** 先量正文页的墨核灰度：50 以下（机械设计基础 240 DPI，19–41）二值化是净收益，58.7 → 16.0MB 且更锐；100 以上（新能源材料与器件 150 DPI，128）笔画已和纸面糊在一起，灰度的抗锯齿就是笔画位置信息，切掉换不回来——任何参数都救不了，别在参数上耗时间。
 
-**五、AI 超分不要用。** 已用原生 300 DPI 的书造真值实测：Real-ESRGAN 只多恢复 1.1 个百分点的字符，代价 −7dB PSNR，放大能看到编出来的笔画。详见 [compression.md](compression.md)。
+**五、不要只凭局部锐度接受 MRC。** 双色教材的浅蓝栏、网底、二维码和密排正文可能被区域检测误判成图片，造成同页文字混用 JBIG2 与 JPEG。抽样页必须检查区域边界、正文一致性和 `probe --per-page`；没有照片的教材却几乎每页都有图片区，是强烈警报。
+
+**六、AI 超分不要用。** 已用原生 300 DPI 的书造真值实测：Real-ESRGAN 只多恢复 1.1 个百分点的字符，代价 −7dB PSNR，放大能看到编出来的笔画。详见 [compression.md](compression.md)。
 
 ## 收录到站点时
 

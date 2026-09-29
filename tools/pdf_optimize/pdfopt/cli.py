@@ -3,6 +3,7 @@
     pdfopt run    INPUT.pdf            # whole chain
     pdfopt probe  INPUT.pdf            # what is this file, which mode suits it
     pdfopt plan   INPUT.pdf            # sample and solve, without a full pass
+    pdfopt continuous INPUT.pdf        # native pixels → continuous grayscale JPEG 2000
     pdfopt verify OUTPUT.pdf           # does it open, does every page decode
     pdfopt ocr-setup                   # fetch the good tesseract models
     pdfopt ocr-check                   # which models would be used
@@ -19,6 +20,7 @@ import time
 from pathlib import Path
 
 from . import budget as budget_mod
+from . import continuous as continuous_mod
 from . import ocr as ocr_mod
 from . import verify as verify_mod
 from .config import Bilevel, Detect, Mode, Params, Tone
@@ -319,21 +321,64 @@ def cmd_verify(args) -> int:
     return 0 if report.ok else 1
 
 
-def cmd_ocr(args) -> int:
-    """Text layer only — every image stream is left byte-for-byte alone.
-
-    The decision procedure in the skill notes ends at "don't run" for a scan
-    that is already inside budget: re-encoding a 150dpi book can only trade
-    legibility for space you don't need. Searchable text is still worth
-    having, so it has to be reachable without the encode pipeline.
-    """
+def cmd_continuous(args) -> int:
+    """Re-encode native scan images as continuous grayscale JPEG 2000."""
     src = args.input.expanduser().resolve()
     if not src.is_file():
         raise SystemExit(f"not a file: {src}")
     workdir = (args.workdir or src.parent / "out").expanduser().resolve()
     workdir.mkdir(parents=True, exist_ok=True)
-    dst = args.out.expanduser().resolve() if args.out else workdir / f"{src.stem}.ocr.pdf"
-    if dst == src:
+
+    from .render import open_doc
+
+    doc = open_doc(src)
+    count = doc.page_count
+    doc.close()
+    pages = parse_pages(args.pages, count)
+    suffix = ".preview" if pages else ".continuous"
+    dst = args.out.expanduser().resolve() if args.out else workdir / f"{src.stem}{suffix}.pdf"
+
+    print(
+        f"continuous: native pixels, 8-bit grayscale JPEG 2000 {args.ratio:g}:1; "
+        f"keep first {args.keep_first_colour} and last {args.keep_last_colour} page(s) in colour"
+    )
+    try:
+        result = continuous_mod.reencode(
+            src,
+            dst,
+            ratio=args.ratio,
+            keep_first_colour=args.keep_first_colour,
+            keep_last_colour=args.keep_last_colour,
+            pages=pages or None,
+            progress=lambda done, total, rate, size: print(
+                f"  … {done}/{total}  {rate:.1f} p/s  {human(size)} images"
+            ),
+        )
+    except (RuntimeError, ValueError) as exc:
+        raise SystemExit(f"continuous unavailable — {exc}") from exc
+    report = verify_mod.verify(dst, expect_pages=result.page_count)
+    print(f"verify: {report.summary()}")
+    print(f"output: {dst} ({human(result.output_bytes)})")
+    if result.output_bytes > int(args.max_mb * 1048576):
+        print(
+            f"warn:   over budget by "
+            f"{human(result.output_bytes - int(args.max_mb * 1048576))} — raise --ratio"
+        )
+        return 2
+    return 0 if report.ok else 1
+
+
+def cmd_ocr(args) -> int:
+    """Add a text layer without changing the target PDF's image streams."""
+    target = args.input.expanduser().resolve()
+    ocr_src = (args.ocr_source or target).expanduser().resolve()
+    for label, path in (("input", target), ("OCR source", ocr_src)):
+        if not path.is_file():
+            raise SystemExit(f"{label} is not a file: {path}")
+    workdir = (args.workdir or target.parent / "out").expanduser().resolve()
+    workdir.mkdir(parents=True, exist_ok=True)
+    dst = args.out.expanduser().resolve() if args.out else workdir / f"{target.stem}.ocr.pdf"
+    if dst == target:
         raise SystemExit("--out would overwrite the source; pick another path")
 
     tessdata = ocr_mod.resolve_tessdata(args.tessdata_dir)
@@ -346,19 +391,25 @@ def cmd_ocr(args) -> int:
 
     from .render import open_doc
 
-    doc = open_doc(src)
-    count = doc.page_count
-    doc.close()
+    target_doc = open_doc(target)
+    count = target_doc.page_count
+    target_doc.close()
+    ocr_doc = open_doc(ocr_src)
+    ocr_count = ocr_doc.page_count
+    ocr_doc.close()
+    if count != ocr_count:
+        raise SystemExit(f"page count mismatch: input has {count}, OCR source has {ocr_count}")
 
     t0 = time.time()
+    source_note = "" if ocr_src == target else f" from {ocr_src.name}"
     print(
         f"ocr:    tesseract -l {args.ocr_langs} --psm {args.ocr_psm} @ {args.ocr_dpi:g}dpi, "
-        f"{count} pages, images untouched …"
+        f"{count} pages{source_note}; target images untouched …"
     )
     lines = ocr_mod.add_text_layer(
-        src,
+        ocr_src,
         list(range(count)),
-        src,
+        target,
         dst,
         ocr_mod.OcrSettings(
             langs=args.ocr_langs,
@@ -374,7 +425,7 @@ def cmd_ocr(args) -> int:
     )
     print(
         f"ocr:    {lines} text lines, {dst.name} ({human(dst.stat().st_size)}, "
-        f"+{human(dst.stat().st_size - src.stat().st_size)}, {(time.time() - t0) / 60:.1f}m)"
+        f"+{human(dst.stat().st_size - target.stat().st_size)}, {(time.time() - t0) / 60:.1f}m)"
     )
     report = verify_mod.verify(dst, expect_pages=count)
     print(f"verify: {report.summary()}")
@@ -480,6 +531,25 @@ def main(argv: list[str] | None = None) -> int:
     add_tuning(pl)
     pl.set_defaults(func=cmd_plan)
 
+    ct = sub.add_parser(
+        "continuous",
+        help="native scan images → 8-bit grayscale JPEG 2000 without binarization",
+    )
+    ct.add_argument("input", type=Path)
+    ct.add_argument("--workdir", type=Path, default=None, help="default: <input dir>/out")
+    ct.add_argument("--out", type=Path, default=None)
+    ct.add_argument("--max-mb", type=float, default=100.0)
+    ct.add_argument("--pages", default=None, help="1-based subset, e.g. 1-20,285")
+    ct.add_argument(
+        "--ratio",
+        type=float,
+        default=24.0,
+        help="JPEG 2000 compression ratio; larger is smaller and more lossy (default: 24)",
+    )
+    ct.add_argument("--keep-first-colour", type=int, default=0)
+    ct.add_argument("--keep-last-colour", type=int, default=0)
+    ct.set_defaults(func=cmd_continuous)
+
     v = sub.add_parser("verify", help="open it, decode every page")
     v.add_argument("input", type=Path)
     v.add_argument("--shallow", action="store_true", help="structure only, skip page decode")
@@ -488,6 +558,12 @@ def main(argv: list[str] | None = None) -> int:
     o = sub.add_parser("ocr", help="add a text layer only, leaving every image untouched")
     common(o)
     o.add_argument("--out", type=Path, default=None)
+    o.add_argument(
+        "--ocr-source",
+        type=Path,
+        default=None,
+        help="recognise from this same-length original PDF while leaving input images untouched",
+    )
     o.add_argument("--ocr-langs", default=ocr_mod.DEFAULT_LANGS)
     o.add_argument("--ocr-dpi", type=float, default=300.0, help="resolution fed to tesseract")
     o.add_argument("--ocr-psm", type=int, default=ocr_mod.DEFAULT_PSM)

@@ -10,6 +10,12 @@
 
 默认 `--psm 4`（单列）。psm 3 遇页边人像会切碎、乱序；抽样 10 页 psm 4 多 6% 汉字、拉丁误判约减半。
 
+目标 PDF 已经压缩时，用 `--ocr-source` 指向未压缩原稿。两份 PDF 必须页数一致；Tesseract 从原稿识别，文本层写入目标，目标图像流保持不变：
+
+```bash
+./pdfopt.sh ocr "out/教材.no-ocr.pdf" --ocr-source "原稿.pdf" --out "out/教材.pdf"
+```
+
 ## 模型
 
 `brew install tesseract-lang` 是 2019 tessdata_fast，中文粗体标题常变拉丁乱码。`./pdfopt.sh ocr-setup` 在 `tools/pdf_optimize/tessdata/` 镜像系统目录并用 tessdata_best 覆盖。

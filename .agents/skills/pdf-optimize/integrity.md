@@ -22,6 +22,8 @@
 | `*.ocr.pdf` | 已 OCR |
 | 同名 `.pdf` | 最终文件 |
 | `*.preview.pdf` | 用了 `--pages` 子集时的预览，不覆盖全书 |
+| `*.continuous.pdf` | `continuous` 的默认输出；原像素连续灰阶 JPEG 2000 |
+| `*.no-ocr.pdf` | 建议用于压缩完成、尚未叠加 OCR 的中间件 |
 
 分页缓存在 `out/.pdfopt/`；`./pdfopt.sh clean` 可删。
 
@@ -49,3 +51,8 @@ def digests(doc, n):
 print("图像流 sha256 一致:", digests(a, a.page_count) == digests(b, b.page_count))
 PY
 ```
+
+
+## 连续灰阶产物
+
+使用 `continuous` 后除常规 `verify` 外，还要确认内页图像为 JPX/JPEG 2000、像素尺寸没有变化，并对保留彩色的页比较原始图像流 SHA-256。抽样估算不能代替最终体积检查；给 OCR 和 PDF 对象留 2%–5% 余量。完整清单见 [continuous-tone.md](continuous-tone.md)。
