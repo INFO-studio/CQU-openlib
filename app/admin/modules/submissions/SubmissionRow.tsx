@@ -5,8 +5,8 @@ import { formatShanghai, formatShanghaiShort } from '~/admin/lib/time';
 import { CopyJsonButton } from '~/admin/modules/submissions/CopyJsonButton';
 import {
   submissionSummary,
+  typeIcon,
   typeLabel,
-  typeTone,
 } from '~/admin/modules/submissions/labels';
 import { renderPayload } from '~/admin/modules/submissions/renderPayload';
 import { StatusControls } from '~/admin/modules/submissions/StatusControls';
@@ -36,6 +36,7 @@ export const SubmissionRow = ({
   onUnauthorized,
 }: Props) => {
   const summary = submissionSummary(item);
+  const TypeIcon = typeIcon(item.type);
 
   return (
     <li
@@ -55,11 +56,11 @@ export const SubmissionRow = ({
           aria-label={`${typeLabel(item.type)}：${summary}`}
           className="absolute inset-0 z-0 rounded-md focus-visible:outline-offset-[-3px]"
         />
-        <span
-          className="w-[4.5rem] shrink-0 truncate font-mono text-[0.68rem] tracking-wide"
-          style={{ color: typeTone(item.type) }}
-        >
-          {typeLabel(item.type)}
+        <span className="flex w-[5.25rem] shrink-0 items-center gap-1.5 text-[0.72rem] text-muted">
+          {TypeIcon ? (
+            <TypeIcon size={14} aria-hidden className="shrink-0 text-icon" />
+          ) : null}
+          <span className="truncate">{typeLabel(item.type)}</span>
         </span>
         <span className="grid min-w-0 flex-1 gap-0.5">
           <span className="truncate text-[0.9rem] leading-snug">{summary}</span>

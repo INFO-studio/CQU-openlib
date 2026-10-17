@@ -60,7 +60,11 @@ export const SubmissionsPage = ({ refreshToken, onUnauthorized }: Props) => {
       setLoading(false);
       return;
     }
-    setItems(res.items ?? []);
+    const nextItems = res.items ?? [];
+    setItems(nextItems);
+    setStatusAnchor((prev) =>
+      prev ? createStatusAnchor(nextItems, prev.status) : null,
+    );
     setLoading(false);
   }, [onUnauthorized]);
 

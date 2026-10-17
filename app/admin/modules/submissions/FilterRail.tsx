@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react';
+import { type LucideIcon, Search, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import type { FormType } from '~/admin/lib/api';
 import {
@@ -17,6 +17,7 @@ type Facet<T extends string> = {
   value: T | '';
   label: string;
   tone?: string;
+  icon?: LucideIcon;
 };
 
 const TYPE_FACETS: Facet<FormType>[] = [
@@ -24,7 +25,7 @@ const TYPE_FACETS: Facet<FormType>[] = [
   ...Object.entries(FORM_TYPE_META).map(([value, meta]) => ({
     value: value as FormType,
     label: meta.label,
-    tone: meta.tone,
+    icon: meta.icon,
   })),
 ];
 
@@ -66,20 +67,28 @@ const FacetList = <T extends string>({
           disabled={count === 0 && !isActive && facet.value !== ''}
           onClick={() => onSelect(isActive && facet.value ? '' : facet.value)}
           className={cn(
-            'grid grid-cols-[0.45rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1.5 text-left text-[0.84rem] transition-colors disabled:pointer-events-none disabled:opacity-40',
+            'grid grid-cols-[0.875rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1.5 text-left text-[0.84rem] transition-colors disabled:pointer-events-none disabled:opacity-40',
             isActive
               ? 'bg-primary-soft text-ink'
               : 'text-muted hover:bg-mist hover:text-ink',
           )}
         >
-          <span
-            aria-hidden
-            className={cn(
-              'h-[0.45rem] w-[0.45rem] rounded-full',
-              !facet.tone && 'shadow-chip-outline',
-            )}
-            style={facet.tone ? { background: facet.tone } : undefined}
-          />
+          {facet.icon ? (
+            <facet.icon
+              size={14}
+              aria-hidden
+              className={isActive ? 'text-icon-strong' : 'text-icon'}
+            />
+          ) : (
+            <span
+              aria-hidden
+              className={cn(
+                'h-[0.45rem] w-[0.45rem] justify-self-center rounded-full',
+                !facet.tone && 'shadow-chip-outline',
+              )}
+              style={facet.tone ? { background: facet.tone } : undefined}
+            />
+          )}
           <span>{facet.label}</span>
           <span className="font-mono text-[0.76rem] tabular-nums text-icon">
             {count}

@@ -1,19 +1,30 @@
+import {
+  BookOpen,
+  CirclePile,
+  FileUp,
+  type LucideIcon,
+  MessageSquareText,
+  UsersRoundCollaboration,
+} from 'lucide-react';
 import type { FormType, SubmissionItem } from '~/admin/lib/api';
 import { statusLabel } from '~/admin/lib/status';
 
-export const FORM_TYPE_META: Record<FormType, { label: string; tone: string }> =
-  {
-    feedback: { label: '页面反馈', tone: '#6aa8c4' },
-    textbook: { label: '教材收集', tone: '#6ab59a' },
-    upload: { label: '文件上传', tone: '#7a9fd0' },
-    club: { label: '社团信息', tone: '#c4a06a' },
-    group: { label: '学生团体', tone: '#a08bc4' },
-  };
+// Types are told apart by icon so colour stays reserved for workflow status.
+export const FORM_TYPE_META: Record<
+  FormType,
+  { label: string; icon: LucideIcon }
+> = {
+  feedback: { label: '页面反馈', icon: MessageSquareText },
+  textbook: { label: '教材收集', icon: BookOpen },
+  upload: { label: '文件上传', icon: FileUp },
+  club: { label: '社团信息', icon: UsersRoundCollaboration },
+  group: { label: '学生团体', icon: CirclePile },
+};
 
 export const typeLabel = (type: string): string =>
   FORM_TYPE_META[type as FormType]?.label ?? type;
-export const typeTone = (type: string): string =>
-  FORM_TYPE_META[type as FormType]?.tone ?? '#8a909c';
+export const typeIcon = (type: string): LucideIcon | null =>
+  FORM_TYPE_META[type as FormType]?.icon ?? null;
 
 const FIELD_LABELS: Record<string, string> = {
   content: '问题说明',

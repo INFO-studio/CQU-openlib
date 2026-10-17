@@ -26,7 +26,7 @@
     "@tanstack/react-router": "^1.170.40",
     "hox": "^2.1.1",
     "html-react-parser": "^6.1.8",
-    "lucide-react": "^1.48.0",
+    "lucide-react": "^1.58.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "recharts": "^3.10.1",
