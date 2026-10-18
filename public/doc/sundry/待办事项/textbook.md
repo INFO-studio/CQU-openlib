@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-25
+updated: 2026-10-18
 ---
 
 # 教材需求
@@ -7,8 +7,6 @@ updated: 2026-09-25
 本页为教材需求，由 [收集表](/form/textbook) 整合而来
 格式：:l-book: `课程名 @课程号` - :l-list-checks: `书籍名-书籍第一作者-出版社-ISBN13` (- :l-message-square-text: `额外内容`)
 
-- `legacy#62`
-    - :l-book: `传媒与社会 @JC20006` - :l-list-checks: `传媒与社会变迁-黄旦-中国传媒大学出版社-9787565728969`
 - `legacy#75`
     - :l-book: `结构力学 @CEM20130` - :l-list-checks: `结构力学-重庆大学结构力学教学团队-高等教育出版社-9787040538304`
 - `legacy#75`
