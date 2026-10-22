@@ -159,7 +159,7 @@ const CourseSidebar = ({
   fadeFrom = colors.paper,
 }: Props) => {
   const groups = useMemo(() => groupCoursesByAlpha(tree), [tree]);
-  const { ensureAncestorsOpen, isExpanded, setOpen } = useSidebarStore();
+  const { ensurePathOpen, isExpanded, setOpen } = useSidebarStore();
   const [activeLetter, setActiveLetter] = useState<AlphaLetter | null>(null);
   const groupsListRef = useRef<HTMLUListElement | null>(null);
 
@@ -203,7 +203,7 @@ const CourseSidebar = ({
   }, [groups, coursePath, currentPath]);
 
   useEffect(() => {
-    ensureAncestorsOpen(currentPath);
+    ensurePathOpen(currentPath);
     if (!activeCourse) {
       setActiveLetter(null);
       return;
@@ -212,13 +212,7 @@ const CourseSidebar = ({
     setOpen(`course-alpha:${letter}`, true);
     setActiveLetter(letter);
     window.requestAnimationFrame(() => scrollLetterToTop(letter));
-  }, [
-    currentPath,
-    activeCourse,
-    ensureAncestorsOpen,
-    scrollLetterToTop,
-    setOpen,
-  ]);
+  }, [currentPath, activeCourse, ensurePathOpen, scrollLetterToTop, setOpen]);
 
   const present = useMemo(() => new Set(groups.map((g) => g.letter)), [groups]);
 

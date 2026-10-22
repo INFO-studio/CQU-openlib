@@ -137,11 +137,11 @@ const Sidebar = ({
   currentPath,
   onNavigate,
 }: Props) => {
-  const { ensureAncestorsOpen } = useSidebarStore();
+  const { ensurePathOpen } = useSidebarStore();
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    ensureAncestorsOpen(currentPath);
+    ensurePathOpen(currentPath);
     const lookup = { cancelled: false, attempts: 0 };
     const revealCurrentPage = () => {
       if (lookup.cancelled) return;
@@ -159,7 +159,7 @@ const Sidebar = ({
       lookup.cancelled = true;
       cancelAnimationFrame(frame);
     };
-  }, [currentPath, ensureAncestorsOpen]);
+  }, [currentPath, ensurePathOpen]);
 
   return (
     <nav

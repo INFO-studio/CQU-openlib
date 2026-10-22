@@ -27,14 +27,15 @@ export const [useSidebarStore, getSidebarStore] = createGlobalStore(() => {
     });
   }, []);
 
-  const ensureAncestorsOpen = useCallback((currentPath: string) => {
+  // Includes the page itself, so landing on a folder index shows its children.
+  const ensurePathOpen = useCallback((currentPath: string) => {
     const parts = currentPath.replace(/^\//, '').split('/').filter(Boolean);
     if (parts.length === 0) return;
-    const ancestors = parts
-      .slice(0, -1)
-      .map((_, index) => `/${parts.slice(0, index + 1).join('/')}`);
-    setExpanded((prev) => new Set([...prev, ...ancestors]));
+    const prefixes = parts.map(
+      (_, index) => `/${parts.slice(0, index + 1).join('/')}`,
+    );
+    setExpanded((prev) => new Set([...prev, ...prefixes]));
   }, []);
 
-  return { expanded, isExpanded, setOpen, toggle, ensureAncestorsOpen };
+  return { expanded, isExpanded, setOpen, toggle, ensurePathOpen };
 });
