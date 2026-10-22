@@ -20,11 +20,17 @@ export type FileFailureItem = {
   at: string;
 };
 
+export type FileFailureArchive = {
+  total: number;
+  keys: FileFailureKey[];
+};
+
 export type FileFailuresResponse = {
   success: boolean;
   summary?: FileFailureSummary;
   keys?: FileFailureKey[];
   items?: FileFailureItem[];
+  archive?: FileFailureArchive;
   message?: string;
 };
 
@@ -33,4 +39,21 @@ export const fetchFileFailures = (): Promise<FileFailuresResponse> =>
     summary?: FileFailureSummary;
     keys?: FileFailureKey[];
     items?: FileFailureItem[];
+    archive?: FileFailureArchive;
   }>('/admin/file-failures');
+
+const postAction = <T>(body: Record<string, string>) =>
+  adminFetch<T>('/admin/file-failures', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+export const archiveFileFailures = () =>
+  postAction<{ archived?: number }>({ action: 'archive' });
+
+export const purgeFileFailureKey = (key: string) =>
+  postAction<{ removed?: { current: number; archive: number } }>({
+    action: 'purge',
+    key,
+  });
