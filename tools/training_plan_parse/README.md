@@ -37,7 +37,7 @@ pnpm plans:update -- --write --prune-placeholders --expect-rows 46327 --date 202
 - `public/doc/academic/专业培养方案/<学院>/<专业>.md`：用当前输入的年级重建对应专业；旧方案只迁移链接，不改展示名、不补入当前专业、不删除旧专业。
 - `public/doc/course/*.md`：缺失页、空白页和纯占位页统一为同一模板，无 `updated`、资源标题或课程号 tab。不覆盖已有教材、试卷及其他实际内容。
 - 旧脏名称纯占位页迁移到核心名称，并同步站内 Markdown 引用；只有显式传入 `--prune-placeholders` 才删除旧页。删除前再次确认目标存在、旧页仍为纯占位。
-- `metadata/course-codes.json`：从站点全部培养方案重新提取；`courses` 保留全部关联，`byCode` 仅包含无歧义映射，`conflicts` 保留所有歧义候选。
+- `metadata/course-codes.json`：从站点全部培养方案重新提取；课程页 tab 上、培养方案里没有的课程号一并保留，不改写已有归属。`courses` 保留全部关联，`byCode` 仅包含无歧义映射，`conflicts` 保留所有歧义候选。
 - 占位页不写日期；其他页面只为内容改变更新日期。相同输入重复执行不会重写相同内容。更新日志需按站点规范另行同步三处，不由脚本自动发布。
 
 输入 Excel 已被 Git 忽略，勿提交。
