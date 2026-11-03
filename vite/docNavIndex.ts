@@ -16,7 +16,7 @@ import {
   titleFromPath,
 } from '../app/lib/nav';
 import { compareTitles } from '../app/lib/titleOrder';
-import { letterOfTitle } from './courseLetter';
+import { courseLetter } from './courseLetter';
 import { listFolderPages } from './docMarkdown';
 
 type CourseCodesMeta = {
@@ -44,11 +44,22 @@ const attachCodes = (
       : undefined,
   }));
 
-const attachLetters = (nodes: SidebarNode[]): SidebarNode[] =>
+const markdownAt = (docRoot: string, path: string): string => {
+  const rel = path.replace(/^\//, '');
+  const page = join(docRoot, `${rel}.md`);
+  if (existsSync(page)) return readFileSync(page, 'utf8');
+  const index = join(docRoot, rel, 'index.md');
+  return existsSync(index) ? readFileSync(index, 'utf8') : '';
+};
+
+const attachLetters = (nodes: SidebarNode[], docRoot: string): SidebarNode[] =>
   nodes.map((node) =>
     node.children?.length
-      ? { ...node, children: attachLetters(node.children) }
-      : { ...node, letter: letterOfTitle(node.title) },
+      ? { ...node, children: attachLetters(node.children, docRoot) }
+      : {
+          ...node,
+          letter: courseLetter(node.title, markdownAt(docRoot, node.path)),
+        },
   );
 
 const skipSearchPrefixes = ['sundry/更新日志/'];
@@ -219,7 +230,10 @@ export const buildDocNavIndex = (
     return {
       navigation: {
         ...section,
-        tree: section.id === 'course' ? attachLetters(withCodes) : withCodes,
+        tree:
+          section.id === 'course'
+            ? attachLetters(withCodes, docRoot)
+            : withCodes,
       },
       documents,
     };
