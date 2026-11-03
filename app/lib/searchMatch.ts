@@ -1,4 +1,5 @@
 import type { CourseCodeSearchEntry } from '~/lib/courseCodeSearch';
+import { exactTitleToken } from '~/lib/exactTitle';
 import { cleanPath, decodePathname } from '~/lib/paths';
 
 export type SearchFragment = {
@@ -42,17 +43,37 @@ const hanPattern = /\p{Script=Han}/gu;
 const documentPath = (path: string): string =>
   cleanPath(decodePathname(path.split(/[?#]/, 1)[0] ?? path));
 
+const pagefindQuery = (normalized: string): string => {
+  const hanLength = normalized.match(hanPattern)?.length ?? 0;
+  const phrase =
+    asciiTokenPattern.test(normalized) ||
+    (!normalized.includes(' ') && hanLength >= 5);
+  return phrase ? `"${normalized}"` : normalized;
+};
+
+const prependExactTitles = (
+  exact: SearchHit[],
+  rest: SearchHit[],
+): SearchHit[] => {
+  const restById = new Map(rest.map((hit) => [hit.id, hit]));
+  const exactIds = new Set(exact.map((hit) => hit.id));
+  return [
+    ...exact.flatMap((hit) => [restById.get(hit.id) ?? hit]),
+    ...rest.filter((hit) => !exactIds.has(hit.id)),
+  ];
+};
+
 export const searchDocuments = async (
   engine: SearchEngine,
   query: string,
 ): Promise<SearchHit[]> => {
   const normalized = query.trim();
   if (!normalized) return [];
-  const hanLength = normalized.match(hanPattern)?.length ?? 0;
-  const exact =
-    asciiTokenPattern.test(normalized) ||
-    (!normalized.includes(' ') && hanLength >= 5);
-  return (await engine.search(exact ? `"${normalized}"` : normalized)).results;
+  const [exact, rest] = await Promise.all([
+    engine.search(exactTitleToken(normalized)),
+    engine.search(pagefindQuery(normalized)),
+  ]);
+  return prependExactTitles(exact.results, rest.results);
 };
 
 export const loadSearchResults = async (
@@ -65,7 +86,7 @@ export const loadSearchResults = async (
       return {
         id: hit.id,
         path: sub?.url ?? data.url,
-        title: data.meta.title,
+        title: data.meta.label || data.meta.title,
         section: [data.meta.section, data.meta.heading || sub?.title]
           .filter(Boolean)
           .join(' · '),

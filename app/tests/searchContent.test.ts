@@ -17,6 +17,8 @@ describe('search content', () => {
     const records = buildSearchRecords(doc, markdown);
     expect(records).toHaveLength(1);
     expect(records[0].content).toContain('课程A');
+    expect(records[0].content).toContain('content="课程 A"');
+    expect(records[0].content).toContain('data-pagefind-weight="10"');
     expect(records[0].content).toContain('自定义别名');
     expect(searchMetadata(markdown).codes).toEqual(['B2', 'B3']);
     for (const excluded of [

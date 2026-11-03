@@ -113,6 +113,26 @@ test('sports links merge without changing display names', () => {
     const target = join(root, 'course/体育.md');
     writeFileSync(target, '## 资源\n体育资料\n');
     assert.deepEqual([...obsoletePlaceholders(root)], [[old, target]]);
+    const physics = join(root, 'course/大学物理.md');
+    writeFileSync(physics, '## 资源\n大学物理资料\n');
+    const folded = [
+      '大学物理（电气信息类）',
+      '大学物理（工程能源类）',
+      '大学物理（化工类）',
+      '大学物理（环化健康类）',
+    ].map((name) => {
+      const file = join(root, `course/${name}.md`);
+      writeFileSync(file, placeholder);
+      return [file, physics];
+    });
+    assert.deepEqual(
+      [...obsoletePlaceholders(root)].sort(([left], [right]) =>
+        left < right ? -1 : left > right ? 1 : 0,
+      ),
+      [[old, target], ...folded].sort(([left], [right]) =>
+        left < right ? -1 : left > right ? 1 : 0,
+      ),
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

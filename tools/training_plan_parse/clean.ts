@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { foldCourseName } from './folds';
 
 export const TOOL_DIR = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(TOOL_DIR, '../..');
@@ -212,8 +213,7 @@ export const simplifyCourseName = (input: string): string => {
   }
   name = name.replace(/^留学生[\s-]*/u, '');
   name = name.replace(/^文明经典(?:系列)?[AB]?$/u, '文明经典系列');
-  if (name.includes('体育') && name !== '体育心理学') return '体育';
-  return name.replace(/fourier/giu, 'Fourier');
+  return foldCourseName(name.replace(/fourier/giu, 'Fourier'));
 };
 
 const codeKey = (code: string | null): [string, number, string, string] => {

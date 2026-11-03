@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
+import { exactTitleToken } from '~/lib/exactTitle';
 import {
   loadInitialSearchResults,
   loadSearchResults,
@@ -40,6 +41,20 @@ describe('searchMatch', () => {
       await searchDocuments({ search } as unknown as SearchEngine, '  '),
     ).toEqual([]);
     expect(search).not.toHaveBeenCalled();
+  });
+
+  it('puts an exact title token match ahead of the ordinary ranking', async () => {
+    const exact = hit('exact');
+    const other = hit('other');
+    const search = vi.fn(async (query: string) => ({
+      results: query === exactTitleToken('大学物理') ? [exact] : [other, exact],
+    }));
+    const results = await searchDocuments(
+      { search } as unknown as SearchEngine,
+      '大学物理',
+    );
+    expect(results.map((item) => item.id)).toEqual(['exact', 'other']);
+    expect(exact.data).not.toHaveBeenCalled();
   });
 
   it('pins exact course-code matches ahead of fulltext results without hiding either', async () => {
@@ -86,5 +101,24 @@ describe('searchMatch', () => {
     };
 
     expect(mergeSearchResults([exact], [fulltext])).toEqual([exact]);
+  });
+
+  it('uses the original article title when the index stores a segmented one', async () => {
+    const [result] = await loadSearchResults([
+      {
+        id: '1',
+        data: async () => ({
+          url: '/course/phys',
+          excerpt: '',
+          meta: {
+            title: '大学 物理',
+            label: '大学物理',
+            section: '课程',
+          },
+          sub_results: [],
+        }),
+      },
+    ]);
+    expect(result.title).toBe('大学物理');
   });
 });

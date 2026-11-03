@@ -213,7 +213,7 @@ updated: 2026-09-15
                 * [形势与政策](../../../course/形势与政策.md) - :l-book:`MT` - :l-circle-arrow-up:`0.25`  
             * 实践环节
                 * [毕业实习](../../../course/毕业实习.md) - :l-book:`MGMT34499` - :l-circle-arrow-up:`4`  
-                * [毕业论文](../../../course/毕业论文.md) - :l-book:`MGMT45498` - :l-circle-arrow-up:`10`  
+                * [毕业论文](../../../course/毕业设计、论文、答辩.md) - :l-book:`MGMT45498` - :l-circle-arrow-up:`10`  
         === "选修"  
             * 公共基础课程
                 * [四史课程集](../../../course/四史课程集.md) - :l-book:`MT00` - :l-circle-arrow-up:`1`  

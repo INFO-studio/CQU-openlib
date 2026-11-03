@@ -23,6 +23,14 @@
 | 扩展语法：内容 tab、admonition、图标、键位 | `markdown-syntax.md` |
 | 新建页面、放图片、写站内链接、加图标 | `site-structure.md` |
 
+## 课程归到同一页
+
+用户要把几门课归到同一页时，改 `tools/training_plan_parse/folds.ts` 的 `EXACT_FOLDS`，并把现有培养方案链接改到目标页。删掉因此空出来的纯占位页，再跑 `pnpm codes:extract`。不要为此重跑整站培养方案写入。
+
+键是洗掉分册、授课语言之后的全名，值是目标课程页文件名。展示名保持原样。不同课程不要写进同一条，例如「毕业论文规范与写作」不归入「毕业设计、论文、答辩」，「大学物理实验」不归入「大学物理」。
+
+这种合入不写更新日志，也不改页面 `updated`。
+
 ## 动 `tools/pdf_optimize/` 之前
 
 规范在 `.agents/skills/pdf-optimize/`，入口 `SKILL.md`：
