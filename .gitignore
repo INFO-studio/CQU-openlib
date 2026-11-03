@@ -24,6 +24,7 @@
 # raw data
 /tools/graduation/data/
 /tools/training_plan_parse/data/
+/tools/form_utils/data/
 
 # Local PDF compress scratch (large binaries; keep scripts only)
 /tools/pdf_optimize/**/*.pdf
