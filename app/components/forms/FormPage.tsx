@@ -96,6 +96,18 @@ export const FormPage = ({
             提交
           </Button>
           <p className="mt-2 text-xs text-muted">{footnote}</p>
+          <p className="mt-1 text-xs text-muted">
+            经审核收录的内容，将以
+            <a
+              href="https://www.gnu.org/licenses/gpl-3.0.html"
+              target="_blank"
+              rel="noreferrer"
+              className="mx-1 text-primary underline-offset-2 hover:underline"
+            >
+              GPL-3.0
+            </a>
+            许可对外开放。
+          </p>
         </div>
       </FormStack>
     </FormShell>

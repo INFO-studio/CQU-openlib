@@ -127,7 +127,7 @@ const DocsShell = ({
               isCourse && hasSidebar && !loading && !errorMessage
                 ? 'lg:flex lg:flex-col lg:overflow-hidden'
                 : showLeftRail
-                  ? 'lg:flex lg:flex-col lg:items-start lg:justify-end'
+                  ? 'lg:flex lg:flex-col lg:items-start lg:justify-start'
                   : 'lg:overflow-y-auto',
               showLeftColumn
                 ? undefined
