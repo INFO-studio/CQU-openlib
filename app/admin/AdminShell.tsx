@@ -1,19 +1,29 @@
+import { Dialog } from '@base-ui/react/dialog';
 import { Link } from '@tanstack/react-router';
 import {
   Activity,
-  Eye,
-  EyeOff,
+  CircleHelp,
+  Copy,
   Inbox,
   Lock,
   type LucideIcon,
   Mail,
+  X,
 } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
+import { match } from 'ts-pattern';
+import { adminPublic } from '~/admin/lib/adminFetch';
+import {
+  canonicalGroupCode,
+  canonicalLocalCode,
+  randomLocalCode,
+} from '~/admin/lib/codes';
 import {
   ADMIN_MODULES,
-  clearAdminKey,
-  writeAdminKey,
+  readLocalCode,
+  writeLocalCode,
+  writeSession,
 } from '~/admin/lib/session';
 import { cn } from '~/lib/cn';
 import { colors } from '~/theme/colors';
@@ -139,28 +149,225 @@ export const AdminShell = ({
   );
 };
 
+const LOCAL_COPY = '在本机永久保存；请牢记并在更换设备时自行复制；不应外泄';
+const SHORT_COPY =
+  '点击「绑定」按钮，在运行维护群 @ OpenElaina 发送「bind XXXXXX(短码)」';
+const GROUP_COPY = '机器人回复的 4 位，与本地码一并提交';
+
+const BIND_SPEC = [
+  ['本地码', LOCAL_COPY],
+  ['短码', SHORT_COPY],
+  ['群码', GROUP_COPY],
+] as const;
+
+const RESTORE_SPEC = [
+  ['本地码', LOCAL_COPY],
+  ['群码', GROUP_COPY],
+] as const;
+
+const SpecList = ({
+  items,
+}: {
+  items: readonly (readonly [string, string])[];
+}) => (
+  <dl className="m-0">
+    {items.map(([term, detail]) => (
+      <div key={term} className="border-t border-line py-2.5 first:border-t-0">
+        <dt className="m-0 font-mono text-[0.72rem] tracking-wider text-icon">
+          {term}
+        </dt>
+        <dd className="m-0 mt-1 text-[0.86rem] leading-relaxed text-ink">
+          {detail}
+        </dd>
+      </div>
+    ))}
+  </dl>
+);
+
+const FlowHelp = () => (
+  <Dialog.Root>
+    <Dialog.Trigger
+      type="button"
+      aria-label="操作说明"
+      className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-icon outline-none transition-colors hover:bg-mist hover:text-icon-strong focus-visible:bg-mist"
+    >
+      <CircleHelp size={18} aria-hidden />
+    </Dialog.Trigger>
+    <Dialog.Portal>
+      <Dialog.Backdrop className="fixed inset-0 z-60 bg-backdrop" />
+      <Dialog.Popup className="theme-dark fixed top-1/2 left-1/2 z-61 max-h-[calc(100vh-2rem)] w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl border border-line bg-panel p-4 text-ink shadow-2xl outline-none">
+        <div className="flex items-center gap-2">
+          <Dialog.Title className="m-0 flex-1 font-display text-lg font-semibold">
+            操作说明
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="关闭"
+            className="grid h-8 w-8 place-items-center rounded-lg text-icon outline-none transition-colors hover:bg-mist hover:text-icon-strong"
+          >
+            <X size={16} aria-hidden />
+          </Dialog.Close>
+        </div>
+        <div className="mt-3 grid gap-6 md:grid-cols-2">
+          <section>
+            <h2 className="m-0 text-[0.95rem] font-semibold">
+              绑定（第一次进入）
+            </h2>
+            <div className="mt-2">
+              <SpecList items={BIND_SPEC} />
+            </div>
+          </section>
+          <section>
+            <h2 className="m-0 text-[0.95rem] font-semibold">
+              复原（多设备登入）
+            </h2>
+            <div className="mt-2">
+              <SpecList items={RESTORE_SPEC} />
+            </div>
+          </section>
+        </div>
+      </Dialog.Popup>
+    </Dialog.Portal>
+  </Dialog.Root>
+);
+
+const LABEL = 'mt-4 block font-mono text-[0.72rem] tracking-wider text-icon';
+const INPUT =
+  'mt-1.5 block w-full rounded-lg border border-line bg-elev px-3 py-2.5 font-mono text-[0.9rem] transition-colors focus:border-primary';
+
+type GateStep =
+  | { kind: 'choose' }
+  | { kind: 'bind'; shortCode: string }
+  | { kind: 'restore' }
+  | { kind: 'group' };
+
 type GateProps = {
-  onUnlock: (key: string) => Promise<string | null>;
+  onEntered: () => void;
 };
 
-export const AdminGate = ({ onUnlock }: GateProps) => {
-  const [key, setKey] = useState('');
+const storedLocalCode = () => canonicalLocalCode(readLocalCode()) ?? '';
+
+export const AdminGate = ({ onEntered }: GateProps) => {
+  const [local, setLocal] = useState(storedLocalCode);
+  const [group, setGroup] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [keyVisible, setKeyVisible] = useState(false);
+  const [busy, setBusy] = useState<'enter' | 'bind' | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [step, setStep] = useState<GateStep>(
+    storedLocalCode() ? { kind: 'group' } : { kind: 'choose' },
+  );
+
+  const copyLocal = async () => {
+    const code = canonicalLocalCode(local);
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setError('复制失败，请手动选中本地码');
+    }
+  };
+
+  const startBind = async () => {
+    if (busy) return;
+    const localCode = randomLocalCode();
+    setError(null);
+    setBusy('bind');
+    try {
+      const res = await adminPublic<{ shortCode?: string }>('/admin/bind', {
+        localCode,
+      });
+      if (!res.success || !res.shortCode) {
+        setError(res.message || '绑定没有发出去');
+        return;
+      }
+      writeLocalCode(localCode);
+      setLocal(localCode);
+      setStep({ kind: 'bind', shortCode: res.shortCode });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const confirmBind = async (shortCode: string) => {
+    if (busy) return;
+    const localCode = canonicalLocalCode(local);
+    if (!localCode) return;
+    setError(null);
+    setBusy('bind');
+    try {
+      const res = await adminPublic<{ ready?: boolean }>('/admin/bind', {
+        localCode,
+        shortCode,
+      });
+      if (!res.success) {
+        setError(res.message || '绑定尚未通过');
+        return;
+      }
+      if (!res.ready) {
+        setError('绑定尚未通过');
+        return;
+      }
+      setStep({ kind: 'group' });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const leaveBind = () => {
+    writeLocalCode('');
+    setLocal('');
+    setGroup('');
+    setError(null);
+    setStep({ kind: 'choose' });
+  };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (busy) return;
+    const localCode = canonicalLocalCode(local);
+    const groupCode = canonicalGroupCode(group);
+    if (!localCode || !groupCode) {
+      setError(localCode ? '账号或本地码不正确' : '本地码需要 8 位数字或字母');
+      return;
+    }
     setError(null);
-    setBusy(true);
+    setBusy('enter');
     try {
-      const message = await onUnlock(key.trim());
-      if (message) setError(message);
+      const res = await adminPublic<{ token?: string; expiresAt?: number }>(
+        '/admin/session',
+        { localCode, groupCode },
+      );
+      if (!res.success || !res.token || !res.expiresAt) {
+        setError(res.message || '无法进入');
+        return;
+      }
+      writeLocalCode(localCode);
+      writeSession(res.token, res.expiresAt);
+      onEntered();
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   };
+
+  const groupField = (
+    <>
+      <label className={LABEL} htmlFor="admin-group">
+        群码
+      </label>
+      <input
+        id="admin-group"
+        type="text"
+        autoComplete="off"
+        autoCapitalize="none"
+        spellCheck={false}
+        value={group}
+        onChange={(ev) => setGroup(ev.target.value)}
+        placeholder="4 位"
+        className={INPUT}
+      />
+    </>
+  );
 
   return (
     <div
@@ -170,57 +377,137 @@ export const AdminGate = ({ onUnlock }: GateProps) => {
       }}
     >
       <form
-        className="w-[min(25rem,100%)] rounded-2xl border border-line bg-panel p-6 shadow-[0_24px_60px_rgba(0,0,0,0.4)]"
-        onSubmit={onSubmit}
+        className="w-[min(26rem,100%)] rounded-2xl border border-line bg-panel p-6 shadow-[0_24px_60px_rgba(0,0,0,0.4)]"
+        onSubmit={(event) => {
+          if (step.kind !== 'restore' && step.kind !== 'group') {
+            event.preventDefault();
+            return;
+          }
+          void onSubmit(event);
+        }}
       >
-        <p className="m-0 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-primary">
-          通行校验
-        </p>
-        <h1 className="m-0 mt-2 font-display text-[1.55rem] font-semibold">
-          输入维护密钥
-        </h1>
-        <p className="m-0 mt-2 text-[0.9rem] leading-relaxed text-muted">
-          校验通过后，本会话可查看收集结果。
-        </p>
-        <label
-          className="mt-5 block font-mono text-[0.72rem] tracking-wider text-icon"
-          htmlFor="admin-key"
-        >
-          Admin Key
-        </label>
-        <div className="relative mt-1.5">
-          <input
-            id="admin-key"
-            type={keyVisible ? 'text' : 'password'}
-            autoComplete="off"
-            spellCheck={false}
-            value={key}
-            onChange={(ev) => setKey(ev.target.value)}
-            placeholder="粘贴密钥"
-            className="block w-full rounded-lg border border-line bg-elev py-2.5 pl-3 pr-11 font-mono text-[0.9rem] transition-colors focus:border-primary"
-          />
-          <button
-            type="button"
-            onClick={() => setKeyVisible((visible) => !visible)}
-            aria-label={keyVisible ? '隐藏密钥' : '显示密钥'}
-            aria-pressed={keyVisible}
-            className="absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-lg text-icon transition-colors hover:bg-mist hover:text-icon-strong"
-          >
-            {keyVisible ? (
-              <EyeOff size={16} aria-hidden />
-            ) : (
-              <Eye size={16} aria-hidden />
-            )}
-          </button>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="m-0 font-display text-[1.55rem] font-semibold">
+            进入维护台
+          </h1>
+          <FlowHelp />
         </div>
+        {match(step)
+          .with({ kind: 'choose' }, () => (
+            <div className="mt-6 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => void startBind()}
+                disabled={Boolean(busy)}
+                className="rounded-lg bg-primary px-4 py-2.5 font-semibold text-paper transition-opacity disabled:opacity-50"
+              >
+                {busy === 'bind' ? '登记中…' : '绑定'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setError(null);
+                  setStep({ kind: 'restore' });
+                }}
+                disabled={Boolean(busy)}
+                className="rounded-lg border border-line px-4 py-2.5 text-[0.9rem] text-muted transition-colors hover:bg-mist hover:text-ink disabled:opacity-50"
+              >
+                复原
+              </button>
+            </div>
+          ))
+          .with({ kind: 'bind' }, ({ shortCode }) => (
+            <>
+              <label className={LABEL} htmlFor="admin-local">
+                本地码
+              </label>
+              <input
+                id="admin-local"
+                readOnly
+                value={local}
+                className={INPUT}
+              />
+              <button
+                type="button"
+                onClick={() => void copyLocal()}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[0.82rem] text-muted transition-colors hover:bg-mist hover:text-ink"
+              >
+                <Copy size={13} className="text-icon" aria-hidden />
+                {copied ? '已复制' : '复制'}
+              </button>
+              <p className="m-0 mt-4 text-[0.9rem] leading-relaxed text-ink">
+                在运行维护群 @ OpenElaina 发送
+                <span className="mx-1 font-mono">bind {shortCode}</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => void confirmBind(shortCode)}
+                disabled={Boolean(busy)}
+                className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 font-semibold text-paper transition-opacity disabled:opacity-50"
+              >
+                {busy === 'bind' ? '确认中…' : '@ 完毕'}
+              </button>
+              <button
+                type="button"
+                onClick={leaveBind}
+                className="mt-2 w-full rounded-lg border border-line px-4 py-2.5 text-[0.9rem] text-muted transition-colors hover:bg-mist hover:text-ink"
+              >
+                返回
+              </button>
+            </>
+          ))
+          .with({ kind: 'restore' }, () => (
+            <>
+              <label className={LABEL} htmlFor="admin-local">
+                本地码
+              </label>
+              <input
+                id="admin-local"
+                type="text"
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                value={local}
+                onChange={(ev) => setLocal(ev.target.value)}
+                placeholder="8 位"
+                className={INPUT}
+              />
+              {groupField}
+              <button
+                type="submit"
+                disabled={Boolean(busy)}
+                className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 font-semibold text-paper transition-opacity disabled:opacity-50"
+              >
+                {busy === 'enter' ? '校验中…' : '进入'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLocal('');
+                  setGroup('');
+                  setError(null);
+                  setStep({ kind: 'choose' });
+                }}
+                className="mt-2 w-full rounded-lg border border-line px-4 py-2.5 text-[0.9rem] text-muted transition-colors hover:bg-mist hover:text-ink"
+              >
+                返回
+              </button>
+            </>
+          ))
+          .with({ kind: 'group' }, () => (
+            <>
+              {groupField}
+              <button
+                type="submit"
+                disabled={Boolean(busy)}
+                className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 font-semibold text-paper transition-opacity disabled:opacity-50"
+              >
+                {busy === 'enter' ? '校验中…' : '进入'}
+              </button>
+            </>
+          ))
+          .otherwise(() => null)}
         {error ? <AdminError>{error}</AdminError> : null}
-        <button
-          type="submit"
-          disabled={busy || !key.trim()}
-          className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 font-semibold text-paper transition-opacity disabled:opacity-50"
-        >
-          {busy ? '校验中…' : '进入'}
-        </button>
       </form>
     </div>
   );
@@ -232,18 +519,3 @@ export const AdminError = ({ children }: { children: ReactNode }) => (
     {children}
   </p>
 );
-
-export const unlockWithKey = async (
-  key: string,
-  probe: (key: string) => Promise<{ ok: boolean; message?: string }>,
-): Promise<string | null> => {
-  const result = await probe(key);
-  if (!result.ok) {
-    clearAdminKey();
-    return result.message === 'unauthorized'
-      ? '密钥不正确'
-      : result.message || '无法进入';
-  }
-  writeAdminKey(key);
-  return null;
-};

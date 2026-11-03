@@ -3,10 +3,10 @@ import {
   Outlet,
   useRouterState,
 } from '@tanstack/react-router';
-import { useCallback, useMemo, useState } from 'react';
-import { AdminGate, AdminShell, unlockWithKey } from '~/admin/AdminShell';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AdminGate, AdminShell } from '~/admin/AdminShell';
+import { adminFetch } from '~/admin/lib/adminFetch';
 import { AdminSessionProvider } from '~/admin/lib/adminSession';
-import { fetchSubmissions } from '~/admin/lib/api';
 import {
   ADMIN_MODULES,
   clearAdminKey,
@@ -21,7 +21,7 @@ const activeModuleId = (pathname: string): string =>
     ?.id ?? 'submissions';
 
 /**
- * Layout for every maintainer module: one gate, one key, one lock button.
+ * Layout for every maintainer module: one gate, one session, one lock button.
  * Modules mount inside the shell and read the session from context.
  */
 const AdminLayout = () => {
@@ -34,16 +34,21 @@ const AdminLayout = () => {
     setUnlocked(false);
   }, []);
 
-  const onUnlock = useCallback(async (key: string) => {
-    const err = await unlockWithKey(key, async (k) => {
-      const res = await fetchSubmissions({ key: k });
-      return { ok: Boolean(res.success), message: res.message };
+  useEffect(() => {
+    if (!readAdminKey()) return;
+    const gate = { cancelled: false };
+    void adminFetch('/admin/session').then((res) => {
+      if (gate.cancelled || res.success) return;
+      if (res.message === 'unauthorized') setUnlocked(false);
     });
-    if (!err) {
-      setUnlocked(true);
-      setRefreshToken((n) => n + 1);
-    }
-    return err;
+    return () => {
+      gate.cancelled = true;
+    };
+  }, []);
+
+  const onEntered = useCallback(() => {
+    setUnlocked(true);
+    setRefreshToken((n) => n + 1);
   }, []);
 
   const session = useMemo(
@@ -62,7 +67,7 @@ const AdminLayout = () => {
           <Outlet />
         </AdminSessionProvider>
       ) : (
-        <AdminGate onUnlock={onUnlock} />
+        <AdminGate onEntered={onEntered} />
       )}
     </AdminShell>
   );

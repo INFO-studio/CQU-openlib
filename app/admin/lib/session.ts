@@ -28,20 +28,64 @@ export const ADMIN_MODULES = [
   },
 ] as const satisfies readonly AdminModule[];
 
-export const ADMIN_SESSION_KEY = 'cqu-openlib:admin-key';
+const LOCAL_CODE_KEY = 'cqu-openlib:admin-local';
+const SESSION_KEY = 'cqu-openlib:admin-session';
+/** Previous daily-key slot. Lock drops it so it cannot linger. */
+const LEGACY_SESSION_KEY = 'cqu-openlib:admin-key';
 
-export const readAdminKey = (): string => {
+type StoredSession = {
+  token: string;
+  expiresAt: number;
+};
+
+const storage = (kind: 'local' | 'session'): Storage | null => {
   try {
-    return sessionStorage.getItem(ADMIN_SESSION_KEY)?.trim() ?? '';
+    return kind === 'local' ? localStorage : sessionStorage;
   } catch {
-    return '';
+    return null;
   }
 };
 
-export const writeAdminKey = (key: string): void => {
-  sessionStorage.setItem(ADMIN_SESSION_KEY, key.trim());
+export const readLocalCode = (): string =>
+  storage('local')?.getItem(LOCAL_CODE_KEY)?.trim() ?? '';
+
+export const writeLocalCode = (code: string): void => {
+  const box = storage('local');
+  if (!box) return;
+  const next = code.trim().toLowerCase();
+  if (!next) box.removeItem(LOCAL_CODE_KEY);
+  else box.setItem(LOCAL_CODE_KEY, next);
 };
 
+const readStoredSession = (): StoredSession | null => {
+  const raw = storage('local')?.getItem(SESSION_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as StoredSession;
+    if (!parsed.token || typeof parsed.expiresAt !== 'number') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+/** Session token, or '' once the day is over. The group code is not stored. */
+export const readAdminKey = (): string => {
+  const stored = readStoredSession();
+  if (!stored) return '';
+  if (stored.expiresAt <= Date.now()) {
+    storage('local')?.removeItem(SESSION_KEY);
+    return '';
+  }
+  return stored.token;
+};
+
+export const writeSession = (token: string, expiresAt: number): void => {
+  storage('local')?.setItem(SESSION_KEY, JSON.stringify({ token, expiresAt }));
+};
+
+/** Drops the session. The local code stays, so the next login only needs the group code. */
 export const clearAdminKey = (): void => {
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  storage('local')?.removeItem(SESSION_KEY);
+  storage('session')?.removeItem(LEGACY_SESSION_KEY);
 };
