@@ -5,30 +5,26 @@
 ## 快速开始
 
 ```bash
-cd tools/training_plan_parse
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-
-# 全量只读验证与数量摘要
-.venv/bin/python clean_training_plans.py --expect-rows 46327 --verify-stable
+# 仓库根目录
+pnpm plans:clean -- --expect-rows 46327 --verify-stable
 
 # 查看一个专业的 Markdown；JSON 模式包含全部原始字段、来源行及预览
-.venv/bin/python clean_training_plans.py --format markdown --college 大数据与软件学院 --major 软件工程
-.venv/bin/python clean_training_plans.py --format json
+pnpm plans:clean -- --format markdown --college 大数据与软件学院 --major 软件工程
+pnpm plans:clean -- --format json
 
 # 默认仅预览处理数量；确认后显式写入，并调用 pnpm codes:extract
-.venv/bin/python update_site.py --expect-rows 46327
-.venv/bin/python update_site.py --write --expect-rows 46327 --date 2026-09-15
+pnpm plans:update -- --expect-rows 46327
+pnpm plans:update -- --write --expect-rows 46327 --date 2026-09-15
 
 # 同时删除已迁移到核心名称、且确认只有占位内容的旧页
-.venv/bin/python update_site.py --write --prune-placeholders --expect-rows 46327 --date 2026-09-15
+pnpm plans:update -- --write --prune-placeholders --expect-rows 46327 --date 2026-09-15
 ```
 
-更新命令需要仓库已安装 Node.js / pnpm 依赖。示例日期应替换为实际更新日期；省略 `--date` 使用本机当天日期。`--expect-rows` 用于核对这批四表，后续批次应使用对应行数或省略。
+示例日期应替换为实际更新日期；省略 `--date` 使用上海时区当天日期。`--expect-rows` 用于核对这批四表，后续批次应使用对应行数或省略。
 
 ## 输入与规则
 
-- 固定按文件名排序，读取活动工作表第二行表头；兼容教务导出错误声明为 `A1` 的数据范围。
+- 固定按文件名排序，读取活动工作表第二行表头。教务导出把数据范围错写成 `A1`，读取时忽略这份声明，按单元格本身读完全部行。
 - 只排除专业名含「辅修」「双学位」的记录，不按层次筛选；完全相同的原始记录合并并保留所有来源行。
 - 不合并不同类别、必选修、备注或其他字段的版本。零学分保留，缺学分显示「未提供」，缺学期归入「未注明学期」。无效学期、学分和缺少专业分组字段会报错。
 - 课程与课程集均正常展示，课程行只显示名称链接、课程号和学分；备注和原始开课范围仅保留在结构化数据中。多学期课程按原始范围分组并显示总学分，不推测学制或拆分「形势与政策」学分。
@@ -44,17 +40,12 @@ python3 -m venv .venv
 - `metadata/course-codes.json`：从站点全部培养方案重新提取；`courses` 保留全部关联，`byCode` 仅包含无歧义映射，`conflicts` 保留所有歧义候选。
 - 占位页不写日期；其他页面只为内容改变更新日期。相同输入重复执行不会重写相同内容。更新日志需按站点规范另行同步三处，不由脚本自动发布。
 
-输入 Excel 和任何层级的 `.venv/` 已被 Git 忽略，勿提交。目录改名后重新执行环境创建和依赖安装，不直接复用旧路径的激活入口。
+输入 Excel 已被 Git 忽略，勿提交。
 
 ## 验证
 
 ```bash
-.venv/bin/python -m unittest discover -s . -p 'test_*.py'
-.venv/bin/python -m pip install pyright types-openpyxl
-.venv/bin/python -m pyright --pythonpath .venv/bin/python .
-
-# 仓库根目录
-pnpm exec tsx --test tools/course_codes/extract.test.ts
+pnpm exec tsx --test tools/training_plan_parse/clean.test.ts tools/training_plan_parse/update.test.ts
 pnpm test
 pnpm typecheck
 ```
