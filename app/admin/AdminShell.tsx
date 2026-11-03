@@ -21,7 +21,9 @@ import {
 } from '~/admin/lib/codes';
 import {
   ADMIN_MODULES,
+  markLocalReady,
   readLocalCode,
+  readLocalReady,
   writeLocalCode,
   writeSession,
 } from '~/admin/lib/session';
@@ -244,28 +246,48 @@ type GateProps = {
   onEntered: () => void;
 };
 
-const storedLocalCode = () => canonicalLocalCode(readLocalCode()) ?? '';
+const openedGate = (): { local: string; step: GateStep } => {
+  if (!readLocalReady()) {
+    writeLocalCode('');
+    return { local: '', step: { kind: 'choose' } };
+  }
+  const local = canonicalLocalCode(readLocalCode()) ?? '';
+  if (!local) {
+    writeLocalCode('');
+    return { local: '', step: { kind: 'choose' } };
+  }
+  return { local, step: { kind: 'group' } };
+};
 
 export const AdminGate = ({ onEntered }: GateProps) => {
-  const [local, setLocal] = useState(storedLocalCode);
+  const [opened] = useState(openedGate);
+  const [local, setLocal] = useState(opened.local);
   const [group, setGroup] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<'enter' | 'bind' | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [step, setStep] = useState<GateStep>(
-    storedLocalCode() ? { kind: 'group' } : { kind: 'choose' },
-  );
+  const [copied, setCopied] = useState<'local' | 'command' | null>(null);
+  const [step, setStep] = useState<GateStep>(opened.step);
 
-  const copyLocal = async () => {
+  const copyText = async (
+    text: string,
+    which: 'local' | 'command',
+    fail: string,
+  ) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(which);
+      window.setTimeout(() => {
+        setCopied((current) => (current === which ? null : current));
+      }, 1500);
+    } catch {
+      setError(fail);
+    }
+  };
+
+  const copyLocal = () => {
     const code = canonicalLocalCode(local);
     if (!code) return;
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500);
-    } catch {
-      setError('复制失败，请手动选中本地码');
-    }
+    void copyText(code, 'local', '复制失败，请手动选中本地码');
   };
 
   const startBind = async () => {
@@ -281,7 +303,6 @@ export const AdminGate = ({ onEntered }: GateProps) => {
         setError(res.message || '绑定没有发出去');
         return;
       }
-      writeLocalCode(localCode);
       setLocal(localCode);
       setStep({ kind: 'bind', shortCode: res.shortCode });
     } finally {
@@ -343,6 +364,7 @@ export const AdminGate = ({ onEntered }: GateProps) => {
         return;
       }
       writeLocalCode(localCode);
+      markLocalReady();
       writeSession(res.token, res.expiresAt);
       onEntered();
     } finally {
@@ -433,12 +455,26 @@ export const AdminGate = ({ onEntered }: GateProps) => {
                 className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[0.82rem] text-muted transition-colors hover:bg-mist hover:text-ink"
               >
                 <Copy size={13} className="text-icon" aria-hidden />
-                {copied ? '已复制' : '复制'}
+                {copied === 'local' ? '已复制' : '复制'}
               </button>
               <p className="m-0 mt-4 text-[0.9rem] leading-relaxed text-ink">
                 在运行维护群 @ OpenElaina 发送
                 <span className="mx-1 font-mono">bind {shortCode}</span>
               </p>
+              <button
+                type="button"
+                onClick={() =>
+                  void copyText(
+                    `bind ${shortCode}`,
+                    'command',
+                    '复制失败，请手动选中 bind 短码',
+                  )
+                }
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[0.82rem] text-muted transition-colors hover:bg-mist hover:text-ink"
+              >
+                <Copy size={13} className="text-icon" aria-hidden />
+                {copied === 'command' ? '已复制' : '复制'}
+              </button>
               <button
                 type="button"
                 onClick={() => void confirmBind(shortCode)}

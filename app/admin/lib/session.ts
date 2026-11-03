@@ -29,6 +29,8 @@ export const ADMIN_MODULES = [
 ] as const satisfies readonly AdminModule[];
 
 const LOCAL_CODE_KEY = 'cqu-openlib:admin-local';
+/** Set only after a group code has been accepted. A bare local code is not a login. */
+const LOCAL_READY_KEY = 'cqu-openlib:admin-local-ready';
 const SESSION_KEY = 'cqu-openlib:admin-session';
 /** Previous daily-key slot. Lock drops it so it cannot linger. */
 const LEGACY_SESSION_KEY = 'cqu-openlib:admin-key';
@@ -49,12 +51,23 @@ const storage = (kind: 'local' | 'session'): Storage | null => {
 export const readLocalCode = (): string =>
   storage('local')?.getItem(LOCAL_CODE_KEY)?.trim() ?? '';
 
+export const readLocalReady = (): boolean =>
+  storage('local')?.getItem(LOCAL_READY_KEY) === '1';
+
 export const writeLocalCode = (code: string): void => {
   const box = storage('local');
   if (!box) return;
   const next = code.trim().toLowerCase();
-  if (!next) box.removeItem(LOCAL_CODE_KEY);
-  else box.setItem(LOCAL_CODE_KEY, next);
+  if (!next) {
+    box.removeItem(LOCAL_CODE_KEY);
+    box.removeItem(LOCAL_READY_KEY);
+    return;
+  }
+  box.setItem(LOCAL_CODE_KEY, next);
+};
+
+export const markLocalReady = (): void => {
+  storage('local')?.setItem(LOCAL_READY_KEY, '1');
 };
 
 const readStoredSession = (): StoredSession | null => {
