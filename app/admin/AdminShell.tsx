@@ -363,7 +363,7 @@ export const AdminGate = ({ onEntered }: GateProps) => {
         spellCheck={false}
         value={group}
         onChange={(ev) => setGroup(ev.target.value)}
-        placeholder="4 位"
+        placeholder="请输入群码"
         className={INPUT}
       />
     </>
@@ -469,7 +469,7 @@ export const AdminGate = ({ onEntered }: GateProps) => {
                 spellCheck={false}
                 value={local}
                 onChange={(ev) => setLocal(ev.target.value)}
-                placeholder="8 位"
+                placeholder="请输入本地码"
                 className={INPUT}
               />
               {groupField}
