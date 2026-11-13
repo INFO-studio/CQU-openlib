@@ -44,3 +44,6 @@
 # Local Netlify folder
 .netlify
 .vitest/
+
+# vscode workspace
+Openlib.code-workspace
