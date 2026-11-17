@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { exactTitleToken } from '~/lib/exactTitle';
+import type { DocNavIndex } from '~/lib/nav';
 import {
+  findExactTitles,
   loadInitialSearchResults,
   loadSearchResults,
   mergeSearchResults,
@@ -10,15 +11,86 @@ import {
   searchDocuments,
 } from '~/lib/searchMatch';
 
-const hit = (id: string): SearchHit => ({
+const hit = (
+  id: string,
+  overrides: Partial<{ url: string; excerpt: string; codes: string }> = {},
+): SearchHit => ({
   id,
   data: vi.fn(async () => ({
-    url: `/course/${id}`,
-    excerpt: '正文',
-    meta: { title: id, page: `/course/${id}`, section: '课程' },
+    url: overrides.url ?? `/course/${id}`,
+    excerpt: overrides.excerpt ?? '正文',
+    meta: {
+      title: id,
+      page: `/course/${id}`,
+      section: '课程',
+      ...(overrides.codes ? { codes: overrides.codes } : {}),
+    },
     sub_results: [],
   })),
 });
+
+const sampleNavIndex: DocNavIndex = {
+  generatedAt: '2026-11-17T00:00:00.000Z',
+  sections: [
+    {
+      id: 'course',
+      label: '课程',
+      path: '/course',
+      source: 'course',
+      kind: 'dir',
+      tree: [
+        {
+          title: '大学物理',
+          path: '/course/大学物理',
+          codes: ['phys10034'],
+        },
+        {
+          title: 'Git',
+          path: '/course/Git',
+        },
+      ],
+    },
+    {
+      id: 'academic',
+      label: '学业',
+      path: '/academic',
+      source: 'academic',
+      kind: 'dir',
+      tree: [
+        {
+          title: '入学必看',
+          path: '/academic/入学必看/新生指南',
+          matchPrefix: '/academic/入学必看',
+          children: [
+            {
+              title: '新生指南',
+              path: '/academic/入学必看/新生指南',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'sundry',
+      label: '杂项',
+      path: '/sundry',
+      source: 'sundry',
+      kind: 'dir',
+      tree: [
+        {
+          title: '更新日志',
+          path: '/sundry/更新日志',
+          children: [
+            {
+              title: '2026-09-23',
+              path: '/sundry/更新日志/2026/2026-09/2026-09-23',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
 
 describe('searchMatch', () => {
   it('keeps Pagefind results lazy until their page is rendered', async () => {
@@ -43,18 +115,67 @@ describe('searchMatch', () => {
     expect(search).not.toHaveBeenCalled();
   });
 
-  it('puts an exact title token match ahead of the ordinary ranking', async () => {
-    const exact = hit('exact');
-    const other = hit('other');
-    const search = vi.fn(async (query: string) => ({
-      results: query === exactTitleToken('大学物理') ? [exact] : [other, exact],
-    }));
-    const results = await searchDocuments(
+  it('matches real page titles case-insensitively while skipping virtual folders and changelog leaves', () => {
+    expect(findExactTitles(sampleNavIndex, ' 大学物理 ')).toEqual([
+      {
+        title: '大学物理',
+        path: '/course/大学物理',
+        section: '课程',
+        codes: ['PHYS10034'],
+      },
+    ]);
+    expect(
+      findExactTitles(sampleNavIndex, 'git').map((item) => item.path),
+    ).toEqual(['/course/Git']);
+    expect(
+      findExactTitles(sampleNavIndex, '首页').map((item) => item.path),
+    ).toEqual(['/']);
+    expect(
+      findExactTitles(sampleNavIndex, '新生指南').map((item) => item.path),
+    ).toEqual(['/academic/入学必看/新生指南']);
+    expect(findExactTitles(sampleNavIndex, '入学必看')).toEqual([]);
+    expect(
+      findExactTitles(sampleNavIndex, '更新日志').map((item) => item.path),
+    ).toEqual(['/sundry/更新日志']);
+    expect(findExactTitles(sampleNavIndex, '2026-09-23')).toEqual([]);
+  });
+
+  it('pins an exact title match ahead of ordinary ranking while reusing fulltext excerpt', async () => {
+    const other = hit('大学物理实验');
+    const phys = hit('大学物理', {
+      url: '/course/%E5%A4%A7%E5%AD%A6%E7%89%A9%E7%90%86#教材',
+      excerpt: '大学<mark>物理</mark>教材',
+      codes: 'PHYS10034 PHYS10035',
+    });
+    const search = vi.fn(async () => ({ results: [other, phys] }));
+    const result = await loadInitialSearchResults(
       { search } as unknown as SearchEngine,
       '大学物理',
+      [],
+      10,
+      findExactTitles(sampleNavIndex, '大学物理'),
     );
-    expect(results.map((item) => item.id)).toEqual(['exact', 'other']);
-    expect(exact.data).not.toHaveBeenCalled();
+    expect(search).toHaveBeenCalledOnce();
+    expect(result.results).toEqual([
+      {
+        id: 'title:/course/大学物理',
+        path: '/course/大学物理',
+        title: '大学物理',
+        section: '课程',
+        codes: 'PHYS10034 PHYS10035',
+        excerpt: '大学<mark>物理</mark>教材',
+        exact: false,
+      },
+      {
+        id: '大学物理实验',
+        path: '/course/大学物理实验',
+        title: '大学物理实验',
+        section: '课程',
+        codes: '',
+        excerpt: '正文',
+        exact: false,
+      },
+    ]);
   });
 
   it('pins exact course-code matches ahead of fulltext results without hiding either', async () => {

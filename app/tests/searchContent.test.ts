@@ -20,6 +20,7 @@ describe('search content', () => {
     expect(records[0].content).toContain('content="课程 A"');
     expect(records[0].content).toContain('data-pagefind-weight="10"');
     expect(records[0].content).toContain('自定义别名');
+    expect(records[0].content).not.toContain('data-pagefind-meta="exact');
     expect(searchMetadata(markdown).codes).toEqual(['B2', 'B3']);
     for (const excluded of [
       'placeholder',

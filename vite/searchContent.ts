@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto';
 import { type DOMNode, htmlToDOM } from 'html-react-parser';
 import { match } from 'ts-pattern';
 import { parseDocument } from 'yaml';
-import { exactTitleToken } from '../app/lib/exactTitle';
 import type { SearchEntry } from '../app/lib/nav';
 import type { Mn, MnHeading, MnRoot } from '../app/types/mdast';
 import { createDocProcessor } from '../app/utils/docProcessor';
@@ -185,14 +184,12 @@ export const buildSearchRecords = (
     const head = [
       meta('title', indexedTitle(doc.title) || doc.title),
       meta('label', doc.title),
-      meta('exact', exactTitleToken(doc.title)),
       meta('page', doc.path),
       meta('section', doc.sectionLabel),
       meta('heading', part.heading),
       meta('codes', codes.join(' ')),
     ].join('');
     // 标题元数据按浏览器的分词写入，词命中才会吃到标题加权。
-    // exact 是整段标题的精确标记，只有搜索词和标题完全一致才对得上。
     // 正文 0.04 是权重乘 24 后还能留下的最小正数，避免正文重复把文章标题挤下去。
     return {
       url,

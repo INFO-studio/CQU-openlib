@@ -1,4 +1,5 @@
 import { Dialog } from '@base-ui/react/dialog';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import parse from 'html-react-parser';
 import { Search, X } from 'lucide-react';
@@ -11,12 +12,14 @@ import { useDeferredFlag } from '~/hooks/useDeferredFlag';
 import { cn } from '~/lib/cn';
 import { toNavTarget } from '~/lib/paths';
 import {
+  findExactTitles,
   loadInitialSearchResults,
   loadSearchResults,
   mergeSearchResults,
   type SearchHit,
   type SearchResult,
 } from '~/lib/searchMatch';
+import { navIndexQueryOptions } from '~/queries/nav';
 import { findExactCourseCodes, getSearchEngine } from '~/queries/search';
 
 type Props = { open: boolean; onClose: () => void };
@@ -24,6 +27,7 @@ const pageSize = 10;
 
 const SearchDialog = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState('');
   const [composing, setComposing] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -60,8 +64,9 @@ const SearchDialog = ({ open, onClose }: Props) => {
     setLoading(true);
     const timer = window.setTimeout(async () => {
       try {
-        const [exact, engine] = await Promise.all([
+        const [exact, navIndex, engine] = await Promise.all([
           findExactCourseCodes(query),
+          queryClient.ensureQueryData(navIndexQueryOptions).catch(() => null),
           getSearchEngine(),
         ]);
         if (id !== runId.current) return;
@@ -70,6 +75,7 @@ const SearchDialog = ({ open, onClose }: Props) => {
           query,
           exact,
           pageSize,
+          findExactTitles(navIndex, query),
         );
         if (id !== runId.current) return;
         setHits(initial.hits);

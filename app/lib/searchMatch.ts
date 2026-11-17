@@ -1,6 +1,13 @@
 import type { CourseCodeSearchEntry } from '~/lib/courseCodeSearch';
-import { exactTitleToken } from '~/lib/exactTitle';
+import type { DocNavIndex, SidebarNode } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
+
+export type ExactTitleEntry = {
+  title: string;
+  path: string;
+  section: string;
+  codes: string[];
+};
 
 export type SearchFragment = {
   url: string;
@@ -39,9 +46,74 @@ export type InitialSearchResults = {
 
 const asciiTokenPattern = /^[a-z0-9_-]+$/i;
 const hanPattern = /\p{Script=Han}/gu;
+const skipTitleSearchPrefixes = ['/sundry/更新日志/'];
+const titleLookups = new WeakMap<DocNavIndex, Map<string, ExactTitleEntry[]>>();
 
 const documentPath = (path: string): string =>
   cleanPath(decodePathname(path.split(/[?#]/, 1)[0] ?? path));
+
+const isTitleSearchablePath = (path: string): boolean =>
+  !skipTitleSearchPrefixes.some((prefix) => path.startsWith(prefix));
+
+const normalizeTitleQuery = (value: string): string =>
+  value.trim().toLowerCase();
+
+const collectTreeEntries = (
+  nodes: SidebarNode[],
+  sectionLabel: string,
+): ExactTitleEntry[] =>
+  nodes.flatMap((node) => {
+    const self =
+      !node.matchPrefix && isTitleSearchablePath(node.path)
+        ? [
+            {
+              title: node.title,
+              path: node.path,
+              section: sectionLabel,
+              codes: (node.codes ?? []).map((code) => code.toUpperCase()),
+            },
+          ]
+        : [];
+    const nested = node.children?.length
+      ? collectTreeEntries(node.children, sectionLabel)
+      : [];
+    return [...self, ...nested];
+  });
+
+const buildTitleLookup = (nav: DocNavIndex): Map<string, ExactTitleEntry[]> => {
+  const entries: ExactTitleEntry[] = [
+    { title: '首页', path: '/', section: '首页', codes: [] },
+    ...nav.sections.flatMap((section) => [
+      {
+        title: section.label,
+        path: section.path,
+        section: section.label,
+        codes: [],
+      },
+      ...collectTreeEntries(section.tree, section.label),
+    ]),
+  ];
+  // Local Map is populated before returning and never mutated afterwards.
+  return entries.reduce((lookup, entry) => {
+    const key = normalizeTitleQuery(entry.title);
+    const existing = lookup.get(key);
+    lookup.set(key, existing ? [...existing, entry] : [entry]);
+    return lookup;
+  }, new Map<string, ExactTitleEntry[]>());
+};
+
+export const findExactTitles = (
+  nav: DocNavIndex | null | undefined,
+  query: string,
+): ExactTitleEntry[] => {
+  if (!nav) return [];
+  const key = normalizeTitleQuery(query);
+  if (!key) return [];
+  const cached = titleLookups.get(nav);
+  const lookup = cached ?? buildTitleLookup(nav);
+  if (!cached) titleLookups.set(nav, lookup);
+  return lookup.get(key) ?? [];
+};
 
 const pagefindQuery = (normalized: string): string => {
   const hanLength = normalized.match(hanPattern)?.length ?? 0;
@@ -51,29 +123,13 @@ const pagefindQuery = (normalized: string): string => {
   return phrase ? `"${normalized}"` : normalized;
 };
 
-const prependExactTitles = (
-  exact: SearchHit[],
-  rest: SearchHit[],
-): SearchHit[] => {
-  const restById = new Map(rest.map((hit) => [hit.id, hit]));
-  const exactIds = new Set(exact.map((hit) => hit.id));
-  return [
-    ...exact.flatMap((hit) => [restById.get(hit.id) ?? hit]),
-    ...rest.filter((hit) => !exactIds.has(hit.id)),
-  ];
-};
-
 export const searchDocuments = async (
   engine: SearchEngine,
   query: string,
 ): Promise<SearchHit[]> => {
   const normalized = query.trim();
   if (!normalized) return [];
-  const [exact, rest] = await Promise.all([
-    engine.search(exactTitleToken(normalized)),
-    engine.search(pagefindQuery(normalized)),
-  ]);
-  return prependExactTitles(exact.results, rest.results);
+  return (await engine.search(pagefindQuery(normalized))).results;
 };
 
 export const loadSearchResults = async (
@@ -110,6 +166,31 @@ export const exactCourseCodeResults = (
     exact: true,
   }));
 
+export const exactTitleResults = (
+  entries: ExactTitleEntry[],
+  fulltext: SearchResult[] = [],
+): SearchResult[] => {
+  // Local index keeps the highest-ranked fulltext snippet per document path.
+  const fulltextByPath = fulltext.reduce((lookup, item) => {
+    const key = documentPath(item.path);
+    if (!lookup.has(key)) lookup.set(key, item);
+    return lookup;
+  }, new Map<string, SearchResult>());
+
+  return entries.map((entry) => {
+    const matched = fulltextByPath.get(documentPath(entry.path));
+    return {
+      id: `title:${entry.path}`,
+      path: entry.path,
+      title: entry.title,
+      section: entry.section,
+      codes: matched?.codes || entry.codes.join(' '),
+      excerpt: matched?.excerpt ?? '',
+      exact: false,
+    };
+  });
+};
+
 export const mergeSearchResults = (
   priority: SearchResult[],
   rest: SearchResult[],
@@ -128,13 +209,18 @@ export const loadInitialSearchResults = async (
   query: string,
   exactEntries: CourseCodeSearchEntry[],
   pageSize: number,
+  exactTitles: ExactTitleEntry[] = [],
 ): Promise<InitialSearchResults> => {
   const hits = await searchDocuments(engine, query);
   const loadedHitCount = Math.min(pageSize, hits.length);
   const fulltext = await loadSearchResults(hits.slice(0, loadedHitCount));
+  const priority = mergeSearchResults(
+    exactCourseCodeResults(exactEntries),
+    exactTitleResults(exactTitles, fulltext),
+  );
   return {
     hits,
     loadedHitCount,
-    results: mergeSearchResults(exactCourseCodeResults(exactEntries), fulltext),
+    results: mergeSearchResults(priority, fulltext),
   };
 };
