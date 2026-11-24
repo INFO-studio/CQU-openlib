@@ -30,7 +30,14 @@ const STATUS_INPUT: Record<string, SubmissionStatus> = {
   变更完成: 'completed',
 };
 
-const FLAG_NAMES = new Set(['--status', '--note', '--api', '--key']);
+const FLAG_NAMES = new Set([
+  '--status',
+  '--note',
+  '--api',
+  '--token',
+  '--local-code',
+  '--group-code',
+]);
 
 export type UpdateArgs = {
   id: string;
@@ -38,7 +45,9 @@ export type UpdateArgs = {
   /** Omitted unless `--note` is present. Only legal when status is completed. */
   note: string | undefined;
   api: string;
-  key: string;
+  token: string;
+  localCode: string;
+  groupCode: string;
 };
 
 const resolveStatus = (value: string): SubmissionStatus => {
@@ -89,7 +98,9 @@ export const parseUpdateArgs = (argv: readonly string[]): UpdateArgs => {
     status,
     note: hasNote ? flags.note : undefined,
     api: (flags.api ?? '').replace(/\/$/, ''),
-    key: flags.key ?? '',
+    token: flags.token ?? '',
+    localCode: flags['local-code'] ?? '',
+    groupCode: flags['group-code'] ?? '',
   };
 };
 
@@ -153,7 +164,9 @@ const main = async (): Promise<void> => {
   const current = resolveSubmission(
     await fetchSubmissions({
       api: args.api,
-      key: args.key,
+      token: args.token,
+      localCode: args.localCode,
+      groupCode: args.groupCode,
       type: '',
       status: '',
     }),
@@ -162,7 +175,9 @@ const main = async (): Promise<void> => {
   rejectTransition(current.status, args.status);
   const updated = await transitionSubmission({
     api: args.api,
-    key: args.key,
+    token: args.token,
+    localCode: args.localCode,
+    groupCode: args.groupCode,
     id: current.id,
     status: args.status,
     completionNote: args.note,

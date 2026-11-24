@@ -6,14 +6,24 @@ export type Filters = {
   status: string;
   id: string;
   api: string;
-  key: string;
+  token: string;
+  localCode: string;
+  groupCode: string;
 };
 
-const FLAG_NAMES = new Set(['--type', '--status', '--id', '--api', '--key']);
+const FLAG_NAMES = new Set([
+  '--type',
+  '--status',
+  '--id',
+  '--api',
+  '--token',
+  '--local-code',
+  '--group-code',
+]);
 
-export const KEY_HELP = `密钥：--key <当天完整密钥>
-      或环境变量 ADMIN_PAGE_TOKEN_PREFIX（自动拼上海日期）
-      或读取相邻仓库 CQU-openlib-api/.env 里的同名变量
+export const KEY_HELP = `鉴权：在 .env 或环境变量配置 ADMIN_LOCAL_CODE（8 位本地码）和 ADMIN_GROUP_CODE（4 位群码），
+      或命令行传 --local-code / --group-code / --token（或 ADMIN_SESSION_TOKEN）。
+      本地码 + 群码会自动换取 24 小时会话并缓存在 tools/form_utils/data/.session.json。
 接口：默认 https://api.cqu-openlib.cn，可用 --api 覆盖
 输出含联系方式，不要贴到公开场合。`;
 
@@ -61,7 +71,9 @@ export const parseArgs = (argv: readonly string[]): Filters => {
     status: flags.status ?? '',
     id: flags.id ?? '',
     api: (flags.api ?? '').replace(/\/$/, ''),
-    key: flags.key ?? '',
+    token: flags.token ?? '',
+    localCode: flags['local-code'] ?? '',
+    groupCode: flags['group-code'] ?? '',
   };
 };
 

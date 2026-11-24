@@ -31,7 +31,41 @@ test('parses an id, a Chinese status and a completion note', () => {
       '--note',
       '已写入',
     ]),
-    { id: 'abc', status: 'completed', note: '已写入', api: '', key: '' },
+    {
+      id: 'abc',
+      status: 'completed',
+      note: '已写入',
+      api: '',
+      token: '',
+      localCode: '',
+      groupCode: '',
+    },
+  );
+});
+
+test('parses session auth flags for update', () => {
+  assert.deepEqual(
+    parseUpdateArgs([
+      'node',
+      'update.ts',
+      'abc',
+      'pending_change',
+      '--local-code',
+      'abcd1234',
+      '--group-code',
+      'ef56',
+      '--token',
+      'tok',
+    ]),
+    {
+      id: 'abc',
+      status: 'pending_change',
+      note: undefined,
+      api: '',
+      token: 'tok',
+      localCode: 'abcd1234',
+      groupCode: 'ef56',
+    },
   );
 });
 
