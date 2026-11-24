@@ -35,6 +35,8 @@ class Page:
     height_pt: float
     dpi: float
     layers: list[Layer]
+    render_width: int = 0
+    render_height: int = 0
 
     @property
     def nbytes(self) -> int:
@@ -44,11 +46,13 @@ class Page:
 # --------------------------------------------------------------------------
 
 
-def _write_pgm(path: Path, gray: np.ndarray) -> None:
-    h, w = gray.shape
+def _write_pbm(path: Path, bitmap: np.ndarray) -> None:
+    """Write a 0/255 (0=black ink, 255=white paper) mask as 1-bit P4 PBM."""
+    h, w = bitmap.shape
+    packed = np.packbits(bitmap == 0, axis=1)
     with path.open("wb") as f:
-        f.write(b"P5\n%d %d\n255\n" % (w, h))
-        f.write(np.ascontiguousarray(gray).tobytes())
+        f.write(b"P4\n%d %d\n" % (w, h))
+        f.write(np.ascontiguousarray(packed).tobytes())
 
 
 def _sauvola_ink(gray: np.ndarray, radius: int, k: float, stripe: int = 768) -> np.ndarray:
@@ -97,9 +101,9 @@ def _sauvola_ink(gray: np.ndarray, radius: int, k: float, stripe: int = 768) -> 
 def bilevel_mask(gray: np.ndarray, dpi: float, cfg: Bilevel) -> tuple[np.ndarray, float]:
     """Threshold the text layer. Returns the 0/255 bitmap and its DPI.
 
-    Resample up to ``cfg.min_dpi`` first, smooth by a fraction of a source
-    pixel, then cut against the local mean and contrast (Sauvola). See
-    ``Bilevel`` for why each of the three steps is there.
+    Resample up to ``cfg.min_dpi`` with bicubic interpolation (avoids Lanczos
+    ringing halos next to strokes), smooth by a fraction of a source pixel,
+    then cut against the local mean and contrast (Sauvola).
     """
     out_dpi = max(dpi, cfg.min_dpi)
     scale = out_dpi / dpi
@@ -107,7 +111,7 @@ def bilevel_mask(gray: np.ndarray, dpi: float, cfg: Bilevel) -> tuple[np.ndarray
     if scale > 1.0:
         img = img.resize(
             (max(1, round(img.width * scale)), max(1, round(img.height * scale))),
-            Image.Resampling.LANCZOS,
+            Image.Resampling.BICUBIC,
         )
     if cfg.smooth > 0:
         img = img.filter(ImageFilter.GaussianBlur(cfg.smooth * scale))
@@ -121,38 +125,66 @@ def bilevel_mask(gray: np.ndarray, dpi: float, cfg: Bilevel) -> tuple[np.ndarray
 
 
 def tone_lut(gray: np.ndarray, cfg: Tone) -> np.ndarray | None:
-    """Levels curve for this page, or None to leave it alone.
+    """Continuous, monotonic levels curve for this page, or None to skip.
 
-    Reads the page's own ink and paper levels off its histogram and returns
-    the 256-entry map that takes them to black and white. Monotonic by
-    construction: it darkens what is already dark relative to the paper it
-    was printed on, and cannot break a stroke the way a cut level can. See
-    ``Tone`` for why the anchors are measured rather than given.
+    Reads the page's own ink and paper levels off its histogram and builds a
+    piecewise-linear 256-entry LUT without step discontinuities — even when
+    ``showthrough > 0`` and ``strength < 1``.
     """
     if cfg.strength <= 0 and cfg.showthrough <= 0:
         return None
     paper, ink = np.percentile(gray, [cfg.paper_pct, cfg.ink_pct])
-    white = paper - cfg.showthrough * (paper - ink)
+    white = float(paper - cfg.showthrough * (paper - ink))
     if paper < cfg.min_paper or white - ink < cfg.min_range:
         return None
+
+    strength = float(max(0.0, min(1.0, cfg.strength)))
+    ink_f = float(ink)
+    paper_f = float(paper)
+    ink_out = ink_f * (1.0 - strength)
+    white_out = 255.0 if cfg.showthrough > 0 else paper_f + strength * (255.0 - paper_f)
+
     level = np.arange(256, dtype=np.float32)
-    stretched = np.clip((level - ink) * (255.0 / (white - ink)), 0.0, 255.0)
-    blended = level + cfg.strength * (stretched - level)
-    # The clip to white is not the contrast curve's to make: cleaning off the
-    # next page's ghost and deepening this page's ink are separate asks.
-    blended[int(np.ceil(white)) :] = 255.0
-    return np.clip(blended, 0.0, 255.0).round().astype(np.uint8)
+    out = np.empty(256, dtype=np.float32)
+
+    low = level <= ink_f
+    mid = (level > ink_f) & (level < white)
+    high = level >= white
+
+    out[low] = level[low] * (ink_out / max(ink_f, 1.0))
+    out[mid] = ink_out + (level[mid] - ink_f) * ((white_out - ink_out) / max(white - ink_f, 1e-3))
+    if cfg.showthrough > 0:
+        out[high] = 255.0
+    else:
+        out[high] = white_out + (level[high] - white) * ((255.0 - white_out) / max(255.0 - white, 1.0))
+
+    return np.clip(out, 0.0, 255.0).round().astype(np.uint8)
+
+
+def _apply_tone_rgb(rgb: np.ndarray, gray: np.ndarray, lut: np.ndarray) -> np.ndarray:
+    """Apply a grayscale tone curve to RGB while preserving hue and pushing clipped highlights to white."""
+    g_in = gray.astype(np.float32)
+    g_out = lut[gray].astype(np.float32)
+    rgb_f = rgb.astype(np.float32)
+    out = rgb_f.copy()
+
+    darken = g_out <= g_in
+    if darken.any():
+        scale = g_out[darken] / np.maximum(g_in[darken], 1.0)
+        out[darken] = rgb_f[darken] * scale[:, None]
+
+    brighten = ~darken
+    if brighten.any():
+        t = (g_out[brighten] - g_in[brighten]) / np.maximum(255.0 - g_in[brighten], 1.0)
+        out[brighten] = rgb_f[brighten] + t[:, None] * (255.0 - rgb_f[brighten])
+
+    return np.clip(out, 0.0, 255.0).round().astype(np.uint8)
 
 
 def jbig2_stream(bitmap: np.ndarray, dpi: float, scratch: Path) -> bytes:
-    """1-bit JBIG2 generic-region stream, ready for PDF /JBIG2Decode.
-
-    ``bitmap`` is already 0/255, so jbig2enc's own cut level is a
-    pass-through. JBIG2 is a bilevel codec: unlike a low-quality JPEG it has
-    no ringing, so the edges survive exactly as thresholded.
-    """
-    src = scratch / "page.pgm"
-    _write_pgm(src, bitmap)
+    """1-bit JBIG2 generic-region stream, ready for PDF /JBIG2Decode."""
+    src = scratch / "page.pbm"
+    _write_pbm(src, bitmap)
     try:
         proc = subprocess.run(
             ["jbig2", "-p", "-T", "128", "-D", str(int(round(dpi))), str(src)],
@@ -198,59 +230,68 @@ def encode_page(doc, index: int, params: Params, scratch: Path) -> Page:
     dpi = params.dpi or 300.0
     if mode in (Mode.GRAY, Mode.COLOR):
         dpi = params.page_dpi or dpi
+    phys_dpi = dpi * params.dpi_scale
 
-    rgb, gray, (w_pt, h_pt) = page_render(doc, index, dpi)
+    orig_rgb, gray, (w_pt, h_pt) = page_render(
+        doc, index, dpi, colorspace_gray_only=(mode is Mode.GRAY)
+    )
+    h_px, w_px = gray.shape
     layers: list[Layer] = []
 
-    # Before anything is measured or cut: a washed-out scan is a greyscale
-    # problem, and fixing it here means the detector, the threshold and the
-    # JPEG all see the page the reader will.
     lut = tone_lut(gray, params.tone)
-    if lut is not None:
-        gray, rgb = lut[gray], lut[rgb]
+    gray_toned = lut[gray] if lut is not None else gray
 
     if mode in (Mode.GRAY, Mode.COLOR):
+        rgb_toned = (
+            _apply_tone_rgb(orig_rgb, gray, lut)
+            if (mode is Mode.COLOR and lut is not None and is_colourful(orig_rgb))
+            else orig_rgb
+        )
         data, w, h, colour = jpeg_stream(
-            rgb,
-            gray,
-            src_dpi=dpi,
-            out_dpi=dpi,
+            rgb_toned,
+            gray_toned,
+            src_dpi=phys_dpi,
+            out_dpi=phys_dpi,
             quality=params.page_quality,
             allow_colour=mode is Mode.COLOR,
         )
         layers.append(Layer("jpeg", data, w, h, colour, None))
-        return Page(index, w_pt, h_pt, dpi, layers)
+        return Page(index, w_pt, h_pt, dpi, layers, render_width=w_px, render_height=h_px)
 
     rects: list[Rect] = []
     if mode is Mode.MRC:
-        rects = find_regions(gray, dpi, params.detect)
+        rects = find_regions(gray_toned, phys_dpi, params.detect, rgb=orig_rgb)
 
     for r in rects:
         x0, y0, x1, y1 = r
+        # Keep colour patches untainted by the grayscale text tone curve.
         data, w, h, colour = jpeg_stream(
-            rgb[y0:y1, x0:x1],
-            gray[y0:y1, x0:x1],
-            src_dpi=dpi,
+            orig_rgb[y0:y1, x0:x1],
+            gray_toned[y0:y1, x0:x1],
+            src_dpi=phys_dpi,
             out_dpi=params.photo_dpi,
             quality=params.photo_quality,
             allow_colour=params.keep_patch_color,
         )
         layers.append(Layer("jpeg", data, w, h, colour, r))
 
-    # Blank the photo areas out of the text layer so the two don't overlap;
-    # patches are drawn after it anyway, but this stops JBIG2 from wasting
-    # bytes dithering a photo it will never be seen through.
-    if coverage(rects, gray.shape) < 0.985:
-        text_src = gray
+    # Threshold the full grayscale page first so blanked photo borders never
+    # distort Sauvola's local mean/variance for adjacent captions, then white out
+    # photo regions on the final 1-bit bitmap before JBIG2 encoding.
+    if coverage(rects, gray_toned.shape) < 0.985:
+        bitmap, text_dpi = bilevel_mask(gray_toned, phys_dpi, params.bilevel)
         if rects:
-            text_src = gray.copy()
+            bh, bw = bitmap.shape
             for x0, y0, x1, y1 in rects:
-                text_src[y0:y1, x0:x1] = 255
-        bitmap, text_dpi = bilevel_mask(text_src, dpi, params.bilevel)
+                bx0 = max(0, int(x0 * bw / w_px))
+                by0 = max(0, int(y0 * bh / h_px))
+                bx1 = min(bw, int(np.ceil(x1 * bw / w_px)))
+                by1 = min(bh, int(np.ceil(y1 * bh / h_px)))
+                bitmap[by0:by1, bx0:bx1] = 255
         data = jbig2_stream(bitmap, text_dpi, scratch)
         layers.insert(0, Layer("jbig2", data, bitmap.shape[1], bitmap.shape[0], False, None))
 
-    return Page(index, w_pt, h_pt, dpi, layers)
+    return Page(index, w_pt, h_pt, dpi, layers, render_width=w_px, render_height=h_px)
 
 
 def scratch_dir() -> Path:

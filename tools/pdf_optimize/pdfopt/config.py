@@ -12,6 +12,10 @@ import json
 from dataclasses import dataclass, field
 from enum import Enum
 
+#: Bump whenever encoding/detection semantics change so stale caches never linger.
+PIPELINE_VERSION = 2
+DPI_FLOOR = 200.0
+
 
 class Mode(str, Enum):
     #: Pick per document from a probe. Safe default.
@@ -60,6 +64,11 @@ class Detect:
     seed_flat_std: float = 0.0  # 0 disables; try 6.0
     seed_flat_max_std: float = 28.0
     seed_flat_max_mean: float = 250.0
+
+    #: Chrominance seeding: catch thin coloured curves/highlights on white paper
+    #: (where paper-white fraction stays high so luminance detectors miss them).
+    seed_chroma: float = 0.08  # 0 disables
+    chroma_threshold: int = 36  # max(R,G,B) - min(R,G,B) above yellowed paper
 
 
 @dataclass(frozen=True)
@@ -152,6 +161,8 @@ class Params:
     #: Text/page raster DPI. Keep at the scan's native DPI; this is the one
     #: knob that directly trades away legibility.
     dpi: float | None = None
+    #: Multiplier from PDF-pt DPI to true physical DPI (>1 when MediaBox is oversized).
+    dpi_scale: float = 1.0
     #: Continuous-tone patches (MRC) — reduce these before touching dpi.
     photo_dpi: float = 150.0
     photo_quality: int = 72
@@ -167,12 +178,13 @@ class Params:
         return dataclasses.replace(self, **kw)
 
     def fingerprint(self) -> str:
-        blob = json.dumps(dataclasses.asdict(self), sort_keys=True, default=str)
+        payload = {"_v": PIPELINE_VERSION, **dataclasses.asdict(self)}
+        blob = json.dumps(payload, sort_keys=True, default=str)
         return hashlib.sha256(blob.encode()).hexdigest()[:12]
 
 
 #: Order in which the budget solver is allowed to give things up. Photo
-#: fidelity goes first; text DPI is last, and never below ``dpi_floor``.
+#: fidelity goes first; text DPI is last, and never below ``DPI_FLOOR``.
 LADDER_MRC = [
     {"photo_dpi": 150, "photo_quality": 72},
     {"photo_dpi": 130, "photo_quality": 68},
@@ -180,6 +192,8 @@ LADDER_MRC = [
     {"photo_dpi": 100, "photo_quality": 58},
     {"photo_dpi": 90, "photo_quality": 52},
     {"photo_dpi": 75, "photo_quality": 45},
+    {"dpi": 240.0, "photo_dpi": 100, "photo_quality": 58},
+    {"dpi": 200.0, "photo_dpi": 90, "photo_quality": 52},
 ]
 
 LADDER_PAGE = [

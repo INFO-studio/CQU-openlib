@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
 import pikepdf
 from pikepdf import Name
 
 from .encode import Layer, Page
-from .util import atomic_write
+from .util import atomic_write, copy_pdf_metadata
 
 #: JBIG2Decode arrived in PDF 1.4. Declaring an older version while using it
 #: makes strict readers reject the file outright as damaged.
@@ -37,6 +38,8 @@ def _xobject(pdf: pikepdf.Pdf, layer: Layer):
 def _page_dict(pdf: pikepdf.Pdf, page: Page) -> pikepdf.Dictionary:
     xobjects = {}
     ops: list[str] = []
+    sx = (page.width_pt / page.render_width) if page.render_width > 0 else (72.0 / page.dpi)
+    sy = (page.height_pt / page.render_height) if page.render_height > 0 else (72.0 / page.dpi)
     for n, layer in enumerate(page.layers):
         key = f"Im{n}"
         xobjects[key] = _xobject(pdf, layer)
@@ -44,11 +47,10 @@ def _page_dict(pdf: pikepdf.Pdf, page: Page) -> pikepdf.Dictionary:
             ops.append(f"q {page.width_pt:.4f} 0 0 {page.height_pt:.4f} 0 0 cm /{key} Do Q")
             continue
         x0, y0, x1, y1 = layer.rect_px
-        scale = 72.0 / page.dpi
-        w = (x1 - x0) * scale
-        h = (y1 - y0) * scale
-        x = x0 * scale
-        y = page.height_pt - y1 * scale  # PDF origin is bottom-left
+        w = (x1 - x0) * sx
+        h = (y1 - y0) * sy
+        x = x0 * sx
+        y = page.height_pt - y1 * sy  # PDF origin is bottom-left
         ops.append(f"q {w:.4f} 0 0 {h:.4f} {x:.4f} {y:.4f} cm /{key} Do Q")
 
     return pikepdf.Dictionary(
@@ -59,12 +61,43 @@ def _page_dict(pdf: pikepdf.Pdf, page: Page) -> pikepdf.Dictionary:
     )
 
 
-def assemble(pages: list[Page], dst: Path, *, title: str | None = None) -> None:
+def assemble(
+    pages: Iterable[Page],
+    dst: Path,
+    *,
+    source_pdf: Path | None = None,
+    page_indices: list[int] | None = None,
+    title: str | None = None,
+) -> tuple[int, int]:
+    """Stream encoded ``pages`` into a linearized PDF, preserving metadata/TOC."""
     pdf = pikepdf.Pdf.new()
-    for page in sorted(pages, key=lambda p: p.index):
-        pdf.pages.append(pikepdf.Page(pdf.make_indirect(_page_dict(pdf, page))))
-    if title:
-        with pdf.open_metadata(set_pikepdf_as_editor=False) as meta:
-            meta["dc:title"] = title
-    atomic_write(dst, lambda tmp: pdf.save(tmp, linearize=True, min_version=MIN_PDF_VERSION))
-    pdf.close()
+    count = 0
+    with_photos = 0
+    try:
+        for page in pages:
+            pdf.pages.append(pikepdf.Page(pdf.make_indirect(_page_dict(pdf, page))))
+            count += 1
+            if any(x.rect_px for x in page.layers):
+                with_photos += 1
+        if source_pdf is not None:
+            copy_pdf_metadata(
+                source_pdf,
+                pdf,
+                page_indices=page_indices,
+                fallback_title=title,
+            )
+        elif title:
+            with pdf.open_metadata(set_pikepdf_as_editor=False) as meta:
+                meta["dc:title"] = title
+        atomic_write(
+            dst,
+            lambda tmp: pdf.save(
+                tmp,
+                linearize=True,
+                min_version=MIN_PDF_VERSION,
+                object_stream_mode=pikepdf.ObjectStreamMode.generate,
+            ),
+        )
+    finally:
+        pdf.close()
+    return count, with_photos

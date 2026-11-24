@@ -6,7 +6,10 @@ looks for it, so a long job can be resumed, inspected, or re-run piecemeal.
 
 from __future__ import annotations
 
+import atexit
 import concurrent.futures as cf
+import os
+import shutil
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -15,7 +18,7 @@ from . import budget as budget_mod
 from . import ocr as ocr_mod
 from . import verify as verify_mod
 from .assemble import assemble
-from .cache import Cache, source_key
+from .cache import Cache, OcrCache, ocr_source_key, source_key
 from .config import Mode, Params
 from .encode import encode_page, scratch_dir
 from .probe import SourceProbe, probe
@@ -24,9 +27,8 @@ from .util import copy_atomic, have, human
 
 STAGES = ("probe", "plan", "encode", "assemble", "ocr", "verify")
 
-#: Headroom held back for the OCR text layer when --ocr is requested. Our own
-#: layer is a subset CJK font plus one run per line — a few hundred KB.
-OCR_RESERVE = 0.02
+#: Headroom held back for the OCR text layer when --ocr is requested.
+OCR_RESERVE = 0.04
 
 
 @dataclass
@@ -41,11 +43,15 @@ class Job:
     batch: int = 64
     want_ocr: bool = False
     ocr_langs: str = ocr_mod.DEFAULT_LANGS
-    ocr_dpi: float = 300.0
+    ocr_dpi: float | None = None
     ocr_psm: int = ocr_mod.DEFAULT_PSM
     ocr_min_conf: float = 25.0
     tessdata_dir: Path | None = None
     verbose: bool = True
+    locked_fields: set[str] = field(default_factory=set)
+    is_subset: bool = False
+    ocr_cache: bool = True
+    ocr_force: bool = False
 
     def log(self, msg: str) -> None:
         if self.verbose:
@@ -67,9 +73,22 @@ class Job:
 _W: dict = {}
 
 
+def _cleanup() -> None:
+    doc = _W.pop("doc", None)
+    if doc is not None:
+        try:
+            doc.close()
+        except Exception:
+            pass
+    scratch = _W.pop("scratch", None)
+    if scratch is not None:
+        shutil.rmtree(scratch, ignore_errors=True)
+
+
 def _init(src: str) -> None:
     _W["doc"] = open_doc(src)
     _W["scratch"] = scratch_dir()
+    atexit.register(_cleanup)
 
 
 def _encode_one(task: tuple[int, Params]):
@@ -84,12 +103,21 @@ def _encode_one(task: tuple[int, Params]):
 
 def stage_probe(job: Job) -> SourceProbe:
     info = probe(job.src, detect=job.params.detect)
+    dpi_note = (
+        f"~{info.native_dpi:g}dpi box (effective ~{info.effective_dpi:g}dpi)"
+        if info.oversized_mediabox
+        else f"~{info.native_dpi:g}dpi"
+    )
     job.log(
-        f"probe:  {info.page_count} pages, native ~{info.native_dpi:g}dpi, "
-        f"{info.colour_pages * 100:.0f}% colour, "
+        f"probe:  {info.page_count} pages, native {dpi_note}, "
+        f"ink p0.5={info.median_ink_p05:.0f}, {info.colour_pages * 100:.0f}% colour, "
         f"{info.photo_pages * 100:.0f}% pages with continuous-tone regions "
         f"({info.mean_photo_coverage * 100:.0f}% mean area)"
-        + (", has a text layer already" if info.has_text_layer else "")
+        + (
+            f", text on {info.text_pages * 100:.0f}% sampled pages"
+            if info.has_text_layer
+            else ""
+        )
     )
     return info
 
@@ -102,6 +130,8 @@ def resolve_params(job: Job, info: SourceProbe) -> Params:
         params = params.replace(mode=mode)
     if params.dpi is None:
         params = params.replace(dpi=info.native_dpi)
+    if info.oversized_mediabox and info.native_dpi > 0 and params.dpi_scale == 1.0:
+        params = params.replace(dpi_scale=info.effective_dpi / info.native_dpi)
     if params.mode in (Mode.GRAY, Mode.COLOR) and params.page_dpi is None:
         params = params.replace(page_dpi=params.dpi)
     return params
@@ -116,9 +146,15 @@ def page_budget(job: Job, page_count: int) -> int:
     return int(target)
 
 
-def stage_plan(job: Job, info: SourceProbe, target: int) -> budget_mod.Plan:
+def stage_plan(
+    job: Job,
+    info: SourceProbe,
+    target: int,
+    *,
+    locked_fields: set[str] | None = None,
+) -> budget_mod.Plan:
     """Sample-based parameter search against the size budget."""
-    count = len(job.pages) or info.page_count
+    pages = job.pages or list(range(info.page_count))
 
     def report(params: Params, est: budget_mod.Estimate) -> None:
         verdict = "fits" if est.fits(target) else "over"
@@ -128,7 +164,15 @@ def stage_plan(job: Job, info: SourceProbe, target: int) -> budget_mod.Plan:
         )
 
     job.log(f"plan:   solving for ≤ {human(target)}")
-    plan = budget_mod.solve(job.src, job.params, count, target, on_step=report)
+    plan = budget_mod.solve(
+        job.src,
+        job.params,
+        pages,
+        target,
+        on_step=report,
+        locked_fields=locked_fields if locked_fields is not None else job.locked_fields,
+        native_dpi=info.native_dpi,
+    )
     if not plan.estimate.fits(target):
         job.log("  warn: nothing on the ladder fits; using the smallest setting")
     job.log(f"plan:   {budget_mod.describe(plan.params)}")
@@ -146,50 +190,53 @@ def stage_encode(job: Job, cache: Cache) -> None:
 
     t0 = time.time()
     finished = 0
-    for start in range(0, len(todo), job.batch):
-        chunk = todo[start : start + job.batch]
-        with cf.ProcessPoolExecutor(
-            max_workers=job.workers, initializer=_init, initargs=(str(job.src),)
-        ) as ex:
-            for page in ex.map(_encode_one, [(i, job.params) for i in chunk], chunksize=2):
-                cache.save(page)
-                finished += 1
-        elapsed = max(time.time() - t0, 0.01)
-        rate = finished / elapsed
-        seen = cache.total_bytes(job.pages)
-        est = seen / max(done + finished, 1) * len(job.pages)
-        job.log(
-            f"  … {done + finished}/{len(job.pages)}  {rate:.1f} p/s  "
-            f"ETA {(len(todo) - finished) / max(rate, 0.01) / 60:.1f}m  est {human(est)}"
-        )
+    total_todo = len(todo)
+    max_w = min(max(1, job.workers), total_todo, max(1, (os.cpu_count() or 2)))
+    with cf.ProcessPoolExecutor(
+        max_workers=max_w, initializer=_init, initargs=(str(job.src),)
+    ) as ex:
+        for page in ex.map(_encode_one, [(i, job.params) for i in todo], chunksize=2):
+            cache.save(page)
+            finished += 1
+            if finished % max(1, job.batch) == 0 or finished == total_todo:
+                elapsed = max(time.time() - t0, 0.01)
+                rate = finished / elapsed
+                seen = cache.total_bytes(job.pages)
+                est = seen / max(done + finished, 1) * len(job.pages)
+                job.log(
+                    f"  … {done + finished}/{len(job.pages)}  {rate:.1f} p/s  "
+                    f"ETA {(total_todo - finished) / max(rate, 0.01) / 60:.1f}m  est {human(est)}"
+                )
 
 
 def stage_assemble(job: Job, cache: Cache) -> Path:
-    dst = job.workdir / f"{job.stem}.layers.pdf"
-    pages = [cache.load(i) for i in job.pages]
-    with_photos = sum(1 for p in pages if any(x.rect_px for x in p.layers))
+    tag = ".preview" if job.is_subset else ""
+    dst = job.workdir / f"{job.stem}{tag}.layers.pdf"
+    count, with_photos = assemble(
+        (cache.load(i) for i in job.pages),
+        dst,
+        source_pdf=job.src,
+        page_indices=job.pages,
+        title=job.stem,
+    )
     if job.params.mode is Mode.MRC:
-        job.log(f"assemble: {with_photos}/{len(pages)} pages carry photo patches")
-    assemble(pages, dst, title=job.stem)
+        job.log(f"assemble: {with_photos}/{count} pages carry photo patches")
     job.log(f"assemble: {dst.name} ({human(dst.stat().st_size)})")
     return dst
 
 
 def stage_ocr(job: Job, src: Path) -> Path:
-    tessdata = ocr_mod.resolve_tessdata(job.tessdata_dir)
+    tessdata = ocr_mod.resolve_tessdata(job.tessdata_dir, job.ocr_langs)
     ok, why = ocr_mod.available(job.ocr_langs, tessdata)
     if not ok:
-        job.log(f"ocr:    skipped — {why}")
-        return src
+        raise SystemExit(f"ocr unavailable — {why}")
 
-    for lang, path, size, best in ocr_mod.model_report(job.ocr_langs, tessdata):
+    for lang, _path, size, best in ocr_mod.model_report(job.ocr_langs, tessdata):
         note = "tessdata_best" if best else "fast/legacy model — run `pdfopt ocr-setup`"
         job.log(f"ocr:    {lang}: {human(size)} ({note})")
 
-    dst = job.workdir / f"{job.stem}.ocr.pdf"
-    if dst.exists() and dst.stat().st_mtime > src.stat().st_mtime:
-        job.log(f"ocr:    reusing {dst.name} ({human(dst.stat().st_size)})")
-        return dst
+    tag = ".preview" if job.is_subset else ""
+    dst = job.workdir / f"{job.stem}{tag}.ocr.pdf"
 
     settings = ocr_mod.OcrSettings(
         langs=job.ocr_langs,
@@ -198,9 +245,32 @@ def stage_ocr(job: Job, src: Path) -> Path:
         psm=job.ocr_psm,
         min_conf=job.ocr_min_conf,
     )
+    ocache: OcrCache | None = None
+    if job.ocr_cache:
+        okey = ocr_source_key(
+            job.src,
+            langs=job.ocr_langs,
+            dpi=job.ocr_dpi,
+            psm=job.ocr_psm,
+            min_conf=job.ocr_min_conf,
+            tessdata_dir=tessdata,
+        )
+        ocache = OcrCache(job.cache_root, okey)
+        ocache.write_meta(
+            {
+                "source": str(job.src),
+                "kind": "ocr",
+                "langs": job.ocr_langs,
+                "dpi": job.ocr_dpi,
+                "psm": job.ocr_psm,
+                "min_conf": job.ocr_min_conf,
+            }
+        )
+
+    dpi_label = "auto" if job.ocr_dpi is None else f"{job.ocr_dpi:g}dpi"
     job.log(
-        f"ocr:    tesseract -l {job.ocr_langs} --psm {job.ocr_psm} @ {job.ocr_dpi:g}dpi "
-        "from the original scan (the slow stage) …"
+        f"ocr:    tesseract -l {job.ocr_langs} --psm {job.ocr_psm} @ {dpi_label} "
+        "from the original scan …"
     )
     t0 = time.time()
 
@@ -209,12 +279,20 @@ def stage_ocr(job: Job, src: Path) -> Path:
 
     try:
         lines = ocr_mod.add_text_layer(
-            job.src, job.pages, src, dst, settings, workers=job.workers, progress=progress
+            job.src,
+            job.pages,
+            src,
+            dst,
+            settings,
+            workers=job.workers,
+            progress=progress,
+            cache=ocache,
+            force=job.ocr_force,
         )
-    except Exception as exc:
-        job.log(f"ocr:    failed ({exc}); keeping the un-OCRed PDF")
+    except Exception:
         dst.unlink(missing_ok=True)
-        return src
+        raise
+
     job.log(
         f"ocr:    {lines} text lines, {dst.name} "
         f"({human(dst.stat().st_size)}, +{human(dst.stat().st_size - src.stat().st_size)}, "
@@ -224,10 +302,16 @@ def stage_ocr(job: Job, src: Path) -> Path:
 
 
 def stage_verify(job: Job, path: Path) -> verify_mod.Report:
-    report = verify_mod.verify(path, expect_pages=len(job.pages))
+    report = verify_mod.verify(
+        path, expect_pages=len(job.pages), expect_text=job.want_ocr
+    )
     job.log(f"verify: {report.summary()}")
     if report.failed_pages:
         job.log(f"  pages that failed to decode: {report.failed_pages[:20]}")
+    if report.blank_pages:
+        job.log(f"  blank pages: {report.blank_pages[:20]}")
+    for w in report.warnings:
+        job.log(f"  warn: {w}")
     return report
 
 
@@ -257,18 +341,16 @@ def run(job: Job, *, plan: bool = True, max_corrections: int = 3) -> Result:
 
     target = page_budget(job, info.page_count)
     base = job.params
-    rungs = budget_mod.ladder_for(base.mode)
-    rung = 0
     if plan:
         planned = stage_plan(job, info, target)
-        base, rung = planned.params, planned.rung
+        base, rung, candidates = planned.params, planned.rung, planned.candidates
     else:
         job.log(f"plan:   fixed — {budget_mod.describe(base)}")
-        rungs = [{}]  # honour the given settings verbatim
+        candidates = [base]
+        rung = 0
 
     # The estimate is only a starting point; the measured size decides. Step
-    # down the ladder only when the real file misses, so photo quality is
-    # never given up on a pessimistic guess.
+    # down the candidate list only when the real file misses.
     layered: Path | None = None
     for attempt in range(max_corrections + 1):
         job.params = base
@@ -276,6 +358,7 @@ def run(job: Job, *, plan: bool = True, max_corrections: int = 3) -> Result:
         cache.write_meta(
             {
                 "source": str(job.src),
+                "kind": "encode",
                 "mode": job.params.mode.value,
                 "params": budget_mod.describe(job.params),
                 "pages": len(job.pages),
@@ -285,10 +368,10 @@ def run(job: Job, *, plan: bool = True, max_corrections: int = 3) -> Result:
         layered = stage_assemble(job, cache)
 
         size = layered.stat().st_size
-        if size <= target or attempt == max_corrections or rung + 1 >= len(rungs):
+        if size <= target or attempt == max_corrections or rung + 1 >= len(candidates):
             break
         rung += 1
-        base = budget_mod.apply_rung(base, rungs[rung])
+        base = candidates[rung]
         job.log(
             f"correct: {human(size)} over the {human(target)} target — "
             f"retrying at {budget_mod.describe(base)}"
@@ -300,13 +383,28 @@ def run(job: Job, *, plan: bool = True, max_corrections: int = 3) -> Result:
     copy_atomic(final, job.out)
     report = stage_verify(job, job.out)
 
+    if not job.is_subset:
+        d_chk = open_doc(job.out)
+        try:
+            toc_n = len(d_chk.get_toc())
+        finally:
+            d_chk.close()
+        if toc_n == 0:
+            job.log("note:   output has 0 bookmarks — add TOC via `pdfopt toc` (see bookmarks.md)")
+
     size = job.out.stat().st_size
-    ratio = job.src.stat().st_size / max(size, 1)
-    job.log(f"output: {job.out} ({human(size)}, {ratio:.1f}× smaller)")
-    within = size <= job.budget_bytes
+    if job.is_subset:
+        ref_bytes = job.src.stat().st_size * (len(job.pages) / max(info.page_count, 1))
+        ratio = ref_bytes / max(size, 1)
+        job.log(f"output: {job.out} ({human(size)}, est. {ratio:.1f}× smaller)")
+    else:
+        ratio = job.src.stat().st_size / max(size, 1)
+        job.log(f"output: {job.out} ({human(size)}, {ratio:.1f}× smaller)")
+    subset_budget = int(job.budget_bytes * (len(job.pages) / max(info.page_count, 1)))
+    within = size <= subset_budget
     if not within:
         job.log(
-            f"warn:   over budget by {human(size - job.budget_bytes)} — "
-            "lower --photo-dpi/--photo-quality"
+            f"warn:   over budget by {human(size - subset_budget)} — "
+            "lower --photo-dpi/--photo-quality or --dpi"
         )
     return Result(job.out, report, job.params, within)

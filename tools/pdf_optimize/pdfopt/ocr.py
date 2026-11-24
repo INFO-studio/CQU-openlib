@@ -9,6 +9,7 @@ directory so the system install is left alone.
 
 from __future__ import annotations
 
+import atexit
 import concurrent.futures as cf
 import os
 import shutil
@@ -18,8 +19,11 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+import pikepdf
 import pymupdf as fitz
 
+from .cache import OcrCache
+from .render import ocr_render_dpi
 from .textlayer import Line, cjk_font, ocr_image, write_lines
 from .util import atomic_write, have, human
 
@@ -27,6 +31,7 @@ DEFAULT_LANGS = "chi_sim+eng"
 BEST_URL = "https://github.com/tesseract-ocr/tessdata_best/raw/main/{lang}.traineddata"
 #: tessdata_fast models are ~1-3MB, tessdata_best ~12-30MB.
 BEST_MIN_BYTES = 6 * 1024 * 1024
+MIN_PDF_VERSION = "1.6"
 
 
 #: 4 = "single column of text of variable sizes". Tesseract's automatic layout
@@ -41,7 +46,7 @@ DEFAULT_PSM = 4
 class OcrSettings:
     langs: str = DEFAULT_LANGS
     tessdata_dir: Path | None = None
-    dpi: float = 300.0
+    dpi: float | None = None
     psm: int | None = DEFAULT_PSM
     min_conf: float = 25.0
 
@@ -52,12 +57,7 @@ class OcrSettings:
 
 
 def system_tessdata() -> Path | None:
-    """Richest tessdata directory on the box.
-
-    A Homebrew ``tesseract`` keg has its own near-empty tessdata; the language
-    packs land in the linked ``share/tessdata``. Picking by language count
-    avoids choosing the one that only has ``eng``.
-    """
+    """Richest tessdata directory on the box."""
     candidates = []
     exe = shutil.which("tesseract")
     if exe:
@@ -83,11 +83,16 @@ def local_tessdata() -> Path:
     return Path(__file__).resolve().parent.parent / "tessdata"
 
 
-def resolve_tessdata(explicit: Path | None) -> Path | None:
+def resolve_tessdata(explicit: Path | None, langs: str | None = None) -> Path | None:
     if explicit:
         return explicit
     local = local_tessdata()
-    if (local / "chi_sim.traineddata").exists() or (local / "eng.traineddata").exists():
+    if not local.is_dir():
+        return None
+    if langs:
+        if all((local / f"{lang}.traineddata").exists() for lang in langs.split("+")):
+            return local
+    if any(local.glob("*.traineddata")):
         return local
     return None
 
@@ -130,8 +135,17 @@ def _fetch(lang: str, dest: Path, log) -> bool:
     target = dest / f"{lang}.traineddata"
     if target.is_symlink():
         target.unlink()
+
+    def _download(tmp: Path) -> None:
+        req = urllib.request.Request(url, headers={"User-Agent": "pdfopt"})
+        with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310
+            data = resp.read()
+        if not data or len(data) < 1024 or data.lstrip()[:1] == b"<":
+            raise RuntimeError("downloaded payload is empty or HTML")
+        tmp.write_bytes(data)
+
     try:
-        atomic_write(target, lambda tmp: urllib.request.urlretrieve(url, tmp))  # noqa: S310
+        atomic_write(target, _download)
     except Exception as exc:
         log(f"  {lang}: download failed ({exc})")
         return False
@@ -165,14 +179,8 @@ def smoke_test(langs: str, tessdata_dir: Path) -> tuple[bool, str]:
         shutil.rmtree(scratch, ignore_errors=True)
 
 
-def setup_best(langs: str, *, dest: Path | None = None, log=print) -> Path:
-    """Mirror the system tessdata, then override with tessdata_best models.
-
-    Mirroring by symlink keeps tesseract's ``configs/`` directory and the
-    sub-language files resolvable. Pointing tesseract at a bare directory
-    holding only ``.traineddata`` files is what breaks it: ``--tessdata-dir``
-    also becomes the search root for ``configs/tsv``.
-    """
+def setup_best(langs: str, *, dest: Path | None = None, log=print) -> tuple[Path, bool]:
+    """Mirror the system tessdata, then override with tessdata_best models."""
     dest = dest or local_tessdata()
     system = system_tessdata()
     if system is None:
@@ -207,7 +215,7 @@ def setup_best(langs: str, *, dest: Path | None = None, log=print) -> Path:
 
     ok, why = smoke_test(langs, dest)
     log(f"  smoke test: {'ok' if ok else 'FAILED — ' + why}")
-    return dest
+    return dest, ok
 
 
 # --------------------------------------------------------------------------
@@ -217,21 +225,35 @@ def setup_best(langs: str, *, dest: Path | None = None, log=print) -> Path:
 _W: dict = {}
 
 
+def _cleanup() -> None:
+    doc = _W.pop("doc", None)
+    if doc is not None:
+        try:
+            doc.close()
+        except Exception:
+            pass
+    scratch = _W.pop("scratch", None)
+    if scratch is not None:
+        shutil.rmtree(scratch, ignore_errors=True)
+
+
 def _init(pdf: str, settings: OcrSettings) -> None:
     _W["doc"] = fitz.open(pdf)
     _W["settings"] = settings
     _W["scratch"] = Path(tempfile.mkdtemp(prefix="pdfopt-ocr-"))
+    atexit.register(_cleanup)
 
 
-def _page(task: tuple[int, int]) -> tuple[int, list[Line]]:
+def _page(task: tuple[int, int]) -> tuple[int, int, list[Line], tuple[int, int]]:
     slot, source_index = task
     doc: fitz.Document = _W["doc"]
     st: OcrSettings = _W["settings"]
     scratch: Path = _W["scratch"]
+    eff_dpi = ocr_render_dpi(doc, source_index, st.dpi)
     # Grayscale, because tesseract does its own adaptive binarisation and is
     # far better at it than a threshold picked to make JBIG2 small.
     pix = doc[source_index].get_pixmap(
-        matrix=fitz.Matrix(st.dpi / 72.0, st.dpi / 72.0),
+        matrix=fitz.Matrix(eff_dpi / 72.0, eff_dpi / 72.0),
         colorspace=fitz.csGRAY,
         alpha=False,
     )
@@ -248,7 +270,7 @@ def _page(task: tuple[int, int]) -> tuple[int, list[Line]]:
         )
     finally:
         image.unlink(missing_ok=True)
-    return slot, lines
+    return slot, source_index, lines, (pix.width, pix.height)
 
 
 def add_text_layer(
@@ -260,6 +282,8 @@ def add_text_layer(
     *,
     workers: int | None = None,
     progress=None,
+    cache: OcrCache | None = None,
+    force: bool = False,
 ) -> int:
     """Read ``ocr_src`` for text, write the layer onto ``target`` as ``dst``.
 
@@ -276,23 +300,74 @@ def add_text_layer(
             f"page count mismatch: {target.name} has {doc.page_count}, "
             f"asked to OCR {len(page_indices)}"
         )
+    if not force:
+        existing = sum(1 for i in range(doc.page_count) if doc[i].get_text("text").strip())
+        if existing:
+            count = doc.page_count
+            doc.close()
+            raise ValueError(
+                f"{target.name} already has text on {existing}/{count} page(s); "
+                "pass --force to overlay anyway"
+            )
+
     font = cjk_font()
     total = len(page_indices)
     done = 0
     written = 0
     t0 = time.time()
+    todo: list[tuple[int, int]] = []
     try:
-        with cf.ProcessPoolExecutor(
-            max_workers=workers, initializer=_init, initargs=(str(ocr_src), settings)
-        ) as ex:
-            for slot, lines in ex.map(_page, list(enumerate(page_indices)), chunksize=1):
-                written += write_lines(doc[slot], lines, settings.dpi, font)
+        for slot, source_index in enumerate(page_indices):
+            if cache is not None and cache.has(source_index):
+                lines, img_size = cache.load(source_index)
+                written += write_lines(
+                    doc[slot], lines, settings.dpi or 300.0, font, img_size=img_size
+                )
                 done += 1
                 if progress and (done % 25 == 0 or done == total):
                     rate = done / max(time.time() - t0, 0.01)
                     progress(done, total, rate)
+            else:
+                todo.append((slot, source_index))
+
+        if todo:
+            max_w = min(workers, len(todo))
+            with cf.ProcessPoolExecutor(
+                max_workers=max_w, initializer=_init, initargs=(str(ocr_src), settings)
+            ) as ex:
+                for slot, source_index, lines, img_size in ex.map(_page, todo, chunksize=1):
+                    if cache is not None:
+                        cache.save(source_index, lines, img_size)
+                    written += write_lines(
+                        doc[slot], lines, settings.dpi or 300.0, font, img_size=img_size
+                    )
+                    done += 1
+                    if progress and (done % 25 == 0 or done == total):
+                        rate = done / max(time.time() - t0, 0.01)
+                        progress(done, total, rate)
+
         doc.subset_fonts()
-        atomic_write(dst, lambda tmp: doc.save(tmp, garbage=4, deflate=True))
+        fd, tmp_name = tempfile.mkstemp(prefix=dst.stem + ".", suffix=".fitz.pdf", dir=dst.parent)
+        os.close(fd)
+        tmp_fitz = Path(tmp_name)
+        try:
+            doc.save(tmp_fitz, garbage=4, deflate=True, use_objstms=1)
+            doc.close()
+            doc = None
+
+            def _linearize(out_tmp: Path) -> None:
+                with pikepdf.open(tmp_fitz) as pk:
+                    pk.save(
+                        out_tmp,
+                        linearize=True,
+                        min_version=MIN_PDF_VERSION,
+                        object_stream_mode=pikepdf.ObjectStreamMode.generate,
+                    )
+
+            atomic_write(dst, _linearize)
+        finally:
+            tmp_fitz.unlink(missing_ok=True)
     finally:
-        doc.close()
+        if doc is not None:
+            doc.close()
     return written
