@@ -39,9 +39,11 @@
 | --- | --- |
 | 安装、probe/run/verify | `setup-and-usage.md` |
 | 压体积、调 `--dpi` / `--mode` | `compression.md` |
+| 单图扫描、双色教材、MRC 误判、JPEG 2000 | `continuous-tone.md` |
 | 去广告（必须在 run 之前） | `ad-removal.md` |
 | 要不要 `--ocr` | `ocr.md` |
 | 产物校验、勿提交大文件 | `integrity.md` |
+| 被否决路径与分书实测数据 | `benchmarks.md` |
 
 ## 开发习惯
 

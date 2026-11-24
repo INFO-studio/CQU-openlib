@@ -2,27 +2,25 @@
 
 ## 目录地图
 
-`public/doc/` 下有 7 个进导航的一级目录，对应 `app/lib/nav.ts` 的 `NAV_SECTIONS`：
+`public/doc/` 下有 7 个进导航的一级目录（对应 `app/lib/nav.ts` `NAV_SECTIONS`）：
 
-| 目录 | 侧边栏标签 | 装什么 | 页面数量级 |
-| --- | --- | --- | --- |
-| `course/` | 课程 | 每门课一页，资源主体 | 3765 |
-| `academic/` | 学业 | 培养方案、专业总览、入学必看 | 239 |
-| `club/` | 社团 | 社团介绍 | 57 |
-| `skill/` | 技巧 | 工具与方法 | 23 |
-| `life/` | 生活 | 校园生活、学生团体 | 17 |
-| `contributor/` | 贡献者 | 每位贡献者一页 | 30 |
-| `sundry/` | 杂项 | 说明书、更新日志、待办事项 | 167 |
+| 目录 | 侧边栏标签 | 用途 |
+| --- | --- | --- |
+| `course/` | 课程 | 每门课一页，资源主体 |
+| `academic/` | 学业 | 培养方案、专业总览、入学必看 |
+| `club/` | 社团 | 社团介绍 |
+| `skill/` | 技巧 | 工具与方法 |
+| `life/` | 生活 | 校园生活、学生团体 |
+| `contributor/` | 贡献者 | 每位贡献者一页 |
+| `sundry/` | 杂项 | 说明书、更新日志、待办事项 |
 
-`public/doc/` 只存放 Markdown 页面；文档静态资源统一放在 `public/assets/doc/`。`42/` 是不进主导航和搜索的隐藏页面树，它未列入 `app/lib/nav.ts` 的 `NAV_SECTIONS`，但仍属于可访问的文档内容。
+- `public/doc/` 只放 Markdown，静态资源统一放 `public/assets/doc/`
+- `42/` 不进主导航和搜索但可访问，改动**不得写进更新日志**
+- `sundry/更新日志/` 进侧边栏但设了 `skipSearchPrefixes`，仅其 `index.md` 进搜索
 
-`sundry/更新日志/` 是特例：**进侧边栏但不进搜索**（`skipSearchPrefixes`），因为 130 多个日期标题的页面正文都是别处内容的摘要，会挤掉读者真正要找的页面。只有它的 `index.md` 进搜索。
+## URL 映射与排序
 
-`public/doc/42/**` 的任何改动**不得写进更新日志**。
-
-## URL 映射
-
-`vite/docNavIndex.ts` 的 `urlFromDocFile`：
+`vite/docNavIndex.ts` `urlFromDocFile`：
 
 | 文件 | URL |
 | --- | --- |
@@ -30,70 +28,27 @@
 | `public/doc/course/高等数学.md` | `/course/高等数学` |
 | `public/doc/sundry/说明书/index.md` | `/sundry/说明书` |
 
-侧边栏标题就是**文件名去掉扩展名**（目录节点用目录名，也不读 `index.md` 里的 H1）。所以文件名即标题，重命名文件等于改标题。默认同级按标题 `localeCompare('zh-CN')` 排序，不是文件系统顺序；`NAV_SECTIONS` 启用 `indexOrder` 的栏目会递归采用各目录 `index.md` 的链接顺序，未列出的页面排在末尾。`course/` 下的叶子还会在构建期烘焙拼音首字母，客户端按 A–Z 加 `#` 分组。
+- 侧边栏标题 = 去扩展名文件名（目录取目录名，不读 `index.md` H1）；默认同级按 `localeCompare('zh-CN')` 排序，启用 `indexOrder` 的栏目递归采用目录 `index.md` 链接顺序（未列排末尾）；`course/` 在构建期按拼音首字母 A–Z + `#` 分组
+- 页面正文标题优先取 AST 首个 H1，无 H1 回落侧边栏标题（课程页不写 H1，故文件名必须即课程名）
+- 目录下有 `index.md` 时目录节点指向它，否则指第一个子页，`index.md` 不作单独叶子；`.` 开头的文件目录跳过
 
-**页面正文的标题**是另一套：优先取 AST 里第一个 H1，没有 H1 才回落到侧边栏标题。课程页的惯例是不写 H1（只有 `## 资源` 这类二级标题），标题由文件名提供——所以课程页的文件名必须就是课程名。
+## 查课程号
 
-目录下有 `index.md` 时，目录节点指向它；没有就指向第一个子页。`index.md` 自己不作为单独叶子出现。以 `.` 开头的文件和目录全部跳过。
-
-## 查课程号（收录教材前必做）
-
-课程号的权威来源是 `metadata/course-codes.json`，由 `public/doc/academic/专业培养方案/**` 抽取而来，覆盖 3643 门课、5550 个课程号。一条命令查：
-
-```bash
-python3 -c "
-import json
-d = json.load(open('metadata/course-codes.json'))['courses']
-print(d.get('/course/泌尿系统与疾病'))
-"
-# {'codes': ['CM31005'], 'labels': {'CM31005': '泌尿系统与疾病'}}
-```
-
-key 是 URL 形式的 `/course/页面名`。一门课有多个课程号时（如高等数学有 8 个），`labels` 会告诉你每个号对应哪个具体开课名，据此决定写哪几个 tab。
-
-**不要凭课程名猜课程号。** 书名和课程名一致也不代表课程号对得上——《泌尿系统与疾病》这本书属于 `CM31005`，而 `CM21120` 是「人体分子与细胞-1st」，两者只差一个字都不到。
+`metadata/course-codes.json` 抽自 `public/doc/academic/专业培养方案/**`，key 为 `/course/页面名`，多课程号看 `labels` 对应开课名（查询命令见 [SKILL.md](SKILL.md)），勿凭课名或书名猜
 
 ## 站内链接
 
-**文档之间**：相对路径 + 带 `.md` 后缀。站点会在渲染时转成路由链接。
-
-```markdown
-见 [高等数学](../course/高等数学.md) 与 [说明书](../../sundry/说明书/index.md)
-```
-
-`.md` 后缀其实可省（`normalizeDocHref` 两种都能转），但全库普遍带着，照抄先例。
-
-**贡献者页的文件名照抄显示名**，名字里有空格就带空格：`contributor/Leo Moore.md`、`contributor/Zhenghong Sun.md`。侧边栏标题取自文件名，去掉空格就显示不对。链接里把空格写成 `%20`：
-
-```markdown
-- [Leo Moore](Leo%20Moore.md)
-@ [Zhenghong Sun](../contributor/Zhenghong%20Sun.md)
-```
-
-**锚点**由标题文本 `slugify` 而来：去空白、转小写、空格换 `-`、丢掉除中文和 `\w-` 以外的字符（`app/utils/headingText.ts`）。`## A. 镜像站` → `#a-镜像站`。旧 MkDocs 时代的 `#_6` 这类数字锚点和新规则不兼容，全库残留 3 处，遇到就顺手改成真锚点。
-
-**站内工具路由**：绝对路径、无后缀。共 5 个表单，slug 写错会被重定向到 `feedback`：
-
-```markdown
-[教材收集](/form/textbook)   [问题反馈](/form/feedback)   [文件上传](/form/upload)
-[社团信息更正](/form/club)    [学生团体收录](/form/group)
-```
-
-`/club/**` 和 `/life/学生团体/**` 的页脚会自动注入对应表单链接，正文里不用重复写。`/admin` 是维护者后台，**任何读者文档和更新日志里都不要出现**。
-
-**资源文件**：走 API，filekey 由维护者上传后给出，不要自己构造。
-
-```markdown
-[教材](https://api.cqu-openlib.cn/file?key=iALhU3zsk0zc)
-```
+- **文档间**：相对路径 + `.md` 后缀（`[高等数学](../course/高等数学.md)`；`normalizeDocHref` 兼容无后缀但全库统一保留）
+- **贡献者页**：文件名保留空格（`contributor/Leo Moore.md`），链接里空格写成 `%20`（`@ [Zhenghong Sun](../contributor/Zhenghong%20Sun.md)`）
+- **锚点**：标题经 `app/utils/headingText.ts` `slugify` 生成（`## A. 镜像站` → `#a-镜像站`）；遇到 `#_6` 等旧 MkDocs 数字锚点顺手改成真锚点
+- **站内工具路由**：绝对路径无后缀，共 5 个表单（slug 写错重定向到 `feedback`）：`[教材收集](/form/textbook)`、`[问题反馈](/form/feedback)`、`[文件上传](/form/upload)`、`[社团信息更正](/form/club)`、`[学生团体收录](/form/group)`。`/club/**` 与 `/life/学生团体/**` 页脚会自动注入对应链接；`/admin` 禁止写入任何读者文档与更新日志
+- **资源文件**：走 API `[教材](https://api.cqu-openlib.cn/file?key=FILEKEY)`，filekey 由维护者给出勿自造
 
 ## 图片
 
-放在 `public/assets/doc/`，文档里用**绝对路径** `/assets/doc/...` 引用。正文展示图统一使用 `.webp`；带 `{:download}` 的原始素材可以保留 SVG、PDF 或 PNG。
+放 `public/assets/doc/`，文档用绝对路径 `/assets/doc/...` 引用；正文图用 `.webp`，带 `{:download}` 原件可保留 SVG/PDF/PNG
 
-命名规则是「板块_路径_页面_序号」，段之间下划线，板块名用中文：`academic` → 学业、`club` → 社团、`life` → 生活、`skill` → 技巧、`contributor` → 贡献者。
-
-同一页面会持续追加的月度事件、案例或记录，在页面名后补 `YYYY-MM`，再写事件名和序号，避免不同月份使用同一组文件名。
+命名规则「板块_路径_页面_序号」（中文板块名：`academic`→学业、`club`→社团、`life`→生活、`skill`→技巧、`contributor`→贡献者）；持续追加的月度事件在页面名后加 `YYYY-MM`；贡献者图片放 `public/assets/doc/contributor/<名字>/`：
 
 ```
 学业_专业总览_数统_数统教材_001.webp
@@ -103,64 +58,32 @@ key 是 URL 形式的 `/course/页面名`。一门课有多个课程号时（如
 contributor/贡献者名/贡献者_贡献者名_001.webp
 ```
 
-贡献者页的图放 `public/assets/doc/contributor/<名字>/` 子目录。
+站点 logo（`public/assets/logo/`，由 `pnpm logo:generate` 维护）与 `public/favicon.png` 不参与 `image:optimize`
 
-例外：站点 logo 在 `public/assets/logo/`，由 `pnpm logo:generate` 维护；favicon 固定放在 `public/favicon.png`。两者都**不参与** `image:optimize`。`{:download}` 承诺了具体格式的下载文件（SVG、PDF、PNG 素材）也不要转 WebP，优化脚本本身会跳过它们。
-
-居中显示用 HTML 块：
-
-```markdown
-<center><img src="/assets/doc/学业_专业总览_数统_数统教材_001.webp" alt="pic001"></center>
-```
-
-需要查看原图时，在 Markdown 图片后紧跟 `{:preview}`。多张图片需要分栏时，再用 `<ImageGallery>` 与 `</ImageGallery>` 明确包住整组；画廊以 alt 文本作为图注，不要额外重复图片说明。边界外的图片不会自动成组。
-
-**加完图必须跑一次：**
+居中显示用 `<center><img src="/assets/doc/..." alt="pic001"></center>`；preview 与 `<ImageGallery>` 语法见 [markdown-syntax.md](markdown-syntax.md)。加完图必须跑一次（压至 1600px q80 WebP、改写引用并写入 `metadata/image-sizes.json` 防布局跳动）：
 
 ```bash
-pnpm image:optimize        # 加 --dry 先看会改什么
+pnpm image:optimize   # 可先加 --dry 预览
 ```
-
-它会把光栅图压到 1600px 宽、q80 重编码成 WebP（原地替换）、**改写所有 Markdown 里的引用**，并把尺寸写进 `metadata/image-sizes.json`。渲染器靠这份清单在图片字节到达前先占好位置，不跑就会有布局跳动。
 
 ## 加一个新图标
 
-`:l-xxx:` 不是直通 lucide 的，漏一步就会在页面上渲染成灰色的字面文本 `:l-xxx:`。
+1. 确认 lucide 存在：`ls node_modules/lucide-react/dist/esm/icons/ | rg '^你要的名字'`
+2. 在 `app/utils/parser/parserIcon.tsx` import 组件（PascalCase）并在 `STATIC_ICONS` 加 `'kebab-name': PascalName`，两处按字母序插入
+3. 文档写 `:l-kebab-name:`
+4. 跑 `pnpm test`
 
-1. 确认 lucide 里有这个图标：`ls node_modules/lucide-react/dist/esm/icons/ | rg '^你要的名字'`。
-2. 在 `app/utils/parser/parserIcon.tsx` 里 import 组件（PascalCase），并在 `STATIC_ICONS` 里加一行 `'kebab-name': PascalName`。两处都按字母序插入。
-3. 在文档里写 `:l-kebab-name:`。
-4. 跑 `pnpm test`。
+仅允许 `STATIC_ICONS` 白名单以保留 lucide tree-shaking（`app/lib/icons.ts` 只认 `l-` 前缀）。`app/tests/parser/iconCoverage.test.ts` 不扫全库，全库自查跑 `rg -o --no-filename -e ':l-[a-z0-9-]+:' public/doc | sort -u` 对 `STATIC_ICONS`；漏注册页面上会显灰色字面文本 `:l-xxx:`
 
-短名规则由 `app/lib/icons.ts` 定：**只认 `l-` 前缀**，后面就是 lucide 的 kebab 名。`remarkIcon` 的正则也只匹配 `:l-xxx:`，所以正文里的 `8:00-8:30`、`:foo:` 不会被误当图标。白名单是刻意的（lucide 1911 个图标、ESM 源 7.6MB，动态取会让 tree-shaking 失效、全量进 bundle；全库至今只用 15 种，注册表里有 17 个，`arrow-left` 和 `frown` 是遗留）。
+## 构建期产物（勿手改）
 
-`app/tests/parser/iconCoverage.test.ts` 只守注册表本身：每个键都对应一个真的 import、键名合法且按字母序、三个样本页在用的图标都已注册。它**不扫全库**——读 4000 多个文档要几十秒，不值得压在每次 `pnpm test` 上。确认全库没有漏网的跑这一行（不到 1 秒），拿结果对 `STATIC_ICONS`：
-
-```bash
-rg -o --no-filename -e ':l-[a-z0-9-]+:' public/doc | sort -u
-```
-
-漏注册的后果是页面上出现灰色字面文本 `:l-xxx:`，`pnpm dev` 打开页面就能看见。
-
-## 构建期产物（不要手改）
-
-| 产物 | 谁生成 |
+| 产物 | 生成者 |
 | --- | --- |
-| `public/nav-index.json` | `vite/docNavIndex.ts`，每次 build / dev 改动重写 |
-| `build/client/search/pagefind/**` | `vite/docSearch.ts`，Pagefind 全文索引与运行时 |
-| `build/client/search/codes/*.json` | `vite/docSearch.ts`，课程号精确查询哈希分片 |
-| `metadata/doc-folder-pages.json` | 同上，内容变化时才写 |
+| `public/nav-index.json` | `vite/docNavIndex.ts` |
+| `build/client/search/pagefind/**` | `vite/docSearch.ts` |
+| `build/client/search/codes/*.json` | `vite/docSearch.ts` |
+| `metadata/doc-folder-pages.json` | `vite/docSearch.ts` |
 | `metadata/image-sizes.json` | `pnpm image:optimize` |
 | `metadata/course-codes.json` | 从培养方案抽取，只读 |
 
-## 命令
-
-```bash
-pnpm dev         # 开发服务器，会监听 public/doc 并重建 nav 索引
-pnpm test        # vitest
-pnpm typecheck   # tsc
-pnpm check       # biome check .
-pnpm build       # 生产构建
-```
-
-没有任何脚本会格式化或 lint Markdown：`pnpm check` 和 pre-commit 的 `biome check --write --staged` 都只管 JS/TS/JSON。文档的格式一致性只能靠抄先例和 `rg` 自查。
+`pnpm dev` 会监听 `public/doc` 并重建 nav 索引。`pnpm check` / biome 不校验 Markdown，文档格式靠先例与 `rg` 自查
