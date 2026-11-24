@@ -1,5 +1,5 @@
 ---
-updated: 2026-08-02
+updated: 2026-11-24
 ---
 
 # 说明书
@@ -126,7 +126,7 @@ openlib 有若干板块：
 
 - QQ 群组 [许愿池 群1](https://qm.qq.com/cgi-bin/qm/qr?k=eO5UrowvAuwZggQSPH6fODQOs9_vQWua&jump_from=webapi&authKey=op45ne7fUvpaao1hPJd2bNem6u959CSOiy1m2hlTplnN8l5cm9ufgJf2vLsPA6Ct)、[许愿池 群2](https://qm.qq.com/cgi-bin/qm/qr?k=-ZQ_q7bzxh-sY_vLdQhU9tao7Y49clgQ&jump_from=webapi&authKey=gtlhqQCelj2dyH9FXTgJkz2ZLsDjaCvQsjervVkLRmB6hwTYYy4fMzglNOlwP17r)
 - [Discord 频道](https://discord.gg/sPk3W96mJV)
-- [Telegram 群组](https://t.me/+3TnAZ_PgiNs1OGQ1)
+- [Telegram 群组](https://t.me/+rXk-hYR_R74wNTg1)
 - [站长](../../contributor/茵符草.md) QQ：`2247977881`
 - 邮箱：`contact@cqu-openlib.cn`
 - GitHub：[INFO-studio/CQU-openlib](https://github.com/INFO-studio/CQU-openlib)（Issue / Pull Request）
