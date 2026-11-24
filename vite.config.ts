@@ -8,7 +8,7 @@ import { docNavIndexPlugin } from './vite/docNavIndex';
 import { docSearchPlugin } from './vite/docSearch';
 import { docSeoPlugin } from './vite/docSeo';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   resolve: {
     tsconfigPaths: true,
   },
@@ -18,23 +18,26 @@ export default defineConfig({
     emptyOutDir: true,
   },
   test: {
-    include: ['app/tests/**/*.{test,spec}.ts'],
+    include: ['app/tests/**/*.{test,spec}.{ts,tsx}'],
     environment: 'node',
   },
-  plugins: lazyPlugins(() => [
-    tanstackRouter({
-      target: 'react',
-      autoCodeSplitting: true,
-      routesDirectory: './app/routes',
-      generatedRouteTree: './app/routeTree.gen.ts',
-      quoteStyle: 'single',
-    }),
-    react(),
-    svgr(),
-    UnoCSS(),
-    docNavIndexPlugin(),
-    docMarkdownPlugin(),
-    docSearchPlugin(),
-    docSeoPlugin(),
-  ]),
-});
+  plugins:
+    mode === 'test'
+      ? []
+      : lazyPlugins(() => [
+          tanstackRouter({
+            target: 'react',
+            autoCodeSplitting: true,
+            routesDirectory: './app/routes',
+            generatedRouteTree: './app/routeTree.gen.ts',
+            quoteStyle: 'single',
+          }),
+          react(),
+          svgr(),
+          UnoCSS(),
+          docNavIndexPlugin(),
+          docMarkdownPlugin(),
+          docSearchPlugin(),
+          docSeoPlugin(),
+        ]),
+}));

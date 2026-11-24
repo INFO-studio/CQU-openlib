@@ -134,12 +134,14 @@ export const docMarkdownPlugin = (): Plugin => {
   let docRoot = '';
   let outDir = 'build/client';
   let root = process.cwd();
+  let isBuild = false;
   return {
     name: 'doc-markdown',
     configResolved(config) {
       root = config.root;
       docRoot = join(config.root, 'public', 'doc');
       outDir = config.build.outDir;
+      isBuild = config.command === 'build';
     },
     configureServer(server) {
       server.middlewares.use(serveMarkdown(() => docRoot));
@@ -148,6 +150,7 @@ export const docMarkdownPlugin = (): Plugin => {
       server.middlewares.use(serveMarkdown(() => docRoot));
     },
     closeBundle() {
+      if (!isBuild) return;
       const dest = join(root, outDir);
       if (!existsSync(dest)) return;
       mirrorDocMarkdown(docRoot, dest);

@@ -133,6 +133,7 @@ export const docSeoPlugin = (): Plugin => {
   const state = { root: process.cwd(), outDir: 'build/client' };
   return {
     name: 'doc-seo',
+    apply: 'build',
     configResolved(config) {
       state.root = config.root;
       state.outDir = config.build.outDir;

@@ -272,6 +272,9 @@ const writeFolderPages = (docRoot: string, projectRoot: string) => {
 export const docNavIndexPlugin = (): Plugin => {
   let root = process.cwd();
   let outDir = 'build/client';
+  let isBuild = false;
+  let isTest = false;
+  let emitted = false;
   const emit = () => {
     const docRoot = join(root, 'public', 'doc');
     writeIndex(docRoot, join(root, 'public'), root);
@@ -282,12 +285,19 @@ export const docNavIndexPlugin = (): Plugin => {
     configResolved(config) {
       root = config.root;
       outDir = config.build.outDir;
+      isBuild = config.command === 'build';
+      isTest = config.mode === 'test';
     },
     buildStart() {
+      if (isTest) return;
+      if (!isBuild && emitted) return;
       emit();
+      emitted = true;
     },
     configureServer(server) {
+      if (isTest) return;
       emit();
+      emitted = true;
       const docRoot = join(root, 'public', 'doc');
       const meta = join(root, 'metadata');
       server.watcher.add(docRoot);
@@ -305,6 +315,7 @@ export const docNavIndexPlugin = (): Plugin => {
       });
     },
     closeBundle() {
+      if (!isBuild) return;
       const dest = join(root, outDir);
       if (!existsSync(dest)) return;
       writeFileSync(
