@@ -50,12 +50,25 @@ export const searchMetadata = (markdown: string) => {
   };
 };
 
-const titleSegmenter = new Intl.Segmenter('zh', { granularity: 'word' });
+const zhWordSegmenter = new Intl.Segmenter('zh', { granularity: 'word' });
+const htmlTagPattern = /<[^>]+>/g;
+const hanWordPattern = /^\p{Script=Han}{2,}$/u;
 // 浏览器把「大学物理」切成「大学」「物理」，索引侧却经常收成一个词，标题就匹配不上。
 const indexedTitle = (title: string) =>
-  [...titleSegmenter.segment(title)]
+  [...zhWordSegmenter.segment(title)]
     .flatMap((part) => (part.isWordLike ? [part.segment] : []))
     .join(' ');
+
+export const extractZhVocabulary = (records: SearchRecord[]): string[] => {
+  const words = new Set(
+    records.flatMap((record) =>
+      [...zhWordSegmenter.segment(record.content.replace(htmlTagPattern, ' '))]
+        .filter((part) => part.isWordLike && hanWordPattern.test(part.segment))
+        .map((part) => part.segment),
+    ),
+  );
+  return [...words].sort();
+};
 
 const escapeHtml = (text: string) =>
   text.replace(

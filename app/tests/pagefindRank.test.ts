@@ -6,10 +6,15 @@ import {
   loadInitialSearchResults,
   searchDocuments,
 } from '~/lib/searchMatch';
+import { createZhVocabulary, type ZhVocabulary } from '~/lib/zhSegment';
 import { createSearchFiles } from '../../vite/docSearch';
-import { buildSearchRecords } from '../../vite/searchContent';
+import {
+  buildSearchRecords,
+  extractZhVocabulary,
+} from '../../vite/searchContent';
 
 let engine: SearchEngine & { destroy: () => Promise<void> };
+let vocab: ZhVocabulary;
 
 const documents = [
   {
@@ -61,14 +66,14 @@ const navIndex: DocNavIndex = {
 };
 
 beforeAll(async () => {
-  const files = await createSearchFiles(
-    documents.flatMap((doc) =>
-      buildSearchRecords(
-        { ...doc, section: 'course', sectionLabel: '课程' },
-        doc.markdown,
-      ),
+  const records = documents.flatMap((doc) =>
+    buildSearchRecords(
+      { ...doc, section: 'course', sectionLabel: '课程' },
+      doc.markdown,
     ),
   );
+  vocab = createZhVocabulary(extractZhVocabulary(records));
+  const files = await createSearchFiles(records);
   const byPath = new Map(files.map((file) => [file.path, file.content]));
   vi.stubGlobal('window', globalThis);
   vi.stubGlobal('document', {
@@ -107,6 +112,7 @@ describe('article title ranking', () => {
       [],
       10,
       findExactTitles(navIndex, '大学物理'),
+      vocab,
     );
     const titles = initial.results.map((row) => row.title);
     expect(titles[0]).toBe('大学物理');
@@ -118,13 +124,14 @@ describe('article title ranking', () => {
   });
 
   it('does not leak unrelated Q matches when searching a term without an exact title', async () => {
-    await searchDocuments(engine, 'python');
+    await searchDocuments(engine, 'python', vocab);
     const initial = await loadInitialSearchResults(
       engine,
       '打印',
       [],
       10,
       findExactTitles(navIndex, '打印'),
+      vocab,
     );
     expect(initial.results.map((row) => row.title)).toEqual([
       '3D打印技术及应用',

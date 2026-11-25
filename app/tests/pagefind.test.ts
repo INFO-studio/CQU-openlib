@@ -1,10 +1,16 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vite-plus/test';
 import type { SearchEngine } from '~/lib/searchMatch';
 import { loadSearchResults, searchDocuments } from '~/lib/searchMatch';
+import { createZhVocabulary, type ZhVocabulary } from '~/lib/zhSegment';
 import { createSearchFiles } from '../../vite/docSearch';
-import { buildSearchRecords } from '../../vite/searchContent';
+import {
+  buildSearchRecords,
+  extractZhVocabulary,
+} from '../../vite/searchContent';
 
 let engine: SearchEngine & { destroy: () => Promise<void> };
+let vocab: ZhVocabulary;
+let byPath: Map<string, Uint8Array>;
 const requests: string[] = [];
 
 beforeAll(async () => {
@@ -31,16 +37,21 @@ beforeAll(async () => {
       markdown:
         '=== "默认分页"\n\n    默认内容\n\n=== "其他分页"\n\n    多元函数 梯度 旋度 散度\n',
     },
+    {
+      title: '户外素质拓展协会',
+      path: '/club/体育协会/户外素质拓展协会',
+      markdown: '!!! info "联系方式"\n    * 纳新群号：`868374844`\n',
+    },
   ];
-  const files = await createSearchFiles(
-    documents.flatMap((doc) =>
-      buildSearchRecords(
-        { ...doc, section: 'course', sectionLabel: '课程' },
-        doc.markdown,
-      ),
+  const records = documents.flatMap((doc) =>
+    buildSearchRecords(
+      { ...doc, section: 'course', sectionLabel: '课程' },
+      doc.markdown,
     ),
   );
-  const byPath = new Map(files.map((file) => [file.path, file.content]));
+  vocab = createZhVocabulary(extractZhVocabulary(records));
+  const files = await createSearchFiles(records);
+  byPath = new Map(files.map((file) => [file.path, file.content]));
   vi.stubGlobal('document', {
     currentScript: null,
     querySelector: () => ({ getAttribute: () => 'zh-CN' }),
@@ -73,7 +84,7 @@ afterAll(async () => {
 describe('real Pagefind search', () => {
   it('keeps course codes searchable as fulltext fallback', async () => {
     for (const code of ['B1', 'B2', 'b2', 'B3']) {
-      const result = await searchDocuments(engine, code);
+      const result = await searchDocuments(engine, code, vocab);
       const first = await loadSearchResults(result.slice(0, 1));
       expect(first[0]).toMatchObject({
         title: '课程A',
@@ -85,7 +96,7 @@ describe('real Pagefind search', () => {
 
   it('finds placeholders by name and custom keywords but not boilerplate or frontmatter', async () => {
     for (const query of ['课程A', '专属别名']) {
-      const result = await searchDocuments(engine, query);
+      const result = await searchDocuments(engine, query, vocab);
       expect(result.length).toBeGreaterThan(0);
       const rows = await loadSearchResults(result);
       expect(rows.some((row) => row.title === '课程A')).toBe(true);
@@ -96,14 +107,14 @@ describe('real Pagefind search', () => {
       'keywords',
       'updated',
     ]) {
-      const result = await searchDocuments(engine, query);
+      const result = await searchDocuments(engine, query, vocab);
       const rows = await loadSearchResults(result);
       expect(rows.some((row) => row.title === '课程A')).toBe(false);
     }
   });
 
   it('returns Chinese single-word matches without over-filtering', async () => {
-    const result = await searchDocuments(engine, '诈骗');
+    const result = await searchDocuments(engine, '诈骗', vocab);
     const rows = await loadSearchResults(result);
     expect(rows.map((row) => row.title)).toContain('防诈骗指南');
   });
@@ -113,10 +124,65 @@ describe('real Pagefind search', () => {
       ['阴文革', '培养方案'],
       ['梯度 散度', '未激活分页'],
     ]) {
-      const result = await searchDocuments(engine, query);
+      const result = await searchDocuments(engine, query, vocab);
       const rows = await loadSearchResults(result.slice(0, 1));
       expect(rows[0].title).toBe(title);
     }
     expect(requests.every((path) => !path.endsWith('.md'))).toBe(true);
+  });
+
+  it('patches pagefind runtime and stays functional when Intl.Segmenter splits Chinese char-by-char', async () => {
+    const pagefindJs = Buffer.from(byPath.get('pagefind.js')!).toString('utf8');
+    const workerJs = Buffer.from(byPath.get('pagefind-worker.js')!).toString(
+      'utf8',
+    );
+    expect(pagefindJs).toContain('needsWordSegmentation=()=>false');
+    expect(workerJs).toContain('needsWordSegmentation=()=>false');
+    expect(pagefindJs).toContain('pagefind-worker.js?v=v2');
+
+    const OriginalSegmenter = Intl.Segmenter;
+    const StubSegmenter = class {
+      private readonly options?: Intl.SegmenterOptions;
+      constructor(_locale?: string, options?: Intl.SegmenterOptions) {
+        this.options = options;
+      }
+      segment(input: string) {
+        if (this.options?.granularity === 'grapheme') {
+          return new OriginalSegmenter('en', {
+            granularity: 'grapheme',
+          }).segment(input);
+        }
+        return [...input].map((char, index) => ({
+          segment: char,
+          index,
+          input,
+          isWordLike: true,
+        }));
+      }
+    };
+    Object.defineProperty(Intl, 'Segmenter', {
+      value: StubSegmenter,
+      configurable: true,
+      writable: true,
+    });
+    try {
+      for (const [query, expectedTitle] of [
+        ['户外素质', '户外素质拓展协会'],
+        ['户外素质拓展协会', '户外素质拓展协会'],
+        ['防诈骗指南', '防诈骗指南'],
+        ['阴文革', '培养方案'],
+        ['梯度 散度', '未激活分页'],
+      ]) {
+        const result = await searchDocuments(engine, query, vocab);
+        const rows = await loadSearchResults(result);
+        expect(rows.map((row) => row.title)).toContain(expectedTitle);
+      }
+    } finally {
+      Object.defineProperty(Intl, 'Segmenter', {
+        value: OriginalSegmenter,
+        configurable: true,
+        writable: true,
+      });
+    }
   });
 });

@@ -1,6 +1,7 @@
 import type { CourseCodeSearchEntry } from '~/lib/courseCodeSearch';
 import type { DocNavIndex, SidebarNode } from '~/lib/nav';
 import { cleanPath, decodePathname } from '~/lib/paths';
+import { segmentZhText, type ZhVocabulary } from '~/lib/zhSegment';
 
 export type ExactTitleEntry = {
   title: string;
@@ -115,21 +116,23 @@ export const findExactTitles = (
   return lookup.get(key) ?? [];
 };
 
-const pagefindQuery = (normalized: string): string => {
+const pagefindQuery = (normalized: string, vocab?: ZhVocabulary): string => {
   const hanLength = normalized.match(hanPattern)?.length ?? 0;
   const phrase =
     asciiTokenPattern.test(normalized) ||
     (!normalized.includes(' ') && hanLength >= 5);
-  return phrase ? `"${normalized}"` : normalized;
+  const prepared = vocab ? segmentZhText(normalized, vocab) : normalized;
+  return phrase ? `"${prepared}"` : prepared;
 };
 
 export const searchDocuments = async (
   engine: SearchEngine,
   query: string,
+  vocab?: ZhVocabulary,
 ): Promise<SearchHit[]> => {
   const normalized = query.trim();
   if (!normalized) return [];
-  return (await engine.search(pagefindQuery(normalized))).results;
+  return (await engine.search(pagefindQuery(normalized, vocab))).results;
 };
 
 export const loadSearchResults = async (
@@ -210,8 +213,9 @@ export const loadInitialSearchResults = async (
   exactEntries: CourseCodeSearchEntry[],
   pageSize: number,
   exactTitles: ExactTitleEntry[] = [],
+  vocab?: ZhVocabulary,
 ): Promise<InitialSearchResults> => {
-  const hits = await searchDocuments(engine, query);
+  const hits = await searchDocuments(engine, query, vocab);
   const loadedHitCount = Math.min(pageSize, hits.length);
   const fulltext = await loadSearchResults(hits.slice(0, loadedHitCount));
   const priority = mergeSearchResults(

@@ -20,7 +20,11 @@ import {
   type SearchResult,
 } from '~/lib/searchMatch';
 import { navIndexQueryOptions } from '~/queries/nav';
-import { findExactCourseCodes, getSearchEngine } from '~/queries/search';
+import {
+  findExactCourseCodes,
+  getSearchEngine,
+  getZhVocabulary,
+} from '~/queries/search';
 
 type Props = { open: boolean; onClose: () => void };
 const pageSize = 10;
@@ -64,10 +68,11 @@ const SearchDialog = ({ open, onClose }: Props) => {
     setLoading(true);
     const timer = window.setTimeout(async () => {
       try {
-        const [exact, navIndex, engine] = await Promise.all([
+        const [exact, navIndex, engine, zhVocab] = await Promise.all([
           findExactCourseCodes(query),
           queryClient.ensureQueryData(navIndexQueryOptions).catch(() => null),
           getSearchEngine(),
+          getZhVocabulary(),
         ]);
         if (id !== runId.current) return;
         const initial = await loadInitialSearchResults(
@@ -76,6 +81,7 @@ const SearchDialog = ({ open, onClose }: Props) => {
           exact,
           pageSize,
           findExactTitles(navIndex, query),
+          zhVocab,
         );
         if (id !== runId.current) return;
         setHits(initial.hits);

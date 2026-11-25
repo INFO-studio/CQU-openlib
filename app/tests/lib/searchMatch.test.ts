@@ -10,6 +10,7 @@ import {
   type SearchResult,
   searchDocuments,
 } from '~/lib/searchMatch';
+import { createZhVocabulary } from '~/lib/zhSegment';
 
 const hit = (
   id: string,
@@ -241,5 +242,16 @@ describe('searchMatch', () => {
       },
     ]);
     expect(result.title).toBe('大学物理');
+  });
+
+  it('segments Chinese queries with the vocabulary while keeping long-phrase quotes', async () => {
+    const vocab = createZhVocabulary(['户外', '素质', '拓展', '协会']);
+    const search = vi.fn(async () => ({ results: [] }));
+    await searchDocuments(
+      { search } as unknown as SearchEngine,
+      '户外素质拓展协会',
+      vocab,
+    );
+    expect(search).toHaveBeenCalledWith('"户外 素质 拓展 协会"');
   });
 });

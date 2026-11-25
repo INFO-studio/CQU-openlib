@@ -6,8 +6,10 @@ import {
   normalizeCourseCode,
 } from '~/lib/courseCodeSearch';
 import type { SearchEngine } from '~/lib/searchMatch';
+import { parseZhVocabulary, type ZhVocabulary } from '~/lib/zhSegment';
 
 let engine: Promise<SearchEngine> | undefined;
+let zhVocab: Promise<ZhVocabulary> | undefined;
 const codeChunks = new Map<string, Promise<CourseCodeSearchChunk>>();
 
 export const findExactCourseCodes = async (
@@ -30,7 +32,7 @@ export const findExactCourseCodes = async (
 
 export const getSearchEngine = (): Promise<SearchEngine> => {
   if (!engine) {
-    const url = '/search/pagefind/pagefind.js';
+    const url = '/search/pagefind/pagefind.js?v=v2';
     engine = import(/* @vite-ignore */ url)
       .then(async (module: SearchEngine) => {
         await module.options({ baseUrl: '/', excerptLength: 24 });
@@ -43,4 +45,19 @@ export const getSearchEngine = (): Promise<SearchEngine> => {
       });
   }
   return engine;
+};
+
+export const getZhVocabulary = (): Promise<ZhVocabulary> => {
+  if (!zhVocab) {
+    zhVocab = fetch('/search/zh-vocab.txt')
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`zh vocab ${response.status}`);
+        return parseZhVocabulary(await response.text());
+      })
+      .catch((error) => {
+        zhVocab = undefined;
+        throw error;
+      });
+  }
+  return zhVocab;
 };

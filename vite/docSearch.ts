@@ -21,7 +21,11 @@ import {
 import { buildDocNavIndex } from './docNavIndex';
 import type { SearchRecord } from './searchContent';
 
-const searchCacheVersion = 1 as const;
+const searchCacheVersion = 2 as const;
+const pagefindRuntimeVersion = 'v2';
+const needsWordSegmentationPattern =
+  /var needsWordSegmentation=\([^)]*\)=>\{[^}]+\};/;
+const workerUrlPattern = /const workerUrl=`\$\{basePath\}pagefind-worker\.js`;/;
 
 export type SearchCache = {
   version: typeof searchCacheVersion;
@@ -29,6 +33,7 @@ export type SearchCache = {
   recordCount: number;
   files: IndexFile[];
   courseCodeChunks: [string, string][];
+  zhVocab: string;
 };
 
 type SearchCacheBuild = {
@@ -73,7 +78,8 @@ const isSearchCache = (value: unknown): value is SearchCache => {
     Array.isArray(candidate.files) &&
     candidate.files.every(isIndexFile) &&
     Array.isArray(candidate.courseCodeChunks) &&
-    candidate.courseCodeChunks.every(isCourseCodeChunk)
+    candidate.courseCodeChunks.every(isCourseCodeChunk) &&
+    typeof candidate.zhVocab === 'string'
   );
 };
 
@@ -100,6 +106,31 @@ export const writeSearchCache = (root: string, cache: SearchCache): void => {
   }
 };
 
+const patchPagefindRuntimeFile = (file: IndexFile): IndexFile => {
+  if (file.path !== 'pagefind.js' && file.path !== 'pagefind-worker.js') {
+    return file;
+  }
+  const source = Buffer.from(file.content).toString('utf8');
+  const withoutBrowserSegmentation = source.replace(
+    needsWordSegmentationPattern,
+    'var needsWordSegmentation=()=>false;',
+  );
+  if (withoutBrowserSegmentation === source) {
+    throw new Error(`未能定位 ${file.path} 的 needsWordSegmentation`);
+  }
+  const patched =
+    file.path === 'pagefind.js'
+      ? withoutBrowserSegmentation.replace(
+          workerUrlPattern,
+          `const workerUrl=\`\${basePath}pagefind-worker.js?v=${pagefindRuntimeVersion}\`;`,
+        )
+      : withoutBrowserSegmentation;
+  if (file.path === 'pagefind.js' && patched === withoutBrowserSegmentation) {
+    throw new Error('未能定位 pagefind.js 的 workerUrl');
+  }
+  return { ...file, content: Uint8Array.from(Buffer.from(patched, 'utf8')) };
+};
+
 export const createSearchFiles = async (
   records: SearchRecord[],
 ): Promise<IndexFile[]> => {
@@ -113,11 +144,13 @@ export const createSearchFiles = async (
     }
     const result = await index.getFiles();
     if (result.errors.length) throw new Error(result.errors.join('\n'));
-    return result.files.filter(
-      (file) =>
-        !file.path.startsWith('pagefind-ui.') &&
-        !file.path.startsWith('pagefind-component-ui.'),
-    );
+    return result.files
+      .filter(
+        (file) =>
+          !file.path.startsWith('pagefind-ui.') &&
+          !file.path.startsWith('pagefind-component-ui.'),
+      )
+      .map(patchPagefindRuntimeFile);
   } finally {
     await index.deleteIndex();
   }
@@ -128,11 +161,15 @@ const buildSearchCache = async (
   previousFingerprint?: string,
 ): Promise<SearchCacheBuild> => {
   // Vite's config loader runs before the app's TypeScript path aliases exist.
-  const { buildSearchRecords, recordFingerprint, searchMetadata } =
-    (await tsImport(pathToFileURL(join(root, 'vite/searchContent.ts')).href, {
-      parentURL: import.meta.url,
-      tsconfig: join(root, 'tsconfig.json'),
-    })) as typeof import('./searchContent');
+  const {
+    buildSearchRecords,
+    extractZhVocabulary,
+    recordFingerprint,
+    searchMetadata,
+  } = (await tsImport(pathToFileURL(join(root, 'vite/searchContent.ts')).href, {
+    parentURL: import.meta.url,
+    tsconfig: join(root, 'tsconfig.json'),
+  })) as typeof import('./searchContent');
   const { documents } = buildDocNavIndex(join(root, 'public', 'doc'), root);
   const chunks = new Map<string, CourseCodeSearchChunk>();
   const records = documents.flatMap((doc) => {
@@ -181,6 +218,7 @@ const buildSearchCache = async (
         bucket,
         JSON.stringify(chunk),
       ]),
+      zhVocab: extractZhVocabulary(records).join('\n'),
     },
     recordCount: records.length,
   };
@@ -276,6 +314,7 @@ export const docSearchPlugin = (): Plugin => {
   let files: IndexFile[] = [];
   let filesByPath = new Map<string, Uint8Array>();
   let courseCodeChunks = new Map<string, string>();
+  let zhVocab = '';
   let fingerprint = '';
   let pending = Promise.resolve();
   let closing = false;
@@ -287,6 +326,7 @@ export const docSearchPlugin = (): Plugin => {
       cache.files.map((file) => [file.path, file.content] as const),
     );
     courseCodeChunks = new Map(cache.courseCodeChunks);
+    zhVocab = cache.zhVocab;
     fingerprint = cache.fingerprint;
   };
 
@@ -343,6 +383,12 @@ export const docSearchPlugin = (): Plugin => {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.setHeader('Cache-Control', 'no-cache');
       res.end(req.method === 'HEAD' ? undefined : source);
+    });
+    server.middlewares.use('/search/zh-vocab.txt', (req, res, next) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.end(req.method === 'HEAD' ? undefined : zhVocab);
     });
     server.middlewares.use('/search/pagefind', (req, res, next) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') return next();
@@ -403,6 +449,11 @@ export const docSearchPlugin = (): Plugin => {
       );
     },
     generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'search/zh-vocab.txt',
+        source: zhVocab,
+      });
       for (const [bucket, source] of courseCodeChunks) {
         this.emitFile({
           type: 'asset',

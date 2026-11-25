@@ -19,10 +19,10 @@ const withTemporaryRoot = <T>(run: (root: string) => T): T => {
 };
 
 describe('search cache', () => {
-  it('preserves generated Pagefind files and course code chunks', () => {
+  it('preserves generated Pagefind files, course code chunks, and zh vocab', () => {
     withTemporaryRoot((root) => {
       const cache: SearchCache = {
-        version: 1,
+        version: 2,
         fingerprint: 'fingerprint',
         recordCount: 2,
         files: [
@@ -32,11 +32,26 @@ describe('search cache', () => {
           },
         ],
         courseCodeChunks: [['B', '{"B1":[]}']],
+        zhVocab: '户外\n素质',
       };
 
       writeSearchCache(root, cache);
 
       expect(readSearchCache(root)).toEqual(cache);
+    });
+  });
+
+  it('ignores version 1 caches without zhVocab', () => {
+    withTemporaryRoot((root) => {
+      writeSearchCache(root, {
+        version: 1,
+        fingerprint: 'fingerprint',
+        recordCount: 2,
+        files: [],
+        courseCodeChunks: [],
+      } as unknown as SearchCache);
+
+      expect(readSearchCache(root)).toBeNull();
     });
   });
 
