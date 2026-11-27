@@ -11,7 +11,7 @@ description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共�
     * [谨防诈骗](life/谨防诈骗.md){.home-fraud-alert}
     * {==新生来看！==}[入学必看](academic/入学必看/index.md)
     * {==openlib 运维小组招新==}[加入运维小组](sundry/加入运维小组.md)
-    * [更新日志](sundry/更新日志/index.md) / [2026-11-27](sundry/更新日志/2026/2026-11/2026-11-27.md)
+    * [更新日志](sundry/更新日志/index.md) / [2026-11-28](sundry/更新日志/2026/2026-11/2026-11-28.md)
 
 <HomeBookmarks />
 
@@ -73,5 +73,5 @@ description: 重庆大学资源共享计划 CQU-openlib，重庆大学资源共�
 
 ## 友情链接
 - [CQUThesis: 重庆大学毕业论文LaTeX模板](https://github.com/nanmu42/CQUThesis)
-- 重庆大学蓝盟 [内网版](http://lanunion.cqu.edu.cn/) / [公网版](https://lanunion-cqu-edu-cn.atrust.cqu.edu.cn) / [简介](club/科学技术协会/蓝盟.md)
+- 重庆大学蓝盟 [内网版](http://lanunion.cqu.edu.cn/) / [公网版](https://lanunion-cqu-edu-cn.atrust.cqu.edu.cn) / [简介](club/创新创业类/蓝盟.md)
 - 感谢2022级电气信息雏鹰巢群组 `876307729` 、2023级CQU骐骥原 `834044239` 对本网站资源建设和宣传的支持
