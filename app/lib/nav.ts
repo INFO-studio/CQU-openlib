@@ -27,7 +27,14 @@ export const NAV_SECTIONS: NavSection[] = [
     kind: 'dir',
     indexOrder: true,
   },
-  { id: 'club', label: '社团', path: '/club', source: 'club', kind: 'dir' },
+  {
+    id: 'club',
+    label: '社团',
+    path: '/club',
+    source: 'club',
+    kind: 'dir',
+    indexOrder: true,
+  },
   { id: 'skill', label: '技巧', path: '/skill', source: 'skill', kind: 'dir' },
   {
     id: 'life',
